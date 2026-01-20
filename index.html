@@ -1,0 +1,29 @@
+---
+layout: default
+title: Accueil
+---
+
+{% include header.html %}
+
+<section id="hero">
+  <h1>Bienvenue sur notre boutique universelle</h1>
+  <p>Vetements, Epices, Manba et plus</p>
+</section>
+
+<section id="products">
+  <h2>Nos Produits</h2>
+  <div class="product-grid">
+    {% for product in site.products %}
+      <div class="product-card">
+        <img src="{{ product.image }}" alt="{{ product.title }}">
+        <h3>{{ product.title }}</h3>
+        <p>{{ product.description }}</p>
+        <p>Prix: {{ product.price }} HTG</p>
+        <input type="number" min="1" value="1" id="qty-{{ product.title | slugify }}">
+        <button onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">Commander</button>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% include footer.html %}

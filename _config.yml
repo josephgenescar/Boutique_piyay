@@ -1,0 +1,28 @@
+title: "Boutique Universelle"
+description: "Vetements, Epices, Manba et plus"
+baseurl: "" 
+url: "https://votre-site.netlify.app"
+
+collections:
+  products:
+    output: true
+    permalink: /:collection/:name/
+
+markdown: kramdown
+
+plugins:
+  - jekyll-feed
+
+# Netlify CMS
+defaults:
+  -
+    scope:
+      path: ""
+      type: "products"
+    values:
+      layout: "product"
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
