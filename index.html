@@ -20,7 +20,7 @@ title: Accueil
         <div class="qty-section">
           <input type="number" min="1" value="1" id="qty-{{ product.title | slugify }}">
         </div>
-        <button onclick="orderProduct('{{ product.title }}', {{ product.price }}, '{{ product.id }}')">🛒 Ajouter</button>
+        <button onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
       </div>
     {% endfor %}
   </div>
