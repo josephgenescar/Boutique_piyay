@@ -41,16 +41,16 @@
 ### 1. **Numéro WhatsApp**
 Remplacez dans `main.js` ligne ~110:
 ```javascript
-let whatsappNumber = "50936000000"; // ← Mettez votre numéro ici
+let whatsappNumber = "50948868964"; // ← Mettez votre numéro ici
 ```
 
-Format: `+509XXXXXXXX` ou `509XXXXXXXX`
+Format: `+50948868964` ou `50948868964`
 
 ### 2. **Numéros Paiement**
 Mettez à jour dans `index.html` les numéros Moncash/Natcash:
 ```html
-<p>📲 <strong>Moncash:</strong> +509 36000000</p>
-<p>💳 <strong>Natcash:</strong> +509 36000000</p>
+<p>📲 <strong>Moncash:</strong> +509 48868964</p>
+<p>💳 <strong>Natcash:</strong> +509 48868964</p>
 ```
 
 ### 3. **Ajouter des Produits**
@@ -90,7 +90,7 @@ Format professionnel automatique:
 🛒 NOUVELLE COMMANDE
 
 👤 Nom: Jean Duviré
-📱 Téléphone: +509 36000000
+📱 Téléphone: +509 48868964
 💳 Paiement: Moncash
 
 📦 ARTICLES:
