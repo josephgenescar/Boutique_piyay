@@ -1,0 +1,15 @@
+---
+layout: default
+---
+
+<div class="product-page">
+  <h1>{{ page.title }}</h1>
+  {% if page.image %}
+    <img src="{{ page.image }}" alt="{{ page.title }}">
+  {% endif %}
+  <p>{{ page.description }}</p>
+  {% if page.price %}
+    <p>Prix: {{ page.price }} HTG</p>
+  {% endif %}
+  {{ content }}
+</div>
