@@ -5,19 +5,13 @@
 [build.environment]
   JEKYLL_ENV = "production"
 
-# ✅ OBLIGATWA POUR NETLIFY CMS
+# ✅ NETLIFY CMS ADMIN (OBLIGATWA)
 [[redirects]]
   from = "/admin/*"
   to = "/admin/index.html"
   status = 200
 
-# ✅ OPTIONNEL : si identity login
-[[redirects]]
-  from = "/.netlify/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# ❌ 404 TOUJOURS EN DERNIER
+# ❌ 404 TOUJOURS AN DERNIER
 [[redirects]]
   from = "/*"
   to = "/404.html"
