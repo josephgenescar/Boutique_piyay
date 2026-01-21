@@ -1,0 +1,222 @@
+/* ===================== ADMIN ROOT ===================== */
+:root {
+  --neon-blue: #00f7ff;
+  --neon-purple: #a855f7;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-dark: rgba(15, 15, 30, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.25);
+}
+
+/* ===================== ADMIN BODY ===================== */
+.admin-body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+  padding: 40px 20px;
+}
+
+/* ===================== ADMIN CONTAINER ===================== */
+.admin-container {
+  max-width: 1200px;
+  margin: auto;
+  background: var(--glass-dark);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: 25px;
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 0 30px rgba(0, 247, 255, 0.25),
+    0 30px 70px rgba(0, 0, 0, 0.6);
+  padding: 30px;
+}
+
+/* ===================== ADMIN HEADER ===================== */
+.admin-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.admin-header h1 {
+  font-size: 2.5em;
+  color: var(--neon-blue);
+  text-shadow:
+    0 0 15px var(--neon-blue),
+    0 0 35px var(--neon-blue);
+}
+
+.admin-header p {
+  color: #ccc;
+}
+
+/* ===================== ADMIN GRID ===================== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+/* ===================== ADMIN CARD ===================== */
+.admin-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow:
+    0 0 15px rgba(0, 247, 255, 0.15),
+    0 15px 35px rgba(0, 0, 0, 0.5);
+  transition: all 0.4s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 0 25px var(--neon-blue),
+    0 0 45px var(--neon-purple),
+    0 25px 60px rgba(0, 0, 0, 0.6);
+}
+
+.admin-card h2 {
+  color: var(--neon-purple);
+  margin-bottom: 20px;
+  text-shadow:
+    0 0 10px var(--neon-purple);
+}
+
+/* ===================== FORM ===================== */
+.admin-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #eee;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.admin-form input::placeholder,
+.admin-form textarea::placeholder {
+  color: #bbb;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus {
+  outline: none;
+  box-shadow:
+    0 0 12px var(--neon-blue),
+    0 0 25px rgba(0, 247, 255, 0.5);
+}
+
+/* ===================== UPLOAD IMAGE ===================== */
+.admin-upload {
+  border: 2px dashed var(--glass-border);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-upload:hover {
+  border-color: var(--neon-blue);
+  box-shadow:
+    0 0 20px var(--neon-blue);
+}
+
+.admin-upload span {
+  color: #ccc;
+}
+
+/* ===================== ADMIN BUTTON ===================== */
+.admin-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  border: none;
+  padding: 14px;
+  border-radius: 30px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 15px var(--neon-blue),
+    0 0 35px var(--neon-purple);
+}
+
+.admin-btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 30px var(--neon-blue),
+    0 0 55px var(--neon-purple);
+}
+
+/* ===================== ADMIN TABLE ===================== */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 15px;
+  text-align: left;
+}
+
+.admin-table th {
+  background: rgba(0, 247, 255, 0.15);
+  color: var(--neon-blue);
+}
+
+.admin-table tr {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-table tr:hover {
+  background: rgba(0, 247, 255, 0.12);
+}
+
+/* ===================== STATUS BADGE ===================== */
+.status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.status.active {
+  background: rgba(0, 255, 170, 0.2);
+  color: #00ffaa;
+  box-shadow: 0 0 10px rgba(0, 255, 170, 0.7);
+}
+
+.status.off {
+  background: rgba(255, 71, 87, 0.2);
+  color: #ff4757;
+  box-shadow: 0 0 10px rgba(255, 71, 87, 0.7);
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  .admin-header h1 {
+    font-size: 2em;
+  }
+}
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+}

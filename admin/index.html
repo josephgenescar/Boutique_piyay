@@ -9,16 +9,18 @@
 
   <!-- Netlify CMS -->
   <script src="https://unpkg.com/netlify-cms@^2.10.0/dist/netlify-cms.js"></script>
+<!--link css admin.html-->
+<link rel="stylesheet" href="/assets/css/admin.css">
 
   <style>
+
     body {
       background: #0f172a;
       font-family: Arial, sans-serif;
     }
   </style>
 </head>
-<body>
-
+<body class="admin-body">
 <script>
   if (window.netlifyIdentity) {
     window.netlifyIdentity.on("init", user => {
