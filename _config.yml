@@ -31,3 +31,5 @@ exclude:
 # Konfigirasyon Netlify CMS la  
 netlify_cms:
   admin_config_path: "admin/config.yml"
+  public_folder: "/images/uploads"
+  media_folder: "assets/images/uploads"
