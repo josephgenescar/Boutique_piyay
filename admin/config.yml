@@ -28,6 +28,19 @@ collections:
           - "Vetements Femme"
           - "Epices"
           - "Manba"
+          - "Cosmetiques"
+          - "Accessoires"
+          - "Autres"
+          - "Promotions"
+          - "Nouveautes"
+          - "Offres Speciales"
+          - "Produits Locaux"
+          - "Produits Importes"
+          - "Produits Bio"
+          - "Produits Artisanaux"
+          - "Produits Technologiques"
+          - "Produits pour la Maison"
+          - "Produits pour Enfants"
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Prix (HTG)", name: "price", widget: "number", min: 0 }
       - { label: "Image du produit", name: "image", widget: "image" }
