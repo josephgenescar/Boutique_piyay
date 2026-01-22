@@ -82,6 +82,114 @@ title: Accueil
         <button class="btn-cancel" onclick="closeOrderModal()">❌ Annuler</button>
         <button class="btn-submit" onclick="submitOrder()">✅ Confirmer la Commande</button>
       </div>
+      <script>
+let cart = [];
+
+function orderProduct(title, price, id) {
+    const qtyInput = document.getElementById(`qty-${title.toLowerCase().replace(/\s+/g, '-')}`);
+    const quantity = parseInt(qtyInput.value);
+    
+    const existingItem = cart.find(item => item.title === title);
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cart.push({ title, price, quantity });
+    }
+    
+    updateCartBadge();
+    alert(`✅ ${quantity} ${title} ajoute nan panyen an!`);
+}
+
+function updateCartBadge() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cart-badge').innerText = totalItems;
+}
+
+function openOrderModal() {
+    if (cart.length === 0) {
+        alert("Panyen ou vid! Ajoute yon pwodwi anvan.");
+        return;
+    }
+    document.getElementById('order-modal').style.display = 'flex';
+    renderOrderSummary();
+}
+
+function closeOrderModal() {
+    document.getElementById('order-modal').style.display = 'none';
+}
+
+function renderOrderSummary() {
+    let summaryHtml = "<ul>";
+    let total = 0;
+    cart.forEach(item => {
+        const subtotal = item.price * item.quantity;
+        summaryHtml += `<li>${item.quantity}x ${item.title} - ${subtotal} HTG</li>`;
+        total += subtotal;
+    });
+    summaryHtml += `</ul><p><strong>Total: ${total} HTG</strong></p>`;
+    document.getElementById('order-summary').innerHTML = summaryHtml;
+}
+
+function submitOrder() {
+    const name = document.getElementById('customer-name').value;
+    const phone = document.getElementById('customer-phone').value;
+    const payment = document.getElementById('payment-method').value;
+
+    if (!name || !phone || !payment) {
+        alert("Tanpri ranpli tout enfòmasyon yo!");
+        return;
+    }
+
+    // 1. MESAJ OTOMATIK SOU EKRAN AN
+    alert(`Mèsi ${name}! 🎉 \n\nKòmand ou a preske fini. Kounye a, nou pral dirije w sou WhatsApp pou voye detay yo ban nou epi konfime peman an.`);
+
+    // 2. PREPARASYON MESAJ WHATSAPP LA
+    let message = `*NOUVO KÒMAND - BOUTIQUE PIYAY*\n\n`;
+    message += `*Non:* ${name}\n`;
+    message += `*Telefòn:* ${phone}\n`;
+    message += `*Peman:* ${payment}\n\n`;
+    message += `*Pwodwi:*\n`;
+    
+    let total = 0;
+    cart.forEach(item => {
+        message += `- ${item.quantity}x ${item.title} (${item.price * item.quantity} HTG)\n`;
+        total += (item.price * item.quantity);
+    });
+    
+    message += `\n*TOTAL:* ${total} HTG`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/50948868964?text=${encodedMessage}`;
+
+    // 3. OUVÈ WHATSAPP
+    window.open(whatsappUrl, '_blank');
+    
+    // Reyalize panyen an apre kòmand lan
+    cart = [];
+    updateCartBadge();
+    closeOrderModal();
+}
+</script>
+
+<style>
+/* Ti style pou asire modal la parèt byen */
+#order-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white; padding: 20px; border-radius: 10px;
+    max-width: 500px; width: 90%; color: #333;
+}
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+.btn-submit { background: #25d366; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+</style>
     </div>
   </div>
 </div>
