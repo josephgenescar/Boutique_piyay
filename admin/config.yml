@@ -1,77 +1,35 @@
-# ===============================
-# BACKEND
-# ===============================
 backend:
   name: git-gateway
   branch: main
 
-# ===============================
-# MEDIA (IMAGES)
-# ===============================
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
-# ===============================
-# SITE INFO
-# ===============================
-site_url: "https://votre-site.netlify.app"
-display_url: "https://votre-site.netlify.app"
+site_url: "https://rivayo3.netlify.app" # Sèvi ak URL ou a
+display_url: "https://rivayo3.netlify.app"
 
-# ===============================
-# EDITOR
-# ===============================
 editor:
   preview: false
 
-# ===============================
-# COLLECTIONS
-# ===============================
 collections:
-
-  # ===========================
-  # PRODUITS
-  # ===========================
   - name: "products"
     label: "🛒 Produits"
     label_singular: "Produit"
     folder: "_products"
     create: true
     slug: "{{slug}}"
-    preview_path: "products/{{slug}}"
-
     fields:
-      - label: "Titre du produit"
-        name: "title"
-        widget: "string"
-
+      - { label: "Titre du produit", name: "title", widget: "string" }
       - label: "Catégorie"
         name: "category"
         widget: "select"
         options:
-          - Vetements Homme
-          - Vetements Femme
-          - Epices
-          - Manba
-
-      - label: "Description"
-        name: "description"
-        widget: "text"
-
-      - label: "Prix (HTG)"
-        name: "price"
-        widget: "number"
-        min: 0
-
-      - label: "Image du produit"
-        name: "image"
-        widget: "image"
-
-      - label: "Disponible ?"
-        name: "available"
-        widget: "boolean"
-        default: true
-
-      - label: "Contenu"
-        name: "body"
-        widget: "markdown"
-        required: false
+          - "Vetements Homme"
+          - "Vetements Femme"
+          - "Epices"
+          - "Manba"
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Prix (HTG)", name: "price", widget: "number", min: 0 }
+      - { label: "Image du produit", name: "image", widget: "image" }
+      - { label: "Disponible ?", name: "available", widget: "boolean", default: true }
+      - { label: "Contenu", name: "body", widget: "markdown", required: false }
