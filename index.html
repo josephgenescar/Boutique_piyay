@@ -162,7 +162,7 @@ function submitOrder() {
     const whatsappUrl = `https://wa.me/50948868964?text=${encodedMessage}`;
 
     // 3. OUVÈ WHATSAPP
-    window.open(whatsappUrl, '_blank');
+    window.location.href = whatsappUrl;
     
     // Reyalize panyen an apre kòmand lan
     cart = [];
