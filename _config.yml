@@ -1,18 +1,33 @@
-backend:
-  name: git-gateway
-  branch: main
+# Enfòmasyon sou Sit la
+title: Boutique Piyay
+email: josephgenescar@gmail.com
+description: >- # Sa se deskripsyon k ap parèt nan Google
+  
+baseurl: "" # Pa mete anyen la si se nan rasin domèn nan l ap ye
+url: "https://rivayo3.netlify.app" # Mete URL final la la a
 
-media_folder: "assets/uploads"
-public_folder: "/assets/uploads"
+# Enfòmasyon sou Otè a
+author:
+  name: Non Ou
+  twitter: non_itilizatè_ou
 
-collections:
-  - name: "products"
-    label: "Produits"
-    folder: "_products"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Nom", name: "title", widget: "string" }
-      - { label: "Prix", name: "price", widget: "number" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Description", name: "body", widget: "markdown" }
+# Konfigirasyon Build la
+markdown: kramdown
+theme: minima # Se tèm pa defo a, ou ka chanje l
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Ekskli fichye sa yo pou Jekyll pa travay yo
+exclude:
+ collections:
+  posts:
+    output: true
+  projects:
+    output: true
+  products:
+    output: true
+    assets:/images/uploads: true
+# Konfigirasyon Netlify CMS la  
+netlify_cms:
+  admin_config_path: "admin/config.yml"
