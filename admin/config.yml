@@ -41,6 +41,7 @@ collections:
           - "Produits Technologiques"
           - "Produits pour la Maison"
           - "Produits pour Enfants"
+          - "cheveux"
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Prix (HTG)", name: "price", widget: "number", min: 0 }
       - { label: "Image du produit", name: "image", widget: "image" }
