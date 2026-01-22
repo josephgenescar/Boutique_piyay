@@ -5,8 +5,8 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
-site_url: "https://rivayo3.netlify.app" # Sèvi ak URL ou a
-display_url: "https://rivayo3.netlify.app"
+site_url: "https://boutique-piyay.netlify.app" # Sèvi ak URL ou a
+display_url: "https://boutique-piyay.netlify.app"
 
 editor:
   preview: false
