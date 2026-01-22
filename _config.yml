@@ -1,35 +1,40 @@
 # Enfòmasyon sou Sit la
 title: Boutique Piyay
 email: josephgenescar@gmail.com
-description: >- # Sa se deskripsyon k ap parèt nan Google
-  
-baseurl: "" # Pa mete anyen la si se nan rasin domèn nan l ap ye
-url: "https://rivayo3.netlify.app" # Mete URL final la la a
+description: >- 
+  Byenvini nan Boutique Piyay, pi bon kote pou jwenn pwodwi ou bezwen.
+baseurl: "" 
+url: "https://rivayo3.netlify.app"
 
 # Enfòmasyon sou Otè a
 author:
-  name: Non Ou
-  twitter: non_itilizatè_ou
+  name: "Joseph Genescar"
+  twitter: "josephgenescar"
 
 # Konfigirasyon Build la
 markdown: kramdown
-theme: minima # Se tèm pa defo a, ou ka chanje l
+theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# Ekskli fichye sa yo pou Jekyll pa travay yo
-exclude:
- collections:
+# Konfigirasyon Koleksyon yo (Sa pa dwe anndan 'exclude')
+collections:
   posts:
     output: true
   projects:
     output: true
   products:
     output: true
-    assets:/images/uploads: true
-# Konfigirasyon Netlify CMS la  
+
+# Ekskli fichye sa yo
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  - .netlify/
+
+# Konfigirasyon Netlify CMS (Opsyonèl pou Jekyll)
 netlify_cms:
   admin_config_path: "admin/config.yml"
-  public_folder: "/images/uploads"
-  media_folder: "assets/images/uploads"
