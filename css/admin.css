@@ -1,0 +1,45 @@
+/* =========================
+   ADMIN PANEL - JEKYLL
+   ========================= */
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #0f172a; /* dark blue */
+  color: #e5e7eb;
+  min-height: 100vh;
+}
+
+/* =========================
+   LAYOUT
+   ========================= */
+
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+  width: 260px;
+  background: #020617;
+  padding: 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-sidebar h2 {
+  color: #38bdf8;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.4rem;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+}
