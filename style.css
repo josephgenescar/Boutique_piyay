@@ -51,7 +51,7 @@ nav {
 }
 
 nav a {
-  color: #fff;
+  color: black;
   text-decoration: none;
   font-weight: 600;
   padding: 8px 18px;
@@ -294,7 +294,7 @@ button:hover {
   background: rgba(11, 4, 4, 0.05);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
-  color: white;
+  color: black;
 }
 
 /* ===================== FOOTER ===================== */
