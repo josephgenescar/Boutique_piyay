@@ -1,8 +1,9 @@
 ---
 id: 6
 title: Manba Artisanal Haïtien
+category: Manba
 description: Beurre d'arachide artisanal, délicieux et naturel
 price: 400
-image: https://via.placeholder.com/300x300/fecb78/ffffff?text=Manba
-category: Manba
+image: /assets/images/uploads/images.jpg
+available: true
 ---
