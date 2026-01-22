@@ -200,7 +200,7 @@ button:hover {
 
 /* ===================== MODAL ===================== */
 #order-modal {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(5, 107, 63, 0.7);
   backdrop-filter: blur(8px);
 }
 
