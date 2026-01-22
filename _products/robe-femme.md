@@ -1,8 +1,9 @@
 ---
 id: 3
 title: Robe Élégante Femme
+category: Vetements Femme
 description: Robe élégante, parfaite pour les occasions spéciales
 price: 850
-image: https://via.placeholder.com/300x300/f093fb/ffffff?text=Robe+Femme
-category: Vetements Femme
+image: /assets/images/uploads/whatsapp-image-2026-01-21-at-19.50.44.jpeg
+available: true
 ---
