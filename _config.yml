@@ -20,7 +20,7 @@ plugins:
 
 # Konfigirasyon Koleksyon yo (Sa pa dwe anndan 'exclude')
 collections:
-  posts:
+  includes:
     output: true
   projects:
     output: true
