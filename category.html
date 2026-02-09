@@ -1,0 +1,18 @@
+---
+layout: default
+---
+
+<h1>{{ page.category }}</h1>
+
+<div class="products">
+  {% for product in site.products %}
+    {% if product.category == page.category %}
+      <div class="product">
+        <img src="{{ product.image }}" width="150">
+        <h3>{{ product.title }}</h3>
+        <p>{{ product.price }} HTG</p>
+        <a href="{{ product.url }}">Voir produit</a>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
