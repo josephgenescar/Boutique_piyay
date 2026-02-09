@@ -7,4 +7,9 @@ layout: default
   <img src="{{ page.image }}" alt="{{ page.title }}">
   <p>{{ page.description }}</p>
   <p>Prix: {{ page.price }} HTG</p>
+
+
+  <button onclick="addToCart('{{ page.title }}', '{{ page.price }}')">
+Ajouter au panier
+</button>
 </div>
