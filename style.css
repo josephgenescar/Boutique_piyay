@@ -43,7 +43,7 @@ header {
   box-shadow: 0 0 20px rgba(0, 247, 255, 0.2);
 }
 
-nav.categories {
+nav {
   display: flex;
   justify-content: center;
   gap: 30px;
