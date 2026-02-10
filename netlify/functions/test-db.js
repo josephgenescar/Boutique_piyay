@@ -16,3 +16,9 @@ exports.handler = async () => {
     };
   }
 };
+const postgres = require('postgres');
+
+// Sèvi ak non ou te bay nan Netlify a (DATABASE_URL)
+const sql = postgres(process.env.DATABASE_URL, {
+  ssl: 'require'
+});
