@@ -2,10 +2,15 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "assets/images/uploads"
-public_folder: "/assets/images/uploads"
+# Konfigirasyon Cloudinary Joseph
+media_library:
+  name: cloudinary
+  config:
+    cloud_name: "df7o1ye4h"
+    api_key: "296348477738299"
+    unsigned_upload_preset: "lrbyiodz"
 
-site_url: "https://boutique-piyay.netlify.app" # Sèvi ak URL ou a
+site_url: "https://boutique-piyay.netlify.app"
 display_url: "https://boutique-piyay.netlify.app"
 
 editor:
