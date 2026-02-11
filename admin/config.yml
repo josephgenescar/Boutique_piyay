@@ -4,7 +4,8 @@ backend:
 
 
 media_library:
-  name: imagekit
+  name: CMSMediaLibraryImagekit
+
   config:
     publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg="
     urlEndpoint: "https://ik.imagekit.io/9zboshcie"
