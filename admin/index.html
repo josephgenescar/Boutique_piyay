@@ -7,9 +7,13 @@
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
     <script src="https://unpkg.com/decap-cms-media-library-imagekit@^1.0.0/dist/decap-cms-media-library-imagekit.js"></script>
 
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+      CMS.registerMediaLibrary(CMSMediaLibraryImagekit);
+    </script>
     
     <script>
       if (window.netlifyIdentity) {
