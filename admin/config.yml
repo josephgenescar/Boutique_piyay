@@ -4,7 +4,7 @@ backend:
 
 
 media_library:
-  name: CMSMediaLibraryImagekit
+  name: MediaLibraryImagekit
 
   config:
     publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg="
