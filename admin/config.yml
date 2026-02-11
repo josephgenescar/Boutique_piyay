@@ -4,7 +4,7 @@ backend:
 
 
 media_library:
-  name: MediaLibraryImagekit
+  name: registerMediaLibraryImagekit
 
   config:
     publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg="
