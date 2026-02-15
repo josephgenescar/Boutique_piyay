@@ -26,6 +26,8 @@ collections:
     output: true
   products:
     output: true
+  categories:
+    output: true
 
 # Ekskli fichye sa yo
 exclude:
