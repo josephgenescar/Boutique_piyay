@@ -7,5 +7,5 @@ sub_categories:
   - Vêtements
   - Chaussures & Tennis
   - Accessoires de Mode
-banner_image: /assets/images/uploads/vetm.jpeg
+banner_image: /assets/images/uploads/vetmt.jpeg
 ---
