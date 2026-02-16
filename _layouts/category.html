@@ -2,45 +2,41 @@
 layout: default
 ---
 
-<div class="category-hero" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ page.image | default: "https://images.unsplash.com/photo-1441986300917-64674bd600d8" }}'); background-size: cover; background-position: center;">
+<!-- 1. BANNER DYNAMIQUE DE LA CATÉGORIE -->
+<div class="category-banner-premium" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ page.banner_image | default: page.image }}');">
     <div class="container">
-        <h1>{{ page.title }}</h1>
-        <p>{{ page.description }}</p>
+        <div class="banner-text">
+            <h1>{{ page.title }}</h1>
+            <p>{{ page.description }}</p>
+        </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="category-layout">
-        <!-- SIDEBAR -->
-        <aside class="category-sidebar">
-            <h3>Sous-Catégories</h3>
-            <ul>
-                <li><a href="{{ page.url }}" class="active">Tout {{ page.title }}</a></li>
-                {% for sub in page.sub_categories %}
-                    <li><a href="#{{ sub | slugify }}">{{ sub }}</a></li>
-                {% endfor %}
-            </ul>
-
-            <div class="sidebar-promo">
-                <span class="badge">PROMO</span>
-                <p>Livraison Rapide de St-Domingue!</p>
+    <div class="category-main-layout">
+        <!-- SIDEBAR (FILTRES) -->
+        <aside class="sidebar-filters">
+            <h3>Explorer {{ page.title }}</h3>
+            <div class="promo-box-sidebar">
+                <span>⚡ OFFRES SPÉCIALES</span>
+                <p>Découvrez nos meilleurs prix aujourd'hui.</p>
             </div>
         </aside>
 
         <!-- GRILLE DE PRODUITS -->
-        <main class="category-main">
+        <div class="products-area">
             <div class="product-grid">
                 {% assign found_products = false %}
                 {% assign current_cat = page.title | downcase %}
 
                 {% for product in site.products %}
                     {% assign prod_cat = product.category | downcase %}
-                    {% if prod_cat == current_cat or page.sub_categories contains product.category %}
+                    {% if prod_cat == current_cat %}
                         {% assign found_products = true %}
-                        <div class="product-card" id="{{ product.category | slugify }}">
+                        <div class="product-card">
                             <div class="card-img">
                                 <a href="{{ product.url }}">
-                                    <img src="{{ product.image }}" alt="{{ product.title }}" onerror="this.src='https://via.placeholder.com/300x300?text=Produit'">
+                                    <img src="{{ product.image }}" alt="{{ product.title }}">
                                 </a>
                             </div>
                             <div class="card-info">
@@ -49,7 +45,7 @@ layout: default
                                     <span class="price">{{ product.price }} HTG</span>
                                 </div>
                                 <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
-                                    🛒 Ajouter
+                                    🛒 Ajouter au panier
                                 </button>
                             </div>
                         </div>
@@ -57,29 +53,48 @@ layout: default
                 {% endfor %}
 
                 {% if found_products == false %}
-                    <div class="no-products">
-                        <p>Aucun produit trouvé pour le moment. 😕</p>
+                    <div class="no-products-found">
+                        <p>Aucun produit trouvé dans cette catégorie. Ajoutez-en via l'administration !</p>
                         <a href="/" class="btn-primary">Retour à l'accueil</a>
                     </div>
                 {% endif %}
             </div>
-        </main>
+        </div>
     </div>
 </div>
 
 <style>
-.category-hero { padding: 80px 0; text-align: center; color: white; margin-bottom: 30px; border-radius: 0 0 20px 20px; }
-.category-layout { display: flex; gap: 30px; margin-bottom: 50px; align-items: flex-start; }
-.category-sidebar { width: 250px; flex-shrink: 0; background: white; padding: 20px; border-radius: 15px; position: sticky; top: 100px; box-shadow: var(--shadow-sm); }
-.category-sidebar ul { padding: 0; }
-.category-sidebar li { margin-bottom: 10px; list-style: none; }
-.category-sidebar a { color: #666; font-size: 14px; font-weight: 500; }
-.category-sidebar a.active, .category-sidebar a:hover { color: var(--primary); }
-.no-products { grid-column: 1 / -1; text-align: center; padding: 50px; }
+/* STYLE PREMIUM CATEGORY PAGE */
+.category-banner-premium {
+    height: 250px;
+    background-size: cover !important;
+    background-position: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    margin-bottom: 40px;
+    border-radius: 0 0 20px 20px;
+}
+.banner-text h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 15px rgba(0,0,0,0.5); }
+.banner-text p { font-size: 1.2rem; opacity: 0.9; }
+
+.category-main-layout { display: flex; gap: 30px; }
+.sidebar-filters { width: 250px; flex-shrink: 0; }
+.sidebar-filters h3 { font-size: 1.3rem; margin-bottom: 20px; border-bottom: 2px solid var(--primary); display: inline-block; }
+
+.promo-box-sidebar { background: var(--secondary); color: white; padding: 20px; border-radius: 12px; margin-top: 20px; }
+.promo-box-sidebar span { color: var(--primary); font-weight: 800; font-size: 12px; }
+
+.products-area { flex-grow: 1; }
+
+.no-products-found { grid-column: 1 / -1; text-align: center; padding: 100px 0; }
 
 @media (max-width: 992px) {
-    .category-layout { flex-direction: column; }
-    .category-sidebar { width: 100%; position: static; }
-    .category-sidebar ul { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
+    .category-main-layout { flex-direction: column; }
+    .sidebar-filters { width: 100%; text-align: center; }
+    .category-banner-premium { height: 200px; }
+    .banner-text h1 { font-size: 2rem; }
 }
 </style>

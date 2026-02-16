@@ -12,56 +12,40 @@ editor:
   preview: false
 
 collections:
-  # 🛒 COLLECTION PRODUITS
+  # 🛒 KOLEKSYON PWODWI
   - name: "products"
     label: "🛒 Produits"
     folder: "_products"
     create: true
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - label: "Catégorie"
-        name: "category"
-        widget: "select"
-        options:
-          - { label: "Vêtements", value: "Vetements" }
-          - { label: "Chaussures & Tennis", value: "Chaussures" }
-          - { label: "Accessoires Électroniques", value: "Electronique" }
-          - { label: "Accessoires Maison", value: "Maison" }
-          - { label: "Beauté & Cosmétiques", value: "Beaute" }
-          - { label: "Épices & Cuisine", value: "Cuisine" }
-          - { label: "Autres", value: "Autres" }
-      - { label: "Prix (HTG)", name: "price", widget: "number" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Vente Flash?", name: "flash_sale", widget: "boolean", default: false }
-      - { label: "Description", name: "body", widget: "markdown" }
-
-  # 📢 GESTION DES PUBLICITÉS
-  - name: "promotions"
-    label: "📢 Publicités & Promos"
-    label_singular: "Publicité"
-    folder: "_promotions"
-    create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Nom du Partenaire", name: "title", widget: "string" }
-      - { label: "Image de la Pub", name: "image", widget: "image" }
-      - { label: "Lien (URL)", name: "url", widget: "string", required: false }
-      - label: "Position sur le site"
-        name: "position"
-        widget: "select"
-        options:
-          - { label: "Haut (Bannière)", value: "top" }
-          - { label: "Milieu (Entre catégories)", value: "middle" }
-          - { label: "Bas (Avant footer)", value: "bottom" }
-      - { label: "Date de début", name: "start_date", widget: "datetime" }
-      - { label: "Date de fin", name: "end_date", widget: "datetime" }
-      - { label: "Activer la publicité?", name: "active", widget: "boolean", default: true }
+      - { label: "Titre du produit", name: "title", widget: "string" }
+      - { label: "Catégorie", name: "category", widget: "string", hint: "Mete menm non ak kategori ou kreye a (ex: Habillement)" }
+      - { label: "Prix (HTG)", name: "price", widget: "number" }
+      - { label: "Image principale", name: "image", widget: "image" }
+      - { label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false }
+      - { label: "Description détaillée", name: "body", widget: "markdown" }
 
-  # 🗂 CATÉGORIES (POUR LA PAGE D'ACCUEIL)
+  # 🗂 KOLEKSYON KATEGORI (DINAMIK)
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
     create: true
+    slug: "{{slug}}"
     fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Image (Bulle)", name: "image", widget: "image" }
+      - { label: "Nom de la Catégorie", name: "title", widget: "string" }
+      - { label: "Description de la page", name: "description", widget: "text" }
+      - { label: "Image Bulle (Accueil)", name: "image", widget: "image" }
+      - { label: "Image Banner (Page Catégorie)", name: "banner_image", widget: "image" }
+      - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
+
+  # 📢 PUBLICITÉS
+  - name: "promotions"
+    label: "📢 Publicités & Promos"
+    folder: "_promotions"
+    create: true
+    fields:
+      - { label: "Nom du Partenaire", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Position", name: "position", widget: "select", options: ["top", "middle", "bottom"] }
+      - { label: "Actif", name: "active", widget: "boolean", default: true }
