@@ -7,12 +7,15 @@
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
+    <!-- Charge Decap CMS (anciennement Netlify CMS) -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <script src="https://unpkg.com/decap-cms-media-library-imagekit@^1.0.0/dist/decap-cms-media-library-imagekit.js"></script>
+    <!-- Charge la bibliothèque Media ImageKit -->
+    <script src="https://unpkg.com/netlify-cms-media-library-imagekit@^1.0.0/dist/netlify-cms-media-library-imagekit.js"></script>
 
     <script>
-      CMS.registerMediaLibrary(registerMediaLibrary);
+      // Enregistre proprement la bibliothèque ImageKit
+      CMS.registerMediaLibrary(NetlifyCMSMediaLibraryImagekit);
     </script>
     
     <script>
