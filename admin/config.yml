@@ -2,12 +2,11 @@ backend:
   name: git-gateway
   branch: main
 
-# Integrasyon ImageKit
-media_library:
-  name: imagekit
-  config:
-    publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg="
-    urlEndpoint: "https://ik.imagekit.io/9zboshcie"
+# On retire la section media_library: imagekit
+
+# Configuration des médias par défaut (Stockage dans le Git)
+media_folder: "assets/images/uploads"
+public_folder: "/assets/images/uploads"
 
 site_url: "https://boutique-piyay.netlify.app"
 display_url: "https://boutique-piyay.netlify.app"
@@ -16,7 +15,7 @@ editor:
   preview: false
 
 collections:
-  # 🛒 KOLEKSYON PWODWI
+  # 🛒 COLLECTION PRODUITS
   - name: "products"
     label: "🛒 Pwodwi"
     label_singular: "Pwodwi"
@@ -36,7 +35,7 @@ collections:
       - { label: "Disponib ?", name: "available", widget: "boolean", default: true }
       - { label: "Detay konplè (Markdown)", name: "body", widget: "markdown", required: false }
 
-  # 🗂 KOLEKSYON KATEGORI
+  # 🗂 COLLECTION CATÉGORIES
   - name: "categories"
     label: "🗂 Kategori"
     label_singular: "Kategori"
@@ -50,7 +49,7 @@ collections:
       - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
       - { label: "Sous-Kategori (Si genyen)", name: "sub_categories", widget: "list", field: { label: "Non Sous-Kategori", name: "sub", widget: "string" }, required: false }
 
-  # 📄 PAJ YO (About, etc.)
+  # 📄 PAGES (About, etc.)
   - name: "pages"
     label: "📄 Paj Yo"
     files:
@@ -59,4 +58,4 @@ collections:
         file: "about.markdown"
         fields:
           - { label: "Tit", name: "title", widget: "string" }
-          - { label: "Kontnu Paj la", name: "body", widget: "markdown" }
+          - { label: "Kontenu Paj la", name: "body", widget: "markdown" }

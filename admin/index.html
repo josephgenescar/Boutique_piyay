@@ -7,24 +7,9 @@
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
-    <!-- 1. Charger le CMS en premier pour définir l'objet CMS -->
+    <!-- On ne garde que le CMS de base -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <!-- 2. Charger le plugin ImageKit -->
-    <script src="https://unpkg.com/netlify-cms-media-library-imagekit@^1.0.0/dist/netlify-cms-media-library-imagekit.js"></script>
-    <script src="https://unpkg.com/netlify-cms-media-library-imagekit/dist/index.js"></script>
-    <script>
-        window.CMS.registerMediaLibrary(imagekit);
-    </script>
-
-    <script>
-      // 3. Enregistrer la bibliothèque immédiatement après le chargement des scripts
-      // On s'assure que l'objet CMS est présent
-      if (typeof CMS !== 'undefined' && window.NetlifyCMSMediaLibraryImagekit) {
-        CMS.registerMediaLibrary(window.NetlifyCMSMediaLibraryImagekit);
-      }
-    </script>
-    
     <script>
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", user => {
