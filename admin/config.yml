@@ -12,7 +12,7 @@ editor:
   preview: false
 
 collections:
-  # 🛒 KOLEKSYON PWODWI
+  # 🛒 KOLEKSYON PWODWI (PRO)
   - name: "products"
     label: "🛒 Produits"
     folder: "_products"
@@ -20,13 +20,15 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Titre du produit", name: "title", widget: "string" }
-      - { label: "Catégorie", name: "category", widget: "string", hint: "Mete menm non ak kategori ou kreye a (ex: Habillement)" }
-      - { label: "Prix (HTG)", name: "price", widget: "number" }
-      - { label: "Image principale", name: "image", widget: "image" }
+      - { label: "Catégorie", name: "category", widget: "string", hint: "Ekri non kategori a (ex: Habillement)" }
+      - { label: "Prix Actuel (HTG)", name: "price", widget: "number" }
+      - { label: "Ancien Prix (pour Vente Flash)", name: "old_price", widget: "number", required: false }
       - { label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false }
-      - { label: "Description détaillée", name: "body", widget: "markdown" }
+      - { label: "Image principale", name: "image", widget: "image" }
+      - label: "Autres Images (Galerie)", name: "images", widget: "list", required: false, field: { label: "Image", name: "img", widget: "image" }
+      - { label: "Description", name: "body", widget: "markdown" }
 
-  # 🗂 KOLEKSYON KATEGORI (DINAMIK)
+  # 🗂 KOLEKSYON KATEGORI
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
@@ -34,9 +36,14 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Nom de la Catégorie", name: "title", widget: "string" }
-      - { label: "Description de la page", name: "description", widget: "text" }
+      - { label: "Description", name: "description", widget: "text" }
       - { label: "Image Bulle (Accueil)", name: "image", widget: "image" }
-      - { label: "Image Banner (Page Catégorie)", name: "banner_image", widget: "image" }
+      - { label: "Image Banner (Haut de page)", name: "banner_image", widget: "image" }
+      - label: "Galerie d'images (Plusieurs photos)"
+        name: "gallery"
+        widget: "list"
+        required: false
+        field: { label: "Image", name: "image", widget: "image" }
       - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
 
   # 📢 PUBLICITÉS

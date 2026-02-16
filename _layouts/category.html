@@ -2,24 +2,45 @@
 layout: default
 ---
 
-<!-- 1. BANNER DYNAMIQUE DE LA CATÉGORIE -->
-<div class="category-banner-premium" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ page.banner_image | default: page.image }}');">
-    <div class="container">
-        <div class="banner-text">
-            <h1>{{ page.title }}</h1>
-            <p>{{ page.description }}</p>
+<!-- 1. BANNER OU GALERIE DE LA CATÉGORIE -->
+<div class="category-header-area">
+    {% if page.gallery and page.gallery.size > 0 %}
+        <!-- Si gen plizyè foto, nou montre yo nan yon bèl Grid -->
+        <div class="category-gallery">
+            {% for item in page.gallery %}
+                <div class="gallery-item">
+                    <img src="{{ item.image }}" alt="{{ page.title }}">
+                </div>
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <!-- Si se yon sèl foto, nou montre banyè a jan sa te ye a -->
+        <div class="category-banner-premium" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ page.banner_image | default: page.image }}');">
+            <div class="container">
+                <div class="banner-text">
+                    <h1>{{ page.title }}</h1>
+                    <p>{{ page.description }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
+
+{% if page.gallery and page.gallery.size > 0 %}
+    <div class="container category-info-text">
+        <h1>{{ page.title }}</h1>
+        <p>{{ page.description }}</p>
+    </div>
+{% endif %}
 
 <div class="container">
     <div class="category-main-layout">
-        <!-- SIDEBAR (FILTRES) -->
+        <!-- SIDEBAR -->
         <aside class="sidebar-filters">
             <h3>Explorer {{ page.title }}</h3>
             <div class="promo-box-sidebar">
                 <span>⚡ OFFRES SPÉCIALES</span>
-                <p>Découvrez nos meilleurs prix aujourd'hui.</p>
+                <p>Le meilleur de Saint-Domingue à votre portée.</p>
             </div>
         </aside>
 
@@ -45,7 +66,7 @@ layout: default
                                     <span class="price">{{ product.price }} HTG</span>
                                 </div>
                                 <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
-                                    🛒 Ajouter au panier
+                                    🛒 Ajouter
                                 </button>
                             </div>
                         </div>
@@ -64,7 +85,21 @@ layout: default
 </div>
 
 <style>
-/* STYLE PREMIUM CATEGORY PAGE */
+/* STYLE GALERIE KATEGORI */
+.category-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    height: 350px;
+    overflow: hidden;
+}
+.gallery-item { height: 100%; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+.category-info-text { text-align: center; padding: 30px 0; border-bottom: 1px solid #eee; margin-bottom: 30px; }
+.category-info-text h1 { font-size: 2.5rem; color: var(--primary); }
+
 .category-banner-premium {
     height: 250px;
     background-size: cover !important;
@@ -74,27 +109,14 @@ layout: default
     justify-content: center;
     color: white;
     text-align: center;
-    margin-bottom: 40px;
     border-radius: 0 0 20px 20px;
 }
-.banner-text h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 15px rgba(0,0,0,0.5); }
-.banner-text p { font-size: 1.2rem; opacity: 0.9; }
 
-.category-main-layout { display: flex; gap: 30px; }
+.category-main-layout { display: flex; gap: 30px; margin-top: 20px; }
 .sidebar-filters { width: 250px; flex-shrink: 0; }
-.sidebar-filters h3 { font-size: 1.3rem; margin-bottom: 20px; border-bottom: 2px solid var(--primary); display: inline-block; }
 
-.promo-box-sidebar { background: var(--secondary); color: white; padding: 20px; border-radius: 12px; margin-top: 20px; }
-.promo-box-sidebar span { color: var(--primary); font-weight: 800; font-size: 12px; }
-
-.products-area { flex-grow: 1; }
-
-.no-products-found { grid-column: 1 / -1; text-align: center; padding: 100px 0; }
-
-@media (max-width: 992px) {
+@media (max-width: 768px) {
+    .category-gallery { grid-template-columns: 1fr; height: auto; }
     .category-main-layout { flex-direction: column; }
-    .sidebar-filters { width: 100%; text-align: center; }
-    .category-banner-premium { height: 200px; }
-    .banner-text h1 { font-size: 2rem; }
 }
 </style>

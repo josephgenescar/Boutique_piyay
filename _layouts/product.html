@@ -2,108 +2,136 @@
 layout: default
 ---
 
-<div class="product-container">
-  <!-- 1. Galeri Foto -->
-  <div class="product-visuals">
-    <div class="main-image">
-      <img id="current-img" src="{{ page.image }}" alt="{{ page.title }}">
-    </div>
-    {% if page.images %}
-    <div class="thumbnails">
-      <img src="{{ page.image }}" onclick="document.getElementById('current-img').src='{{ page.image }}'">
-      {% for img_obj in page.images %}
-      <img src="{{ img_obj.img }}" onclick="document.getElementById('current-img').src='{{ img_obj.img }}'">
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- 2. Enfòmasyon Pwodwi -->
-  <div class="product-details">
-    <nav class="breadcrumb">
-      <a href="/">Akèy</a> > <span class="cat-label">{{ page.category | capitalize }}</span>
-    </nav>
-
-    <h1>{{ page.title }}</h1>
-
-    <div class="price-box">
-      <span class="current-price">{{ page.price }} HTG</span>
-      {% if page.old_price %}
-      <span class="old-price">{{ page.old_price }} HTG</span>
-      <span class="discount">-{{ page.old_price | minus: page.price | times: 100 | divided_by: page.old_price }}%</span>
-      {% endif %}
-    </div>
-
-    <div class="short-description">
-      <p>{{ page.description }}</p>
-    </div>
-
-    <div class="stock-status">
-      {% if page.available != false %}
-        <span class="in-stock">✅ Nan stock</span>
-      {% else %}
-        <span class="out-of-stock">❌ Fin vann</span>
-      {% endif %}
-    </div>
-
-    <!-- 3. Aksyon -->
-    <div class="actions">
-      <div class="quantity-picker">
-        <label for="prod-qty">Kantite:</label>
-        <div class="qty-controls">
-            <button type="button" onclick="changeQty(-1)">-</button>
-            <input type="number" id="prod-qty" value="1" min="1">
-            <button type="button" onclick="changeQty(1)">+</button>
+<div class="container">
+    <div class="product-page-layout">
+        <!-- 1. FOTO PWODWI (GALERI) -->
+        <div class="product-visuals">
+            <div class="main-img-container">
+                <img id="main-product-img" src="{{ page.image }}" alt="{{ page.title }}">
+            </div>
+            {% if page.images and page.images.size > 0 %}
+            <div class="product-thumbnails">
+                <img src="{{ page.image }}" class="thumb active" onclick="updateMainImg(this)">
+                {% for img_obj in page.images %}
+                    <img src="{{ img_obj.img }}" class="thumb" onclick="updateMainImg(this)">
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
-      </div>
 
-      <button class="btn-cart-add" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}')">
-        Ajoute nan Panyen 🛒
-      </button>
+        <!-- 2. DETAY PWODWI -->
+        <div class="product-info-panel">
+            <nav class="breadcrumb">
+                <a href="/">Accueil</a> / <a href="/kategori/{{ page.category | slugify }}">{{ page.category }}</a>
+            </nav>
 
-      <p style="font-size: 12px; color: #888; margin-top: 10px; text-align: center;">Kòmand lan ap konfime sou WhatsApp apre w fin valide panyen an.</p>
+            <h1 class="product-title">{{ page.title }}</h1>
+
+            <div class="product-price-box">
+                <span class="current-price">{{ page.price }} HTG</span>
+                {% if page.old_price %}
+                    <span class="old-price">{{ page.old_price }} HTG</span>
+                    <span class="discount-badge">-{{ page.old_price | minus: page.price | times: 100 | divided_by: page.old_price }}%</span>
+                {% endif %}
+            </div>
+
+            <div class="shipping-info-box">
+                <p>🚚 <strong>Livraison Rapide</strong> de Saint-Domingue vers Haïti</p>
+                <p>🛡️ Garantie de satisfaction Boutique Piyay</p>
+            </div>
+
+            <div class="purchase-controls">
+                <div class="qty-selector">
+                    <label>Quantité :</label>
+                    <div class="qty-btn-group">
+                        <button onclick="changeProdQty(-1)">-</button>
+                        <input type="number" id="prod-qty" value="1" min="1">
+                        <button onclick="changeProdQty(1)">+</button>
+                    </div>
+                </div>
+
+                <button class="btn-buy-now" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}')">
+                    Ajouter au Panier 🛒
+                </button>
+            </div>
+
+            <div class="product-description-content">
+                <h3>Description</h3>
+                <div class="markdown-body">
+                    {{ content | default: page.description }}
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="trust-badges">
-      <div class="badge-item"><span>🚚</span> Livrezon Rapid</div>
-      <div class="badge-item"><span>🔒</span> Peman Sekirize</div>
-      <div class="badge-item"><span>⭐</span> Pi bon Kalite</div>
-    </div>
-  </div>
-</div>
-
-<div class="product-full-description">
-    <h2>Deskripsyon Pwodwi</h2>
-    <div class="content">
-        {{ content }}
-    </div>
+    <!-- 3. PWODWI SIMILÈ -->
+    <section class="related-products">
+        <div class="section-header">
+            <h2>Produits Similaires</h2>
+        </div>
+        <div class="product-grid">
+            {% assign count = 0 %}
+            {% for product in site.products %}
+                {% if product.category == page.category and product.title != page.title and count < 4 %}
+                    {% assign count = count | plus: 1 %}
+                    <div class="product-card">
+                        <div class="card-img">
+                            <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
+                        </div>
+                        <div class="card-info">
+                            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+                            <div class="price-container">
+                                <span class="price">{{ product.price }} HTG</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
 </div>
 
 <script>
-function changeQty(val) {
+function updateMainImg(el) {
+    document.getElementById('main-product-img').src = el.src;
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function changeProdQty(val) {
     let input = document.getElementById('prod-qty');
     let current = parseInt(input.value);
-    if (current + val >= 1) {
-        input.value = current + val;
-    }
+    if (current + val >= 1) input.value = current + val;
 }
 </script>
 
 <style>
-/* Style ki te la deja yo... */
-.product-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 40px 20px; max-width: 1200px; margin: auto; }
-.main-image img { width: 100%; border-radius: 15px; border: 1px solid #f0f0f0; }
-.thumbnails img { width: 70px; height: 70px; object-fit: cover; cursor: pointer; border: 1px solid #ddd; border-radius: 8px; margin-right: 10px; }
-.price-box { margin: 20px 0; }
-.current-price { font-size: 36px; font-weight: 800; color: #ff4747; }
-.old-price { text-decoration: line-through; color: #aaa; margin-left: 10px; }
-.qty-controls { display: flex; gap: 10px; margin-top: 5px; }
-.qty-controls button { width: 40px; height: 40px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; }
-.qty-controls input { width: 60px; text-align: center; border: 1px solid #ddd; border-radius: 8px; }
-.btn-cart-add { background: #ff4747; color: white; border: none; padding: 18px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; transition: 0.3s; }
-.btn-cart-add:hover { background: #e03636; transform: translateY(-2px); }
-.trust-badges { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px solid #eee; padding-top: 20px; }
-.badge-item { text-align: center; font-size: 12px; }
-.badge-item span { display: block; font-size: 20px; }
-@media (max-width: 768px) { .product-container { grid-template-columns: 1fr; } }
+.product-page-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; padding: 40px 0; }
+.main-img-container { background: white; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-md); margin-bottom: 20px; }
+.main-img-container img { width: 100%; height: 500px; object-fit: contain; }
+
+.product-thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+.thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+.thumb.active { border-color: var(--primary); }
+
+.product-title { font-size: 2.2rem; margin-bottom: 15px; line-height: 1.2; }
+.product-price-box { margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+.current-price { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+.old-price { text-decoration: line-through; color: #999; font-size: 1.2rem; }
+
+.shipping-info-box { background: #f0f9ff; border: 1px solid #bae6fd; padding: 15px; border-radius: 12px; margin-bottom: 30px; font-size: 14px; }
+
+.qty-selector { margin-bottom: 20px; }
+.qty-btn-group { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.qty-btn-group button { width: 40px; height: 40px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; }
+.qty-btn-group input { width: 60px; text-align: center; border: 1px solid #ddd; border-radius: 8px; height: 40px; }
+
+.btn-buy-now { width: 100%; padding: 18px; font-size: 1.2rem; border-radius: 15px; margin-top: 10px; }
+
+.related-products { margin-top: 80px; border-top: 1px solid #eee; padding-top: 50px; }
+
+@media (max-width: 768px) {
+    .product-page-layout { grid-template-columns: 1fr; gap: 30px; }
+    .main-img-container img { height: 350px; }
+}
 </style>
