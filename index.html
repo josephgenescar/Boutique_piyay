@@ -7,7 +7,7 @@ title: Accueil - Boutique Piyay
 <section id="hero-marketplace">
   <div class="hero-content container">
     <div class="hero-text-box">
-        <span class="badge">🔥 Flash Sale -50%</span>
+        <span class="badge">🔥 Vente Flash -50%</span>
         <h1>Offres exceptionnelles sur nos collections !</h1>
         <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
         <a href="#products" class="btn-primary">Acheter Maintenant 🛍️</a>
@@ -32,12 +32,15 @@ title: Accueil - Boutique Piyay
         {% for product in site.products %}
             {% if product.flash_sale %}
             <div class="flash-card">
-                <div class="discount-badge">SALE</div>
+                <div class="discount-badge">SOLDE</div>
                 <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
                 <div class="flash-info">
                     <h3>{{ product.title }}</h3>
                     <div class="flash-prices">
                         <span class="new-price">{{ product.price }} HTG</span>
+                        {% if product.old_price %}
+                        <span class="old-price">{{ product.old_price }} HTG</span>
+                        {% endif %}
                     </div>
                     <button class="btn-flash-buy" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">Ajouter</button>
                 </div>
@@ -50,7 +53,7 @@ title: Accueil - Boutique Piyay
 <!-- 3. CATÉGORIES -->
 <section id="categories-section" class="container">
   <div class="section-header">
-    <h2>Nos Catégories</h2>
+    <h2>Parcourir par Catégorie</h2>
   </div>
   <div class="category-bubbles">
     {% for category in site.categories %}
@@ -85,7 +88,7 @@ title: Accueil - Boutique Piyay
                 <span class="price">{{ product.price }} HTG</span>
             </div>
             <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
-                🛒 Ajouter
+                🛒 Ajouter au panier
             </button>
         </div>
       </div>
@@ -94,30 +97,83 @@ title: Accueil - Boutique Piyay
   </div>
 </section>
 
-<!-- 5. OPEN FOR BUSINESS -->
+<!-- 5. OPEN FOR BUSINESS (PROMOTION) -->
 <section id="open-for-business" class="container">
     <div class="business-card">
         <div class="business-content">
             <h2>📢 Open for Business</h2>
-            <p>Booster votre visibilité ! Faites votre promotion sur Boutique Piyay.</p>
-            <button class="btn-promo-request" onclick="openPromoModal()">Faire une demande 🚀</button>
+            <p>Vous souhaitez booster votre visibilité ? Faites la promotion de vos produits ou services sur **Boutique Piyay** et touchez des milliers de clients !</p>
+            <button class="btn-promo-request" onclick="openPromoModal()">Soumettre une demande 🚀</button>
         </div>
+        <div class="business-icon">📈</div>
     </div>
 </section>
+
+<!-- Modal pour demande de Promotion -->
+<div id="promo-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Demande de Promotion</h2>
+            <button class="modal-close" onclick="closePromoModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 20px;">Remplissez ce formulaire pour que nous puissions analyser votre demande.</p>
+            <div class="form-group">
+                <label>Nom de votre Business / Projet</label>
+                <input type="text" id="promo-biz-name" placeholder="Ex: Ma Boutique" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Type de promotion souhaité</label>
+                <select id="promo-type" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="Bannière Accueil">Bannière sur l'Accueil</option>
+                    <option value="Produit Vedette">Mise en avant de Produit</option>
+                    <option value="Réseaux Sociaux">Promotion Réseaux Sociaux</option>
+                    <option value="Autre">Autre service</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Votre message ou description</label>
+                <textarea id="promo-message" placeholder="Dites-nous en plus..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; height: 100px;"></textarea>
+            </div>
+            <button class="btn-confirm-order" style="margin-top: 20px;" onclick="submitPromoRequest()">Envoyer la demande ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
+function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+
+function submitPromoRequest() {
+    const bizName = document.getElementById('promo-biz-name').value;
+    const promoType = document.getElementById('promo-type').value;
+    const message = document.getElementById('promo-message').value;
+
+    if(!bizName || !message) { alert("Veuillez remplir tous les champs !"); return; }
+
+    let whatsappMsg = `*📢 DEMANDE DE PROMOTION - BOUTIQUE PIYAY*\n\n`;
+    whatsappMsg += `🏢 *Business :* ${bizName}\n`;
+    whatsappMsg += `🎯 *Type :* ${promoType}\n`;
+    whatsappMsg += `📝 *Message :* ${message}\n\n`;
+    whatsappMsg += `Je souhaite obtenir plus d'informations sur vos tarifs publicitaires.`;
+
+    window.open(`https://wa.me/50948868964?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+    closePromoModal();
+}
+</script>
 
 <style>
 #hero-marketplace {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
-    /* Redwi otè a pou l fè yon bèl rektang */
     height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     margin-bottom: 30px;
-    border-radius: 15px; /* Mwens wonn pou l paret pi rektangilè */
+    border-radius: 15px;
     margin-top: 10px;
 }
 
@@ -141,7 +197,7 @@ title: Accueil - Boutique Piyay
 
 .btn-primary {
     background: #ff4747; color: white; padding: 12px 30px;
-    border-radius: 8px; /* Bouton an plis rektangilè tou */
+    border-radius: 8px;
     text-decoration: none; font-weight: bold;
     display: inline-block; transition: 0.3s;
 }
@@ -152,10 +208,37 @@ title: Accueil - Boutique Piyay
     .hero-content p { font-size: 0.9rem; }
 }
 
-/* Lòt style yo rete konsistan... */
+#flash-sale { background: #fff; padding: 30px 0; margin-bottom: 40px; }
 .flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.flash-title { display: flex; align-items: center; gap: 15px; }
 .timer { background: #222; color: white; padding: 5px 12px; border-radius: 5px; font-weight: bold; }
 .flash-grid { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; }
 .flash-card { min-width: 180px; background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
 .flash-card img { height: 120px; object-fit: cover; width: 100%; border-radius: 8px; }
+.btn-flash-buy { width: 100%; background: #ff4747; color: white; border: none; padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; }
+
+.category-bubbles { display: flex; gap: 15px; overflow-x: auto; padding: 15px 0; }
+.cat-bubble { text-align: center; text-decoration: none; color: #333; min-width: 80px; }
+.bubble-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #ff4747; margin: 0 auto 5px; overflow: hidden; }
+
+.section-header { margin-bottom: 20px; }
+.product-card { border: 1px solid #eee; border-radius: 10px; overflow: hidden; background: white; }
+.card-img img { height: 180px; width: 100%; object-fit: cover; }
+.card-info { padding: 10px; }
+.add-to-cart { width: 100%; background: #222; color: white; padding: 8px; border-radius: 5px; margin-top: 10px; }
+
+#open-for-business { padding: 60px 0; }
+.business-card {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+    padding: 30px; border-radius: 15px; color: white; text-align: center; display: flex; align-items: center; justify-content: space-between;
+}
+.business-content { text-align: left; }
+.business-icon { font-size: 5rem; opacity: 0.3; }
+.btn-promo-request { background: white; color: #b21f1f; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+@media (max-width: 768px) {
+    .business-card { flex-direction: column; text-align: center; }
+    .business-content { text-align: center; margin-bottom: 20px; }
+    .business-icon { display: none; }
+}
 </style>

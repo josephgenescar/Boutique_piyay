@@ -2,11 +2,12 @@ backend:
   name: git-gateway
   branch: main
 
-# On retire la section media_library: imagekit
-
-# Configuration des médias par défaut (Stockage dans le Git)
-media_folder: "assets/images/uploads"
-public_folder: "/assets/images/uploads"
+# Ré-activation d'ImageKit
+media_library:
+  name: imagekit
+  config:
+    publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg="
+    urlEndpoint: "https://ik.imagekit.io/9zboshcie"
 
 site_url: "https://boutique-piyay.netlify.app"
 display_url: "https://boutique-piyay.netlify.app"
