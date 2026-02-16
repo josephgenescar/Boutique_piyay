@@ -12,6 +12,10 @@
 
     <!-- 2. Charger le plugin ImageKit -->
     <script src="https://unpkg.com/netlify-cms-media-library-imagekit@^1.0.0/dist/netlify-cms-media-library-imagekit.js"></script>
+    <script src="https://unpkg.com/netlify-cms-media-library-imagekit/dist/index.js"></script>
+    <script>
+        window.CMS.registerMediaLibrary(imagekit);
+    </script>
 
     <script>
       // 3. Enregistrer la bibliothèque immédiatement après le chargement des scripts
