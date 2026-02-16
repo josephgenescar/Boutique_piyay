@@ -12,7 +12,7 @@ editor:
   preview: false
 
 collections:
-  # 🛒 KOLEKSYON PWODWI (PRO)
+  # 🛒 COLLECTION PRODUITS
   - name: "products"
     label: "🛒 Produits"
     folder: "_products"
@@ -20,15 +20,19 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Titre du produit", name: "title", widget: "string" }
-      - { label: "Catégorie", name: "category", widget: "string", hint: "Ekri non kategori a (ex: Habillement)" }
+      - { label: "Catégorie", name: "category", widget: "string" }
       - { label: "Prix Actuel (HTG)", name: "price", widget: "number" }
-      - { label: "Ancien Prix (pour Vente Flash)", name: "old_price", widget: "number", required: false }
+      - { label: "Ancien Prix (Vente Flash)", name: "old_price", widget: "number", required: false }
       - { label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false }
       - { label: "Image principale", name: "image", widget: "image" }
-      - label: "Autres Images (Galerie)", name: "images", widget: "list", required: false, field: { label: "Image", name: "img", widget: "image" }
+      - label: "Galerie d'images"
+        name: "images"
+        widget: "list"
+        required: false
+        field: { label: "Image", name: "img", widget: "image" }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  # 🗂 KOLEKSYON KATEGORI
+  # 🗂 COLLECTION CATÉGORIES
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
@@ -39,7 +43,7 @@ collections:
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image Bulle (Accueil)", name: "image", widget: "image" }
       - { label: "Image Banner (Haut de page)", name: "banner_image", widget: "image" }
-      - label: "Galerie d'images (Plusieurs photos)"
+      - label: "Galerie de la catégorie"
         name: "gallery"
         widget: "list"
         required: false
