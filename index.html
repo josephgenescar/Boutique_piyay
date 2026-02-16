@@ -3,30 +3,36 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER RECTANGULAIRE -->
+<!-- 1. HERO BANNER -->
 <section id="hero-marketplace">
   <div class="hero-content container">
     <div class="hero-text-box">
-        <span class="badge">🔥 Vente Flash -50%</span>
+        <span class="badge">🔥 Flash Sale -50%</span>
         <h1>Offres exceptionnelles sur nos collections !</h1>
         <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
-        <a href="#products" class="btn-primary">Acheter Maintenant 🛍️</a>
+        <a href="#flash-sale" class="btn-primary">Profiter des offres 🛍️</a>
     </div>
   </div>
 </section>
 
-<!-- 2. AFFICHAGE DES PUBS DU HAUT -->
-<section class="ads-top container">
-    {% for ad in site.promotions %}
-        {% if ad.active and ad.position == "top" %}
-            <div class="ad-banner">
-                <a href="{{ ad.url | default: '#' }}"><img src="{{ ad.image }}" alt="{{ ad.title }}"></a>
-            </div>
-        {% endif %}
+<!-- 2. CATÉGORIES (LES BULLES - TRÈS IMPORTANT) -->
+<section id="categories-section" class="container">
+  <div class="section-header">
+    <h2>Parcourir par Catégorie</h2>
+  </div>
+  <div class="category-bubbles">
+    {% for category in site.categories %}
+    <a href="{{ category.url }}" class="cat-bubble">
+      <div class="bubble-img">
+        <img src="{{ category.image }}" alt="{{ category.title }}">
+      </div>
+      <span>{{ category.title }}</span>
+    </a>
     {% endfor %}
+  </div>
 </section>
 
-<!-- 3. FLASH SALE SECTION -->
+<!-- 3. FLASH SALE (LES PRODUITS LES PLUS CHAUDS) -->
 <section id="flash-sale" class="container">
     <div class="flash-header">
         <div class="flash-title">
@@ -36,7 +42,6 @@ title: Accueil - Boutique Piyay
                 <span id="hours">02</span>:<span id="minutes">30</span>:<span id="seconds">00</span>
             </div>
         </div>
-        <a href="#" class="view-all">Tout voir ></a>
     </div>
 
     <div class="flash-grid">
@@ -58,32 +63,13 @@ title: Accueil - Boutique Piyay
     </div>
 </section>
 
-<!-- 4. CATÉGORIES (BULLES) -->
-<section id="categories-section" class="container">
+<!-- 4. RECOMMANDATIONS (UN MÉLANGE DE TOUT) -->
+<section id="recommandations" class="container">
   <div class="section-header">
-    <h2>Parcourir par Catégorie</h2>
+    <h2>✨ Recommandations pour vous</h2>
   </div>
-  <div class="category-bubbles">
-    {% for category in site.categories %}
-    <a href="{{ category.url }}" class="cat-bubble">
-      <div class="bubble-img">
-        <img src="{{ category.image }}" alt="{{ category.title }}">
-      </div>
-      <span>{{ category.title }}</span>
-    </a>
-    {% endfor %}
-  </div>
-</section>
-
-<!-- 5. TOUS LES PRODUITS -->
-<section id="products" class="container">
-  <div class="section-header">
-    <h2>✨ Produits Tendances</h2>
-  </div>
-
   <div class="product-grid">
-    {% for product in site.products %}
-      {% unless product.flash_sale %}
+    {% for product in site.products limit:12 %}
       <div class="product-card">
         <div class="card-img">
             <a href="{{ product.url }}">
@@ -95,118 +81,38 @@ title: Accueil - Boutique Piyay
             <div class="price-container">
                 <span class="price">{{ product.price }} HTG</span>
             </div>
-            <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
-                🛒 Ajouter au panier
-            </button>
+            <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
         </div>
       </div>
-      {% endunless %}
     {% endfor %}
   </div>
 </section>
 
-<!-- 6. OPEN FOR BUSINESS SECTION -->
+<!-- 5. OPEN FOR BUSINESS SECTION -->
 <section id="open-for-business" class="container">
     <div class="business-card">
         <div class="business-content">
             <h2>📢 Open for Business</h2>
-            <p>Vous souhaitez booster votre visibilité ? Soumettez votre demande de promotion et nous l'afficherons sur notre plateforme !</p>
+            <p>Faites la promotion de votre business sur Boutique Piyay !</p>
             <button class="btn-promo-request" onclick="openPromoModal()">Soumettre ma demande 🚀</button>
         </div>
-        <div class="business-icon">📈</div>
     </div>
 </section>
 
-<!-- MODAL AVEC NETLIFY FORM -->
-<div id="promo-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h2>Demande de Promotion</h2>
-            <button class="modal-close" onclick="closePromoModal()">✕</button>
-        </div>
-        <div class="modal-body">
-            <form name="demande-promotion" method="POST" data-netlify="true">
-                <input type="hidden" name="form-name" value="demande-promotion">
-                <div class="form-group">
-                    <label>Nom du Business</label>
-                    <input type="text" name="business-name" required placeholder="Votre marque" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Email de contact</label>
-                    <input type="email" name="email" required placeholder="email@exemple.com" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Description du projet</label>
-                    <textarea name="message" required placeholder="Décrivez votre produit..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; height: 100px;"></textarea>
-                </div>
-                <button type="submit" class="btn-confirm-order" style="margin-top: 20px;">Envoyer ma demande ✅</button>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script>
-function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
-function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
-
-// LOGIQUE DU CHRONOMÈTRE FLASH SALE
 function startFlashTimer(duration) {
     var timer = duration, hours, minutes, seconds;
     setInterval(function () {
         hours = parseInt(timer / 3600, 10);
         minutes = parseInt((timer % 3600) / 60, 10);
         seconds = parseInt(timer % 60, 10);
-
-        document.getElementById('hours').textContent = hours < 10 ? "0" + hours : hours;
-        document.getElementById('minutes').textContent = minutes < 10 ? "0" + minutes : minutes;
-        document.getElementById('seconds').textContent = seconds < 10 ? "0" + seconds : seconds;
-
+        if (document.getElementById('hours')) {
+            document.getElementById('hours').textContent = hours < 10 ? "0" + hours : hours;
+            document.getElementById('minutes').textContent = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById('seconds').textContent = seconds < 10 ? "0" + seconds : seconds;
+        }
         if (--timer < 0) { timer = duration; }
     }, 1000);
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    startFlashTimer(3600 * 2.5); // Initialise à 2h30
-});
+document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 * 2.5); });
 </script>
-
-<style>
-/* RECONSTITUTION DES STYLES CSS */
-#hero-marketplace {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
-    background-size: cover; background-position: center;
-    height: 300px; display: flex; align-items: center; justify-content: center;
-    color: white; margin-bottom: 30px; border-radius: 15px; margin-top: 10px;
-}
-.hero-text-box { text-align: center; }
-.hero-content h1 { font-size: 2.2rem; margin: 10px 0; font-weight: 800; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
-.btn-primary { background: #ff4747; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; }
-
-.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.timer { background: #222; color: white; padding: 5px 12px; border-radius: 5px; font-weight: bold; }
-.flash-grid { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; }
-.flash-card { min-width: 180px; background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
-.flash-card img { height: 120px; object-fit: cover; width: 100%; border-radius: 8px; }
-.btn-flash-buy { width: 100%; background: #ff4747; color: white; border: none; padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; }
-
-.category-bubbles { display: flex; gap: 15px; overflow-x: auto; padding: 15px 0; }
-.cat-bubble { text-align: center; text-decoration: none; color: #333; min-width: 80px; }
-.bubble-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #ff4747; margin: 0 auto 5px; overflow: hidden; }
-
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-.product-card { border: 1px solid #eee; border-radius: 10px; overflow: hidden; background: white; }
-.card-img img { height: 180px; width: 100%; object-fit: cover; }
-.card-info { padding: 10px; }
-.add-to-cart { width: 100%; background: #222; color: white; padding: 8px; border-radius: 5px; margin-top: 10px; }
-
-#open-for-business { padding: 40px 0; }
-.business-card {
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
-    padding: 30px; border-radius: 15px; color: white; display: flex; align-items: center; justify-content: space-between;
-}
-.business-icon { font-size: 5rem; opacity: 0.3; }
-.btn-promo-request { background: white; color: #b21f1f; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { background: white; width: 90%; border-radius: 20px; padding: 30px; color: #333; }
-</style>

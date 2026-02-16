@@ -2,77 +2,84 @@
 layout: default
 ---
 
-<div class="category-header">
+<div class="category-hero" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ page.image | default: "https://images.unsplash.com/photo-1441986300917-64674bd600d8" }}'); background-size: cover; background-position: center;">
     <div class="container">
         <h1>{{ page.title }}</h1>
-        {% if page.description %}
-            <p>{{ page.description }}</p>
-        {% endif %}
+        <p>{{ page.description }}</p>
     </div>
 </div>
 
 <div class="container">
-    <div class="product-grid">
-        {% assign found_products = false %}
+    <div class="category-layout">
+        <!-- SIDEBAR -->
+        <aside class="category-sidebar">
+            <h3>Sous-Catégories</h3>
+            <ul>
+                <li><a href="{{ page.url }}" class="active">Tout {{ page.title }}</a></li>
+                {% for sub in page.sub_categories %}
+                    <li><a href="#{{ sub | slugify }}">{{ sub }}</a></li>
+                {% endfor %}
+            </ul>
 
-        {% comment %}
-           Nou konpare kategori pwodwi a ak tit paj la oubyen si li nan lis sous-kategori yo.
-           Nou itilize downcase pou evite erè majiskil.
-        {% endcomment %}
-
-        {% assign current_cat = page.title | downcase %}
-
-        {% for product in site.products %}
-            {% assign prod_cat = product.category | downcase %}
-
-            {% if prod_cat == current_cat or page.sub_categories contains product.category %}
-                {% assign found_products = true %}
-                <div class="product-card">
-                    <div class="card-img">
-                        <a href="{{ product.url }}">
-                            <img src="{{ product.image }}" alt="{{ product.title }}">
-                        </a>
-                    </div>
-                    <div class="card-info">
-                        <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
-                        <div class="price-container">
-                            <span class="price">{{ product.price }} HTG</span>
-                        </div>
-                        <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
-                            🛒 Ajouter au panier
-                        </button>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-
-        {% if found_products == false %}
-            <div class="no-products">
-                <p>Désolé, aucun produit n'est disponible dans cette catégorie pour le moment. 😕</p>
-                <a href="/" class="btn-primary" style="margin-top: 20px; display: inline-block;">Retour à l'accueil</a>
+            <div class="sidebar-promo">
+                <span class="badge">PROMO</span>
+                <p>Livraison Rapide de St-Domingue!</p>
             </div>
-        {% endif %}
+        </aside>
+
+        <!-- GRILLE DE PRODUITS -->
+        <main class="category-main">
+            <div class="product-grid">
+                {% assign found_products = false %}
+                {% assign current_cat = page.title | downcase %}
+
+                {% for product in site.products %}
+                    {% assign prod_cat = product.category | downcase %}
+                    {% if prod_cat == current_cat or page.sub_categories contains product.category %}
+                        {% assign found_products = true %}
+                        <div class="product-card" id="{{ product.category | slugify }}">
+                            <div class="card-img">
+                                <a href="{{ product.url }}">
+                                    <img src="{{ product.image }}" alt="{{ product.title }}" onerror="this.src='https://via.placeholder.com/300x300?text=Produit'">
+                                </a>
+                            </div>
+                            <div class="card-info">
+                                <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+                                <div class="price-container">
+                                    <span class="price">{{ product.price }} HTG</span>
+                                </div>
+                                <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
+                                    🛒 Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                {% if found_products == false %}
+                    <div class="no-products">
+                        <p>Aucun produit trouvé pour le moment. 😕</p>
+                        <a href="/" class="btn-primary">Retour à l'accueil</a>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
     </div>
 </div>
 
 <style>
-.category-header {
-    background: #fff;
-    padding: 40px 0;
-    text-align: center;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 30px;
-}
-.category-header h1 { font-size: 2.5rem; color: #222; margin-bottom: 10px; }
-.category-header p { color: #666; font-size: 1.1rem; }
+.category-hero { padding: 80px 0; text-align: center; color: white; margin-bottom: 30px; border-radius: 0 0 20px 20px; }
+.category-layout { display: flex; gap: 30px; margin-bottom: 50px; align-items: flex-start; }
+.category-sidebar { width: 250px; flex-shrink: 0; background: white; padding: 20px; border-radius: 15px; position: sticky; top: 100px; box-shadow: var(--shadow-sm); }
+.category-sidebar ul { padding: 0; }
+.category-sidebar li { margin-bottom: 10px; list-style: none; }
+.category-sidebar a { color: #666; font-size: 14px; font-weight: 500; }
+.category-sidebar a.active, .category-sidebar a:hover { color: var(--primary); }
+.no-products { grid-column: 1 / -1; text-align: center; padding: 50px; }
 
-.no-products {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 80px 20px;
-    color: #888;
+@media (max-width: 992px) {
+    .category-layout { flex-direction: column; }
+    .category-sidebar { width: 100%; position: static; }
+    .category-sidebar ul { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
 }
-
-/* Nou asire style bouton yo konsistan */
-.add-to-cart { width: 100%; background: #222; color: white; padding: 10px; border-radius: 8px; cursor: pointer; }
 </style>

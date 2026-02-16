@@ -1,9 +1,10 @@
 ---
-title: Habillement
-description: Pi bèl rad, soulye ak akseswa pou Gason, Fi, ak Timoun.
-image: /assets/images/uploads/whatsapp-image-2026-01-21-at-19.50.44.jpeg
 layout: category
+title: Habillement
+description: "Découvrez notre collection de vêtements, chaussures et accessoires tendance."
+image: /assets/images/uploads/fashion-banner.jpg
 sub_categories:
-  - Vetements Homme
-  - Vetements Femme
+  - Vêtements
+  - Chaussures & Tennis
+  - Accessoires de Mode
 ---
