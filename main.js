@@ -1,14 +1,24 @@
 // ==========================================
-// BOUTIQUE PIYAY - CORE JAVASCRIPT
+// BOUTIQUE PIYAY - CORE JAVASCRIPT (FIXED)
 // ==========================================
 
-let cart = JSON.parse(localStorage.getItem('piyay_cart')) || [];
+let cart = [];
+try {
+    cart = JSON.parse(localStorage.getItem('piyay_cart')) || [];
+} catch(e) {
+    cart = [];
+}
 
 // 1. AJOUTE NAN PANYEN
 function orderProduct(title, price, id) {
-    // Tcheke si gen yon input kantite espesifik (paj pwodwi)
-    let qtyInput = document.getElementById('prod-qty');
-    let quantity = qtyInput ? parseInt(qtyInput.value) : 1;
+    console.log("Ajoute pwodwi:", title);
+    let quantity = 1;
+
+    // Si nou sou paj pwodwi, nou pran kantite nan input la
+    const qtyInput = document.getElementById('prod-qty');
+    if (qtyInput) {
+        quantity = parseInt(qtyInput.value) || 1;
+    }
 
     const existingItem = cart.find(item => item.title === title);
     if (existingItem) {
@@ -19,47 +29,50 @@ function orderProduct(title, price, id) {
     
     saveCart();
     updateCartUI();
-    alert(`✅ ${quantity} ${title} ajoute nan panyen!`);
+
+    // Feedback vizyèl
+    alert("✅ " + title + " ajoute nan panyen!");
 }
 
-// 2. SOVE PANYEN LA
 function saveCart() {
     localStorage.setItem('piyay_cart', JSON.stringify(cart));
 }
 
-// 3. MIZAJOU BADGE PANYEN
 function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const badge = document.getElementById('cart-badge');
     if (badge) {
         badge.innerText = totalItems;
-        badge.style.display = totalItems > 0 ? 'block' : 'none';
+        // Nou kite badge la parèt menmsi se 0 jan sa te ye nan foto a
+        badge.style.display = 'block';
     }
 }
 
-// 4. OUVRI MODAL KÒMAND
+// 2. OUVRI MODAL PANYEN
 function openOrderModal() {
-    if (cart.length === 0) {
-        alert("Panyen ou vid! Ajoute yon pwodwi anvan.");
-        return;
-    }
+    console.log("Ouvri Panyen...");
     const modal = document.getElementById('order-modal');
     if (modal) {
         modal.style.display = 'flex';
         renderOrderSummary();
+    } else {
+        alert("Panyen ou gen " + cart.length + " atik. (Modal la ap chaje...)");
     }
 }
 
-// 5. FÈMEN MODAL
 function closeOrderModal() {
     const modal = document.getElementById('order-modal');
     if (modal) modal.style.display = 'none';
 }
 
-// 6. REZIME KÒMAND LA
 function renderOrderSummary() {
     const summaryDiv = document.getElementById('order-summary');
     if (!summaryDiv) return;
+
+    if (cart.length === 0) {
+        summaryDiv.innerHTML = '<p style="text-align:center; padding:20px;">Panyen ou vid! 🛒</p>';
+        return;
+    }
 
     let html = '<div class="summary-list">';
     let total = 0;
@@ -77,7 +90,7 @@ function renderOrderSummary() {
     summaryDiv.innerHTML = html;
 }
 
-// 7. KONFIME KÒMAND SOU WHATSAPP
+// 3. KONFIME KÒMAND
 function submitOrder() {
     const name = document.getElementById('customer-name').value.trim();
     const phone = document.getElementById('customer-phone').value.trim();
@@ -85,6 +98,11 @@ function submitOrder() {
 
     if (!name || !phone || !payment) {
         alert("Tanpri ranpli tout enfòmasyon yo!");
+        return;
+    }
+
+    if (cart.length === 0) {
+        alert("Panyen ou vid!");
         return;
     }
 
@@ -104,60 +122,56 @@ function submitOrder() {
 
     const whatsappUrl = `https://wa.me/50948868964?text=${encodeURIComponent(message)}`;
     
-    // Klere panyen an apre kòmand lan
+    window.open(whatsappUrl, '_blank');
+
+    // Klere panyen an
     cart = [];
     saveCart();
     updateCartUI();
     closeOrderModal();
-
-    window.open(whatsappUrl, '_blank');
 }
 
-// 8. LIVE SEARCH LOGIC
-let searchData = [];
-fetch('/search.json').then(res => res.json()).then(data => searchData = data);
-
+// 4. RECHÈCH
 function liveSearch() {
-    let input = document.getElementById('search-input').value.toLowerCase();
+    let input = document.getElementById('search-input');
+    if (!input) return;
+    let term = input.value.toLowerCase();
     let resultsDiv = document.getElementById('search-results');
 
-    if (input.length < 2) {
-        resultsDiv.style.display = 'none';
+    if (term.length < 2) {
+        if (resultsDiv) resultsDiv.style.display = 'none';
         return;
     }
 
-    let filtered = searchData.filter(item =>
-        item.title.toLowerCase().includes(input) ||
-        (item.category && item.category.toLowerCase().includes(input))
-    ).slice(0, 10);
+    // Fonksyon rechèch la ap itilize searchData ki chaje nan paj la
+    if (typeof searchData !== 'undefined') {
+        let filtered = searchData.filter(item =>
+            item.title.toLowerCase().includes(term) ||
+            (item.category && item.category.toLowerCase().includes(term))
+        ).slice(0, 10);
 
-    if (filtered.length > 0) {
-        resultsDiv.innerHTML = filtered.map(item => `
-            <a href="${item.url}" class="search-item" style="display:flex; align-items:center; padding:10px; text-decoration:none; color:#333; border-bottom:1px solid #eee;">
-                <img src="${item.image}" style="width:40px; height:40px; object-fit:cover; margin-right:10px; border-radius:5px;">
-                <div>
-                    <div style="font-weight:bold; font-size:14px;">${item.title}</div>
-                    <div style="font-size:12px; color:#ff4747;">${item.price} HTG</div>
-                </div>
-            </a>
-        `).join('');
-        resultsDiv.style.display = 'block';
-    } else {
-        resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Pa jwenn anyen 😕</div>';
-        resultsDiv.style.display = 'block';
+        if (resultsDiv) {
+            if (filtered.length > 0) {
+                resultsDiv.innerHTML = filtered.map(item => `
+                    <a href="${item.url}" class="search-item" style="display:flex; align-items:center; padding:10px; text-decoration:none; color:#333; border-bottom:1px solid #eee;">
+                        <img src="${item.image}" style="width:40px; height:40px; object-fit:cover; margin-right:10px; border-radius:5px;">
+                        <div>
+                            <div style="font-weight:bold; font-size:14px;">${item.title}</div>
+                            <div style="font-size:12px; color:#ff4747;">${item.price} HTG</div>
+                        </div>
+                    </a>
+                `).join('');
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Pa jwenn anyen 😕</div>';
+                resultsDiv.style.display = 'block';
+            }
+        }
     }
 }
 
 // INITYALIZASYON
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("Boutique Piyay JS Loaded");
     updateCartUI();
-
-    // Fèmen dropdown rechèch si moun nan klike deyò
-    document.addEventListener('click', (e) => {
-        const searchBox = document.querySelector('.search-box');
-        const resultsDiv = document.getElementById('search-results');
-        if (searchBox && !searchBox.contains(e.target) && resultsDiv) {
-            resultsDiv.style.display = 'none';
-        }
-    });
 });
