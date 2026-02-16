@@ -12,9 +12,9 @@ editor:
   preview: false
 
 collections:
-  # 🛒 COLLECTION PRODUITS
+  # 1. TOUT PWODWI YO
   - name: "products"
-    label: "🛒 Produits"
+    label: "🛒 Tout Pwodwi"
     folder: "_products"
     create: true
     slug: "{{slug}}"
@@ -32,7 +32,19 @@ collections:
         field: { label: "Image", name: "img", widget: "image" }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  # 🗂 COLLECTION CATÉGORIES
+  # 2. SEKSYON ESPESYAL POU VENTE FLASH (Filtré)
+  - name: "flash_sale_products"
+    label: "⚡ Vente Flash (Lis)"
+    folder: "_products"
+    create: false # Nou pa kreye isit la, nou jis jere sa k nan flash sale
+    filter: {field: "flash_sale", value: true}
+    fields:
+      - { label: "Titre du produit", name: "title", widget: "string" }
+      - { label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: true }
+      - { label: "Prix Actuel (HTG)", name: "price", widget: "number" }
+      - { label: "Ancien Prix", name: "old_price", widget: "number" }
+
+  # 3. KATEGORI YO
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
@@ -50,7 +62,7 @@ collections:
         field: { label: "Image", name: "image", widget: "image" }
       - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
 
-  # 📢 PUBLICITÉS
+  # 4. PIBLISITE YO
   - name: "promotions"
     label: "📢 Publicités & Promos"
     folder: "_promotions"
