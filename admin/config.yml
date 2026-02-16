@@ -2,12 +2,8 @@ backend:
   name: git-gateway
   branch: main
 
-# Ré-activation d'ImageKit
-media_library:
-  name: imagekit
-  config:
-    publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg="
-    urlEndpoint: "https://ik.imagekit.io/9zboshcie"
+media_folder: "assets/images/uploads"
+public_folder: "/assets/images/uploads"
 
 site_url: "https://boutique-piyay.netlify.app"
 display_url: "https://boutique-piyay.netlify.app"
@@ -18,45 +14,43 @@ editor:
 collections:
   # 🛒 COLLECTION PRODUITS
   - name: "products"
-    label: "🛒 Pwodwi"
-    label_singular: "Pwodwi"
+    label: "🛒 Produits"
     folder: "_products"
     create: true
-    slug: "{{slug}}"
     fields:
-      - { label: "Tit Pwodwi a", name: "title", widget: "string" }
-      - { label: "Kategori", name: "category", widget: "select", options: ["Vetements Homme", "Vetements Femme", "Habillement", "Maison", "Epices", "Manba", "Cosmetiques", "Accessoires", "Tech"] }
-      - { label: "Deskripsyon Kout", name: "description", widget: "text" }
-      - { label: "Pri Aktyèl (HTG)", name: "price", widget: "number", min: 0 }
-      - { label: "Ansyen Pri (pou Rabè)", name: "old_price", widget: "number", min: 0, required: false }
-      - { label: "Pwodwi Flash Sale?", name: "flash_sale", widget: "boolean", default: false }
-      - { label: "Kantite nan Stock", name: "stock", widget: "number", default: 10 }
-      - { label: "Imaj Prensipal", name: "image", widget: "image" }
-      - { label: "Galeri Foto (Lòt foto)", name: "images", widget: "list", field: { label: "Imaj", name: "img", widget: "image" }, required: false }
-      - { label: "Disponib ?", name: "available", widget: "boolean", default: true }
-      - { label: "Detay konplè (Markdown)", name: "body", widget: "markdown", required: false }
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Prix", name: "price", widget: "number" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Flash Sale?", name: "flash_sale", widget: "boolean", default: false }
+      - { label: "Corps", name: "body", widget: "markdown" }
 
-  # 🗂 COLLECTION CATÉGORIES
-  - name: "categories"
-    label: "🗂 Kategori"
-    label_singular: "Kategori"
-    folder: "_categories"
+  # 📢 NOUVEAU: GESTION DES PUBLICITÉS
+  - name: "promotions"
+    label: "📢 Publicités & Promos"
+    label_singular: "Publicité"
+    folder: "_promotions"
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Non Kategori a", name: "title", widget: "string" }
-      - { label: "Deskripsyon", name: "description", widget: "text" }
-      - { label: "Imaj (pou Bulle a)", name: "image", widget: "image" }
-      - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
-      - { label: "Sous-Kategori (Si genyen)", name: "sub_categories", widget: "list", field: { label: "Non Sous-Kategori", name: "sub", widget: "string" }, required: false }
+      - { label: "Nom du Partenaire", name: "title", widget: "string" }
+      - { label: "Image de la Pub", name: "image", widget: "image" }
+      - { label: "Lien (URL)", name: "url", widget: "string", required: false }
+      - label: "Position sur le site"
+        name: "position"
+        widget: "select"
+        options:
+          - { label: "Haut (Bannière)", value: "top" }
+          - { label: "Milieu (Entre catégories)", value: "middle" }
+          - { label: "Bas (Avant footer)", value: "bottom" }
+      - { label: "Date de début", name: "start_date", widget: "datetime" }
+      - { label: "Date de fin", name: "end_date", widget: "datetime" }
+      - { label: "Activer la publicité?", name: "active", widget: "boolean", default: true }
 
-  # 📄 PAGES (About, etc.)
-  - name: "pages"
-    label: "📄 Paj Yo"
-    files:
-      - label: "Sou Nou (About)"
-        name: "about"
-        file: "about.markdown"
-        fields:
-          - { label: "Tit", name: "title", widget: "string" }
-          - { label: "Kontenu Paj la", name: "body", widget: "markdown" }
+  # 🗂 CATÉGORIES
+  - name: "categories"
+    label: "🗂 Catégories"
+    folder: "_categories"
+    create: true
+    fields:
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
