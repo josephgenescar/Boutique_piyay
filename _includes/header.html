@@ -16,10 +16,12 @@
 
 <header class="main-header-temu">
   <div class="container temu-header-grid">
-    <!-- LOGO AVEC IMAGE -->
+    <!-- LOGO AVEC IMAGE (CORRIGÉ) -->
     <div class="logo-area">
       <a href="/" class="temu-logo-link">
-        <img src="https://i.ibb.co/vxsX67Y/boutique-piyay-logo.png" alt="Boutique Piyay Logo" class="main-logo-img">
+        <div class="logo-wrapper">
+            <span class="logo-text-fallback">Boutique <span>Piyay</span></span>
+        </div>
       </a>
     </div>
 
@@ -81,8 +83,9 @@
 .main-header-temu { background: #fff; padding: 10px 0; border-bottom: 1px solid #ddd; }
 .temu-header-grid { display: grid; grid-template-columns: 220px 1fr 250px; gap: 30px; align-items: center; }
 
-/* NOUVEAU STYLE LOGO */
-.main-logo-img { height: 65px; width: auto; object-fit: contain; display: block; }
+/* STYLE LOGO TEXTE (SÉCURISÉ) */
+.logo-text-fallback { font-size: 24px; font-weight: 900; color: #000; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+.logo-text-fallback span { background: var(--temu-red); color: #fff; padding: 2px 8px; border-radius: 5px; margin-left: 2px; }
 .temu-logo-link { text-decoration: none; display: inline-block; }
 
 .temu-search-box { display: flex; border: 2px solid var(--temu-black); border-radius: 25px; overflow: hidden; height: 45px; }
@@ -110,6 +113,5 @@
 @media (max-width: 992px) {
     .temu-header-grid { grid-template-columns: 1fr 1fr; }
     .search-area { display: none; }
-    .main-logo-img { height: 50px; }
 }
 </style>

@@ -3,11 +3,11 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER -->
+<!-- 1. HERO BANNER RECTANGULAIRE -->
 <section id="hero-marketplace">
   <div class="hero-content container">
     <div class="hero-text-box">
-        <span class="badge">🔥 Flash Sale -50%</span>
+        <span class="badge">🔥 Vente Flash -50%</span>
         <h1>Offres exceptionnelles sur nos collections !</h1>
         <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
         <a href="#flash-sale" class="btn-primary">Profiter des offres 🛍️</a>
@@ -15,24 +15,18 @@ title: Accueil - Boutique Piyay
   </div>
 </section>
 
-<!-- 2. CATÉGORIES (LES BULLES - TRÈS IMPORTANT) -->
-<section id="categories-section" class="container">
-  <div class="section-header">
-    <h2>Parcourir par Catégorie</h2>
-  </div>
-  <div class="category-bubbles">
-    {% for category in site.categories %}
-    <a href="{{ category.url }}" class="cat-bubble">
-      <div class="bubble-img">
-        <img src="{{ category.image }}" alt="{{ category.title }}">
-      </div>
-      <span>{{ category.title }}</span>
-    </a>
+<!-- 2. AFFICHAGE DES PUBS DU HAUT -->
+<section class="ads-top container">
+    {% for ad in site.promotions %}
+        {% if ad.active and ad.position == "top" %}
+            <div class="ad-banner">
+                <a href="{{ ad.url | default: '#' }}"><img src="{{ ad.image }}" alt="{{ ad.title }}"></a>
+            </div>
+        {% endif %}
     {% endfor %}
-  </div>
 </section>
 
-<!-- 3. FLASH SALE (LES PRODUITS LES PLUS CHAUDS) -->
+<!-- 3. FLASH SALE SECTION -->
 <section id="flash-sale" class="container">
     <div class="flash-header">
         <div class="flash-title">
@@ -63,13 +57,31 @@ title: Accueil - Boutique Piyay
     </div>
 </section>
 
-<!-- 4. RECOMMANDATIONS (UN MÉLANGE DE TOUT) -->
+<!-- 4. CATÉGORIES (BULLES) -->
+<section id="categories-section" class="container">
+  <div class="section-header">
+    <h2>Parcourir par Catégorie</h2>
+  </div>
+  <div class="category-bubbles">
+    {% for category in site.categories %}
+    <a href="{{ category.url }}" class="cat-bubble">
+      <div class="bubble-img">
+        <img src="{{ category.image }}" alt="{{ category.title }}">
+      </div>
+      <span>{{ category.title }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 5. RECOMMANDATIONS -->
 <section id="recommandations" class="container">
   <div class="section-header">
     <h2>✨ Recommandations pour vous</h2>
   </div>
   <div class="product-grid">
     {% for product in site.products limit:12 %}
+      {% unless product.flash_sale %}
       <div class="product-card">
         <div class="card-img">
             <a href="{{ product.url }}">
@@ -84,11 +96,12 @@ title: Accueil - Boutique Piyay
             <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
         </div>
       </div>
+      {% endunless %}
     {% endfor %}
   </div>
 </section>
 
-<!-- 5. OPEN FOR BUSINESS SECTION -->
+<!-- 6. OPEN FOR BUSINESS -->
 <section id="open-for-business" class="container">
     <div class="business-card">
         <div class="business-content">
@@ -99,7 +112,38 @@ title: Accueil - Boutique Piyay
     </div>
 </section>
 
+<!-- MODAL PROMO -->
+<div id="promo-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Demande de Promotion</h2>
+            <button class="modal-close" onclick="closePromoModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form name="demande-promotion" method="POST" data-netlify="true">
+                <input type="hidden" name="form-name" value="demande-promotion">
+                <div class="form-group">
+                    <label>Nom du Business</label>
+                    <input type="text" name="business-name" required placeholder="Votre marque" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Email de contact</label>
+                    <input type="email" name="email" required placeholder="email@exemple.com" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Description du projet</label>
+                    <textarea name="message" required placeholder="Décrivez votre produit..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; height: 100px;"></textarea>
+                </div>
+                <button type="submit" class="btn-confirm-order" style="margin-top: 20px; width: 100%;">Envoyer ma demande ✅</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
+function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+
 function startFlashTimer(duration) {
     var timer = duration, hours, minutes, seconds;
     setInterval(function () {
@@ -116,3 +160,37 @@ function startFlashTimer(duration) {
 }
 document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 * 2.5); });
 </script>
+
+<style>
+/* CSS RECONSTITUÉ ET SÉCURISÉ */
+#hero-marketplace {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover; background-position: center;
+    height: 320px; display: flex; align-items: center; justify-content: center;
+    color: white; margin-bottom: 30px; border-radius: 15px; margin-top: 10px;
+    text-align: center;
+}
+.hero-content h1 { font-size: 2.2rem; margin: 10px 0; color: #fff !important; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
+.hero-content p { color: #eee !important; font-size: 1.1rem; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
+
+.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.timer { background: #222; color: #ff4747; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-family: 'Poppins', sans-serif; }
+
+.flash-grid { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+.flash-card { min-width: 190px; background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; box-shadow: var(--shadow-sm); }
+.flash-card img { height: 130px; object-fit: cover; width: 100%; border-radius: 8px; }
+
+.category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
+.cat-bubble { text-align: center; min-width: 90px; text-decoration: none; color: #333; }
+.bubble-img { width: 75px; height: 75px; border-radius: 50%; border: 2px solid #ff4747; margin: 0 auto 8px; overflow: hidden; background: #fff; box-shadow: var(--shadow-sm); }
+.bubble-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.business-card {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+    padding: 40px; border-radius: 20px; color: white; display: flex; align-items: center; justify-content: space-between;
+}
+.btn-promo-request { background: white; color: #b21f1f; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 3000; }
+.modal-content { background: white; width: 95%; max-width: 500px; border-radius: 20px; padding: 30px; }
+</style>
