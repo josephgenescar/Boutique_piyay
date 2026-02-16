@@ -99,15 +99,104 @@ title: Akèy - Boutique Piyay
   </div>
 </section>
 
+<!-- 5. SECTION OPEN FOR BUSINESS (PROMOTION) -->
+<section id="open-for-business">
+    <div class="business-card">
+        <div class="business-content">
+            <h2>📢 Open for Business</h2>
+            <p>Vous souhaitez booster votre visibilité ? Faites la promotion de vos produits ou services sur **Boutique Piyay** et touchez des milliers de clients en Haïti !</p>
+            <button class="btn-promo-request" onclick="openPromoModal()">Soumettre une demande 🚀</button>
+        </div>
+        <div class="business-icon">📈</div>
+    </div>
+</section>
+
+<!-- Modal pour demande de Promotion -->
+<div id="promo-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Demande de Promotion</h2>
+            <button class="modal-close" onclick="closePromoModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 20px;">Remplissez ce formulaire pour que nous puissions analyser votre demande.</p>
+            <div class="form-group">
+                <label>Nom de votre Business / Projet</label>
+                <input type="text" id="promo-biz-name" placeholder="Ex: Ma Boutique" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Type de promotion souhaité</label>
+                <select id="promo-type" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="Bannière Accueil">Bannière sur l'Accueil</option>
+                    <option value="Produit Vedette">Mise en avant de Produit</option>
+                    <option value="Réseaux Sociaux">Promotion Réseaux Sociaux</option>
+                    <option value="Autre">Autre service</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Votre message ou description</label>
+                <textarea id="promo-message" placeholder="Dites-nous en plus..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; height: 100px;"></textarea>
+            </div>
+            <button class="btn-confirm-order" style="margin-top: 20px;" onclick="submitPromoRequest()">Envoyer la demande ✅</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
+function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+
+function submitPromoRequest() {
+    const bizName = document.getElementById('promo-biz-name').value;
+    const promoType = document.getElementById('promo-type').value;
+    const message = document.getElementById('promo-message').value;
+
+    if(!bizName || !message) { alert("Veuillez remplir tous les champs !"); return; }
+
+    let whatsappMsg = `*📢 DEMANDE DE PROMOTION - BOUTIQUE PIYAY*\n\n`;
+    whatsappMsg += `🏢 *Business :* ${bizName}\n`;
+    whatsappMsg += `🎯 *Type :* ${promoType}\n`;
+    whatsappMsg += `📝 *Message :* ${message}\n\n`;
+    whatsappMsg += `Je souhaite obtenir plus d'informations sur vos tarifs publicitaires.`;
+
+    window.open(`https://wa.me/50948868964?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+    closePromoModal();
+}
+</script>
+
 <style>
-/* ... (Mwen kenbe tout style ki te la yo) ... */
-#flash-sale { background: #fff; padding: 30px 5%; margin-bottom: 40px; }
-.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.flash-title { display: flex; align-items: center; gap: 15px; }
-.timer { background: #222; color: white; padding: 5px 15px; border-radius: 5px; font-weight: bold; font-family: monospace; font-size: 18px; }
-.flash-grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; }
-.flash-card { min-width: 220px; background: #fff; border-radius: 12px; border: 1px solid #eee; overflow: hidden; position: relative; }
-.btn-flash-buy { width: 100%; background: #ff4747; color: white; border: none; padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; }
-.btn-flash-buy:hover { background: #d03535; }
-/* Style hero ak kategori yo rete menm jan */
+/* STYLE OPEN FOR BUSINESS */
+#open-for-business { padding: 60px 5%; background: #f0f4f8; }
+.business-card {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    border-radius: 20px; padding: 40px; display: flex; align-items: center;
+    justify-content: space-between; color: white; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+.business-content { flex: 1; }
+.business-content h2 { font-size: 2.5rem; margin-bottom: 15px; }
+.business-content p { font-size: 1.1rem; margin-bottom: 25px; max-width: 600px; line-height: 1.6; }
+.btn-promo-request {
+    background: white; color: #b21f1f; border: none; padding: 15px 30px;
+    border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer;
+    transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.btn-promo-request:hover { transform: scale(1.05); background: #eee; }
+.business-icon { font-size: 8rem; opacity: 0.2; }
+
+@media (max-width: 768px) {
+    .business-card { flex-direction: column; text-align: center; padding: 30px; }
+    .business-icon { display: none; }
+    .business-content h2 { font-size: 1.8rem; }
+}
+
+/* Modal Style Global */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+    justify-content: center; align-items: center; z-index: 2000;
+}
+.modal-content {
+    background: white; width: 90%; border-radius: 20px;
+    padding: 30px; color: #333; max-height: 90vh; overflow-y: auto;
+}
 </style>
