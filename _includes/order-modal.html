@@ -2,43 +2,43 @@
 <div id="order-modal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <h2>📋 Konfime Kòmand ou</h2>
+      <h2>📋 Confirmer votre commande</h2>
       <button class="modal-close" onclick="closeOrderModal()">✕</button>
     </div>
 
     <div class="modal-body">
-      <!-- Rezime Panyen -->
+      <!-- Résumé du Panier -->
       <div id="order-summary"></div>
 
       <div class="order-form">
         <div class="form-group">
-            <label for="customer-name">👤 Non konplè</label>
-            <input type="text" id="customer-name" placeholder="Egz: Jean Philippe" required>
+            <label for="customer-name">👤 Nom complet</label>
+            <input type="text" id="customer-name" placeholder="Ex: Jean Philippe" required>
         </div>
 
         <div class="form-group">
-            <label for="customer-phone">📱 Nimewo Telefòn</label>
-            <input type="tel" id="customer-phone" placeholder="Egz: +509 4886-8964" required>
+            <label for="customer-phone">📱 Numéro de téléphone</label>
+            <input type="tel" id="customer-phone" placeholder="Ex: +509 4886-8964" required>
         </div>
 
         <div class="form-group">
-            <label for="payment-method">💳 Metòd Peman</label>
+            <label for="payment-method">💳 Mode de paiement</label>
             <select id="payment-method" required>
-                <option value="">-- Chwazi yon opsyon --</option>
+                <option value="">-- Choisir une option --</option>
                 <option value="Moncash">💸 Moncash</option>
                 <option value="Natcash">💳 Natcash</option>
-                <option value="Livrezon">💵 Cash à la Livraison</option>
+                <option value="Espèces">💵 Espèces à la Livraison</option>
             </select>
         </div>
       </div>
 
       <div class="payment-info-box">
-        <p><strong>ℹ️ Info Peman:</strong></p>
-        <p>📲 Moncash: 4886-8964</p>
-        <p>💳 Natcash: 4068-3108</p>
+        <p><strong>ℹ️ Info Paiement :</strong></p>
+        <p>📲 Moncash : 4886-8964</p>
+        <p>💳 Natcash : 4068-3108</p>
       </div>
 
-      <button class="btn-confirm-order" onclick="submitOrder()">✅ Konfime Kòmand la</button>
+      <button class="btn-confirm-order" onclick="submitOrder()">✅ Confirmer la commande</button>
     </div>
   </div>
 </div>

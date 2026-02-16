@@ -1,5 +1,5 @@
 // ==========================================
-// BOUTIQUE PIYAY - CORE JAVASCRIPT (FIXED)
+// BOUTIQUE PIYAY - CORE JAVASCRIPT (VERSION FRANÇAISE)
 // ==========================================
 
 let cart = [];
@@ -9,12 +9,12 @@ try {
     cart = [];
 }
 
-// 1. AJOUTE NAN PANYEN
+// 1. AJOUTER AU PANIER
 function orderProduct(title, price, id) {
-    console.log("Ajoute pwodwi:", title);
+    console.log("Ajout du produit :", title);
     let quantity = 1;
 
-    // Si nou sou paj pwodwi, nou pran kantite nan input la
+    // Si nous sommes sur la page produit, nous prenons la quantité dans l'input
     const qtyInput = document.getElementById('prod-qty');
     if (qtyInput) {
         quantity = parseInt(qtyInput.value) || 1;
@@ -30,8 +30,8 @@ function orderProduct(title, price, id) {
     saveCart();
     updateCartUI();
 
-    // Feedback vizyèl
-    alert("✅ " + title + " ajoute nan panyen!");
+    // Feedback visuel
+    alert("✅ " + title + " a été ajouté au panier !");
 }
 
 function saveCart() {
@@ -43,20 +43,19 @@ function updateCartUI() {
     const badge = document.getElementById('cart-badge');
     if (badge) {
         badge.innerText = totalItems;
-        // Nou kite badge la parèt menmsi se 0 jan sa te ye nan foto a
         badge.style.display = 'block';
     }
 }
 
-// 2. OUVRI MODAL PANYEN
+// 2. OUVRIR LE MODAL DU PANIER
 function openOrderModal() {
-    console.log("Ouvri Panyen...");
+    console.log("Ouverture du panier...");
     const modal = document.getElementById('order-modal');
     if (modal) {
         modal.style.display = 'flex';
         renderOrderSummary();
     } else {
-        alert("Panyen ou gen " + cart.length + " atik. (Modal la ap chaje...)");
+        alert("Votre panier contient " + cart.length + " article(s).");
     }
 }
 
@@ -70,7 +69,7 @@ function renderOrderSummary() {
     if (!summaryDiv) return;
 
     if (cart.length === 0) {
-        summaryDiv.innerHTML = '<p style="text-align:center; padding:20px;">Panyen ou vid! 🛒</p>';
+        summaryDiv.innerHTML = '<p style="text-align:center; padding:20px;">Votre panier est vide ! 🛒</p>';
         return;
     }
 
@@ -86,31 +85,31 @@ function renderOrderSummary() {
         `;
         total += subtotal;
     });
-    html += `</div><div style="text-align:right; font-weight:800; font-size:20px; color:#ff4747; margin-top:15px;">TOTAL: ${total} HTG</div>`;
+    html += `</div><div style="text-align:right; font-weight:800; font-size:20px; color:#ff4747; margin-top:15px;">TOTAL : ${total} HTG</div>`;
     summaryDiv.innerHTML = html;
 }
 
-// 3. KONFIME KÒMAND
+// 3. CONFIRMER LA COMMANDE
 function submitOrder() {
     const name = document.getElementById('customer-name').value.trim();
     const phone = document.getElementById('customer-phone').value.trim();
     const payment = document.getElementById('payment-method').value;
 
     if (!name || !phone || !payment) {
-        alert("Tanpri ranpli tout enfòmasyon yo!");
+        alert("Veuillez remplir toutes les informations !");
         return;
     }
 
     if (cart.length === 0) {
-        alert("Panyen ou vid!");
+        alert("Votre panier est vide !");
         return;
     }
 
-    let message = `*🛒 NOUVO KÒMAND - BOUTIQUE PIYAY*\n\n`;
-    message += `👤 *Kliyan:* ${name}\n`;
-    message += `📱 *Telefòn:* ${phone}\n`;
-    message += `💳 *Peman:* ${payment}\n\n`;
-    message += `*📦 ATIK YO:*\n`;
+    let message = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n`;
+    message += `👤 *Client :* ${name}\n`;
+    message += `📱 *Téléphone :* ${phone}\n`;
+    message += `💳 *Paiement :* ${payment}\n\n`;
+    message += `*📦 ARTICLES :*\n`;
     
     let total = 0;
     cart.forEach(item => {
@@ -118,20 +117,20 @@ function submitOrder() {
         total += (item.price * item.quantity);
     });
     
-    message += `\n*💰 TOTAL: ${total} HTG*`;
+    message += `\n*💰 TOTAL : ${total} HTG*`;
 
     const whatsappUrl = `https://wa.me/50948868964?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, '_blank');
 
-    // Klere panyen an
+    // Vider le panier
     cart = [];
     saveCart();
     updateCartUI();
     closeOrderModal();
 }
 
-// 4. RECHÈCH
+// 4. RECHERCHE EN DIRECT
 function liveSearch() {
     let input = document.getElementById('search-input');
     if (!input) return;
@@ -143,7 +142,6 @@ function liveSearch() {
         return;
     }
 
-    // Fonksyon rechèch la ap itilize searchData ki chaje nan paj la
     if (typeof searchData !== 'undefined') {
         let filtered = searchData.filter(item =>
             item.title.toLowerCase().includes(term) ||
@@ -163,14 +161,14 @@ function liveSearch() {
                 `).join('');
                 resultsDiv.style.display = 'block';
             } else {
-                resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Pa jwenn anyen 😕</div>';
+                resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Aucun résultat trouvé 😕</div>';
                 resultsDiv.style.display = 'block';
             }
         }
     }
 }
 
-// INITYALIZASYON
+// INITIALISATION
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Boutique Piyay JS Loaded");
     updateCartUI();
