@@ -8,6 +8,7 @@
     <!-- LOGO -->
     <div class="logo">
       <a href="/">Boutique <span>Piyay</span></a>
+      <p class="tagline">Achetez depuis Saint-Domingue en toute simplicité</p>
     </div>
 
     <!-- BARRE DE RECHERCHE -->
@@ -87,8 +88,10 @@ function closeLoginModal() {
 .top-bar { background: var(--dark-color); color: white; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; }
 .main-header { background: white; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 .header-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 5%; max-width: 1300px; margin: auto; gap: 20px; }
-.logo a { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--dark-color); }
+.logo a { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--dark-color); display: block; line-height: 1; }
 .logo span { color: var(--primary-color); }
+.tagline { font-size: 11px; color: #777; margin-top: 5px; font-weight: 500; font-style: italic; }
+
 .search-box { flex: 1; position: relative; max-width: 500px; }
 .search-input-wrapper { display: flex; border: 2px solid var(--primary-color); border-radius: 25px; overflow: hidden; }
 #search-input { width: 100%; padding: 10px 20px; border: none; outline: none; }
