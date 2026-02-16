@@ -16,16 +16,17 @@
 
 <header class="main-header-temu">
   <div class="container temu-header-grid">
-    <!-- LOGO AVEC IMAGE (CORRIGÉ) -->
+    <!-- LOGO AVEC IMAGE DEVANT LE TEXTE -->
     <div class="logo-area">
       <a href="/" class="temu-logo-link">
         <div class="logo-wrapper">
-            <span class="logo-text-fallback">Boutique <span>Piyay</span></span>
+            <img src="https://i.ibb.co/vxsX67Y/boutique-piyay-logo.png" alt="Logo" class="logo-img-front">
+            <span class="logo-text-temu">BOUTIQUE <span>PIYAY</span></span>
         </div>
       </a>
     </div>
 
-    <!-- SEARCH BAR (CENTRE) -->
+    <!-- SEARCH BAR -->
     <div class="search-area">
       <div class="temu-search-box">
         <input type="text" id="search-input" placeholder="vêtements, chaussures, électronique..." onkeyup="liveSearch()">
@@ -70,23 +71,24 @@
 </header>
 
 <style>
-/* STYLE TEMU RECONSTITUÉ */
 :root {
     --temu-red: #fb7701;
-    --temu-black: #222;
+    --temu-black: #000;
 }
 
 .top-nav-temu { background: #000; color: #fff; padding: 8px 0; font-size: 12px; }
 .top-nav-temu a { color: #fff; text-decoration: none; margin-right: 20px; opacity: 0.9; }
 .temu-flex-between { display: flex; justify-content: space-between; align-items: center; }
 
-.main-header-temu { background: #fff; padding: 10px 0; border-bottom: 1px solid #ddd; }
-.temu-header-grid { display: grid; grid-template-columns: 220px 1fr 250px; gap: 30px; align-items: center; }
+.main-header-temu { background: #fff; padding: 12px 0; border-bottom: 1px solid #ddd; }
+.temu-header-grid { display: grid; grid-template-columns: 300px 1fr 250px; gap: 20px; align-items: center; }
 
-/* STYLE LOGO TEXTE (SÉCURISÉ) */
-.logo-text-fallback { font-size: 24px; font-weight: 900; color: #000; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
-.logo-text-fallback span { background: var(--temu-red); color: #fff; padding: 2px 8px; border-radius: 5px; margin-left: 2px; }
-.temu-logo-link { text-decoration: none; display: inline-block; }
+/* STYLE LOGO AK IMAJ DEVANT */
+.logo-wrapper { display: flex; align-items: center; gap: 8px; }
+.logo-img-front { height: 42px; width: auto; object-fit: contain; }
+.logo-text-temu { font-size: 22px; font-weight: 900; color: var(--temu-black); font-family: 'Poppins', sans-serif; letter-spacing: -0.5px; }
+.logo-text-temu span { background: var(--temu-red); color: #fff; padding: 2px 8px; border-radius: 6px; margin-left: 2px; }
+.temu-logo-link { text-decoration: none; }
 
 .temu-search-box { display: flex; border: 2px solid var(--temu-black); border-radius: 25px; overflow: hidden; height: 45px; }
 #search-input { flex: 1; border: none; padding: 0 20px; outline: none; font-size: 15px; }
@@ -97,7 +99,6 @@
 .action-icon { font-size: 22px; display: block; }
 .action-label { font-size: 12px; font-weight: 600; display: block; margin-top: 3px; }
 
-.cart-wrapper { position: relative; display: inline-block; }
 .badge { position: absolute; top: -10px; right: -10px; background: var(--temu-red); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; border: 2px solid #fff; }
 
 .sub-nav-temu { background: #fff; border-bottom: 1px solid #eee; }
@@ -113,5 +114,7 @@
 @media (max-width: 992px) {
     .temu-header-grid { grid-template-columns: 1fr 1fr; }
     .search-area { display: none; }
+    .logo-text-temu { font-size: 18px; }
+    .logo-img-front { height: 35px; }
 }
 </style>
