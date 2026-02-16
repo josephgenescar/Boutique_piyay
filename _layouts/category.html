@@ -3,20 +3,31 @@ layout: default
 ---
 
 <div class="category-header">
-    <h1>{{ page.title }}</h1>
-    <p>{{ page.description }}</p>
+    <div class="container">
+        <h1>{{ page.title }}</h1>
+        {% if page.description %}
+            <p>{{ page.description }}</p>
+        {% endif %}
+    </div>
 </div>
 
 <div class="container">
     <div class="product-grid">
         {% assign found_products = false %}
+
+        {% comment %}
+           Nou konpare kategori pwodwi a ak tit paj la oubyen si li nan lis sous-kategori yo.
+           Nou itilize downcase pou evite erè majiskil.
+        {% endcomment %}
+
+        {% assign current_cat = page.title | downcase %}
+
         {% for product in site.products %}
-            {% if product.category == page.title or page.sub_categories contains product.category %}
+            {% assign prod_cat = product.category | downcase %}
+
+            {% if prod_cat == current_cat or page.sub_categories contains product.category %}
                 {% assign found_products = true %}
                 <div class="product-card">
-                    {% if product.old_price %}
-                        <div class="sale-tag">SALE</div>
-                    {% endif %}
                     <div class="card-img">
                         <a href="{{ product.url }}">
                             <img src="{{ product.image }}" alt="{{ product.title }}">
@@ -25,64 +36,43 @@ layout: default
                     <div class="card-info">
                         <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
                         <div class="price-container">
-                            <span class="price">💰 {{ product.price }} HTG</span>
-                            {% if product.old_price %}
-                            <span class="old-price">{{ product.old_price }} HTG</span>
-                            {% endif %}
+                            <span class="price">{{ product.price }} HTG</span>
                         </div>
-                        <a href="{{ product.url }}" class="btn-view">Gade Pwodwi</a>
+                        <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
+                            🛒 Ajouter au panier
+                        </button>
                     </div>
                 </div>
             {% endif %}
         {% endfor %}
 
         {% if found_products == false %}
-            <p class="no-products">Pa gen pwodwi nan kategori sa a pou kounye a. Retounen pita!</p>
+            <div class="no-products">
+                <p>Désolé, aucun produit n'est disponible dans cette catégorie pour le moment. 😕</p>
+                <a href="/" class="btn-primary" style="margin-top: 20px; display: inline-block;">Retour à l'accueil</a>
+            </div>
         {% endif %}
     </div>
 </div>
 
 <style>
 .category-header {
+    background: #fff;
+    padding: 40px 0;
     text-align: center;
-    padding: 60px 20px;
-    background: #f9f9f9;
-    margin-bottom: 40px;
-    border-radius: 0 0 30px 30px;
-    color: #333;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
 }
-.category-header h1 { font-size: 2.5rem; margin-bottom: 10px; color: #ff4747; }
+.category-header h1 { font-size: 2.5rem; color: #222; margin-bottom: 10px; }
 .category-header p { color: #666; font-size: 1.1rem; }
 
-.no-products { text-align: center; grid-column: 1 / -1; padding: 50px; color: #888; }
-
-.btn-view {
-    display: block;
+.no-products {
+    grid-column: 1 / -1;
     text-align: center;
-    background: #222;
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-weight: bold;
-    transition: 0.3s;
+    padding: 80px 20px;
+    color: #888;
 }
-.btn-view:hover { background: #ff4747; }
 
-/* Nou itilize menm style grille a pou konsistans */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px;
-    max-width: 1200px;
-    margin: 0 auto 50px;
-    padding: 0 20px;
-}
-.product-card { background: white; border-radius: 15px; overflow: hidden; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); color: #333; }
-.card-img img { width: 100%; height: 200px; object-fit: cover; }
-.card-info { padding: 15px; }
-.card-info h3 a { color: #222; text-decoration: none; }
-.price { color: #ff4747; font-weight: 800; font-size: 1.2rem; }
-.sale-tag { position: absolute; top: 10px; left: 10px; background: #ff4747; color: white; padding: 3px 10px; border-radius: 5px; font-weight: bold; z-index: 2; }
+/* Nou asire style bouton yo konsistan */
+.add-to-cart { width: 100%; background: #222; color: white; padding: 10px; border-radius: 8px; cursor: pointer; }
 </style>
