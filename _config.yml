@@ -18,16 +18,22 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# Konfigirasyon Koleksyon yo (Sa pa dwe anndan 'exclude')
+# Konfigirasyon Koleksyon yo
 collections:
-  includes:
-    output: true
-  projects:
-    output: true
   products:
     output: true
+    permalink: /pwodwi/:path/
   categories:
     output: true
+    permalink: /kategori/:path/
+
+# Defaults pou koleksyon yo
+defaults:
+  - scope:
+      path: ""
+      type: "products"
+    values:
+      layout: "product"
 
 # Ekskli fichye sa yo
 exclude:
@@ -37,7 +43,7 @@ exclude:
   - vendor/
   - .netlify/
 
-# Konfigirasyon Netlify CMS (Opsyonèl pou Jekyll)
+# Konfigirasyon Netlify CMS
 netlify_cms:
   admin_config_path: "admin/config.yml"
   admin_index_path: "admin/index.html"

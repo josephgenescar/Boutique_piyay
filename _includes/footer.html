@@ -1,5 +1,106 @@
-<footer>
-    <p><i>Rivayo-tech Design </i></p>
-    <p><i>Contact: josephgenesca@gmail.com</i></p>
-  <p>&copy; 2026 Boutique Universelle</p>
+<footer class="main-footer">
+    <div class="footer-container">
+        <!-- 1. Seksyon Enfòmasyon -->
+        <div class="footer-section">
+            <h3>Boutique <span>Piyay</span></h3>
+            <p>Nou ofri pi bon kalite pwodwi ak pi bon pri nan mache a. Satisfaksyon ou se priyorite nou.</p>
+            <div class="social-links">
+                <a href="#">📘</a>
+                <a href="#">📸</a>
+                <a href="#">🐦</a>
+                <a href="https://wa.me/50948868964">💬</a>
+            </div>
+        </div>
+
+        <!-- 2. Lyen Rapid -->
+        <div class="footer-section">
+            <h4>Lyen Rapid</h4>
+            <ul>
+                <li><a href="/">Akèy</a></li>
+                <li><a href="/about">Sou nou</a></li>
+                <li><a href="#products">Tout Pwodwi</a></li>
+                <li><a href="/privacy-policy">Politik Privasite</a></li>
+            </ul>
+        </div>
+
+        <!-- 3. Seksyon Kontak -->
+        <div class="footer-section">
+            <h4>Kontakte nou</h4>
+            <p>📍 Pòtoprens, Ayiti</p>
+            <p>📧 <a href="mailto:josephgenescar@gmail.com">josephgenescar@gmail.com</a></p>
+            <p>📞 +509 4886-8964</p>
+            <p>📞 +509 4068-3108</p>
+        </div>
+
+        <!-- 4. Metòd Peman -->
+        <div class="footer-section">
+            <h4>Peman Sekirize</h4>
+            <div class="payment-methods">
+                <span title="Moncash">📱 Moncash</span>
+                <span title="Natcash">💳 Natcash</span>
+                <span title="Livrezon">💵 Cash à la livraison</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2026 Boutique Piyay - Tout dwa rezève. Design by <span>Rivayo-Tech</span></p>
+    </div>
 </footer>
+
+<style>
+.main-footer {
+    background: #1a1a1a;
+    color: #ddd;
+    padding: 60px 5% 20px;
+    margin-top: 50px;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-section h3 { color: white; margin-bottom: 20px; font-size: 24px; }
+.footer-section h3 span { color: #ff4747; }
+.footer-section h4 { color: white; margin-bottom: 20px; font-size: 18px; position: relative; }
+.footer-section h4::after { content: ''; display: block; width: 40px; height: 2px; background: #ff4747; margin-top: 10px; }
+
+.footer-section p { font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
+.footer-section ul { list-style: none; padding: 0; }
+.footer-section ul li { margin-bottom: 10px; }
+.footer-section ul li a { color: #ddd; text-decoration: none; font-size: 14px; transition: 0.3s; }
+.footer-section ul li a:hover { color: #ff4747; padding-left: 5px; }
+
+.social-links { display: flex; gap: 15px; margin-top: 20px; }
+.social-links a {
+    background: #333; width: 35px; height: 35px; display: flex;
+    align-items: center; justify-content: center; border-radius: 50%;
+    text-decoration: none; transition: 0.3s;
+}
+.social-links a:hover { background: #ff4747; transform: translateY(-3px); }
+
+.payment-methods { display: flex; flex-direction: column; gap: 10px; }
+.payment-methods span {
+    background: #333; padding: 8px 15px; border-radius: 5px;
+    font-size: 13px; font-weight: 600; display: inline-block;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #333;
+    margin-top: 50px;
+    padding-top: 20px;
+    font-size: 13px;
+    color: #888;
+}
+.footer-bottom span { color: #ff4747; font-weight: bold; }
+
+@media (max-width: 768px) {
+    .footer-container { grid-template-columns: 1fr 1fr; }
+    .main-footer { padding: 40px 5% 20px; }
+}
+</style>

@@ -1,195 +1,141 @@
 ---
 layout: default
-title: Accueil
+title: Akèy - Boutique Piyay
 ---
 
-<section id="hero">
-  <h1>🛍️ Bienvenue sur notre Boutique Universelle</h1>
-  <p>✨ Vêtements • Épices • Manba et plus ✨</p>
+<!-- 1. HERO BANNER -->
+<section id="hero-marketplace">
+  <div class="hero-content">
+    <span class="badge">🔥 Flash Sale -50%</span>
+    <h1>Gwo Rabè sou Tout Koleksyon Yo!</h1>
+    <p>Pi bèl kalite, pi bon pri nan mache a. Livrezon rapid nan tout peyi a.</p>
+    <a href="#products" class="btn-primary">Achte Kounye a 🛍️</a>
+  </div>
 </section>
 
-<section id="products">
-  <h2>🏪 Nos Produits</h2>
-  <div class="product-grid">
-    {% for product in site.products %}
-      <div class="product-card">
-        <img src="{{ product.image }}" alt="{{ product.title }}">
-        <h3>{{ product.title }}</h3>
-        <p>{{ product.description }}</p>
-        <p class="price">💰 {{ product.price }} HTG</p>
-        <div class="qty-section">
-          <input type="number" min="1" value="1" id="qty-{{ product.title | slugify }}">
+<!-- 2. FLASH SALE SECTION (NEW) -->
+<section id="flash-sale">
+    <div class="flash-header">
+        <div class="flash-title">
+            <span class="flash-icon">⚡</span>
+            <h2>Vant Flash</h2>
+            <div id="countdown" class="timer">
+                <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+            </div>
         </div>
-        <button onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
+        <a href="#" class="view-all">Tout pwodwi ></a>
+    </div>
+
+    <div class="flash-grid">
+        {% for product in site.products %}
+            {% if product.flash_sale %}
+            <div class="flash-card">
+                <div class="discount-badge">-{{ product.old_price | minus: product.price | times: 100 | divided_by: product.old_price }}%</div>
+                <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
+                <div class="flash-info">
+                    <h3>{{ product.title }}</h3>
+                    <div class="flash-prices">
+                        <span class="new-price">{{ product.price }} HTG</span>
+                        <span class="old-price">{{ product.old_price }} HTG</span>
+                    </div>
+                    <div class="stock-bar">
+                        <div class="progress" style="width: 70%;"></div>
+                    </div>
+                    <p class="stock-text">Rete sèlman 5 nan stock!</p>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<!-- 3. KATEGORI (STYLE BULLES) -->
+<section id="categories-section">
+  <div class="section-header">
+    <h2>Chèche pa Kategori</h2>
+  </div>
+  <div class="category-bubbles">
+    {% for category in site.categories %}
+    <a href="{{ category.url }}" class="cat-bubble">
+      <div class="bubble-img">
+        <img src="{{ category.image }}" alt="{{ category.title }}">
       </div>
+      <span>{{ category.title }}</span>
+    </a>
     {% endfor %}
   </div>
 </section>
 
-<!-- Cart Button -->
-<div class="cart-button-container">
-  <button class="cart-btn" onclick="openOrderModal()" title="Voir le panier">
-    🛒
-    <span id="cart-badge">0</span>
-  </button>
-</div>
+<!-- 4. TOUT PWODWI -->
+<section id="products">
+  <div class="section-header">
+    <h2>✨ Lòt Pwodwi ki cho kounye a</h2>
+  </div>
 
-<!-- Order Modal -->
-<div id="order-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>📋 Passer une Commande</h2>
-      <button class="modal-close" onclick="closeOrderModal()">✕</button>
-    </div>
-    
-    <div class="modal-body">
-      <!-- Order Summary -->
-      <div id="order-summary"></div>
-      
-      <!-- Customer Information -->
-      <div class="form-group">
-        <label for="customer-name">👤 Votre Nom Complet</label>
-        <input type="text" id="customer-name" placeholder="Ex: Jean Duviré" required>
+  <div class="product-grid">
+    {% for product in site.products %}
+      {% unless product.flash_sale %}
+      <div class="product-card">
+        <div class="card-img">
+            <a href="{{ product.url }}">
+                <img src="{{ product.image }}" alt="{{ product.title }}">
+            </a>
+        </div>
+        <div class="card-info">
+            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+            <div class="price-container">
+                <span class="price">💰 {{ product.price }} HTG</span>
+            </div>
+            <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
+                🛒 Ajoute nan panyen
+            </button>
+        </div>
       </div>
-      
-      <div class="form-group">
-        <label for="customer-phone">📱 Numéro de Téléphone</label>
-        <input type="tel" id="customer-phone" placeholder="Ex: +509 48868964" required>
-      </div>
-      
-      <!-- Payment Methods -->
-      <div class="form-group">
-        <label>💳 Méthode de Paiement</label>
-        <select id="payment-method" required>
-          <option value="">-- Sélectionner une option --</option>
-          <option value="Moncash">💸 Moncash</option>
-          <option value="Natcash">💳 Natcash</option>
-          <option value="Virement Bancaire">🏦 Virement Bancaire</option>
-          <option value="Espèces à la Livraison">💵 Espèces à la Livraison</option>
-        </select>
-      </div>
-      
-      <!-- Payment Information -->
-      <div style="background: #c95328; border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 0.95em;">
-        <p style="margin: 0;"><strong>ℹ️ Information Paiement:</strong></p>
-        <p style="margin: 5px 0;">📲 <strong>Moncash:</strong> +509 48868964</p>
-        <p style="margin: 5px 0;">💳 <strong>Natcash:</strong> +509 40683108</p>
-        <p style="margin: 0;">Nous vous confirmerons les détails de paiement après réception de votre commande.</p>
-      </div>
-      
-      <!-- Buttons -->
-      <div class="modal-buttons">
-        <button class="btn-cancel" onclick="closeOrderModal()">❌ Annuler</button>
-        <button class="btn-submit" onclick="submitOrder()">✅ Confirmer la Commande</button>
-      </div>
-      <script>
-let cart = [];
-
-function orderProduct(title, price, id) {
-    const qtyInput = document.getElementById(`qty-${title.toLowerCase().replace(/\s+/g, '-')}`);
-    const quantity = parseInt(qtyInput.value);
-    
-    const existingItem = cart.find(item => item.title === title);
-    if (existingItem) {
-        existingItem.quantity += quantity;
-    } else {
-        cart.push({ title, price, quantity });
-    }
-    
-    updateCartBadge();
-    alert(`✅ ${quantity} ${title} ajoute nan panyen an!`);
-}
-
-function updateCartBadge() {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById('cart-badge').innerText = totalItems;
-}
-
-function openOrderModal() {
-    if (cart.length === 0) {
-        alert("Panyen ou vid! Ajoute yon pwodwi anvan.");
-        return;
-    }
-    document.getElementById('order-modal').style.display = 'flex';
-    renderOrderSummary();
-}
-
-function closeOrderModal() {
-    document.getElementById('order-modal').style.display = 'none';
-}
-
-function renderOrderSummary() {
-    let summaryHtml = "<ul>";
-    let total = 0;
-    cart.forEach(item => {
-        const subtotal = item.price * item.quantity;
-        summaryHtml += `<li>${item.quantity}x ${item.title} - ${subtotal} HTG</li>`;
-        total += subtotal;
-    });
-    summaryHtml += `</ul><p><strong>Total: ${total} HTG</strong></p>`;
-    document.getElementById('order-summary').innerHTML = summaryHtml;
-}
-
-function submitOrder() {
-    const name = document.getElementById('customer-name').value;
-    const phone = document.getElementById('customer-phone').value;
-    const payment = document.getElementById('payment-method').value;
-
-    if (!name || !phone || !payment) {
-        alert("Tanpri ranpli tout enfòmasyon yo!");
-        return;
-    }
-
-    // 1. MESAJ OTOMATIK SOU EKRAN AN
-    alert(`Mèsi ${name}! 🎉 \n\nKòmand ou a preske fini. Kounye a, nou pral dirije w sou WhatsApp pou voye detay yo ban nou epi konfime peman an.`);
-
-    // 2. PREPARASYON MESAJ WHATSAPP LA
-    let message = `*NOUVO KÒMAND - BOUTIQUE PIYAY*\n\n`;
-    message += `*Non:* ${name}\n`;
-    message += `*Telefòn:* ${phone}\n`;
-    message += `*Peman:* ${payment}\n\n`;
-    message += `*Pwodwi:*\n`;
-    
-    let total = 0;
-    cart.forEach(item => {
-        message += `- ${item.quantity}x ${item.title} (${item.price * item.quantity} HTG)\n`;
-        total += (item.price * item.quantity);
-    });
-    
-    message += `\n*TOTAL:* ${total} HTG`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/50948868964?text=${encodedMessage}`;
-
-    // 3. OUVÈ WHATSAPP
-    window.location.href = whatsappUrl;
-    
-    // Reyalize panyen an apre kòmand lan
-    cart = [];
-    updateCartBadge();
-    closeOrderModal();
-}
-</script>
+      {% endunless %}
+    {% endfor %}
+  </div>
+</section>
 
 <style>
-/* Ti style pou asire modal la parèt byen */
-#order-modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    justify-content: center; align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: white; padding: 20px; border-radius: 10px;
-    max-width: 500px; width: 90%; color: #333;
-}
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-.form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-.btn-submit { background: #25d366; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+/* FLASH SALE STYLES */
+#flash-sale { background: #fff; padding: 30px 5%; margin-bottom: 40px; }
+.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.flash-title { display: flex; align-items: center; gap: 15px; }
+.flash-icon { font-size: 24px; animation: blink 1s infinite; }
+.timer { background: #222; color: white; padding: 5px 15px; border-radius: 5px; font-weight: bold; font-family: monospace; font-size: 18px; }
+.view-all { color: #ff4747; text-decoration: none; font-weight: 600; }
+
+.flash-grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+.flash-card { min-width: 200px; background: #fdfdfd; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #eee; }
+.discount-badge { position: absolute; top: 10px; right: 10px; background: #ff4747; color: white; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 12px; }
+.flash-card img { width: 100%; height: 180px; object-fit: cover; }
+.flash-info { padding: 12px; }
+.flash-info h3 { font-size: 14px; margin-bottom: 8px; color: #444; }
+.new-price { color: #ff4747; font-weight: 800; font-size: 18px; }
+.old-price { text-decoration: line-through; color: #999; font-size: 13px; margin-left: 5px; }
+
+.stock-bar { height: 8px; background: #eee; border-radius: 4px; margin: 10px 0 5px; overflow: hidden; }
+.progress { height: 100%; background: linear-gradient(90deg, #ff4747, #ff9f43); }
+.stock-text { font-size: 11px; color: #888; font-weight: 600; }
+
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 </style>
-    </div>
-  </div>
-</div>
+
+<script>
+// COUNTDOWN TIMER LOGIC
+function startTimer(duration) {
+    var timer = duration, hours, minutes, seconds;
+    setInterval(function () {
+        hours = parseInt(timer / 3600, 10);
+        minutes = parseInt((timer % 3600) / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        document.getElementById('hours').textContent = hours < 10 ? "0" + hours : hours;
+        document.getElementById('minutes').textContent = minutes < 10 ? "0" + minutes : minutes;
+        document.getElementById('seconds').textContent = seconds < 10 ? "0" + seconds : seconds;
+
+        if (--timer < 0) { timer = duration; }
+    }, 1000);
+}
+window.onload = function () { startTimer(3600 * 2.5); }; // 2h 30min
+</script>

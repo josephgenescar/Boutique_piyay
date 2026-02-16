@@ -2,7 +2,7 @@ backend:
   name: git-gateway
   branch: main
 
-
+# Integrasyon ImageKit
 media_library:
   name: imagekit
   config:
@@ -16,38 +16,59 @@ editor:
   preview: false
 
 collections:
+  # 🛒 KOLEKSYON PWODWI
   - name: "products"
-    label: "🛒 Produits"
-    label_singular: "Produit"
+    label: "🛒 Pwodwi"
+    label_singular: "Pwodwi"
     folder: "_products"
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Titre du produit", name: "title", widget: "string" }
-      - label: "Catégorie"
+      - { label: "Tit Pwodwi a", name: "title", widget: "string" }
+      - label: "Kategori"
         name: "category"
         widget: "select"
         options:
           - "Vetements Homme"
           - "Vetements Femme"
+          - "Habillement"
+          - "Maison"
           - "Epices"
           - "Manba"
           - "Cosmetiques"
           - "Accessoires"
-          - "Autres"
-          - "Promotions"
-          - "Nouveautes"
-          - "Offres Speciales"
-          - "Produits Locaux"
-          - "Produits Importes"
-          - "Produits Bio"
-          - "Produits Artisanaux"
-          - "Produits Technologiques"
-          - "Produits pour la Maison"
-          - "Produits pour Enfants"
-          - "cheveux"
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Prix (HTG)", name: "price", widget: "number", min: 0 }
-      - { label: "Image du produit", name: "image", widget: "image" }
-      - { label: "Disponible ?", name: "available", widget: "boolean", default: true }
-      - { label: "Contenu", name: "body", widget: "markdown", required: false }
+          - "Tech"
+      - { label: "Deskripsyon Kout", name: "description", widget: "text" }
+      - { label: "Pri Aktyèl (HTG)", name: "price", widget: "number", min: 0 }
+      - { label: "Ansyen Pri (pou Rabè)", name: "old_price", widget: "number", min: 0, required: false }
+      - { label: "Pwodwi Flash Sale?", name: "flash_sale", widget: "boolean", default: false }
+      - { label: "Kantite nan Stock", name: "stock", widget: "number", default: 10 }
+      - { label: "Imaj Prensipal", name: "image", widget: "image" }
+      - label: "Galeri Foto (Lòt foto)", name: "images", widget: "list", field: { label: "Imaj", name: "img", widget: "image" }, required: false }
+      - { label: "Disponib ?", name: "available", widget: "boolean", default: true }
+      - { label: "Detay konplè (Markdown)", name: "body", widget: "markdown", required: false }
+
+  # 🗂 KOLEKSYON KATEGORI
+  - name: "categories"
+    label: "🗂 Kategori"
+    label_singular: "Kategori"
+    folder: "_categories"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Non Kategori a", name: "title", widget: "string" }
+      - { label: "Deskripsyon", name: "description", widget: "text" }
+      - { label: "Imaj (pou Bulle a)", name: "image", widget: "image" }
+      - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
+      - label: "Sous-Kategori (Si genyen)", name: "sub_categories", widget: "list", field: { label: "Non Sous-Kategori", name: "sub", widget: "string" }, required: false }
+
+  # 📄 PAJ YO (About, etc.)
+  - name: "pages"
+    label: "📄 Paj Yo"
+    files:
+      - label: "Sou Nou (About)"
+        name: "about"
+        file: "about.markdown"
+        fields:
+          - { label: "Tit", name: "title", widget: "string" }
+          - { label: "Kontnu Paj la", name: "body", widget: "markdown" }

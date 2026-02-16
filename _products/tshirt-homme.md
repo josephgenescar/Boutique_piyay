@@ -4,6 +4,8 @@ title: Soulier
 category: Vetements Homme
 description: Soulier de haute qualité, confortable et durable
 price: 350
+old_price: 700
+flash_sale: true
 image: /assets/images/uploads/whatsapp-image-2026-01-21-at-22.11.28.jpeg
 available: true
 ---

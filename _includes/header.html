@@ -1,6 +1,146 @@
-<header>
-  <nav>
-    <a href="/">Accueil</a> |
-    <a href="#products">Produits</a>
+<!-- 1. TOP PROMO BAR -->
+<div class="top-bar">
+    <p>🚚 Livrezon GRATIS pou kòmand plis pase 5000 HTG! ⚡</p>
+</div>
+
+<header class="main-header">
+  <div class="header-container">
+    <!-- LOGO -->
+    <div class="logo">
+      <a href="/">Boutique <span>Piyay</span></a>
+    </div>
+
+    <!-- SEARCH BAR (MODÈN) -->
+    <div class="search-box">
+      <div class="search-input-wrapper">
+        <input type="text" id="search-input" placeholder="Chèche rad, soulye, manba..." onkeyup="liveSearch()">
+        <button class="search-btn">🔍</button>
+      </div>
+      <div id="search-results" class="search-dropdown"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="header-actions">
+      <div class="action-item hide-mobile">
+        <span class="icon">👤</span>
+        <span class="label">Kont mwen</span>
+      </div>
+
+      <div class="action-item cart-trigger" onclick="openOrderModal()">
+        <div class="cart-icon-wrapper">
+          <span class="icon">🛒</span>
+          <span id="cart-badge" class="badge">0</span>
+        </div>
+        <span class="label">Panyen</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION KATEGORI -->
+  <nav class="sub-nav">
+    <div class="nav-links">
+      <a href="/" class="active">Tout</a>
+      {% for category in site.categories %}
+        <a href="{{ category.url }}">{{ category.title }}</a>
+      {% endfor %}
+    </div>
   </nav>
 </header>
+
+<style>
+/* CSS POU HEADER MARKETPLACE */
+:root {
+    --primary-color: #ff4747; /* Wouj Temu style */
+    --dark-color: #222;
+    --light-bg: #f5f5f5;
+}
+
+.top-bar { background: var(--dark-color); color: white; text-align: center; padding: 8px; font-size: 13px; font-weight: 500; }
+
+.main-header { background: white; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+.header-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 5%; max-width: 1300px; margin: auto; gap: 20px; }
+
+.logo a { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--dark-color); letter-spacing: -1px; }
+.logo span { color: var(--primary-color); }
+
+.search-box { flex: 1; position: relative; max-width: 600px; }
+.search-input-wrapper { display: flex; border: 2px solid var(--primary-color); border-radius: 25px; overflow: hidden; }
+#search-input { width: 100%; padding: 10px 20px; border: none; outline: none; font-size: 15px; }
+.search-btn { background: var(--primary-color); border: none; padding: 0 20px; color: white; cursor: pointer; transition: 0.2s; }
+.search-btn:hover { background: #e03636; }
+
+/* Dropdown Rechèch */
+.search-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-top: 8px; display: none; max-height: 450px; overflow-y: auto; z-index: 1001; }
+.search-item { display: flex; align-items: center; padding: 12px; text-decoration: none; color: #333; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
+.search-item:hover { background: #fff8f8; }
+.search-item img { width: 50px; height: 50px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
+
+/* Actions */
+.header-actions { display: flex; gap: 20px; align-items: center; }
+.action-item { text-align: center; cursor: pointer; color: #444; transition: 0.2s; }
+.action-item:hover { color: var(--primary-color); }
+.action-item .icon { font-size: 22px; display: block; }
+.action-item .label { font-size: 12px; font-weight: 600; display: block; }
+
+.cart-icon-wrapper { position: relative; display: inline-block; }
+.badge { position: absolute; top: -8px; right: -12px; background: var(--primary-color); color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; min-width: 18px; border: 2px solid white; }
+
+/* Sub Nav */
+.sub-nav { background: #fff; border-top: 1px solid #f0f0f0; overflow-x: auto; scrollbar-width: none; }
+.nav-links { display: flex; justify-content: center; gap: 30px; padding: 10px 5%; max-width: 1300px; margin: auto; }
+.nav-links a { text-decoration: none; color: #666; font-size: 14px; font-weight: 600; white-space: nowrap; transition: 0.2s; padding-bottom: 5px; border-bottom: 2px solid transparent; }
+.nav-links a:hover, .nav-links a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
+@media (max-width: 768px) {
+    .header-container { flex-wrap: wrap; padding: 10px 3%; }
+    .search-box { order: 3; width: 100%; max-width: none; margin-top: 5px; }
+    .hide-mobile { display: none; }
+    .logo a { font-size: 22px; }
+    .nav-links { justify-content: flex-start; gap: 20px; }
+}
+</style>
+
+<script>
+// Menm kòd JS la, m jis asire l mache byen
+let searchData = [];
+fetch('/search.json').then(res => res.json()).then(data => searchData = data);
+
+function liveSearch() {
+    let input = document.getElementById('search-input').value.toLowerCase();
+    let resultsDiv = document.getElementById('search-results');
+
+    if (input.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+
+    let filtered = searchData.filter(item =>
+        item.title.toLowerCase().includes(input) ||
+        (item.category && item.category.toLowerCase().includes(input))
+    ).slice(0, 10);
+
+    if (filtered.length > 0) {
+        resultsDiv.innerHTML = filtered.map(item => `
+            <a href="${item.url}" class="search-item">
+                <img src="${item.image}" onerror="this.src='/assets/images/placeholder.jpg'">
+                <div>
+                    <div style="font-weight:bold; font-size:14px;">${item.title}</div>
+                    <div style="font-size:13px;color:#ff4747;font-weight:700;">${item.price} HTG</div>
+                </div>
+            </a>
+        `).join('');
+        resultsDiv.style.display = 'block';
+    } else {
+        resultsDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">Pa jwenn anyen 😕</div>';
+        resultsDiv.style.display = 'block';
+    }
+}
+
+// Fèmen dropdown si moun nan klike deyò
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-box')) {
+        document.getElementById('search-results').style.display = 'none';
+    }
+});
+</script>
