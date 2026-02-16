@@ -3,13 +3,15 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER AVEC IMAGE PAR DÉFAUT -->
+<!-- 1. HERO BANNER RECTANGULAIRE ET PLUS COMPACT -->
 <section id="hero-marketplace">
   <div class="hero-content container">
-    <span class="badge">🔥 Vente Flash -50%</span>
-    <h1>De superbes offres sur toutes nos collections !</h1>
-    <p>Meilleure qualité, meilleur prix. Livraison rapide en Haïti.</p>
-    <a href="#products" class="btn-primary">Acheter Maintenant 🛍️</a>
+    <div class="hero-text-box">
+        <span class="badge">🔥 Flash Sale -50%</span>
+        <h1>Offres exceptionnelles sur nos collections !</h1>
+        <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
+        <a href="#products" class="btn-primary">Acheter Maintenant 🛍️</a>
+    </div>
   </div>
 </section>
 
@@ -36,14 +38,7 @@ title: Accueil - Boutique Piyay
                     <h3>{{ product.title }}</h3>
                     <div class="flash-prices">
                         <span class="new-price">{{ product.price }} HTG</span>
-                        {% if product.old_price %}
-                        <span class="old-price">{{ product.old_price }} HTG</span>
-                        {% endif %}
                     </div>
-                    <div class="stock-bar">
-                        <div class="progress" style="width: 70%;"></div>
-                    </div>
-                    <p class="stock-text">Il ne reste que quelques articles !</p>
                     <button class="btn-flash-buy" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">Ajouter</button>
                 </div>
             </div>
@@ -52,7 +47,7 @@ title: Accueil - Boutique Piyay
     </div>
 </section>
 
-<!-- 3. CATÉGORIES (BULLES) -->
+<!-- 3. CATÉGORIES -->
 <section id="categories-section" class="container">
   <div class="section-header">
     <h2>Nos Catégories</h2>
@@ -112,48 +107,55 @@ title: Accueil - Boutique Piyay
 
 <style>
 #hero-marketplace {
-    /* Mwen mete yon bèl imaj ki soti nan Unsplash kòm defo */
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
-    padding: 120px 0;
-    text-align: center;
+    /* Redwi otè a pou l fè yon bèl rektang */
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
-    margin-bottom: 40px;
-    border-radius: 0 0 30px 30px;
+    margin-bottom: 30px;
+    border-radius: 15px; /* Mwens wonn pou l paret pi rektangilè */
+    margin-top: 10px;
+}
+
+.hero-text-box {
+    text-align: center;
+    padding: 20px;
 }
 
 .hero-content h1 {
-    font-size: 3rem;
-    margin: 20px 0;
+    font-size: 2.2rem;
+    margin: 10px 0;
     font-weight: 800;
-    text-shadow: 2px 2px 15px rgba(0,0,0,0.7);
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
 }
 
 .hero-content p {
-    font-size: 1.3rem;
-    margin-bottom: 30px;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    font-weight: 400;
 }
 
 .btn-primary {
-    background: #ff4747; color: white; padding: 15px 40px;
-    border-radius: 50px; text-decoration: none; font-weight: bold;
+    background: #ff4747; color: white; padding: 12px 30px;
+    border-radius: 8px; /* Bouton an plis rektangilè tou */
+    text-decoration: none; font-weight: bold;
     display: inline-block; transition: 0.3s;
-    box-shadow: 0 10px 20px rgba(255, 71, 71, 0.3);
 }
-.btn-primary:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 71, 71, 0.4); }
-
-/* ... (Style flash sale ak lòt yo rete menm jan) ... */
-.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-.timer { background: #222; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold; }
-.flash-grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
-.flash-card { min-width: 200px; background: white; border: 1px solid #eee; border-radius: 15px; padding: 15px; }
-.flash-card img { height: 150px; object-fit: cover; width: 100%; border-radius: 10px; }
-.new-price { color: #ff4747; font-weight: 800; font-size: 20px; }
-.btn-flash-buy { width: 100%; background: #ff4747; color: white; border: none; padding: 10px; border-radius: 8px; margin-top: 10px; cursor: pointer; font-weight: bold; }
 
 @media (max-width: 768px) {
-    #hero-marketplace { padding: 80px 10px; }
-    .hero-content h1 { font-size: 2rem; }
+    #hero-marketplace { height: 250px; padding: 20px; border-radius: 0; margin-top: 0; }
+    .hero-content h1 { font-size: 1.6rem; }
+    .hero-content p { font-size: 0.9rem; }
 }
+
+/* Lòt style yo rete konsistan... */
+.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.timer { background: #222; color: white; padding: 5px 12px; border-radius: 5px; font-weight: bold; }
+.flash-grid { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; }
+.flash-card { min-width: 180px; background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
+.flash-card img { height: 120px; object-fit: cover; width: 100%; border-radius: 8px; }
 </style>
