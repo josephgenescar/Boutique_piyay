@@ -1,316 +1,163 @@
-// Cart Management System
-class ShoppingCart {
-  constructor() {
-    this.items = this.loadCart();
-  }
+// ==========================================
+// BOUTIQUE PIYAY - CORE JAVASCRIPT
+// ==========================================
 
-  addItem(productId, title, price, quantity) {
-    const existingItem = this.items.find(item => item.productId === productId);
-    
+let cart = JSON.parse(localStorage.getItem('piyay_cart')) || [];
+
+// 1. AJOUTE NAN PANYEN
+function orderProduct(title, price, id) {
+    // Tcheke si gen yon input kantite espesifik (paj pwodwi)
+    let qtyInput = document.getElementById('prod-qty');
+    let quantity = qtyInput ? parseInt(qtyInput.value) : 1;
+
+    const existingItem = cart.find(item => item.title === title);
     if (existingItem) {
-      existingItem.quantity += parseInt(quantity);
+        existingItem.quantity += quantity;
     } else {
-      this.items.push({
-        productId: productId,
-        title: title,
-        price: parseFloat(price),
-        quantity: parseInt(quantity)
-      });
+        cart.push({ title, price: parseFloat(price), quantity });
     }
     
-    this.saveCart();
-    this.updateCartUI();
-    showNotification(`✅ ${title} ajouté au panier!`, 'success');
-  }
+    saveCart();
+    updateCartUI();
+    alert(`✅ ${quantity} ${title} ajoute nan panyen!`);
+}
 
-  removeItem(productId) {
-    this.items = this.items.filter(item => item.productId !== productId);
-    this.saveCart();
-    this.updateCartUI();
-  }
+// 2. SOVE PANYEN LA
+function saveCart() {
+    localStorage.setItem('piyay_cart', JSON.stringify(cart));
+}
 
-  updateQuantity(productId, quantity) {
-    const item = this.items.find(item => item.productId === productId);
-    if (item) {
-      item.quantity = Math.max(1, parseInt(quantity));
-      this.saveCart();
-      this.updateCartUI();
-    }
-  }
-
-  getTotal() {
-    return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }
-
-  getItemCount() {
-    return this.items.reduce((sum, item) => sum + item.quantity, 0);
-  }
-
-  saveCart() {
-    localStorage.setItem('cart', JSON.stringify(this.items));
-  }
-
-  loadCart() {
-    const saved = localStorage.getItem('cart');
-    return saved ? JSON.parse(saved) : [];
-  }
-
-  clear() {
-    this.items = [];
-    this.saveCart();
-    this.updateCartUI();
-  }
-
-  updateCartUI() {
+// 3. MIZAJOU BADGE PANYEN
+function updateCartUI() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const badge = document.getElementById('cart-badge');
     if (badge) {
-      badge.textContent = this.getItemCount();
-      badge.style.display = this.getItemCount() > 0 ? 'block' : 'none';
+        badge.innerText = totalItems;
+        badge.style.display = totalItems > 0 ? 'block' : 'none';
     }
-  }
 }
 
-const cart = new ShoppingCart();
-
-// Order Product Function
-function orderProduct(title, price, id) {
-  let qtyInput = document.getElementById(`qty-${title.replace(/\s+/g,'-').toLowerCase()}`);
-  let qty = qtyInput.value;
-  
-  if (qty <= 0) {
-    showNotification('❌ Veuillez entrer une quantité valide', 'error');
-    return;
-  }
-  
-  cart.addItem(id, title, price, qty);
-  qtyInput.value = 1;
-}
-
-// Notification System
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  notification.textContent = message;
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 25px;
-    background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#667eea'};
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    animation: slideInRight 0.4s ease;
-    font-weight: 500;
-  `;
-  
-  document.body.appendChild(notification);
-  
-  setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.4s ease';
-    setTimeout(() => notification.remove(), 400);
-  }, 3000);
-}
-
-// Open Order Modal
+// 4. OUVRI MODAL KÒMAND
 function openOrderModal() {
-  if (cart.items.length === 0) {
-    showNotification('❌ Votre panier est vide!', 'error');
-    return;
-  }
-  
-  const modal = document.getElementById('order-modal');
-  updateOrderSummary();
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+    if (cart.length === 0) {
+        alert("Panyen ou vid! Ajoute yon pwodwi anvan.");
+        return;
+    }
+    const modal = document.getElementById('order-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        renderOrderSummary();
+    }
 }
 
-// Close Order Modal
+// 5. FÈMEN MODAL
 function closeOrderModal() {
-  const modal = document.getElementById('order-modal');
-  modal.style.display = 'none';
-  document.body.style.overflow = 'auto';
+    const modal = document.getElementById('order-modal');
+    if (modal) modal.style.display = 'none';
 }
 
-// Update Order Summary
-function updateOrderSummary() {
-  const summaryDiv = document.getElementById('order-summary');
-  
-  if (cart.items.length === 0) {
-    summaryDiv.innerHTML = '<p>Panier vide</p>';
-    return;
-  }
-  
-  let html = '<div class="order-items">';
-  cart.items.forEach(item => {
-    const subtotal = (item.price * item.quantity).toFixed(2);
-    html += `
-      <div class="order-item">
-        <div class="item-info">
-          <span class="item-name">${item.title}</span>
-          <span class="item-qty">x${item.quantity}</span>
-        </div>
-        <div class="item-price">${subtotal} HTG</div>
-      </div>
-    `;
-  });
-  html += '</div>';
-  html += `
-    <div class="order-total">
-      <strong>Total: ${cart.getTotal().toFixed(2)} HTG</strong>
-    </div>
-  `;
-  summaryDiv.innerHTML = html;
-}
+// 6. REZIME KÒMAND LA
+function renderOrderSummary() {
+    const summaryDiv = document.getElementById('order-summary');
+    if (!summaryDiv) return;
 
-// Submit Order
-function submitOrder() {
-  const name = document.getElementById('customer-name').value.trim();
-  const phone = document.getElementById('customer-phone').value.trim();
-  const paymentMethod = document.getElementById('payment-method').value;
-  
-  if (!name) {
-    showNotification('❌ Veuillez entrer votre nom', 'error');
-    return;
-  }
-  
-  if (!phone || phone.length < 8) {
-    showNotification('❌ Veuillez entrer un numéro de téléphone valide', 'error');
-    return;
-  }
-  
-  if (!paymentMethod) {
-    showNotification('❌ Veuillez sélectionner une méthode de paiement', 'error');
-    return;
-  }
-  
-  // Build WhatsApp message
-  let message = `*🛒 NOUVELLE COMMANDE*\n\n`;
-  message += `👤 *Nom:* ${name}\n`;
-  message += `📱 *Téléphone:* ${phone}\n`;
-  message += `💳 *Paiement:* ${paymentMethod}\n\n`;
-  message += `*📦 ARTICLES:*\n`;
-  
-  cart.items.forEach(item => {
-    const subtotal = (item.price * item.quantity).toFixed(2);
-    message += `• ${item.title} x${item.quantity} = ${subtotal} HTG\n`;
-  });
-  
-  const total = cart.getTotal().toFixed(2);
-  message += `\n*💰 TOTAL: ${total} HTG*\n\n`;
-  message += `Merci pour votre commande! ✨`;
-  
-  // WhatsApp API
-  let whatsappNumber = "50936000000"; // À remplacer par le vrai numéro
-  let url = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
-  
-  window.open(url, "_blank");
-  
-  // Clear cart and close modal
-  setTimeout(() => {
-    cart.clear();
-    closeOrderModal();
-    showNotification('✅ Commande envoyée avec succès! Merci! 🙏', 'success');
-  }, 500);
-}
-
-// Add animation styles
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(100px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  @keyframes slideOutRight {
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateX(100px);
-    }
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-`;
-document.head.appendChild(style);
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-  cart.updateCartUI();
-  
-  // Add quantity buttons
-  const quantityInputs = document.querySelectorAll('input[type="number"]');
-  
-  quantityInputs.forEach(input => {
-    const wrapper = input.parentElement;
-    
-    const decreaseBtn = document.createElement('button');
-    decreaseBtn.textContent = '−';
-    decreaseBtn.type = 'button';
-    decreaseBtn.className = 'qty-btn';
-    decreaseBtn.onclick = (e) => {
-      e.preventDefault();
-      if (input.value > 1) input.value = parseInt(input.value) - 1;
-    };
-    
-    const increaseBtn = document.createElement('button');
-    increaseBtn.textContent = '+';
-    increaseBtn.type = 'button';
-    increaseBtn.className = 'qty-btn';
-    increaseBtn.onclick = (e) => {
-      e.preventDefault();
-      input.value = parseInt(input.value) + 1;
-    };
-    
-    wrapper.insertBefore(decreaseBtn, input);
-    wrapper.insertBefore(increaseBtn, input.nextSibling);
-  });
-  
-  // Scroll animations
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.animation = 'floatIn 0.6s ease forwards';
-      }
+    let html = '<div class="summary-list">';
+    let total = 0;
+    cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        html += `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                <span>${item.quantity}x ${item.title}</span>
+                <span>${subtotal} HTG</span>
+            </div>
+        `;
+        total += subtotal;
     });
-  }, { threshold: 0.1 });
-  
-  document.querySelectorAll('.product-card').forEach(card => {
-    observer.observe(card);
-  });
-  
-  // Parallax effect
-  window.addEventListener('scroll', function() {
-    const hero = document.querySelector('#hero');
-    if (hero) {
-      hero.style.transform = `translateY(${window.scrollY * 0.5}px)`;
+    html += `</div><div style="text-align:right; font-weight:800; font-size:20px; color:#ff4747; margin-top:15px;">TOTAL: ${total} HTG</div>`;
+    summaryDiv.innerHTML = html;
+}
+
+// 7. KONFIME KÒMAND SOU WHATSAPP
+function submitOrder() {
+    const name = document.getElementById('customer-name').value.trim();
+    const phone = document.getElementById('customer-phone').value.trim();
+    const payment = document.getElementById('payment-method').value;
+
+    if (!name || !phone || !payment) {
+        alert("Tanpri ranpli tout enfòmasyon yo!");
+        return;
     }
-  });
-  
-  // Close modal when clicking outside
-  const modal = document.getElementById('order-modal');
-  window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      closeOrderModal();
+
+    let message = `*🛒 NOUVO KÒMAND - BOUTIQUE PIYAY*\n\n`;
+    message += `👤 *Kliyan:* ${name}\n`;
+    message += `📱 *Telefòn:* ${phone}\n`;
+    message += `💳 *Peman:* ${payment}\n\n`;
+    message += `*📦 ATIK YO:*\n`;
+    
+    let total = 0;
+    cart.forEach(item => {
+        message += `- ${item.quantity}x ${item.title} (${item.price * item.quantity} HTG)\n`;
+        total += (item.price * item.quantity);
+    });
+    
+    message += `\n*💰 TOTAL: ${total} HTG*`;
+
+    const whatsappUrl = `https://wa.me/50948868964?text=${encodeURIComponent(message)}`;
+    
+    // Klere panyen an apre kòmand lan
+    cart = [];
+    saveCart();
+    updateCartUI();
+    closeOrderModal();
+
+    window.open(whatsappUrl, '_blank');
+}
+
+// 8. LIVE SEARCH LOGIC
+let searchData = [];
+fetch('/search.json').then(res => res.json()).then(data => searchData = data);
+
+function liveSearch() {
+    let input = document.getElementById('search-input').value.toLowerCase();
+    let resultsDiv = document.getElementById('search-results');
+
+    if (input.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
     }
-  });
-  
-  console.log('🛍️ Boutique Universelle - Site chargé!');
+
+    let filtered = searchData.filter(item =>
+        item.title.toLowerCase().includes(input) ||
+        (item.category && item.category.toLowerCase().includes(input))
+    ).slice(0, 10);
+
+    if (filtered.length > 0) {
+        resultsDiv.innerHTML = filtered.map(item => `
+            <a href="${item.url}" class="search-item" style="display:flex; align-items:center; padding:10px; text-decoration:none; color:#333; border-bottom:1px solid #eee;">
+                <img src="${item.image}" style="width:40px; height:40px; object-fit:cover; margin-right:10px; border-radius:5px;">
+                <div>
+                    <div style="font-weight:bold; font-size:14px;">${item.title}</div>
+                    <div style="font-size:12px; color:#ff4747;">${item.price} HTG</div>
+                </div>
+            </a>
+        `).join('');
+        resultsDiv.style.display = 'block';
+    } else {
+        resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Pa jwenn anyen 😕</div>';
+        resultsDiv.style.display = 'block';
+    }
+}
+
+// INITYALIZASYON
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+
+    // Fèmen dropdown rechèch si moun nan klike deyò
+    document.addEventListener('click', (e) => {
+        const searchBox = document.querySelector('.search-box');
+        const resultsDiv = document.getElementById('search-results');
+        if (searchBox && !searchBox.contains(e.target) && resultsDiv) {
+            resultsDiv.style.display = 'none';
+        }
+    });
 });

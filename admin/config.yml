@@ -25,26 +25,14 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Tit Pwodwi a", name: "title", widget: "string" }
-      - label: "Kategori"
-        name: "category"
-        widget: "select"
-        options:
-          - "Vetements Homme"
-          - "Vetements Femme"
-          - "Habillement"
-          - "Maison"
-          - "Epices"
-          - "Manba"
-          - "Cosmetiques"
-          - "Accessoires"
-          - "Tech"
+      - { label: "Kategori", name: "category", widget: "select", options: ["Vetements Homme", "Vetements Femme", "Habillement", "Maison", "Epices", "Manba", "Cosmetiques", "Accessoires", "Tech"] }
       - { label: "Deskripsyon Kout", name: "description", widget: "text" }
       - { label: "Pri Aktyèl (HTG)", name: "price", widget: "number", min: 0 }
       - { label: "Ansyen Pri (pou Rabè)", name: "old_price", widget: "number", min: 0, required: false }
       - { label: "Pwodwi Flash Sale?", name: "flash_sale", widget: "boolean", default: false }
       - { label: "Kantite nan Stock", name: "stock", widget: "number", default: 10 }
       - { label: "Imaj Prensipal", name: "image", widget: "image" }
-      - label: "Galeri Foto (Lòt foto)", name: "images", widget: "list", field: { label: "Imaj", name: "img", widget: "image" }, required: false }
+      - { label: "Galeri Foto (Lòt foto)", name: "images", widget: "list", field: { label: "Imaj", name: "img", widget: "image" }, required: false }
       - { label: "Disponib ?", name: "available", widget: "boolean", default: true }
       - { label: "Detay konplè (Markdown)", name: "body", widget: "markdown", required: false }
 
@@ -60,7 +48,7 @@ collections:
       - { label: "Deskripsyon", name: "description", widget: "text" }
       - { label: "Imaj (pou Bulle a)", name: "image", widget: "image" }
       - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
-      - label: "Sous-Kategori (Si genyen)", name: "sub_categories", widget: "list", field: { label: "Non Sous-Kategori", name: "sub", widget: "string" }, required: false }
+      - { label: "Sous-Kategori (Si genyen)", name: "sub_categories", widget: "list", field: { label: "Non Sous-Kategori", name: "sub", widget: "string" }, required: false }
 
   # 📄 PAJ YO (About, etc.)
   - name: "pages"

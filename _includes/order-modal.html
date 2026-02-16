@@ -1,0 +1,74 @@
+<!-- Order Modal Global -->
+<div id="order-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>📋 Konfime Kòmand ou</h2>
+      <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Rezime Panyen -->
+      <div id="order-summary"></div>
+
+      <div class="order-form">
+        <div class="form-group">
+            <label for="customer-name">👤 Non konplè</label>
+            <input type="text" id="customer-name" placeholder="Egz: Jean Philippe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="customer-phone">📱 Nimewo Telefòn</label>
+            <input type="tel" id="customer-phone" placeholder="Egz: +509 4886-8964" required>
+        </div>
+
+        <div class="form-group">
+            <label for="payment-method">💳 Metòd Peman</label>
+            <select id="payment-method" required>
+                <option value="">-- Chwazi yon opsyon --</option>
+                <option value="Moncash">💸 Moncash</option>
+                <option value="Natcash">💳 Natcash</option>
+                <option value="Livrezon">💵 Cash à la Livraison</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="payment-info-box">
+        <p><strong>ℹ️ Info Peman:</strong></p>
+        <p>📲 Moncash: 4886-8964</p>
+        <p>💳 Natcash: 4068-3108</p>
+      </div>
+
+      <button class="btn-confirm-order" onclick="submitOrder()">✅ Konfime Kòmand la</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+    justify-content: center; align-items: center; z-index: 2000;
+}
+.modal-content {
+    background: white; width: 90%; max-width: 500px; border-radius: 20px;
+    padding: 30px; color: #333; max-height: 90vh; overflow-y: auto;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #888; }
+
+#order-summary { background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+.order-item-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+.order-total-row { border-top: 2px solid #ddd; padding-top: 10px; margin-top: 10px; font-weight: 800; font-size: 18px; color: #ff4747; text-align: right; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+.form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
+
+.payment-info-box { background: #fff5f5; border: 1px dashed #ff4747; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 13px; }
+
+.btn-confirm-order {
+    width: 100%; background: #25d366; color: white; border: none; padding: 15px;
+    border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.btn-confirm-order:hover { background: #128c7e; transform: translateY(-2px); }
+</style>
