@@ -15,8 +15,7 @@ title: Accueil - Boutique Piyay
   </div>
 </section>
 
-<!-- 2. AFFICHAGE DES PUBS DU HAUT (TOP BANNERS) -->
-{% assign current_date = "now" | date: "%Y-%m-%d %H:%M" %}
+<!-- 2. AFFICHAGE DES PUBS DU HAUT -->
 <section class="ads-top container">
     {% for ad in site.promotions %}
         {% if ad.active and ad.position == "top" %}
@@ -27,9 +26,86 @@ title: Accueil - Boutique Piyay
     {% endfor %}
 </section>
 
-<!-- ... (FLASH SALE SECTION) ... -->
+<!-- 3. FLASH SALE SECTION -->
+<section id="flash-sale" class="container">
+    <div class="flash-header">
+        <div class="flash-title">
+            <span class="flash-icon">⚡</span>
+            <h2>Vente Flash</h2>
+            <div id="countdown" class="timer">
+                <span id="hours">02</span>:<span id="minutes">30</span>:<span id="seconds">00</span>
+            </div>
+        </div>
+        <a href="#" class="view-all">Tout voir ></a>
+    </div>
 
-<!-- 3. OPEN FOR BUSINESS SECTION -->
+    <div class="flash-grid">
+        {% for product in site.products %}
+            {% if product.flash_sale %}
+            <div class="flash-card">
+                <div class="discount-badge">SOLDE</div>
+                <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
+                <div class="flash-info">
+                    <h3>{{ product.title }}</h3>
+                    <div class="flash-prices">
+                        <span class="new-price">{{ product.price }} HTG</span>
+                    </div>
+                    <button class="btn-flash-buy" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">Ajouter</button>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<!-- 4. CATÉGORIES (BULLES) -->
+<section id="categories-section" class="container">
+  <div class="section-header">
+    <h2>Parcourir par Catégorie</h2>
+  </div>
+  <div class="category-bubbles">
+    {% for category in site.categories %}
+    <a href="{{ category.url }}" class="cat-bubble">
+      <div class="bubble-img">
+        <img src="{{ category.image }}" alt="{{ category.title }}">
+      </div>
+      <span>{{ category.title }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 5. TOUS LES PRODUITS -->
+<section id="products" class="container">
+  <div class="section-header">
+    <h2>✨ Produits Tendances</h2>
+  </div>
+
+  <div class="product-grid">
+    {% for product in site.products %}
+      {% unless product.flash_sale %}
+      <div class="product-card">
+        <div class="card-img">
+            <a href="{{ product.url }}">
+                <img src="{{ product.image }}" alt="{{ product.title }}">
+            </a>
+        </div>
+        <div class="card-info">
+            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+            <div class="price-container">
+                <span class="price">{{ product.price }} HTG</span>
+            </div>
+            <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
+                🛒 Ajouter au panier
+            </button>
+        </div>
+      </div>
+      {% endunless %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 6. OPEN FOR BUSINESS SECTION -->
 <section id="open-for-business" class="container">
     <div class="business-card">
         <div class="business-content">
@@ -75,8 +151,42 @@ function closePromoModal() { document.getElementById('promo-modal').style.displa
 </script>
 
 <style>
-/* STYLE POUR LES PUBS */
-.ad-banner { margin: 20px 0; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-.ad-banner img { width: 100%; display: block; }
-/* ... (Style Hero et Business Card) ... */
+/* RECONSTITUTION DES STYLES CSS */
+#hero-marketplace {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover; background-position: center;
+    height: 300px; display: flex; align-items: center; justify-content: center;
+    color: white; margin-bottom: 30px; border-radius: 15px; margin-top: 10px;
+}
+.hero-text-box { text-align: center; }
+.hero-content h1 { font-size: 2.2rem; margin: 10px 0; font-weight: 800; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
+.btn-primary { background: #ff4747; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; }
+
+.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.timer { background: #222; color: white; padding: 5px 12px; border-radius: 5px; font-weight: bold; }
+.flash-grid { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; }
+.flash-card { min-width: 180px; background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
+.flash-card img { height: 120px; object-fit: cover; width: 100%; border-radius: 8px; }
+.btn-flash-buy { width: 100%; background: #ff4747; color: white; border: none; padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; }
+
+.category-bubbles { display: flex; gap: 15px; overflow-x: auto; padding: 15px 0; }
+.cat-bubble { text-align: center; text-decoration: none; color: #333; min-width: 80px; }
+.bubble-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #ff4747; margin: 0 auto 5px; overflow: hidden; }
+
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.product-card { border: 1px solid #eee; border-radius: 10px; overflow: hidden; background: white; }
+.card-img img { height: 180px; width: 100%; object-fit: cover; }
+.card-info { padding: 10px; }
+.add-to-cart { width: 100%; background: #222; color: white; padding: 8px; border-radius: 5px; margin-top: 10px; }
+
+#open-for-business { padding: 40px 0; }
+.business-card {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+    padding: 30px; border-radius: 15px; color: white; display: flex; align-items: center; justify-content: space-between;
+}
+.business-icon { font-size: 5rem; opacity: 0.3; }
+.btn-promo-request { background: white; color: #b21f1f; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: white; width: 90%; border-radius: 20px; padding: 30px; color: #333; }
 </style>
