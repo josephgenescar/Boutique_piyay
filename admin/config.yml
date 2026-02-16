@@ -19,12 +19,23 @@ collections:
     create: true
     fields:
       - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Prix", name: "price", widget: "number" }
+      - label: "Catégorie"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Vêtements", value: "Vetements" }
+          - { label: "Chaussures & Tennis", value: "Chaussures" }
+          - { label: "Accessoires Électroniques", value: "Electronique" }
+          - { label: "Accessoires Maison", value: "Maison" }
+          - { label: "Beauté & Cosmétiques", value: "Beaute" }
+          - { label: "Épices & Cuisine", value: "Cuisine" }
+          - { label: "Autres", value: "Autres" }
+      - { label: "Prix (HTG)", name: "price", widget: "number" }
       - { label: "Image", name: "image", widget: "image" }
-      - { label: "Flash Sale?", name: "flash_sale", widget: "boolean", default: false }
-      - { label: "Corps", name: "body", widget: "markdown" }
+      - { label: "Vente Flash?", name: "flash_sale", widget: "boolean", default: false }
+      - { label: "Description", name: "body", widget: "markdown" }
 
-  # 📢 NOUVEAU: GESTION DES PUBLICITÉS
+  # 📢 GESTION DES PUBLICITÉS
   - name: "promotions"
     label: "📢 Publicités & Promos"
     label_singular: "Publicité"
@@ -46,11 +57,11 @@ collections:
       - { label: "Date de fin", name: "end_date", widget: "datetime" }
       - { label: "Activer la publicité?", name: "active", widget: "boolean", default: true }
 
-  # 🗂 CATÉGORIES
+  # 🗂 CATÉGORIES (POUR LA PAGE D'ACCUEIL)
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
     create: true
     fields:
       - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Image (Bulle)", name: "image", widget: "image" }
