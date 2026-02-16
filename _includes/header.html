@@ -1,22 +1,15 @@
-<!-- 1. TOP BAR (NOIRE) -->
+<!-- 1. TOP BAR (SIMPLE & DIRECTE) -->
 <div class="top-nav-temu">
-    <div class="container temu-flex-between">
-        <div class="top-nav-left">
-            <a href="#">🚚 Livraison rapide : SD ➔ HT</a>
-            <a href="#">🛡️ Garantie de livraison</a>
-        </div>
-        <div class="top-nav-right">
-            <a href="#">Télécharger l'App</a>
-            <a href="#">Vendre sur Piyay</a>
-            <a href="#">Aide</a>
-            <span class="lang-selector">🇫🇷 Français</span>
+    <div class="container temu-flex-center">
+        <div class="top-nav-message">
+            <span>🚚 Livraison rapide : Saint-Domingue ➔ Haïti ! 🇭🇹</span>
         </div>
     </div>
 </div>
 
 <header class="main-header-temu">
   <div class="container temu-header-grid">
-    <!-- LOGO AVEC IMAGE LOCALE DEVANT LE TEXTE -->
+    <!-- LOGO AVEC IMAGE LOCALE -->
     <div class="logo-area">
       <a href="/" class="temu-logo-link">
         <div class="logo-wrapper">
@@ -76,24 +69,27 @@
     --temu-black: #000;
 }
 
-.top-nav-temu { background: #000; color: #fff; padding: 8px 0; font-size: 12px; }
-.top-nav-temu a { color: #fff; text-decoration: none; margin-right: 20px; opacity: 0.9; }
-.temu-flex-between { display: flex; justify-content: space-between; align-items: center; }
+/* TOP BAR CLEAN */
+.top-nav-temu { background: #000; color: #fff; padding: 10px 0; font-size: 13px; font-weight: 600; }
+.temu-flex-center { display: flex; justify-content: center; align-items: center; }
+.top-nav-message span { letter-spacing: 0.5px; }
 
 .main-header-temu { background: #fff; padding: 12px 0; border-bottom: 1px solid #ddd; }
 .temu-header-grid { display: grid; grid-template-columns: 320px 1fr 250px; gap: 20px; align-items: center; }
 
-/* STYLE LOGO AVEC IMAGE LOCALE */
+/* STYLE LOGO */
 .logo-wrapper { display: flex; align-items: center; gap: 10px; }
 .logo-img-front { height: 45px; width: auto; object-fit: contain; }
 .logo-text-temu { font-size: 20px; font-weight: 900; color: var(--temu-black); font-family: 'Poppins', sans-serif; white-space: nowrap; }
 .logo-text-temu span { background: var(--temu-red); color: #fff; padding: 2px 8px; border-radius: 6px; margin-left: 2px; }
 .temu-logo-link { text-decoration: none; }
 
+/* SEARCH BAR */
 .temu-search-box { display: flex; border: 2px solid var(--temu-black); border-radius: 25px; overflow: hidden; height: 45px; }
 #search-input { flex: 1; border: none; padding: 0 20px; outline: none; font-size: 15px; }
 .temu-search-btn { background: var(--temu-black); color: #fff; border: none; width: 60px; cursor: pointer; font-size: 18px; }
 
+/* ACTIONS */
 .user-actions-area { display: flex; justify-content: flex-end; gap: 25px; }
 .action-btn { text-align: center; cursor: pointer; color: #333; position: relative; }
 .action-icon { font-size: 22px; display: block; }
