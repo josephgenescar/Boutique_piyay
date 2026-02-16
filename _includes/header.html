@@ -1,121 +1,115 @@
-<!-- 1. BARRE DE PROMOTION -->
-<div class="top-bar">
-    <p>🚚 Livraison rapide de Saint-Domingue vers Haïti ! 🇩🇴 ➔ 🇭🇹</p>
+<!-- 1. TOP BAR (NOIRE) -->
+<div class="top-nav-temu">
+    <div class="container temu-flex-between">
+        <div class="top-nav-left">
+            <a href="#">🚚 Livraison rapide ➔ 🇭🇹</a>
+            <a href="#">🛡️ Garantie de livraison</a>
+        </div>
+        <div class="top-nav-right">
+            <a href="#">Télécharger l'App</a>
+            <a href="#">Vendre sur Piyay</a>
+            <a href="#">Aide</a>
+            <span class="lang-selector">🇫🇷 Français</span>
+        </div>
+    </div>
 </div>
 
-<header class="main-header">
-  <div class="header-container">
-    <!-- LOGO -->
-    <div class="logo">
-      <a href="/">Boutique <span>Piyay</span></a>
-      <p class="tagline">Achetez depuis Saint-Domingue en toute simplicité</p>
+<header class="main-header-temu">
+  <div class="container temu-header-grid">
+    <!-- LOGO AVEC IMAGE -->
+    <div class="logo-area">
+      <a href="/" class="temu-logo-link">
+        <img src="https://i.ibb.co/vxsX67Y/boutique-piyay-logo.png" alt="Boutique Piyay Logo" class="main-logo-img">
+      </a>
     </div>
 
-    <!-- BARRE DE RECHERCHE -->
-    <div class="search-box">
-      <div class="search-input-wrapper">
-        <input type="text" id="search-input" placeholder="Rechercher un produit..." onkeyup="liveSearch()">
-        <button class="search-btn" onclick="liveSearch()">🔍</button>
+    <!-- SEARCH BAR (CENTRE) -->
+    <div class="search-area">
+      <div class="temu-search-box">
+        <input type="text" id="search-input" placeholder="vêtements, chaussures, électronique..." onkeyup="liveSearch()">
+        <button class="temu-search-btn" onclick="liveSearch()">🔍</button>
       </div>
       <div id="search-results" class="search-dropdown"></div>
     </div>
 
-    <!-- ACTIONS -->
-    <div class="header-actions">
-      <!-- Mon Compte -->
-      <div class="action-item hide-mobile" onclick="openLoginModal()">
-        <span class="icon">👤</span>
-        <span class="label">Mon compte</span>
+    <!-- USER ACTIONS -->
+    <div class="user-actions-area">
+      <div class="action-btn" onclick="openLoginModal()">
+        <span class="action-icon">👤</span>
+        <span class="action-label">Mon compte</span>
       </div>
-
-      <!-- Panier -->
-      <div class="action-item cart-trigger" id="cart-header-btn" onclick="openOrderModal()">
-        <div class="cart-icon-wrapper">
-          <span class="icon">🛒</span>
+      <div class="action-btn cart-trigger" onclick="openOrderModal()">
+        <div class="cart-wrapper">
+          <span class="action-icon">🛒</span>
           <span id="cart-badge" class="badge">0</span>
         </div>
-        <span class="label">Panier</span>
+        <span class="action-label">Panier</span>
       </div>
     </div>
   </div>
 
-  <!-- NAVIGATION -->
-  <nav class="sub-nav">
-    <div class="nav-links">
-      <a href="/" class="active">Tout</a>
-      {% for category in site.categories %}
-        <a href="{{ category.url }}">{{ category.title }}</a>
-      {% endfor %}
+  <!-- SUB-NAV -->
+  <nav class="sub-nav-temu">
+    <div class="container temu-nav-flex">
+      <a href="/" class="nav-item active">Tout</a>
+      <a href="#" class="nav-item">🔥 Meilleures ventes</a>
+      <a href="#" class="nav-item">⭐ Notés 5 étoiles</a>
+      <a href="#" class="nav-item">Nouveautés</a>
+      <div class="nav-dropdown-trigger">
+        Catégories ▾
+        <div class="nav-dropdown-content">
+            {% for category in site.categories %}
+                <a href="{{ category.url }}">{{ category.title }}</a>
+            {% endfor %}
+        </div>
+      </div>
     </div>
   </nav>
 </header>
 
-<!-- Modal de Connexion (Simple Placeholder) -->
-<div id="login-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content" style="max-width: 400px; text-align: center;">
-        <div class="modal-header">
-            <h2>Connexion</h2>
-            <button class="modal-close" onclick="closeLoginModal()">✕</button>
-        </div>
-        <div class="modal-body">
-            <p style="margin-bottom: 20px;">Connectez-vous pour suivre vos commandes.</p>
-            <div class="form-group" style="text-align: left;">
-                <label>Email</label>
-                <input type="email" placeholder="votre@email.com" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-            </div>
-            <div class="form-group" style="text-align: left; margin-top: 15px;">
-                <label>Mot de passe</label>
-                <input type="password" placeholder="********" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-            </div>
-            <button class="btn-confirm-order" style="margin-top: 20px;" onclick="alert('Fonctionnalité en cours de développement !')">Se connecter</button>
-            <p style="margin-top: 15px; font-size: 14px;">Pas encore de compte ? <a href="#" style="color: #ff4747;">S'inscrire</a></p>
-        </div>
-    </div>
-</div>
-
-<script>
-function openLoginModal() {
-    document.getElementById('login-modal').style.display = 'flex';
-}
-function closeLoginModal() {
-    document.getElementById('login-modal').style.display = 'none';
-}
-</script>
-
 <style>
-/* CSS POUR HEADER */
-:root { --primary-color: #ff4747; --dark-color: #222; }
-.top-bar { background: var(--dark-color); color: white; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; }
-.main-header { background: white; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-.header-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 5%; max-width: 1300px; margin: auto; gap: 20px; }
-.logo a { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--dark-color); display: block; line-height: 1; }
-.logo span { color: var(--primary-color); }
-.tagline { font-size: 11px; color: #777; margin-top: 5px; font-weight: 500; font-style: italic; }
-
-.search-box { flex: 1; position: relative; max-width: 500px; }
-.search-input-wrapper { display: flex; border: 2px solid var(--primary-color); border-radius: 25px; overflow: hidden; }
-#search-input { width: 100%; padding: 10px 20px; border: none; outline: none; }
-.search-btn { background: var(--primary-color); border: none; padding: 0 20px; color: white; cursor: pointer; }
-.search-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; z-index: 1001; }
-.header-actions { display: flex; gap: 25px; align-items: center; }
-.action-item { text-align: center; cursor: pointer; color: #444; }
-.action-item .icon { font-size: 24px; display: block; }
-.action-item .label { font-size: 12px; font-weight: 600; }
-.cart-icon-wrapper { position: relative; display: inline-block; }
-.badge { position: absolute; top: -8px; right: -12px; background: var(--primary-color); color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; border: 2px solid white; font-weight: bold; }
-.sub-nav { border-top: 1px solid #f0f0f0; background: #fff; }
-.nav-links { display: flex; justify-content: center; gap: 30px; padding: 10px; overflow-x: auto; }
-.nav-links a { text-decoration: none; color: #666; font-size: 14px; font-weight: 600; white-space: nowrap; }
-
-.modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-    justify-content: center; align-items: center; z-index: 2000;
+/* STYLE TEMU RECONSTITUÉ */
+:root {
+    --temu-red: #fb7701;
+    --temu-black: #222;
 }
 
-@media (max-width: 768px) {
-    .header-container { padding: 10px; }
-    .search-box { display: none; }
-    .hide-mobile { display: none; }
+.top-nav-temu { background: #000; color: #fff; padding: 8px 0; font-size: 12px; }
+.top-nav-temu a { color: #fff; text-decoration: none; margin-right: 20px; opacity: 0.9; }
+.temu-flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+.main-header-temu { background: #fff; padding: 10px 0; border-bottom: 1px solid #ddd; }
+.temu-header-grid { display: grid; grid-template-columns: 220px 1fr 250px; gap: 30px; align-items: center; }
+
+/* NOUVEAU STYLE LOGO */
+.main-logo-img { height: 65px; width: auto; object-fit: contain; display: block; }
+.temu-logo-link { text-decoration: none; display: inline-block; }
+
+.temu-search-box { display: flex; border: 2px solid var(--temu-black); border-radius: 25px; overflow: hidden; height: 45px; }
+#search-input { flex: 1; border: none; padding: 0 20px; outline: none; font-size: 15px; }
+.temu-search-btn { background: var(--temu-black); color: #fff; border: none; width: 60px; cursor: pointer; font-size: 18px; }
+
+.user-actions-area { display: flex; justify-content: flex-end; gap: 25px; }
+.action-btn { text-align: center; cursor: pointer; color: #333; position: relative; }
+.action-icon { font-size: 22px; display: block; }
+.action-label { font-size: 12px; font-weight: 600; display: block; margin-top: 3px; }
+
+.cart-wrapper { position: relative; display: inline-block; }
+.badge { position: absolute; top: -10px; right: -10px; background: var(--temu-red); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; border: 2px solid #fff; }
+
+.sub-nav-temu { background: #fff; border-bottom: 1px solid #eee; }
+.temu-nav-flex { display: flex; align-items: center; gap: 25px; padding: 10px 0; }
+.nav-item { text-decoration: none; color: #222; font-weight: 600; font-size: 14px; }
+.nav-item:hover, .nav-item.active { color: var(--temu-red); }
+
+.nav-dropdown-trigger { position: relative; font-weight: 600; font-size: 14px; cursor: pointer; }
+.nav-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.1); min-width: 200px; z-index: 1002; border-radius: 8px; margin-top: 10px; }
+.nav-dropdown-content a { display: block; padding: 12px 20px; text-decoration: none; color: #333; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+.nav-dropdown-trigger:hover .nav-dropdown-content { display: block; }
+
+@media (max-width: 992px) {
+    .temu-header-grid { grid-template-columns: 1fr 1fr; }
+    .search-area { display: none; }
+    .main-logo-img { height: 50px; }
 }
 </style>
