@@ -16,11 +16,11 @@
 
 <header class="main-header-temu">
   <div class="container temu-header-grid">
-    <!-- LOGO AVEC IMAGE DEVANT LE TEXTE -->
+    <!-- LOGO AVEC IMAGE DEVANT LE TEXTE (CORRIGÉ) -->
     <div class="logo-area">
       <a href="/" class="temu-logo-link">
         <div class="logo-wrapper">
-            <img src="https://i.ibb.co/vxsX67Y/boutique-piyay-logo.png" alt="Logo" class="logo-img-front">
+            <img src="https://i.ibb.co/vxsX67Y/boutique-piyay-logo.png" alt="Boutique Piyay Logo" class="logo-img-front">
             <span class="logo-text-temu">BOUTIQUE <span>PIYAY</span></span>
         </div>
       </a>
@@ -81,12 +81,12 @@
 .temu-flex-between { display: flex; justify-content: space-between; align-items: center; }
 
 .main-header-temu { background: #fff; padding: 12px 0; border-bottom: 1px solid #ddd; }
-.temu-header-grid { display: grid; grid-template-columns: 300px 1fr 250px; gap: 20px; align-items: center; }
+.temu-header-grid { display: grid; grid-template-columns: 320px 1fr 250px; gap: 20px; align-items: center; }
 
-/* STYLE LOGO AK IMAJ DEVANT */
-.logo-wrapper { display: flex; align-items: center; gap: 8px; }
-.logo-img-front { height: 42px; width: auto; object-fit: contain; }
-.logo-text-temu { font-size: 22px; font-weight: 900; color: var(--temu-black); font-family: 'Poppins', sans-serif; letter-spacing: -0.5px; }
+/* STYLE LOGO KÒRÈK */
+.logo-wrapper { display: flex; align-items: center; gap: 10px; }
+.logo-img-front { height: 45px; width: auto; object-fit: contain; }
+.logo-text-temu { font-size: 20px; font-weight: 900; color: var(--temu-black); font-family: 'Poppins', sans-serif; white-space: nowrap; }
 .logo-text-temu span { background: var(--temu-red); color: #fff; padding: 2px 8px; border-radius: 6px; margin-left: 2px; }
 .temu-logo-link { text-decoration: none; }
 
@@ -114,7 +114,6 @@
 @media (max-width: 992px) {
     .temu-header-grid { grid-template-columns: 1fr 1fr; }
     .search-area { display: none; }
-    .logo-text-temu { font-size: 18px; }
-    .logo-img-front { height: 35px; }
+    .logo-text-temu { font-size: 16px; }
 }
 </style>
