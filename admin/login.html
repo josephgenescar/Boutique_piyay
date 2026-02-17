@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Boutique Piyay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #ff4747 0%, #ff8c42 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .login-logo {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .login-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .login-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .login-body {
+      padding: 40px 30px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #ff4747;
+      box-shadow: 0 0 0 3px rgba(255, 71, 71, 0.1);
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+      background: #fee2e2;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border-left: 3px solid #dc2626;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #ff4747 0%, #ff8c42 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 71, 71, 0.3);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-btn.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .login-footer {
+      text-align: center;
+      padding: 20px 30px;
+      background: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .login-footer a {
+      color: #ff4747;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .success-message {
+      color: #16a34a;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+      background: #dcfce7;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border-left: 3px solid #16a34a;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        margin: 20px;
+      }
+
+      .login-header {
+        padding: 30px 20px;
+      }
+
+      .login-body {
+        padding: 30px 20px;
+      }
+
+      .login-footer {
+        padding: 15px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="login-logo">🔐</div>
+      <h1>Admin Login</h1>
+      <p>Boutique Piyay - Konsòl Administrasyon</p>
+    </div>
+
+    <div class="login-body">
+      <div class="success-message" id="successMessage">
+        ✓ Modpas kòrèk! Redijeksyon...
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="password">🔑 Modpas:</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Tape modpas admin..."
+            autocomplete="off"
+            required
+          />
+          <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          🔓 Ouvri Admin
+        </button>
+      </form>
+    </div>
+
+    <div class="login-footer">
+      <p>🛡️ Paj Sekire - Sèlman Loging Admin</p>
+      <p style="margin-top: 8px;">
+        <a href="/" target="_blank">← Retounen Site</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_PASSWORD = 'boutique_piyay_2026';
+    const AUTH_TOKEN_KEY = 'admin_auth_token';
+    const AUTH_TIME_KEY = 'admin_auth_time';
+    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+
+    // Check if already logged in
+    function checkExistingAuth() {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+
+      if (token && authTime) {
+        const elapsed = Date.now() - parseInt(authTime);
+        if (elapsed < SESSION_DURATION) {
+          // Valid session - redirect to admin panel
+          window.location.href = '/admin/admin.html';
+          return;
+        } else {
+          // Session expired
+          localStorage.removeItem(AUTH_TOKEN_KEY);
+          localStorage.removeItem(AUTH_TIME_KEY);
+        }
+      }
+    }
+
+    // Run on page load
+    checkExistingAuth();
+
+    // Form submission
+    const loginForm = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const password = passwordInput.value.trim();
+
+      // Clear previous messages
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+
+      // Check password
+      if (password === ADMIN_PASSWORD) {
+        // Correct password
+        successMessage.classList.add('show');
+
+        // Generate token
+        const token = 'token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
+        localStorage.setItem(AUTH_TIME_KEY, Date.now().toString());
+
+        // Redirect after showing success message
+        setTimeout(() => {
+          window.location.href = '/admin/admin.html';
+        }, 1000);
+      } else {
+        // Wrong password
+        errorMessage.textContent = '❌ Modpas pa kòrèk. Eseye ankò.';
+        errorMessage.classList.add('show');
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    });
+
+    // Optional: Show password toggle button
+    const passwordField = document.getElementById('password');
+    const showPasswordToggle = document.createElement('button');
+    showPasswordToggle.type = 'button';
+    showPasswordToggle.textContent = '👁️';
+    showPasswordToggle.style.cssText = `
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      font-size: 18px;
+    `;
+
+    // Focus on password field on load
+    passwordField.focus();
+  </script>
+</body>
+</html>

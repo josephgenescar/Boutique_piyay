@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Compte - Boutique Piyay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .nav-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .nav-bar a,
+    .nav-bar button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .nav-bar a:hover,
+    .nav-bar button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #111827;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e8e8e8;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .order-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .order-header {
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .order-details {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #667eea;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .message.success {
+      display: block;
+      background: #dcfce7;
+      border: 2px solid #16a34a;
+      color: #166534;
+    }
+
+    .message.error {
+      display: block;
+      background: #fee2e2;
+      border: 2px solid #dc2626;
+      color: #991b1b;
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 20px; }
+      header h1 { font-size: 24px; }
+      .section { padding: 20px; }
+      .form-row { grid-template-columns: 1fr; }
+      .button-group { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>👤 Mon Compte</h1>
+      <p>Jere pwofil, kòmannd, ak preferans ou</p>
+      
+      <div class="nav-bar">
+        <a href="/">← Retounen Boutik</a>
+        <a href="/admin/account.html">👤 Mon Kompt</a>
+        <a href="/shop.html">🛒 Boutik</a>
+      </div>
+    </header>
+
+    <div id="messageBox" class="message"></div>
+
+    <!-- PROFILE SECTION -->
+    <div class="section">
+      <h2 class="section-title">📋 Pwofil Mwen</h2>
+      
+      <form id="profileForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Pé Non:</label>
+            <input type="text" id="firstName" placeholder="Tape pé non...">
+          </div>
+          <div class="form-group">
+            <label for="lastName">Dènyè Non:</label>
+            <input type="text" id="lastName" placeholder="Tape dènyè non...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">📧 Email:</label>
+            <input type="email" id="email" placeholder="votre@email.com">
+          </div>
+          <div class="form-group">
+            <label for="phone">📱 Telefòn:</label>
+            <input type="tel" id="phone" placeholder="+509 XXXX-XXXX">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">📍 Adres:</label>
+          <input type="text" id="address" placeholder="Adres ou...">
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary">💾 Sove Pwofil</button>
+          <button type="button" class="btn btn-secondary" onclick="resetProfile()">↺ Deche</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ORDERS SECTION -->
+    <div class="section">
+      <h2 class="section-title">📦 Kòmannd Mwen</h2>
+      
+      <div id="ordersList">
+        <div class="empty-state">
+          <div class="empty-state-icon">📦</div>
+          <p>Okenn kòmannd ankor.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREFERENCES SECTION -->
+    <div class="section">
+      <h2 class="section-title">⚙️ Preferans</h2>
+      
+      <div class="form-group">
+        <label>Notifikasyon Email:</label>
+        <div class="toggle-switch">
+          <label class="switch">
+            <input type="checkbox" id="emailNotif" checked>
+            <span class="slider"></span>
+          </label>
+          <span id="emailNotifLabel">Pèmi</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Notifikasyon WhatsApp:</label>
+        <div class="toggle-switch">
+          <label class="switch">
+            <input type="checkbox" id="whatsappNotif" checked>
+            <span class="slider"></span>
+          </label>
+          <span id="whatsappNotifLabel">Pèmi</span>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-primary" onclick="savePreferences()">💾 Sove Preferans</button>
+      </div>
+    </div>
+
+    <!-- SECURITY SECTION -->
+    <div class="section">
+      <h2 class="section-title">🔒 Segirité</h2>
+      
+      <div class="form-group">
+        <label for="newPassword">Modpas Nouvo:</label>
+        <input type="password" id="newPassword" placeholder="Tape modpas nouvo...">
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Konfime Modpas:</label>
+        <input type="password" id="confirmPassword" placeholder="Konfime modpas...">
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-primary" onclick="changePassword()">🔐 Chanje Modpas</button>
+      </div>
+
+      <hr style="margin: 30px 0; border: 1px solid #e0e0e0;">
+
+      <div class="form-group">
+        <label>Efase Kont:</label>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+          ⚠️ Aksyon sa a pa reversib. Tout done ou yo ap dlete definitif.
+        </p>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-danger" onclick="deleteAccount()">🗑️ Efase Kont Mwen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PROFILE_KEY = 'bp_customer_profile';
+    const ORDERS_KEY = 'bp_customer_orders';
+    const PREFERENCES_KEY = 'bp_customer_preferences';
+
+    // Load profile on page load
+    function loadProfile() {
+      const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+      document.getElementById('firstName').value = profile.firstName || '';
+      document.getElementById('lastName').value = profile.lastName || '';
+      document.getElementById('email').value = profile.email || '';
+      document.getElementById('phone').value = profile.phone || '';
+      document.getElementById('address').value = profile.address || '';
+    }
+
+    // Save profile
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const profile = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value
+      };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      showMessage('✓ Pwofil save avèk sikse!', 'success');
+    });
+
+    // Reset profile
+    function resetProfile() {
+      loadProfile();
+      showMessage('Pwofil reset.', 'success');
+    }
+
+    // Load orders
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+      const list = document.getElementById('ordersList');
+
+      if (orders.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <p>Okenn kòmannd ankor.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = orders.map((order, i) => `
+        <div class="order-item">
+          <div class="order-header">#Kòmannd ${order.id || i + 1}</div>
+          <div class="order-details">
+            Date: ${new Date(order.date).toLocaleDateString('fr-HT')}<br>
+            Montant: $${order.total || 0}<br>
+            Estati: ${order.status || 'Pedant'}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Save preferences
+    function savePreferences() {
+      const preferences = {
+        emailNotif: document.getElementById('emailNotif').checked,
+        whatsappNotif: document.getElementById('whatsappNotif').checked
+      };
+      localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
+      showMessage('✓ Preferans save!', 'success');
+    }
+
+    // Load preferences
+    function loadPreferences() {
+      const prefs = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}');
+      document.getElementById('emailNotif').checked = prefs.emailNotif !== false;
+      document.getElementById('whatsappNotif').checked = prefs.whatsappNotif !== false;
+      updatePreferenceLabels();
+    }
+
+    // Update preference labels
+    function updatePreferenceLabels() {
+      document.getElementById('emailNotifLabel').textContent = 
+        document.getElementById('emailNotif').checked ? 'Pèmi' : 'Izole';
+      document.getElementById('whatsappNotifLabel').textContent = 
+        document.getElementById('whatsappNotif').checked ? 'Pèmi' : 'Izole';
+    }
+
+    document.getElementById('emailNotif').addEventListener('change', updatePreferenceLabels);
+    document.getElementById('whatsappNotif').addEventListener('change', updatePreferenceLabels);
+
+    // Change password
+    function changePassword() {
+      const pwd = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (!pwd || !confirm) {
+        showMessage('Tape modpas yo!', 'error');
+        return;
+      }
+
+      if (pwd !== confirm) {
+        showMessage('Modpas yo pa konformi!', 'error');
+        return;
+      }
+
+      localStorage.setItem('bp_customer_password', pwd);
+      showMessage('✓ Modpas chanje!', 'success');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    }
+
+    // Delete account
+    function deleteAccount() {
+      if (!confirm('Èske ou sigè? Aksyon sa a pa reversib!')) return;
+      if (!confirm('Repete konfimasyon pou efase kont?')) return;
+
+      localStorage.removeItem(PROFILE_KEY);
+      localStorage.removeItem(ORDERS_KEY);
+      localStorage.removeItem(PREFERENCES_KEY);
+      localStorage.removeItem('bp_customer_password');
+
+      showMessage('Kont efase. Redijeksyon...', 'success');
+      setTimeout(() => window.location.href = '/', 1500);
+    }
+
+    // Show message
+    function showMessage(text, type) {
+      const box = document.getElementById('messageBox');
+      box.textContent = text;
+      box.className = 'message ' + type;
+      setTimeout(() => box.className = 'message', 4000);
+    }
+
+    // Initialize
+    loadProfile();
+    loadOrders();
+    loadPreferences();
+  </script>
+</body>
+</html>

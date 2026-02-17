@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Redirecting...</title>
+</head>
+<body>
+  <script>
+    // Authentication check
+    const AUTH_TOKEN_KEY = 'admin_auth_token';
+    const AUTH_TIME_KEY = 'admin_auth_time';
+    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+
+    function checkAuthentication() {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+
+      if (!token || !authTime) {
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      const elapsed = Date.now() - parseInt(authTime);
+      if (elapsed > SESSION_DURATION) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TIME_KEY);
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      return true;
+    }
+
+    // Check auth and redirect
+    if (checkAuthentication()) {
+      window.location.href = '/admin/admin.html';
+    }
+  </script>
+</body>
+</html>
