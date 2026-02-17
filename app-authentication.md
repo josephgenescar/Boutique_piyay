@@ -1,7 +1,7 @@
 ---
 layout: page
 title: App Authentication Overview
-permalink: https://boutique-piyay.netlify.app/app-authentication/ 
+permalink: /app-authentication/
 ---
 
 <div style="font-family: sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: auto; padding: 20px;">
