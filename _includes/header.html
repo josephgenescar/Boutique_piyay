@@ -1,115 +1,57 @@
-<!-- 1. TOP BAR (SIMPLE & DIRECTE) -->
-<div class="top-nav-temu">
-    <div class="container temu-flex-center">
-        <div class="top-nav-message">
-            <span>🚚 Livraison rapide : Saint-Domingue ➔ Haïti ! 🇭🇹</span>
-        </div>
-    </div>
-</div>
-
-<header class="main-header-temu">
-  <div class="container temu-header-grid">
-    <!-- LOGO AVEC IMAGE LOCALE -->
-    <div class="logo-area">
-      <a href="/" class="temu-logo-link">
-        <div class="logo-wrapper">
-            <img src="/assets/images/logo.png" alt="Boutique Piyay Logo" class="logo-img-front">
-            <span class="logo-text-temu">BOUTIQUE <span>PIYAY</span></span>
-        </div>
+<header class="site-header">
+  <div class="wrapper">
+    <div class="header-content">
+      <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
+        {% if site.data.settings.logo %}
+          <img src="{{ site.data.settings.logo | relative_url }}" alt="{{ site.data.settings.site_name }}" style="height: 40px;">
+        {% else %}
+          {{ site.data.settings.site_name }}
+        {% endif %}
       </a>
-    </div>
 
-    <!-- SEARCH BAR -->
-    <div class="search-area">
-      <div class="temu-search-box">
-        <input type="text" id="search-input" placeholder="vêtements, chaussures, électronique..." onkeyup="liveSearch()">
-        <button class="temu-search-btn" onclick="liveSearch()">🔍</button>
-      </div>
-      <div id="search-results" class="search-dropdown"></div>
-    </div>
+      <nav class="site-nav">
+        <div class="trigger">
+          <a class="page-link" href="{{ "/shop" | relative_url }}">Boutik</a>
+          <a class="page-link" href="{{ "/about" | relative_url }}">À Propos</a>
 
-    <!-- USER ACTIONS -->
-    <div class="user-actions-area">
-      <div class="action-btn" onclick="openLoginModal()">
-        <span class="action-icon">👤</span>
-        <span class="action-label">Mon compte</span>
-      </div>
-      <div class="action-btn cart-trigger" onclick="openOrderModal()">
-        <div class="cart-wrapper">
-          <span class="action-icon">🛒</span>
-          <span id="cart-badge" class="badge">0</span>
+          <!-- Cart Icon -->
+          <a href="{{ "/cart" | relative_url }}" class="cart-icon">
+            🛒 <span class="cart-count" id="cartCount">0</span>
+          </a>
         </div>
-        <span class="action-label">Panier</span>
-      </div>
+      </nav>
     </div>
   </div>
-
-  <!-- SUB-NAV -->
-  <nav class="sub-nav-temu">
-    <div class="container temu-nav-flex">
-      <a href="/" class="nav-item active">Tout</a>
-      <a href="#" class="nav-item">🔥 Meilleures ventes</a>
-      <a href="#" class="nav-item">⭐ Notés 5 étoiles</a>
-      <a href="#" class="nav-item">Nouveautés</a>
-      <div class="nav-dropdown-trigger">
-        Catégories ▾
-        <div class="nav-dropdown-content">
-            {% for category in site.categories %}
-                <a href="{{ category.url }}">{{ category.title }}</a>
-            {% endfor %}
-        </div>
-      </div>
-    </div>
-  </nav>
 </header>
 
 <style>
-:root {
-    --temu-red: #fb7701;
-    --temu-black: #000;
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
 }
 
-/* TOP BAR CLEAN */
-.top-nav-temu { background: #000; color: #fff; padding: 10px 0; font-size: 13px; font-weight: 600; }
-.temu-flex-center { display: flex; justify-content: center; align-items: center; }
-.top-nav-message span { letter-spacing: 0.5px; }
+.cart-icon {
+  position: relative;
+  margin-left: 20px;
+  font-size: 20px;
+  text-decoration: none;
+}
 
-.main-header-temu { background: #fff; padding: 12px 0; border-bottom: 1px solid #ddd; }
-.temu-header-grid { display: grid; grid-template-columns: 320px 1fr 250px; gap: 20px; align-items: center; }
-
-/* STYLE LOGO */
-.logo-wrapper { display: flex; align-items: center; gap: 10px; }
-.logo-img-front { height: 45px; width: auto; object-fit: contain; }
-.logo-text-temu { font-size: 20px; font-weight: 900; color: var(--temu-black); font-family: 'Poppins', sans-serif; white-space: nowrap; }
-.logo-text-temu span { background: var(--temu-red); color: #fff; padding: 2px 8px; border-radius: 6px; margin-left: 2px; }
-.temu-logo-link { text-decoration: none; }
-
-/* SEARCH BAR */
-.temu-search-box { display: flex; border: 2px solid var(--temu-black); border-radius: 25px; overflow: hidden; height: 45px; }
-#search-input { flex: 1; border: none; padding: 0 20px; outline: none; font-size: 15px; }
-.temu-search-btn { background: var(--temu-black); color: #fff; border: none; width: 60px; cursor: pointer; font-size: 18px; }
-
-/* ACTIONS */
-.user-actions-area { display: flex; justify-content: flex-end; gap: 25px; }
-.action-btn { text-align: center; cursor: pointer; color: #333; position: relative; }
-.action-icon { font-size: 22px; display: block; }
-.action-label { font-size: 12px; font-weight: 600; display: block; margin-top: 3px; }
-
-.badge { position: absolute; top: -10px; right: -10px; background: var(--temu-red); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; border: 2px solid #fff; }
-
-.sub-nav-temu { background: #fff; border-bottom: 1px solid #eee; }
-.temu-nav-flex { display: flex; align-items: center; gap: 25px; padding: 10px 0; }
-.nav-item { text-decoration: none; color: #222; font-weight: 600; font-size: 14px; }
-.nav-item:hover, .nav-item.active { color: var(--temu-red); }
-
-.nav-dropdown-trigger { position: relative; font-weight: 600; font-size: 14px; cursor: pointer; }
-.nav-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.1); min-width: 200px; z-index: 1002; border-radius: 8px; margin-top: 10px; }
-.nav-dropdown-content a { display: block; padding: 12px 20px; text-decoration: none; color: #333; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
-.nav-dropdown-trigger:hover .nav-dropdown-content { display: block; }
-
-@media (max-width: 992px) {
-    .temu-header-grid { grid-template-columns: 1fr 1fr; }
-    .search-area { display: none; }
-    .logo-text-temu { font-size: 16px; }
+.cart-count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
 }
 </style>

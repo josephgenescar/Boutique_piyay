@@ -1,53 +1,44 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="{{ site.lang | default: "fr-FR" }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  {% if page.description %}
-    <meta name="description" content="{{ page.description }}">
-  {% else %}
-    <meta name="description" content="Boutique Piyay - Qualité Premium au Meilleur Prix. Livraison rapide de Saint-Domingue vers Haïti.">
-  {% endif %}
+    {% seo %}
 
-  <title>{{ page.title }} | Boutique Piyay</title>
-  <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/custom.css" | relative_url }}">
 
-  <!-- ==========================================
-       OPEN GRAPH (Aperçu WhatsApp/Facebook)
-  =========================================== -->
-  <meta property="og:site_name" content="Boutique Piyay" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://boutique-piyay.netlify.app{{ page.url }}" />
+    {% feed_meta %}
 
-  <!-- Titre dynamique -->
-  <meta property="og:title" content="{% if page.title %}{{ page.title }} | Boutique Piyay{% else %}Boutique Piyay - Meilleur prix{% endif %}" />
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  </head>
+  <body>
+    {% include header.html %}
 
-  <!-- Description dynamique -->
-  <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}Qualité Premium • Meilleur Prix • Livraison Rapide de Saint-Domingue vers Haïti.{% endif %}" />
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        {{ content }}
+      </div>
+    </main>
 
-  <!-- Image dynamique (Si le produit a une image, on l'affiche, sinon on met une image par défaut) -->
-  <meta property="og:image" content="{% if page.image %}https://boutique-piyay.netlify.app{{ page.image }}{% else %}https://boutique-piyay.netlify.app/assets/images/preview.jpg{% endif %}" />
+    {% include footer.html %}
 
-  <!-- Optimisation WhatsApp -->
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image">
+    <!-- Cart System -->
+    <script src="{{ "/assets/js/cart.js" | relative_url }}"></script>
 
-</head>
-<body>
-
-  {% include header.html %}
-  
-  <main>
-    {{ content }}
-  </main>
-  
-  {% include footer.html %}
-  
-  <!-- Global Components -->
-  {% include order-modal.html %}
-
-  <script src="/main.js"></script>
-</body>
+    <!-- Netlify Identity Logic -->
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
+  </body>
 </html>
