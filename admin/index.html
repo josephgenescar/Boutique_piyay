@@ -1,37 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <title>Boutique Piyay - Admin Dashboard</title>
-    <!-- Netlify Identity Widget -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  </head>
-  <body>
-    <!-- 1. Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Admin - Boutique Piyay</title>
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
 
-    <!-- 2. ImageKit Library -->
-    <script src="https://unpkg.com/netlify-cms-media-library-imagekit@^1.0.0/dist/netlify-cms-media-library-imagekit.js"></script>
+  <!-- Netlify CMS -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <script>
-      // 3. Enregistrement ImageKit
-      if (typeof CMS !== 'undefined' && window.NetlifyCMSMediaLibraryImagekit) {
-        CMS.registerMediaLibrary(window.NetlifyCMSMediaLibraryImagekit);
+  <style>
+    /* Custom Admin Styling */
+    :root {
+      --primary-color: #4facfe;
+      --accent-color: #00f2fe;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      color: white;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .loading-text {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .loading-subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-top: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Custom CMS Overrides */
+    [data-slate-editor] {
+      min-height: 300px !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-logo">🛍️</div>
+    <div class="loading-text">Boutique Piyay Admin</div>
+    <div class="loading-subtitle">Chargement du panneau d'administration...</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Netlify CMS -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+
+  <script>
+    // Hide loading screen when CMS is ready
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('loadingScreen').classList.add('hidden');
+      }, 1000);
+    });
+
+    // Netlify Identity Widget
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+
+    // Custom CMS Configuration
+    CMS.registerPreviewStyle('/assets/css/main.css');
+
+    // Custom Preview Templates
+    CMS.registerPreviewTemplate("products", ({ entry, widgetFor }) => {
+      const data = entry.getIn(['data']).toJS();
+      return `
+        <div style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: sans-serif;">
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+            <img src="${data.featured_image}" style="width: 100%; height: 300px; object-fit: cover;" />
+            <div style="padding: 20px;">
+              <h1 style="margin: 0 0 10px 0; font-size: 24px;">${data.title}</h1>
+              <p style="color: #6b7280; margin: 0 0 15px 0;">${data.excerpt}</p>
+              <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 28px; font-weight: bold; color: #4facfe;">${data.price} HTG</span>
+                ${data.original_price ? `<span style="text-decoration: line-through; color: #9ca3af;">${data.original_price} HTG</span>` : ''}
+                ${data.discount_percent ? `<span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">-${data.discount_percent}%</span>` : ''}
+              </div>
+              <div style="margin-bottom: 15px;">
+                <span style="background: #e5e7eb; padding: 4px 12px; border-radius: 20px; font-size: 14px;">${data.category}</span>
+                ${data.in_stock ? '<span style="color: #10b981; margin-left: 10px;">✓ En stock</span>' : '<span style="color: #ef4444; margin-left: 10px;">✗ Rupture de stock</span>'}
+              </div>
+              <div style="border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                ${widgetFor('description')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    // Helper functions for admin
+    window.AdminHelpers = {
+      generateSKU: function() {
+        return 'BP-' + Date.now().toString(36).toUpperCase();
+      },
+
+      calculateDiscount: function(original, sale) {
+        return Math.round(((original - sale) / original) * 100);
       }
-    </script>
-
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
-    </script>
-  </body>
+    };
+  </script>
+</body>
 </html>

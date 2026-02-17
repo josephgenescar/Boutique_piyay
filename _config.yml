@@ -22,10 +22,12 @@ plugins:
 collections:
   products:
     output: true
-    permalink: /pwodwi/:path/
+    permalink: /pwodwi/:slug/
   categories:
     output: true
-    permalink: /kategori/:path/
+    permalink: /kategori/:slug/
+  orders:
+    output: false
 
 # Defaults pou koleksyon yo
 defaults:
@@ -34,6 +36,12 @@ defaults:
       type: "products"
     values:
       layout: "product"
+      published: true
+  - scope:
+      path: ""
+      type: "categories"
+    values:
+      layout: "category"
 
 # Ekskli fichye sa yo
 exclude:
@@ -42,6 +50,7 @@ exclude:
   - node_modules/
   - vendor/
   - .netlify/
+  - admin/config.yml
 
 # Konfigirasyon Netlify CMS
 netlify_cms:
