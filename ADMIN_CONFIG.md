@@ -2,7 +2,7 @@
 
 ## 📋 Aksès Admin (Admin Access)
 
-Tout paj admin yo proteje pa **password authentication**. Se SELMAN ou (the owner) ki gen drwa aksè.
+De (2) paj admin yo proteje pa **password authentication** (Dashboard + Products). CMS Netlify a pa proteje. Se SELMAN ou (the owner) ki gen drwa aksè.
 
 ---
 
@@ -50,24 +50,25 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 
 ## 📧 Paj Admin
 
-### Dashboard Admin (`/admin/dashboard.html`)
+### Dashboard Admin (`/admin/dashboard.html`) 🔐 PROTEJE
 - Wè estatistik total pwodwi
 - Gade kryaj Rekòmande
 - Aksè rapid nan tout tool yo
-- **Rekit:** Login
+- **Rekit:** Login avèk modpas
 
-### Gestion Produits (`/admin/products.html`)
+### Gestion Produits (`/admin/products.html`) 🔐 PROTEJE
 - ➕ **Ajoute pwodwi** (Fil form)
 - 📦 **Lis pwodwi** (Sèch, efase)
 - 🔍 **Filtre Real-time search**
-- **Rekit:** Login
+- **Rekit:** Login avèk modpas
 
-### CMS Netlify (`/admin/index.html`)
+### CMS Netlify (`/admin/index.html`) 🔓 LIBRE
 - Traditional CMS pou kòn, ofè, etc.
 - Synkronizasyon otomatik
-- **Rekit:** Login
+- **Rekit:** Sèvi Netlify Identity
+- **Di Atansyon:** Ou ka aksè direktman san modpas boutik
 
-### Kategori Pages (`/kategori.html`)
+### Kategori Pages (`/kategori.html`) 🔓 LIBRE
 - Wè pwodwi aksè kategori
 - Filtre pa pri, rekòmande, estòk
 - Aksè ouvè (pa bezwen login)
@@ -76,7 +77,12 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 
 ## 🔒 Sigrite (Security)
 
-✅ **Pwodèj Proteksyon:**
+✅ **Pwodèj Proteksyon (2 Paj):**
+- ✅ Dashboard (`/admin/dashboard.html`) - Modpas oblije
+- ✅ Products (`/admin/products.html`) - Modpas oblije
+- ✅ CMS Netlify (`/admin/index.html`) - Sèvi Netlify Identity (pa modpas boutik)
+
+**Mekanik Proteksyon:**
 - Modpas check dèk login  
 - Session token valid 8 èzè
 - localStorage persistence
@@ -118,7 +124,18 @@ Sistèm yo sèvi avèk **localStorage** pou rejis:
 
 ---
 
-## 🛠️ Fiyabilite (Troubleshooting)
+## � Paj Proteje - Resume
+
+| Paj | Modpas | Status |
+|-----|--------|--------|
+| Dashboard | ✅ Rekit | 🔐 Pwoteje |
+| Products | ✅ Rekit | 🔐 Pwoteje |
+| CMS Netlify | ❌ Pa | 🔓 Libre |
+| Kategori | ❌ Pa | 🔓 Libre (Kliyan) |
+
+---
+
+## �🛠️ Fiyabilite (Troubleshooting)
 
 ### Pwoblem: "Modpas yo pa kòrèk"
 **Solisyon:**
@@ -150,4 +167,4 @@ Sistèm yo sèvi avèk **localStorage** pou rejis:
 ---
 
 **Last Updated:** Fevriye 17, 2026
-**Version:** Admin v1.1 (Secured)
+**Version:** Admin v1.2 (2-Page Protected + CMS Free)
