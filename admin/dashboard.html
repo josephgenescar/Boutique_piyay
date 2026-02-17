@@ -3,39 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Redirecting...</title>
+  <title>Dashboard Admin — Boutique Piyay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/assets/css/glassmorphism.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background: #f0f2f5; font-family: 'Inter', sans-serif; }
+    .dashboard-container { padding: 40px; max-width: 1200px; margin: auto; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .stat-card { padding: 30px; text-align: center; }
+    .stat-value { font-size: 32px; font-weight: 800; color: #ff4747; margin: 10px 0; }
+    .stat-label { color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .chart-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+  </style>
 </head>
 <body>
-  <script>
-    // Authentication check
-    const AUTH_TOKEN_KEY = 'admin_auth_token';
-    const AUTH_TIME_KEY = 'admin_auth_time';
-    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+  <div class="dashboard-container">
+    <h1 style="margin-bottom: 30px; font-weight: 800;">📊 Admin Analytics</h1>
 
-    function checkAuthentication() {
-      const token = localStorage.getItem(AUTH_TOKEN_KEY);
-      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+    <div class="stats-grid">
+      <div class="glass-panel stat-card">
+        <div class="stat-label">Revenu Total</div>
+        <div class="stat-value" id="stat-revenue">0 HTG</div>
+      </div>
+      <div class="glass-panel stat-card">
+        <div class="stat-label">Kòmand Total</div>
+        <div class="stat-value" id="stat-orders">0</div>
+      </div>
+      <div class="glass-panel stat-card">
+        <div class="stat-label">Pwodwi Actif</div>
+        <div class="stat-value" id="stat-products">0</div>
+      </div>
+    </div>
 
-      if (!token || !authTime) {
-        window.location.href = '/admin/login.html';
-        return false;
-      }
+    <div class="chart-container">
+      <h3 style="margin-bottom: 20px;">📈 Ventes (7 derniers jours)</h3>
+      <canvas id="salesChart"></canvas>
+    </div>
+  </div>
 
-      const elapsed = Date.now() - parseInt(authTime);
-      if (elapsed > SESSION_DURATION) {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-        localStorage.removeItem(AUTH_TIME_KEY);
-        window.location.href = '/admin/login.html';
-        return false;
-      }
-
-      return true;
-    }
-
-    // Check auth and redirect
-    if (checkAuthentication()) {
-      window.location.href = '/admin/admin.html';
-    }
-  </script>
+  <script src="/assets/js/dashboard-stats.js"></script>
 </body>
 </html>

@@ -1,0 +1,66 @@
+/*
+ * BOUTIQUE PIYAY — GLASSMORPHISM SYSTEM
+ */
+
+:root {
+  --glass-white: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(16px);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --gradient-fire: linear-gradient(135deg, #ff4747, #ff8c42, #ffd000);
+}
+
+/* Header Sticky with Blur */
+.main-header-temu {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* Glass Cards */
+.product-card, .flash-card {
+  background: var(--glass-white);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.product-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 15px 45px rgba(255, 71, 71, 0.15);
+}
+
+/* Modal and Overlays */
+.modal-content {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+}
+
+/* Custom Utilities */
+.glass-panel {
+  background: var(--glass-white);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}

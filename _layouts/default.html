@@ -1,107 +1,47 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} | Boutique Piyay</title>
-  <meta name="description" content="{{ page.description | default: site.description }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <!-- Fèy style egzistan an an premye -->
-  <link rel="stylesheet" href="/css/style.css">
-  <!-- Fèy amelyorasyon nou an apre (pa ekrase anyen) -->
-  <link rel="stylesheet" href="/assets/css/ameliore.css">
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-</head>
-<body>
+<html lang="{{ site.lang | default: "fr-FR" }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  {% include header.html %}
+    {% seo %}
 
-  <main>{{ content }}</main>
+    <!-- ORDRE DES STYLES IMPORTANT -->
+    <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/custom.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/glassmorphism.css" | relative_url }}">
 
-  {% include footer.html %}
+    {% feed_meta %}
 
-  <!-- ===== MODAL COMMANDE ===== -->
-  <div id="order-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; z-index:9999; justify-content:center; align-items:center;">
-    <div class="modal-content" style="background:white; width:95%; max-width:460px; border-radius:20px; overflow:hidden; max-height:90vh; overflow-y:auto;">
-      <div style="background:linear-gradient(135deg,#ff4747,#ff8c42); padding:20px 25px; display:flex; justify-content:space-between; align-items:center;">
-        <h2 style="margin:0; color:white; font-size:18px; font-family:Poppins,sans-serif;">📋 Confirmer votre commande</h2>
-        <button onclick="closeOrderModal()" style="background:none; border:none; color:white; font-size:26px; cursor:pointer; line-height:1;">✕</button>
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  </head>
+  <body>
+    {% include header.html %}
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        {{ content }}
       </div>
-      <div style="padding:25px;">
-        <div id="order-summary" style="background:#fff5f5; border:1px solid #fecaca; border-radius:10px; padding:15px; margin-bottom:20px; font-size:14px; line-height:1.8;"></div>
-        <form onsubmit="submitOrder(event)">
-          <div class="form-group" style="margin-bottom:15px;">
-            <label style="display:block; font-weight:600; margin-bottom:6px; font-size:14px; color:#333;">👤 Nom complet</label>
-            <input id="customer-name" type="text" required placeholder="Ex: Jean Baptiste"
-              style="width:100%; padding:12px 15px; border:2px solid #eee; border-radius:10px; font-size:14px; font-family:Inter,sans-serif; box-sizing:border-box; transition:.3s; outline:none;"
-              onfocus="this.style.borderColor='#ff4747'" onblur="this.style.borderColor='#eee'">
-          </div>
-          <div class="form-group" style="margin-bottom:15px;">
-            <label style="display:block; font-weight:600; margin-bottom:6px; font-size:14px; color:#333;">📱 Numéro de téléphone</label>
-            <input id="customer-phone" type="tel" required placeholder="Ex: 509-4886-8964"
-              style="width:100%; padding:12px 15px; border:2px solid #eee; border-radius:10px; font-size:14px; font-family:Inter,sans-serif; box-sizing:border-box; transition:.3s; outline:none;"
-              onfocus="this.style.borderColor='#ff4747'" onblur="this.style.borderColor='#eee'">
-          </div>
-          <div class="form-group" style="margin-bottom:15px;">
-            <label style="display:block; font-weight:600; margin-bottom:6px; font-size:14px; color:#333;">💳 Mode de paiement</label>
-            <select id="payment-method" required onchange="showPaymentInfo(this.value)"
-              style="width:100%; padding:12px 15px; border:2px solid #eee; border-radius:10px; font-size:14px; font-family:Inter,sans-serif; box-sizing:border-box; outline:none; cursor:pointer;">
-              <option value="">-- Choisir une option --</option>
-              <option value="moncash">💸 Moncash — 4886-8964</option>
-              <option value="natcash">💳 Natcash — 4068-3108</option>
-              <option value="cash">💵 Espèces à la Livraison</option>
-            </select>
-          </div>
-          <div id="payment-info-box" style="display:none; background:#fff3cd; border-left:4px solid #ff8c42; padding:12px 15px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#856404;"></div>
-          <button type="submit" class="btn-confirm-order" style="width:100%; padding:14px; font-size:15px; border-radius:10px; font-family:Poppins,sans-serif; cursor:pointer; border:none;">
-            ✅ Confirmer la commande
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
+    </main>
 
-  <!-- ===== PANIER LATERAL ===== -->
-  <div id="cart-modal" style="display:none; position:fixed; inset:0; z-index:8888;">
-    <div onclick="closeCart()" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px);"></div>
-    <div style="position:absolute; right:0; top:0; bottom:0; width:380px; max-width:100vw; background:white; display:flex; flex-direction:column; box-shadow:-5px 0 30px rgba(0,0,0,.15); animation:slideRight .3s ease;">
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 22px; border-bottom:2px solid #f3f4f6;">
-        <h3 style="margin:0; font-size:20px; font-family:Poppins,sans-serif;">🛒 Mon Panier</h3>
-        <button onclick="closeCart()" style="background:none; border:none; font-size:26px; cursor:pointer; color:#9ca3af; line-height:1;">✕</button>
-      </div>
-      <div id="cart-items" style="flex:1; overflow-y:auto; padding:15px;"></div>
-      <div id="cart-footer" style="display:none; padding:20px 22px; border-top:2px solid #f3f4f6; background:#fafafa;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-          <span style="font-size:16px; font-weight:600;">Total:</span>
-          <strong id="cart-total" style="color:#ff4747; font-size:24px; font-family:Poppins,sans-serif;">0 HTG</strong>
-        </div>
-        <button onclick="passerCommande()" style="width:100%; padding:15px; background:linear-gradient(135deg,#ff4747,#ff8c42); color:white; border:none; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; font-family:Poppins,sans-serif; transition:.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-          Commander ✅
-        </button>
-      </div>
-    </div>
-  </div>
+    {% include footer.html %}
 
-  <!-- ===== TOAST NOTIFIKASYON ===== -->
-  <div id="toast" style="display:none; position:fixed; bottom:25px; right:25px; background:#222; color:white; padding:14px 22px; border-radius:10px; font-size:14px; font-weight:500; z-index:99999; font-family:Inter,sans-serif; max-width:300px; box-shadow:0 10px 25px rgba(0,0,0,.2);"></div>
+    <!-- Scripts -->
+    <script src="{{ "/assets/js/cart.js" | relative_url }}"></script>
+    <script src="{{ "/assets/js/animations.js" | relative_url }}"></script>
 
-  <style>
-    @keyframes slideRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
-    @keyframes toastIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-  </style>
-
-  <script src="/assets/js/cart.js"></script>
-
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
-        }
-      });
-    }
-  </script>
-
-</body>
+    <!-- Netlify Identity Logic -->
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
+  </body>
 </html>
