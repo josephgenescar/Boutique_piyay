@@ -1,0 +1,8 @@
+# Netlify Redirects for Boutique Piyay
+
+# Admin CMS redirect
+/admin/*                    /admin/index.html   200
+/api/v1/*                   /.netlify/functions/:splat   200
+
+# Catch-all for SPA routing
+/*                          /404.html           404

@@ -11,9 +11,14 @@
   to = "/admin/index.html"
   status = 200
 
+# ✅ API REDIRECT POU GIT GATEWAY
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
 # ❌ 404 TOUJOURS AN DERNIER
 [[redirects]]
   from = "/*"
   to = "/404.html"
   status = 404
-
