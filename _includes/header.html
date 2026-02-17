@@ -1,6 +1,182 @@
-<header>
-  <nav>
-    <a href="/">Accueil</a> |
-    <a href="#products">Produits</a>
-</nav>
+<style>
+/* ===== HEADER — konpatib ak style.css rouge egzistan ===== */
+.main-header { background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.08); position:sticky; top:0; z-index:1000; }
+
+.top-bar { background:#222; color:#fff; padding:9px 0; font-size:13px; font-weight:600; letter-spacing:.5px; }
+.top-bar .container { display:flex; justify-content:space-between; align-items:center; }
+.top-bar a { color:#ccc; text-decoration:none; transition:.3s; font-weight:400; }
+.top-bar a:hover { color:#ff4747; }
+.top-bar-links { display:flex; gap:20px; }
+
+.header-main { padding:12px 0; }
+.header-main .container { display:flex; align-items:center; gap:16px; }
+
+/* Logo */
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
+.logo img { height:44px; width:auto; }
+.logo span { font-size:20px; font-weight:800; font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#ff4747,#ff8c42);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
+
+/* Barre Rechèch */
+.search-wrap { flex:1; max-width:520px; position:relative; }
+.search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; transition:.3s; }
+.search-form:focus-within { border-color:#ff4747; box-shadow:0 0 0 3px rgba(255,71,71,.12); }
+.search-form input { flex:1; padding:10px 18px; border:none; outline:none; font-size:14px; font-family:'Inter',sans-serif; }
+.search-form button { padding:10px 22px; background:var(--primary,#ff4747); border:none; color:white; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; transition:.3s; }
+.search-form button:hover { background:#e03636; }
+
+/* Résultats */
+#search-drop { position:absolute; top:calc(100% + 6px); left:0; right:0; background:white; border:1px solid #eee; border-radius:var(--radius-md,12px); box-shadow:0 10px 30px rgba(0,0,0,.12); z-index:200; max-height:380px; overflow-y:auto; }
+.s-item { display:flex; align-items:center; gap:12px; padding:12px 15px; border-bottom:1px solid #f9f9f9; text-decoration:none; color:inherit; transition:.2s; }
+.s-item:hover { background:#fff5f5; }
+.s-item:last-child { border:none; }
+.s-item img { width:48px; height:48px; object-fit:cover; border-radius:8px; background:#f3f4f6; flex-shrink:0; }
+.s-item-info strong { display:block; font-size:14px; }
+.s-item-info span { color:#ff4747; font-weight:700; font-size:13px; }
+
+/* Actions */
+.header-actions { display:flex; align-items:center; gap:14px; flex-shrink:0; }
+.act-btn { display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none; cursor:pointer; font-size:22px; text-decoration:none; color:#333; position:relative; transition:.3s; }
+.act-btn:hover { color:#ff4747; }
+.act-btn small { font-size:10px; font-family:'Inter',sans-serif; font-weight:600; }
+.cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:19px; height:19px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; }
+
+/* Nav */
+.site-nav { background:#f8f9fa; border-top:1px solid #eee; }
+.site-nav .container { display:flex; gap:4px; align-items:center; overflow-x:auto; scrollbar-width:none; padding:0 20px; }
+.site-nav .container::-webkit-scrollbar { display:none; }
+.nav-lnk { display:block; padding:11px 14px; color:#333; text-decoration:none; font-size:14px; font-weight:600; white-space:nowrap; border-bottom:2px solid transparent; transition:.3s; font-family:'Inter',sans-serif; }
+.nav-lnk:hover, .nav-lnk.active { color:#ff4747; border-bottom-color:#ff4747; }
+
+/* Dropdown */
+.nav-drop { position:relative; }
+.nav-drop:hover .drop-menu { display:block; }
+.drop-menu { display:none; position:absolute; top:100%; left:0; background:white; border:1px solid #eee; border-radius:var(--radius-md,12px); box-shadow:0 10px 25px rgba(0,0,0,.1); min-width:190px; padding:8px 0; z-index:300; }
+.drop-menu a { display:block; padding:10px 18px; text-decoration:none; color:#333; font-size:14px; transition:.2s; font-family:'Inter',sans-serif; }
+.drop-menu a:hover { background:#fff5f5; color:#ff4747; }
+
+/* Bouton mobile */
+.mob-toggle { display:none; background:none; border:none; font-size:26px; cursor:pointer; color:#333; }
+
+/* ===== MOBILE ===== */
+@media (max-width:768px) {
+  .top-bar-links { display:none; }
+  .search-wrap { display:none; }
+  .act-btn small { display:none; }
+  .mob-toggle { display:block; }
+  .logo span { font-size:16px; }
+  .site-nav { display:none; }
+  .site-nav.open { display:block; }
+  .site-nav .container { flex-direction:column; align-items:flex-start; padding:10px; gap:0; }
+  .nav-drop:hover .drop-menu { position:static; box-shadow:none; border:none; padding-left:15px; }
+}
+</style>
+
+<header class="main-header">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <span>🚚 Livraison rapide : Saint-Domingue ➔ Haïti 🇭🇹</span>
+      <div class="top-bar-links">
+        <a href="mailto:josephgenescar@gmail.com">📧 josephgenescar@gmail.com</a>
+        <a href="https://wa.me/50948868964" target="_blank">💬 WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Prensipal -->
+  <div class="header-main">
+    <div class="container">
+
+      <!-- Logo -->
+      <a href="/" class="logo">
+        <img src="/assets/images/logo.png" alt="Boutique Piyay" onerror="this.style.display='none'">
+        <span>BOUTIQUE PIYAY</span>
+      </a>
+
+      <!-- Rechèch -->
+      <div class="search-wrap">
+        <form class="search-form" onsubmit="return false;">
+          <input type="text" id="search-inp" placeholder="🔍 Rechercher un produit..." oninput="liveSearch(this.value)" autocomplete="off">
+          <button type="submit">Chercher</button>
+        </form>
+        <div id="search-drop" style="display:none;"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        <a href="/admin/" class="act-btn">
+          <span>👤</span><small>Compte</small>
+        </a>
+        <button class="act-btn" onclick="toggleCart()" title="Panier">
+          <span>🛒</span>
+          <div class="cart-badge" id="cart-count" style="display:none;">0</div>
+          <small>Panier</small>
+        </button>
+        <button class="mob-toggle" onclick="document.getElementById('main-nav').classList.toggle('open')">☰</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="site-nav" id="main-nav">
+    <div class="container">
+      <a href="/" class="nav-lnk {% if page.url == '/' %}active{% endif %}">Tout</a>
+      <a href="/#flash-sale" class="nav-lnk">🔥 Meilleures ventes</a>
+      <a href="/#recommandations" class="nav-lnk">⭐ Notés 5 étoiles</a>
+      <a href="/#recommandations" class="nav-lnk">Nouveautés</a>
+      <div class="nav-drop">
+        <a href="#" class="nav-lnk">Catégories ▾</a>
+        <div class="drop-menu">
+          {% for cat in site.categories %}
+          <a href="{{ cat.url }}">{{ cat.title }}</a>
+          {% endfor %}
+          <a href="/kategori/accessoires-electronique/">⚡ Électronique</a>
+          <a href="/kategori/habillement/">👗 Habillement</a>
+          <a href="/kategori/maison/">🏠 Maison</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 </header>
+
+<script>
+function liveSearch(val) {
+  var drop = document.getElementById('search-drop');
+  if (!val || val.length < 2) { drop.style.display = 'none'; return; }
+
+  var cards = document.querySelectorAll('.product-card, .flash-card');
+  var results = [];
+
+  cards.forEach(function(c) {
+    var title = (c.querySelector('h3 a') || c.querySelector('h3') || {}).textContent || '';
+    var price = (c.querySelector('.price') || c.querySelector('.new-price') || {}).textContent || '';
+    var img = (c.querySelector('img') || {}).src || '';
+    var link = (c.querySelector('a') || {}).href || '#';
+    if (title && title.toLowerCase().indexOf(val.toLowerCase()) !== -1) {
+      results.push({ title: title.trim(), price: price.trim(), img: img, link: link });
+    }
+  });
+
+  if (results.length === 0) {
+    drop.innerHTML = '<div style="padding:18px;text-align:center;color:#999;font-size:14px;">Aucun résultat pour "' + val + '"</div>';
+  } else {
+    drop.innerHTML = results.slice(0, 6).map(function(r) {
+      return '<a href="' + r.link + '" class="s-item">' +
+        '<img src="' + r.img + '" alt="' + r.title + '" onerror="this.style.background=\'#f3f4f6\'">' +
+        '<div class="s-item-info"><strong>' + r.title + '</strong><span>' + r.price + '</span></div>' +
+        '</a>';
+    }).join('');
+  }
+  drop.style.display = 'block';
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-wrap')) {
+    var d = document.getElementById('search-drop');
+    if (d) d.style.display = 'none';
+  }
+});
+</script>

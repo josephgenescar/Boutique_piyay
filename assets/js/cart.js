@@ -1,209 +1,250 @@
-// Enhanced Cart System for Boutique Piyay
-// Save as: assets/js/cart.js
+// ================================================
+// BOUTIQUE PIYAY — cart.js
+// Konpatib 100% ak index.html (orderProduct)
+// ================================================
 
-class ShoppingCart {
-  constructor() {
-    this.cart = this.loadCart();
-    this.init();
+var cart = JSON.parse(localStorage.getItem('bp_cart') || '[]');
+
+document.addEventListener('DOMContentLoaded', function() {
+  refreshBadge();
+  initPaymentListener();
+});
+
+// ─── FONKSYON RELE NAN HTML ──────────────────────
+// Fonksyon sa a deja nan bouton "Ajouter" ou yo
+function orderProduct(title, price, id) {
+  var key = id || title.replace(/\s+/g,'-').toLowerCase();
+  var found = false;
+
+  for (var i = 0; i < cart.length; i++) {
+    if (cart[i].id === key) { cart[i].qty += 1; found = true; break; }
   }
 
-  init() {
-    this.updateCartDisplay();
-    this.updateCartCount();
-    this.bindEvents();
-  }
-
-  loadCart() {
-    const saved = localStorage.getItem('boutique_piyay_cart');
-    return saved ? JSON.parse(saved) : [];
-  }
-
-  saveCart() {
-    localStorage.setItem('boutique_piyay_cart', JSON.stringify(this.cart));
-    this.updateCartDisplay();
-    this.updateCartCount();
-  }
-
-  addItem(product) {
-    const existing = this.cart.find(item =>
-      item.id === product.id &&
-      JSON.stringify(item.selectedVariants) === JSON.stringify(product.selectedVariants)
-    );
-
-    if (existing) {
-      existing.quantity += product.quantity || 1;
-    } else {
-      this.cart.push({
-        id: product.id || Date.now(),
-        title: product.title,
-        price: product.price,
-        image: product.image,
-        quantity: product.quantity || 1,
-        selectedVariants: product.selectedVariants || {},
-        url: product.url
-      });
-    }
-
-    this.saveCart();
-    this.showNotification(`✅ ${product.title} ajouté au panier!`);
-  }
-
-  removeItem(index) {
-    this.cart.splice(index, 1);
-    this.saveCart();
-    this.showNotification('🗑️ Produit retiré du panier');
-  }
-
-  updateQuantity(index, quantity) {
-    if (quantity <= 0) {
-      this.removeItem(index);
-    } else {
-      this.cart[index].quantity = quantity;
-      this.saveCart();
-    }
-  }
-
-  clearCart() {
-    this.cart = [];
-    this.saveCart();
-    this.showNotification('🛒 Panier vidé');
-  }
-
-  getTotal() {
-    return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }
-
-  getItemCount() {
-    return this.cart.reduce((sum, item) => sum + item.quantity, 0);
-  }
-
-  updateCartCount() {
-    const countElements = document.querySelectorAll('.cart-count, #cartCount');
-    const count = this.getItemCount();
-
-    countElements.forEach(el => {
-      el.textContent = count;
-      el.style.display = count > 0 ? 'inline-block' : 'none';
+  if (!found) {
+    // Chèche imaj pwodwi a nan DOM
+    var img = '';
+    var cards = document.querySelectorAll('.product-card, .flash-card');
+    cards.forEach(function(c) {
+      var t = (c.querySelector('h3 a')||c.querySelector('h3')||{}).textContent || '';
+      if (t.trim() === title.trim()) {
+        img = (c.querySelector('img')||{}).src || '';
+      }
     });
+    cart.push({ id: key, title: title, price: parseFloat(price)||0, img: img, qty: 1 });
   }
 
-  showNotification(message, type = 'success') {
-    const existing = document.querySelector('.cart-notification');
-    if (existing) existing.remove();
-
-    const notification = document.createElement('div');
-    notification.className = `cart-notification ${type}`;
-    notification.textContent = message;
-
-    Object.assign(notification.style, {
-      position: 'fixed',
-      top: '20px',
-      right: '20px',
-      background: type === 'success' ? '#10b981' : '#ef4444',
-      color: 'white',
-      padding: '15px 25px',
-      borderRadius: '8px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-      zIndex: '100000',
-      animation: 'slideInRight 0.3s ease-out',
-      fontWeight: '500'
-    });
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.style.animation = 'slideOutRight 0.3s ease-in';
-      setTimeout(() => notification.remove(), 300);
-    }, 3000);
-  }
-
-  processCheckout(formData) {
-    const order = {
-      orderNumber: 'BP-' + Date.now(),
-      date: new Date().toISOString(),
-      customer: {
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        email: formData.get('email'),
-        address: formData.get('address'),
-        city: formData.get('city'),
-        notes: formData.get('notes')
-      },
-      items: this.cart,
-      payment: {
-        method: formData.get('payment_method'),
-        amount: this.getTotal() + this.calculateShipping(this.getTotal())
-      },
-      status: 'pending'
-    };
-
-    let orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    orders.push(order);
-    localStorage.setItem('orders', JSON.stringify(orders));
-
-    this.sendWhatsAppOrder(order);
-    this.clearCart();
-
-    localStorage.setItem('lastOrder', JSON.stringify(order));
-    window.location.href = '/order-confirmation';
-
-    return order;
-  }
-
-  sendWhatsAppOrder(order) {
-    const whatsappNumber = '50948868964';
-
-    let message = `🛍️ *NOUVELLE COMMANDE*
-
-📋 Commande: ${order.orderNumber}
-👤 Client: ${order.customer.name}
-📱 Téléphone: ${order.customer.phone}
-📍 Adresse: ${order.customer.address}, ${order.customer.city}
-
-*PRODUITS:*
-${order.items.map(item =>
-  `• ${item.title} x${item.quantity} - ${item.price * item.quantity} HTG`
-).join('\n')}
-
-💰 *Total: ${order.payment.amount} HTG*
-💳 Paiement: ${order.payment.method}
-
-${order.customer.notes ? `📝 Notes: ${order.customer.notes}` : ''}
-`;
-
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  }
-
-  calculateShipping(subtotal) {
-    if (subtotal >= 1000) return 0;
-    return 100;
-  }
-
-  updateCartDisplay() {
-    // This will be called to update any cart displays on the page
-  }
-
-  bindEvents() {
-    // Bind any necessary events
-  }
+  save();
+  refreshBadge();
+  toast('✅ ' + title + ' ajouté!');
+  openCart();
 }
 
-const cart = new ShoppingCart();
+// ─── PANIER ─────────────────────────────────────
 
-function addToCart(title, price, image = '', url = '') {
-  cart.addItem({ title, price, image, url });
+function toggleCart() {
+  var m = document.getElementById('cart-modal');
+  if (!m) return;
+  m.style.display = (m.style.display === 'none' || !m.style.display) ? 'block' : 'none';
+  if (m.style.display === 'block') drawCart();
 }
 
-const style = document.createElement('style');
-style.textContent = `
-@keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+function openCart() {
+  var m = document.getElementById('cart-modal');
+  if (m) { m.style.display = 'block'; drawCart(); }
 }
-@keyframes slideOutRight {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100%); opacity: 0; }
+
+function closeCart() {
+  var m = document.getElementById('cart-modal');
+  if (m) m.style.display = 'none';
 }
-`;
-document.head.appendChild(style);
+
+function drawCart() {
+  var box = document.getElementById('cart-items');
+  var foot = document.getElementById('cart-footer');
+  if (!box) return;
+
+  if (cart.length === 0) {
+    box.innerHTML =
+      '<div style="text-align:center;padding:50px 20px;color:#999;">' +
+      '<div style="font-size:56px;margin-bottom:15px;">🛒</div>' +
+      '<p style="font-size:15px;margin-bottom:20px;">Votre panier est vide</p>' +
+      '<a href="/" onclick="closeCart()" style="display:inline-block;padding:11px 24px;background:#ff4747;color:white;text-decoration:none;border-radius:8px;font-weight:700;font-family:Poppins,sans-serif;">Voir les produits</a>' +
+      '</div>';
+    if (foot) foot.style.display = 'none';
+    return;
+  }
+
+  if (foot) foot.style.display = 'block';
+
+  box.innerHTML = cart.map(function(it) {
+    var sub = (it.price * it.qty).toFixed(0);
+    return '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #f5f5f5;">' +
+      '<div style="width:65px;height:65px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f5f5f5;display:flex;align-items:center;justify-content:center;">' +
+        (it.img ? '<img src="'+it.img+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML=\'🛍️\'">' : '<span style="font-size:28px;">🛍️</span>') +
+      '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:13px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+it.title+'</div>' +
+        '<div style="color:#ff4747;font-weight:800;margin-bottom:8px;font-size:15px;">'+sub+' HTG</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<button onclick="chgQty(\''+it.id+'\',-1)" style="width:26px;height:26px;border:1px solid #eee;background:white;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1;">−</button>' +
+          '<span style="font-weight:700;min-width:18px;text-align:center;">'+it.qty+'</span>' +
+          '<button onclick="chgQty(\''+it.id+'\',1)" style="width:26px;height:26px;border:1px solid #eee;background:white;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1;">+</button>' +
+        '</div>' +
+      '</div>' +
+      '<button onclick="delItem(\''+it.id+'\')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#ddd;padding:0;align-self:flex-start;transition:.3s;" onmouseover="this.style.color=\'#ff4747\'" onmouseout="this.style.color=\'#ddd\'">🗑️</button>' +
+    '</div>';
+  }).join('');
+
+  var tot = document.getElementById('cart-total');
+  if (tot) tot.textContent = total() + ' HTG';
+}
+
+function chgQty(id, d) {
+  cart.forEach(function(it) { if (it.id === id) it.qty = Math.max(1, it.qty + d); });
+  save(); refreshBadge(); drawCart();
+}
+
+function delItem(id) {
+  cart = cart.filter(function(it) { return it.id !== id; });
+  save(); refreshBadge(); drawCart();
+  toast('🗑️ Produit retiré');
+}
+
+function total() {
+  return cart.reduce(function(s,it){ return s + it.price*it.qty; }, 0).toFixed(0);
+}
+
+function count() {
+  return cart.reduce(function(s,it){ return s + it.qty; }, 0);
+}
+
+function save() { localStorage.setItem('bp_cart', JSON.stringify(cart)); }
+
+function refreshBadge() {
+  var b = document.getElementById('cart-count');
+  if (!b) return;
+  var n = count();
+  b.textContent = n;
+  b.style.display = n > 0 ? 'flex' : 'none';
+}
+
+// ─── COMMANDE ────────────────────────────────────
+
+function passerCommande() {
+  closeCart();
+  if (cart.length === 0) { toast('⚠️ Panier vide!'); return; }
+
+  var lines = cart.map(function(it) {
+    return '• '+it.title+' x'+it.qty+' = '+(it.price*it.qty).toFixed(0)+' HTG';
+  }).join('<br>');
+
+  var html = '<strong>📦 ' + count() + ' article(s):</strong><br>' + lines +
+    '<hr style="border:1px solid #fecaca;margin:10px 0;">' +
+    '<strong>💰 Total: ' + total() + ' HTG</strong>';
+
+  openOrderModal(html, '', '');
+}
+
+function openOrderModal(summaryHTML, directTitle, directPrice) {
+  var box = document.getElementById('order-summary');
+  if (box) box.innerHTML = summaryHTML;
+
+  var modal = document.getElementById('order-modal');
+  if (!modal) return;
+
+  modal.dataset.dt = directTitle || '';
+  modal.dataset.dp = directPrice || '';
+  modal.style.display = 'flex';
+}
+
+function closeOrderModal() {
+  var m = document.getElementById('order-modal');
+  if (m) m.style.display = 'none';
+}
+
+function submitOrder(e) {
+  e.preventDefault();
+
+  var name  = (document.getElementById('customer-name') ||{}).value || '';
+  var phone = (document.getElementById('customer-phone')||{}).value || '';
+  var pay   = (document.getElementById('payment-method')||{}).value || '';
+
+  name = name.trim(); phone = phone.trim();
+
+  if (!name || !phone || !pay) { toast('⚠️ Remplissez tous les champs!'); return; }
+
+  var modal = document.getElementById('order-modal');
+  var dt = modal ? modal.dataset.dt : '';
+  var dp = modal ? modal.dataset.dp : '';
+
+  var lines, tot;
+  if (dt) {
+    lines = '• '+dt+' — '+dp+' HTG';
+    tot   = dp;
+  } else {
+    lines = cart.map(function(it){ return '• '+it.title+' x'+it.qty+' = '+(it.price*it.qty).toFixed(0)+' HTG'; }).join('\n');
+    tot   = total();
+  }
+
+  var payLbl = { moncash:'💸 Moncash (4886-8964)', natcash:'💳 Natcash (4068-3108)', cash:'💵 Espèces à la livraison' };
+
+  var msg =
+    '🛍️ *NOUVELLE COMMANDE — BOUTIQUE PIYAY*\n\n' +
+    '👤 *Client:* '+name+'\n' +
+    '📱 *Téléphone:* '+phone+'\n' +
+    '💳 *Paiement:* '+(payLbl[pay]||pay)+'\n\n' +
+    '📦 *PRODUITS:*\n'+lines+'\n\n' +
+    '💰 *TOTAL: '+tot+' HTG*\n\n' +
+    '📅 '+new Date().toLocaleString('fr-FR');
+
+  window.open('https://wa.me/50948868964?text='+encodeURIComponent(msg), '_blank');
+
+  if (!dt) { cart=[]; save(); refreshBadge(); }
+  closeOrderModal();
+  e.target.reset();
+  showPaymentInfo('');
+  toast('🎉 Commande envoyée! Merci!');
+}
+
+function showPaymentInfo(val) {
+  var box = document.getElementById('payment-info-box');
+  if (!box) return;
+  var msgs = {
+    moncash: '📲 Envoyez le montant au <strong>4886-8964</strong> via Moncash, puis confirmez votre commande.',
+    natcash: '💳 Envoyez le montant au <strong>4068-3108</strong> via Natcash, puis confirmez.',
+    cash:    '💵 Préparez le montant exact. Notre livreur vous contactera avant d\'arriver.'
+  };
+  if (msgs[val]) { box.innerHTML = msgs[val]; box.style.display = 'block'; }
+  else           { box.style.display = 'none'; }
+}
+
+function initPaymentListener() {
+  var sel = document.getElementById('payment-method');
+  if (sel) sel.addEventListener('change', function(){ showPaymentInfo(this.value); });
+}
+
+// ─── TOAST ──────────────────────────────────────
+
+function toast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.animation = 'toastIn .3s ease';
+  clearTimeout(t._tmr);
+  t._tmr = setTimeout(function(){ t.style.display='none'; }, 3000);
+}
+
+// ─── EXPOSE GLOBAL ──────────────────────────────
+window.orderProduct  = orderProduct;
+window.toggleCart    = toggleCart;
+window.openCart      = openCart;
+window.closeCart     = closeCart;
+window.chgQty        = chgQty;
+window.delItem       = delItem;
+window.passerCommande= passerCommande;
+window.openOrderModal= openOrderModal;
+window.closeOrderModal=closeOrderModal;
+window.submitOrder   = submitOrder;
+window.showPaymentInfo=showPaymentInfo;
+window.toast         = toast;

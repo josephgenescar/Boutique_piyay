@@ -1,0 +1,144 @@
+/*
+ * ameliore.css — Boutique Piyay
+ * Chaje APRE /css/style.css
+ * Respekte tout variable egzistan yo (--primary:#ff4747 etc.)
+ * Pa ekrase anyen — jis ajoute
+ */
+
+/* ─── LAYOUT GENERAL ─────────────────────── */
+main { min-height: 60vh; }
+section.container { margin-bottom: 50px; }
+
+/* ─── PRODUCT CARDS AMELYORE ─────────────── */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+
+.card-img {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s;
+}
+
+.card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
+}
+
+.card-info h3 {
+  font-size: 14px;
+  line-height: 1.4;
+  height: auto;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+/* ─── BOUTONS ADD TO CART ─────────────────── */
+.add-to-cart {
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 10px;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.add-to-cart:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(255,71,71,.3);
+}
+
+/* ─── FLASH SALE ──────────────────────────── */
+.flash-grid::-webkit-scrollbar { display: none; }
+.flash-grid { scrollbar-width: none; }
+
+.flash-card {
+  transition: transform .3s, box-shadow .3s;
+}
+.flash-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,.1);
+}
+
+/* ─── CATEGORIES BUBBLES ──────────────────── */
+.category-bubbles::-webkit-scrollbar { display: none; }
+.cat-bubble { transition: transform .3s; }
+.cat-bubble:hover { transform: translateY(-5px); }
+.cat-bubble:hover span { color: var(--primary); }
+.bubble-img { transition: transform .3s, border-color .3s, box-shadow .3s; }
+.cat-bubble:hover .bubble-img {
+  border-color: var(--primary);
+  box-shadow: 0 4px 14px rgba(255,71,71,.25);
+}
+
+/* ─── SECTION HEADER DEKORE ──────────────── */
+#recommandations .section-header h2::after,
+#categories-section .section-header h2::after {
+  background: var(--primary);
+}
+
+/* ─── OPEN FOR BUSINESS ───────────────────── */
+.business-card { border-radius: 20px; }
+
+/* ─── MODAL PROMO (egzistan nan index.html) ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+/* ─── RESPONSIVE GRID ─────────────────────── */
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .card-info { padding: 10px; }
+  .add-to-cart { font-size: 12px; padding: 9px; }
+}
+
+/* ─── SCROLL-TO-TOP BTN ───────────────────── */
+#scroll-top {
+  position: fixed;
+  bottom: 80px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255,71,71,.4);
+  z-index: 500;
+  transition: transform .2s;
+}
+#scroll-top:hover { transform: scale(1.1); }
