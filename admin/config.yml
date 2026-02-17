@@ -5,8 +5,8 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
-site_url: "https://boutique-piyay.netlify.app"
-display_url: "https://boutique-piyay.netlify.app"
+site_url: "https://boutique.netlify.app"
+display_url: "https://boutique.netlify.app"
 
 editor:
   preview: false
