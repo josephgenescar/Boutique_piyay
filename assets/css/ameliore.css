@@ -112,13 +112,94 @@ section.container { margin-bottom: 50px; }
 }
 
 /* ─── RESPONSIVE GRID ─────────────────────── */
-@media (max-width: 480px) {
+/* Desktop: 4 kolòn */
+@media (min-width: 1200px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .card-info { padding: 14px; }
+  .add-to-cart { font-size: 13px; padding: 11px; }
+}
+
+/* Tablet: 3 kolòn */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  .card-info { padding: 12px; }
+  .add-to-cart { font-size: 12px; padding: 10px; }
+  
+  .header-main .container { gap: 12px; }
+  .search-wrap { max-width: 300px; }
+  .logo span { font-size: 18px; }
+}
+
+/* Mobile: 2 kolòn */
+@media (max-width: 767px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
+  .card-img { aspect-ratio: 1; }
   .card-info { padding: 10px; }
+  .card-info h3 { font-size: 13px; }
   .add-to-cart { font-size: 12px; padding: 9px; }
+  
+  /* Header Responsive */
+  .search-wrap { display: none; }
+  .header-main .container { gap: 10px; }
+  .logo span { font-size: 16px; }
+  .act-btn small { display: none; }
+  
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; gap: 25px; }
+  
+  /* Modals */
+  #cart-modal > div:last-child { width: 100vw !important; }
+  .modal-content { width: 95% !important; }
+  
+  /* Section */
+  section.container { margin-bottom: 30px; }
+  main { min-height: 50vh; }
+}
+
+/* Extra Small: 1 kolòn */
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .card-info { padding: 8px; }
+  .card-info h3 { font-size: 12px; }
+  .add-to-cart { font-size: 11px; padding: 8px; }
+  
+  /* Header */
+  .top-bar { display: none; }
+  .logo span { font-size: 14px; }
+  .act-btn { gap: 0; font-size: 18px; }
+  
+  /* Panier Lateral */
+  #cart-modal > div:last-child {
+    width: 100vw !important;
+    border-radius: 20px 20px 0 0;
+  }
+  
+  /* Toast */
+  #toast {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    font-size: 13px;
+  }
+  
+  /* Section */
+  section.container { margin-bottom: 20px; padding: 0 12px; }
+  main { min-height: 45vh; }
+  
+  /* Flexbox Stacking */
+  .top-bar .container { flex-direction: column; gap: 10px; }
 }
 
 /* ─── SCROLL-TO-TOP BTN ───────────────────── */
@@ -142,3 +223,81 @@ section.container { margin-bottom: 50px; }
   transition: transform .2s;
 }
 #scroll-top:hover { transform: scale(1.1); }
+
+/* Mobile Scroll Top */
+@media (max-width: 480px) {
+  #scroll-top {
+    width: 40px;
+    height: 40px;
+    bottom: 70px;
+    right: 15px;
+    font-size: 18px;
+  }
+}
+
+/* ─── ANIMATIONS RESPONSIVE ─────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ─── ACCESSIBILITY ────────────────────────── */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  select {
+    font-size: 16px; /* Prevent auto-zoom on iOS */
+  }
+}
+
+/* ─── CONTAINER RESPONSIVE ──────────────────── */
+.container {
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 576px) {
+  .container { max-width: 540px; }
+}
+
+@media (min-width: 768px) {
+  .container { max-width: 720px; padding-left: 15px; padding-right: 15px; }
+}
+
+@media (min-width: 992px) {
+  .container { max-width: 960px; }
+}
+
+@media (min-width: 1200px) {
+  .container { max-width: 1140px; }
+}
+
+/* ─── FLASH SALE RESPONSIVE ──────────────────── */
+@media (max-width: 768px) {
+  .flash-grid { gap: 12px; }
+  .flash-card { min-width: 150px; }
+}
+
+@media (max-width: 480px) {
+  .flash-grid { gap: 8px; }
+  .flash-card { min-width: 120px; }
+}
+
+/* ─── CATEGORY BUBBLES RESPONSIVE ───────────── */
+@media (max-width: 768px) {
+  .category-bubbles { gap: 12px; }
+  .cat-bubble { min-width: 100px; }
+}
+
+@media (max-width: 480px) {
+  .category-bubbles { gap: 8px; }
+  .cat-bubble { min-width: 80px; }
+  .bubble-img { width: 70px; height: 70px; }
+  .cat-bubble span { font-size: 12px; }
+}
