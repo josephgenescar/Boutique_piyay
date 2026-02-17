@@ -250,7 +250,7 @@
           successMsg.classList.add('show');
 
           setTimeout(function() {
-            window.location.href = '/admin/dashboard.html';
+            window.location.href = '/admin/admin.html';
           }, 1200);
         } else {
           // Invalid password
@@ -273,7 +273,7 @@
         const elapsed = Date.now() - parseInt(authTime);
         if (elapsed < SESSION_DURATION) {
           // Already logged in and session is valid
-          window.location.href = '/admin/dashboard.html';
+          window.location.href = '/admin/admin.html';
           return;
         } else {
           // Session expired
