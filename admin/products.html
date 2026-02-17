@@ -133,6 +133,10 @@
     <div class="header">
       <h1>🛍️ Gestion des Produits</h1>
       <p>Ajoute, modifie, ak retire pwodwi pou chak kategori</p>
+      <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+        <a href="/admin/dashboard.html" style="display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); font-weight: 600; font-size: 14px; transition: all .3s;">← Dashboard</a>
+        <a href="#" onclick="logout(); return false;" style="display: inline-block; padding: 10px 20px; background: rgba(220,38,38,0.2); color: #ff8c42; text-decoration: none; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); font-weight: 600; font-size: 14px; transition: all .3s;">🚪 Lonje</a>
+      </div>
     </div>
     
     <div class="content">
@@ -207,6 +211,43 @@
   </div>
 
   <script>
+    // ─── AUTHENTICATION CHECK ──────────────────
+    const AUTH_TOKEN_KEY = 'admin_auth_token';
+    const AUTH_TIME_KEY = 'admin_auth_time';
+    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+
+    function checkAuthentication() {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+
+      if (!token || !authTime) {
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      const elapsed = Date.now() - parseInt(authTime);
+      if (elapsed > SESSION_DURATION) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TIME_KEY);
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      return true;
+    }
+
+    function logout() {
+      if (confirm('Èske ou swe ou vle lonje soti?')) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TIME_KEY);
+        window.location.href = '/';
+      }
+    }
+
+    if (!checkAuthentication()) {
+      throw new Error('Not authenticated');
+    }
+
     // ─── LOAD PRODUCTS ──────────────────
     var products = JSON.parse(localStorage.getItem('bp_products') || '[]');
     

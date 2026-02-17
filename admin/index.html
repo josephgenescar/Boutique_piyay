@@ -104,6 +104,35 @@
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
 
   <script>
+    // Authentication Check
+    const AUTH_TOKEN_KEY = 'admin_auth_token';
+    const AUTH_TIME_KEY = 'admin_auth_time';
+    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+
+    function checkAuthentication() {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+
+      if (!token || !authTime) {
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      const elapsed = Date.now() - parseInt(authTime);
+      if (elapsed > SESSION_DURATION) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TIME_KEY);
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      return true;
+    }
+
+    if (!checkAuthentication()) {
+      throw new Error('Not authenticated');
+    }
+
     // Hide loading screen when CMS is ready
     window.addEventListener('load', function() {
       setTimeout(function() {

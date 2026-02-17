@@ -239,6 +239,7 @@
         <a href="/" target="_blank">← Retounen Site</a>
         <a href="https://app.netlify.com/sites/boutique-piyay/settings" target="_blank">⚙️ Netlify</a>
         <a href="/admin/index.html#/collections/products" target="_blank">📝 CMS Produits</a>
+        <a href="#" onclick="logout(); return false;" style="background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.5); color: #dc2626;">🚪 Lonje</a>
       </div>
     </header>
     
@@ -331,6 +332,46 @@
   </div>
 
   <script>
+    // Authentication Check
+    const AUTH_TOKEN_KEY = 'admin_auth_token';
+    const AUTH_TIME_KEY = 'admin_auth_time';
+    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+
+    function checkAuthentication() {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+
+      if (!token || !authTime) {
+        // Not logged in
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      const elapsed = Date.now() - parseInt(authTime);
+      if (elapsed > SESSION_DURATION) {
+        // Session expired
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TIME_KEY);
+        window.location.href = '/admin/login.html';
+        return false;
+      }
+
+      return true;
+    }
+
+    function logout() {
+      if (confirm('Èske ou swe ou vle louje soti?')) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TIME_KEY);
+        window.location.href = '/';
+      }
+    }
+
+    // Check auth before loading page
+    if (!checkAuthentication()) {
+      throw new Error('Not authenticated');
+    }
+
     // Load stats from localStorage
     function loadStats() {
       var products = JSON.parse(localStorage.getItem('bp_products') || '[]');
