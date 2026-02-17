@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion Produits - Boutique Piyay Admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f3f4f6; padding: 20px; }
+    
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    .header {
+      background: linear-gradient(135deg, #ff4747, #ff8c42);
+      color: white; padding: 30px 20px;
+      border-radius: 12px; margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(255,71,71,.2);
+    }
+    .header h1 { font-size: 28px; margin-bottom: 5px; }
+    .header p { opacity: 0.9; font-size: 14px; }
+    
+    .content {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+    }
+    
+    .panel {
+      background: white; padding: 25px; border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    
+    .panel-title {
+      font-size: 18px; font-weight: 700; margin-bottom: 20px;
+      color: #111827; border-bottom: 2px solid #ff4747; padding-bottom: 12px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block; font-weight: 600; margin-bottom: 6px;
+      font-size: 14px; color: #333;
+    }
+    
+    input, select, textarea {
+      width: 100%; padding: 12px 15px; border: 2px solid #eee;
+      border-radius: 8px; font-family: inherit; font-size: 14px;
+      transition: border-color .3s;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: #ff4747;
+      box-shadow: 0 0 0 3px rgba(255,71,71,.1);
+    }
+    
+    textarea { resize: vertical; min-height: 100px; }
+    
+    .btn {
+      width: 100%; padding: 14px; border: none; border-radius: 8px;
+      font-weight: 700; font-size: 15px; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4747, #ff8c42);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,71,71,.3); }
+    
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    
+    .btn-small {
+      width: auto; padding: 8px 12px; font-size: 12px; margin-right: 8px;
+      display: inline-block;
+    }
+    
+    .products-list {
+      display: flex; flex-direction: column; gap: 15px;
+    }
+    
+    .product-item {
+      background: #f8f9fa; padding: 15px; border-radius: 8px;
+      border-left: 4px solid #ff4747;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    
+    .product-info {
+      flex: 1;
+    }
+    .product-info h3 { font-size: 15px; margin-bottom: 4px; }
+    .product-info p { font-size: 13px; color: #666; }
+    .product-price { color: #ff4747; font-weight: 700; font-size: 16px; }
+    
+    .product-actions {
+      display: flex; gap: 8px;
+    }
+    
+    .badge {
+      display: inline-block; padding: 4px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 700; background: #dbeafe; color: #1e40af;
+    }
+    
+    .image-preview {
+      width: 80px; height: 80px; border-radius: 8px;
+      background: #e5e7eb; display: flex; align-items: center;
+      justify-content: center; margin-top: 10px; overflow: hidden;
+    }
+    
+    .image-preview img { width: 100%; height: 100%; object-fit: cover; }
+    
+    @media (max-width: 768px) {
+      .content { grid-template-columns: 1fr; }
+      .product-item { flex-direction: column; align-items: flex-start; }
+    }
+    
+    .alert {
+      padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;
+      font-size: 14px; font-weight: 600;
+    }
+    .alert-success { background: #d1fae5; color: #065f46; }
+    .alert-error { background: #fee2e2; color: #991b1b; }
+    
+    .empty-state {
+      text-align: center; padding: 30px 20px; color: #999;
+    }
+    .empty-state p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🛍️ Gestion des Produits</h1>
+      <p>Ajoute, modifie, ak retire pwodwi pou chak kategori</p>
+    </div>
+    
+    <div class="content">
+      <!-- FORMULAIRE AJOUTE PRODUIT -->
+      <div class="panel">
+        <div class="panel-title">➕ Ajoute Pwodwi Nou</div>
+        
+        <form id="productForm">
+          <div id="alertBox"></div>
+          
+          <div class="form-group">
+            <label>📛 Non Pwodwi *</label>
+            <input type="text" id="title" required placeholder="Ex: Jean Bleu Premium">
+          </div>
+          
+          <div class="form-group">
+            <label>💵 Pri (HTG) *</label>
+            <input type="number" id="price" required placeholder="1500" min="1">
+          </div>
+          
+          <div class="form-group">
+            <label>🏷️ Kategori *</label>
+            <select id="category" required>
+              <option value="">-- Chwazi Kategori --</option>
+              <option value="accessoires-electronique">⚡ Électronique</option>
+              <option value="habillement">👗 Habillement</option>
+              <option value="maison">🏠 Maison</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>📸 Imaj URL *</label>
+            <input type="url" id="image" required placeholder="https://example.com/image.jpg" oninput="previewImage()">
+            <div class="image-preview"><img id="imgPreview" style="display:none;"></div>
+          </div>
+          
+          <div class="form-group">
+            <label>📝 Deskripsyon *</label>
+            <textarea id="description" required placeholder="Dekri prodwi a..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>📦 Estòk (Kantite) *</label>
+            <input type="number" id="stock" required placeholder="10" min="0">
+          </div>
+          
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="featured"> ⭐ Pwodwi Rekòmande
+            </label>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">✅ Enrejistre Pwodwi</button>
+        </form>
+      </div>
+      
+      <!-- LLIS PWODWI -->
+      <div class="panel">
+        <div class="panel-title">📦 Llis Pwodwi (<span id="totalProducts">0</span>)</div>
+        
+        <div class="form-group">
+          <input type="text" id="searchInput" placeholder="🔍 Chèche pwodwi...">
+        </div>
+        
+        <div id="productsList" class="products-list">
+          <div class="empty-state">
+            <p>Poko gen pwodwi. Ajoute youn epi l ap parèt la!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── LOAD PRODUCTS ──────────────────
+    var products = JSON.parse(localStorage.getItem('bp_products') || '[]');
+    
+    function saveProducts() {
+      localStorage.setItem('bp_products', JSON.stringify(products));
+      displayProducts();
+      showAlert('✅ Pwodwi anrejistre!', 'success');
+    }
+    
+    function showAlert(msg, type) {
+      var box = document.getElementById('alertBox');
+      box.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+      setTimeout(() => { box.innerHTML = ''; }, 3000);
+    }
+    
+    function previewImage() {
+      var url = document.getElementById('image').value;
+      var preview = document.getElementById('imgPreview');
+      if (url) {
+        preview.src = url;
+        preview.style.display = 'block';
+        preview.onerror = () => { preview.style.display = 'none'; };
+      }
+    }
+    
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var newProduct = {
+        id: 'prod-' + Date.now(),
+        title: document.getElementById('title').value.trim(),
+        price: parseFloat(document.getElementById('price').value),
+        category: document.getElementById('category').value,
+        image: document.getElementById('image').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        stock: parseInt(document.getElementById('stock').value),
+        featured: document.getElementById('featured').checked,
+        dateAdded: new Date().toLocaleString('fr-FR')
+      };
+      
+      if (!newProduct.title || !newProduct.price || !newProduct.category) {
+        showAlert('⚠️ Ranpli tout chan obligatwa!', 'error');
+        return;
+      }
+      
+      products.push(newProduct);
+      saveProducts();
+      this.reset();
+      document.getElementById('imgPreview').style.display = 'none';
+    });
+    
+    function displayProducts() {
+      var list = document.getElementById('productsList');
+      var search = document.getElementById('searchInput').value.toLowerCase();
+      var filtered = products.filter(p => p.title.toLowerCase().includes(search));
+      
+      document.getElementById('totalProducts').textContent = products.length;
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state"><p>Poko gen pwodwi.</p></div>';
+        return;
+      }
+      
+      list.innerHTML = filtered.map(function(p) {
+        return '<div class="product-item">' +
+          '<div style="display:flex; gap:12px; flex:1;">' +
+            (p.image ? '<img src="' + p.image + '" style="width:60px;height:60px;border-radius:6px;object-fit:cover;" onerror="this.style.display=\'none\'">' : '') +
+            '<div class="product-info">' +
+              '<div style="display:flex; align-items:center; gap:8px;">' +
+                '<h3>' + p.title + '</h3>' +
+                (p.featured ? '<span class="badge">⭐ Rekòmande</span>' : '') +
+              '</div>' +
+              '<p>' + p.description.substring(0, 60) + '...</p>' +
+              '<p><strong>' + p.category + '</strong> | 📦 ' + p.stock + ' | ' + p.dateAdded + '</p>' +
+              '<div class="product-price">' + p.price + ' HTG</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="product-actions">' +
+            '<button class="btn btn-small btn-danger" onclick="deleteProduct(\'' + p.id + '\')">🗑️ Efase</button>' +
+          '</div>' +
+          '</div>';
+      }).join('');
+    }
+    
+    function deleteProduct(id) {
+      if (confirm('Ou sigur ou vle efase pwodwi sa yo?')) {
+        products = products.filter(p => p.id !== id);
+        saveProducts();
+      }
+    }
+    
+    document.getElementById('searchInput').addEventListener('input', displayProducts);
+    
+    // Initial display
+    displayProducts();
+    window.deleteProduct = deleteProduct;
+  </script>
+</body>
+</html>

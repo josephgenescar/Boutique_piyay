@@ -63,41 +63,34 @@ title: Accueil - Boutique Piyay
     <h2>Parcourir par Catégorie</h2>
   </div>
   <div class="category-bubbles">
-    {% for category in site.categories %}
-    <a href="{{ category.url }}" class="cat-bubble">
+    <a href="/kategori.html?cat=accessoires-electronique" class="cat-bubble">
       <div class="bubble-img">
-        <img src="{{ category.image }}" alt="{{ category.title }}">
+        <img src="/assets/images/uploads/images-3-.jpg" alt="Électronique" onerror="this.parentElement.innerHTML='⚡'">
       </div>
-      <span>{{ category.title }}</span>
+      <span>⚡ Électronique</span>
     </a>
-    {% endfor %}
+    <a href="/kategori.html?cat=habillement" class="cat-bubble">
+      <div class="bubble-img">
+        <img src="/assets/images/uploads/habillement.jpg" alt="Habillement" onerror="this.parentElement.innerHTML='👗'">
+      </div>
+      <span>👗 Habillement</span>
+    </a>
+    <a href="/kategori.html?cat=maison" class="cat-bubble">
+      <div class="bubble-img">
+        <img src="/assets/images/uploads/maison.jpg" alt="Maison" onerror="this.parentElement.innerHTML='🏠'">
+      </div>
+      <span>🏠 Maison</span>
+    </a>
   </div>
 </section>
 
-<!-- 5. RECOMMANDATIONS -->
+<!-- 5. REKÒMANDE (CHARGE DARI LOKALSTORAGE) -->
 <section id="recommandations" class="container">
   <div class="section-header">
-    <h2>✨ Recommandations pour vous</h2>
+    <h2>✨ Rekòmande pou ou</h2>
   </div>
-  <div class="product-grid">
-    {% for product in site.products limit:12 %}
-      {% unless product.flash_sale %}
-      <div class="product-card">
-        <div class="card-img">
-            <a href="{{ product.url }}">
-                <img src="{{ product.image }}" alt="{{ product.title }}">
-            </a>
-        </div>
-        <div class="card-info">
-            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
-            <div class="price-container">
-                <span class="price">{{ product.price }} HTG</span>
-            </div>
-            <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
-        </div>
-      </div>
-      {% endunless %}
-    {% endfor %}
+  <div id="recommendedProducts" class="product-grid">
+    <!-- Charge dari JavaScript -->
   </div>
 </section>
 
@@ -158,7 +151,37 @@ function startFlashTimer(duration) {
         if (--timer < 0) { timer = duration; }
     }, 1000);
 }
-document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 * 2.5); });
+
+// ─── CHARGE REKÒMANDE DARI LOKALSTORAGE ──────────────
+function loadRecommended() {
+  var products = JSON.parse(localStorage.getItem('bp_products') || '[]');
+  var featured = products.filter(p => p.featured).slice(0, 12);
+  
+  var container = document.getElementById('recommendedProducts');
+  if (featured.length === 0) {
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;"><p>Poko gen pwodwi rekòmande</p></div>';
+    return;
+  }
+  
+  container.innerHTML = featured.map(p => {
+    return '<div class="product-card">' +
+      '<div class="card-img">' +
+        (p.image ? '<img src="' + p.image + '" alt="' + p.title + '" onerror="this.style.display=\'none\'">' : '<span style="display:flex;align-items:center;justify-content:center;height:100%;font-size:40px;">🛍️</span>') +
+      '</div>' +
+      '<div class="card-info">' +
+        '<h3>' + p.title + '</h3>' +
+        '<p style="font-size:12px;color:#666;margin-bottom:8px;">' + p.description.substring(0, 50) + '...</p>' +
+        '<div style="color:#ff4747; font-weight:700; font-size:16px; margin-bottom:10px;">' + p.price + ' HTG</div>' +
+        '<button class="add-to-cart" onclick="orderProduct(\'' + p.title + '\', ' + p.price + ', \'' + p.id + '\')">🛒 Ajoute</button>' +
+      '</div>' +
+      '</div>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  startFlashTimer(3600 * 2.5);
+  loadRecommended();
+});
 </script>
 
 <style>
