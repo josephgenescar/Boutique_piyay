@@ -4,25 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
-    <title>Boutique Piyay - Admin Dashboard</title>
+    <title>Boutique Piyay — Administration</title>
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
-    <!-- 1. Decap CMS -->
+    <!-- Decap CMS (Nouvo non Netlify CMS) -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <!-- 2. ImageKit Library -->
-    <script src="https://unpkg.com/netlify-cms-media-library-imagekit@^1.0.0/dist/netlify-cms-media-library-imagekit.js"></script>
-
     <script>
-      // 3. Enregistrement ImageKit
-      if (typeof CMS !== 'undefined' && window.NetlifyCMSMediaLibraryImagekit) {
-        CMS.registerMediaLibrary(window.NetlifyCMSMediaLibraryImagekit);
-      }
-    </script>
-
-    <script>
+      // Jesyon login
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", user => {
           if (!user) {

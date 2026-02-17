@@ -5,14 +5,13 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
-site_url: "https://boutique.netlify.app"
-display_url: "https://boutique.netlify.app"
+# Retire site_url ak display_url pou evite konfli lokal
+# Netlify ap detekte yo otomatikman
 
 editor:
   preview: false
 
 collections:
-  # 1. TOUT PWODWI YO
   - name: "products"
     label: "🛒 Tout Pwodwi"
     folder: "_products"
@@ -32,19 +31,6 @@ collections:
         field: { label: "Image", name: "img", widget: "image" }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  # 2. SEKSYON ESPESYAL POU VENTE FLASH (Filtré)
-  - name: "flash_sale_products"
-    label: "⚡ Vente Flash (Lis)"
-    folder: "_products"
-    create: false # Nou pa kreye isit la, nou jis jere sa k nan flash sale
-    filter: {field: "flash_sale", value: true}
-    fields:
-      - { label: "Titre du produit", name: "title", widget: "string" }
-      - { label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: true }
-      - { label: "Prix Actuel (HTG)", name: "price", widget: "number" }
-      - { label: "Ancien Prix", name: "old_price", widget: "number" }
-
-  # 3. KATEGORI YO
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
@@ -54,21 +40,4 @@ collections:
       - { label: "Nom de la Catégorie", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image Bulle (Accueil)", name: "image", widget: "image" }
-      - { label: "Image Banner (Haut de page)", name: "banner_image", widget: "image" }
-      - label: "Galerie de la catégorie"
-        name: "gallery"
-        widget: "list"
-        required: false
-        field: { label: "Image", name: "image", widget: "image" }
       - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
-
-  # 4. PIBLISITE YO
-  - name: "promotions"
-    label: "📢 Publicités & Promos"
-    folder: "_promotions"
-    create: true
-    fields:
-      - { label: "Nom du Partenaire", name: "title", widget: "string" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Position", name: "position", widget: "select", options: ["top", "middle", "bottom"] }
-      - { label: "Actif", name: "active", widget: "boolean", default: true }
