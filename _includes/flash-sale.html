@@ -1,0 +1,99 @@
+<div class="flash-sale-banner" id="flashSale">
+  <div class="wrapper">
+    <div class="flash-content">
+      <div class="flash-icon">⚡</div>
+      <div class="flash-text">
+        <h3>VENTE FLASH!</h3>
+        <p>Jusqu'à -50% sur une sélection de produits</p>
+      </div>
+      <div class="flash-timer">
+        <div class="timer-block">
+          <span id="hours">00</span>
+          <label>Heures</label>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-block">
+          <span id="minutes">00</span>
+          <label>Minutes</label>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-block">
+          <span id="seconds">00</span>
+          <label>Secondes</label>
+        </div>
+      </div>
+      <a href="/shop" class="flash-cta">Voir les offres →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const saleEnd = new Date();
+saleEnd.setHours(saleEnd.getHours() + 24);
+
+function updateTimer() {
+  const now = new Date();
+  const diff = saleEnd - now;
+
+  if (diff <= 0) {
+    document.getElementById('flashSale').style.display = 'none';
+    return;
+  }
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+  document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+  document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+</script>
+
+<style>
+.flash-sale-banner {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 20px 0;
+  margin-bottom: 30px;
+}
+.flash-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.flash-timer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.timer-block {
+  background: rgba(255,255,255,0.2);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 60px;
+}
+.timer-block span {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+}
+.timer-block label {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+.flash-cta {
+  background: white;
+  color: #ef4444;
+  padding: 10px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+}
+</style>
