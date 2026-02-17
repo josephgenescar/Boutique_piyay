@@ -50,11 +50,12 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 
 ## 📧 Paj Admin
 
-### Dashboard Admin (`/admin/dashboard.html`) 🔐 PROTEJE
-- Wè estatistik total pwodwi
-- Gade kryaj Rekòmande
-- Aksè rapid nan tout tool yo
+### Admin Panel (`/admin/admin.html`) 🔐 PROTEJE - **PRINCIPAL**
+- Dashboard avèk estatistik
+- Onglet Konfigirasyon
+- Lyen rapid pou tout tool yo
 - **Rekit:** Login avèk modpas
+- **Lyen Rapid:** Products, CMS, Kategori, Kont Kliyan
 
 ### Gestion Produits (`/admin/products.html`) 🔐 PROTEJE
 - ➕ **Ajoute pwodwi** (Fil form)
@@ -68,19 +69,21 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 - **Rekit:** Sèvi Netlify Identity
 - **Di Atansyon:** Ou ka aksè direktman san modpas boutik
 
-### Kategori Pages (`/kategori.html`) 🔓 LIBRE
-- Wè pwodwi aksè kategori
-- Filtre pa pri, rekòmande, estòk
-- Aksè ouvè (pa bezwen login)
+### Kont Kliyan (`/admin/account.html`) 🔓 LIBRE
+- Enfòmasyon kont kliyan
+- Istorik komannd
+- Paramèt sekirite ak preferans
+- **Rekit:** Aksè direktman pou kliyan (pa bezwen admin login)
 
 ---
 
 ## 🔒 Sigrite (Security)
 
 ✅ **Pwodèj Proteksyon (2 Paj):**
-- ✅ Dashboard (`/admin/dashboard.html`) - Modpas oblije
+- ✅ Admin Panel (`/admin/admin.html`) - Modpas oblije
 - ✅ Products (`/admin/products.html`) - Modpas oblije
 - ✅ CMS Netlify (`/admin/index.html`) - Sèvi Netlify Identity (pa modpas boutik)
+- ✅ Kont Kliyan (`/admin/account.html`) - Libre pou kliyan
 
 **Mekanik Proteksyon:**
 - Modpas check dèk login  
@@ -90,7 +93,7 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 
 ⚠️ **Di Atansyon:**
 - Modpas a stoke lo **client-side** (browser localStorage)
-- Pou maksimòm sigrite, sevi ak HTTPS
+- Pou maksimòm sigrite, sèvi ak HTTPS
 - Logout apre ou fini travay
 
 ---
@@ -128,9 +131,10 @@ Sistèm yo sèvi avèk **localStorage** pou rejis:
 
 | Paj | Modpas | Status |
 |-----|--------|--------|
-| Dashboard | ✅ Rekit | 🔐 Pwoteje |
+| Admin Panel | ✅ Rekit | 🔐 Pwoteje |
 | Products | ✅ Rekit | 🔐 Pwoteje |
 | CMS Netlify | ❌ Pa | 🔓 Libre |
+| Kont Kliyan | ❌ Pa | 🔓 Libre (Kliyan) |
 | Kategori | ❌ Pa | 🔓 Libre (Kliyan) |
 
 ---
@@ -167,4 +171,4 @@ Sistèm yo sèvi avèk **localStorage** pou rejis:
 ---
 
 **Last Updated:** Fevriye 17, 2026
-**Version:** Admin v1.2 (2-Page Protected + CMS Free)
+**Version:** Admin v1.3 (Unified Admin Panel + Customer Account)
