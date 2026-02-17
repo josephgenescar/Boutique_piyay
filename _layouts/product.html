@@ -111,7 +111,7 @@ layout: default
 
       <!-- Add to Cart Button -->
       {% if page.in_stock %}
-      <button class="add-to-cart-btn" onclick="addToCart('{{ page.title }}', {{ page.price }}, '{{ page.featured_image }}', '{{ page.url }}')">
+      <button class="add-to-cart-btn" onclick="addToCart('{{ page.title }}', {{ page.price }})">
         🛒 Ajouter au panier
       </button>
       {% else %}
