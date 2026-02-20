@@ -3,10 +3,23 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. BANNER PRENSIPAL (RANPLASE HERO UNPLASH) -->
-<div class="main-banner-wrap">
-  {% include boutique-piyay-banner.html %}
-</div>
+<!-- 1. HERO BANNER KI GEN NOUVO BANNER OU A AK TEKS LA -->
+<section id="hero-marketplace" class="main-hero-custom">
+  <!-- Kontni Banner HTML la kòm background -->
+  <div class="hero-bg-layer">
+    {% include boutique-piyay-banner.html %}
+  </div>
+
+  <!-- Tèks ki te sou imaj la anvan an -->
+  <div class="hero-content container">
+    <div class="hero-text-box">
+        <span class="badge-flash">🔥 Vente Flash -50%</span>
+        <h1>Offres exceptionnelles sur nos collections !</h1>
+        <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
+        <a href="#flash-sale" class="btn-primary-hero">Profiter des offres 🛍️</a>
+    </div>
+  </div>
+</section>
 
 <!-- 2. AFFICHAGE DES PUBS DU HAUT -->
 <section class="ads-top container" style="padding-top: 20px;">
@@ -114,58 +127,89 @@ title: Accueil - Boutique Piyay
 </div>
 
 <script src="/main.js"></script>
-<script>
-function startFlashTimer(duration) {
-    var timer = duration, hours, minutes, seconds;
-    setInterval(function () {
-        hours = parseInt(timer / 3600, 10);
-        minutes = parseInt((timer % 3600) / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-        if (document.getElementById('hours')) {
-            document.getElementById('hours').textContent = hours < 10 ? "0" + hours : hours;
-            document.getElementById('minutes').textContent = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById('seconds').textContent = seconds < 10 ? "0" + seconds : seconds;
-        }
-        if (--timer < 0) { timer = duration; }
-    }, 1000);
-}
-document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 * 2.5); });
-</script>
 
 <style>
-/* CSS POU RANN BANNER A 100% EPI SAN ESPAS */
-.main-banner-wrap {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+/* CSS POU KONBINE BANNER A AK TEKS LA */
+.main-hero-custom {
+    position: relative;
+    width: 100%;
+    height: 450px; /* Menm wotè ak banner a */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
+    margin-bottom: 30px;
 }
 
-/* Nou asire n ke kòd ki anndan banner a tou pran 100% */
-.main-banner-wrap > * {
+.hero-bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    transform: scale(1.1); /* Pou asire l kouvri tout lajè a byen */
+}
+
+/* Nou fose banner anndan an pran tout plas la */
+.hero-bg-layer iframe, .hero-bg-layer .banner {
     width: 100% !important;
-    max-width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
 }
 
-/* CSS MODAL & GRID */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-.modal-content { background: white; width: 95%; max-width: 500px; border-radius: 15px; padding: 20px; max-height: 90vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
-.order-form input, .order-form select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; }
-.btn-confirm-order { width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    color: white;
+}
 
+.hero-text-box h1 {
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+    margin: 15px 0;
+}
+
+.hero-text-box p {
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+    margin-bottom: 25px;
+}
+
+.badge-flash {
+    background: #ff4747;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-primary-hero {
+    background: #ff4747;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(255, 71, 71, 0.4);
+}
+
+/* GRID & CARDS */
 .category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
-.cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; transition: 0.3s; }
-.cat-bubble:hover { transform: scale(1.1); }
-.bubble-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #ff4747; margin: 0 auto 10px; overflow: hidden; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; }
+.bubble-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #ff4747; margin: 0 auto 10px; overflow: hidden; background: #fff; }
 .bubble-img img { width: 100%; height: 100%; object-fit: cover; }
-.cat-bubble span { font-weight: 600; font-size: 14px; }
 
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-.product-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; }
-.product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+.product-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; }
 .card-img img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; }
 .price { color: #ff4747; font-weight: bold; font-size: 16px; margin: 8px 0; }
-.add-to-cart { width: 100%; padding: 8px; background: #ff4747; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
+.add-to-cart { width: 100%; padding: 8px; background: #ff4747; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+/* MODAL */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+.modal-content { background: white; width: 95%; max-width: 500px; border-radius: 15px; padding: 20px; max-height: 90vh; overflow-y: auto; }
 </style>
