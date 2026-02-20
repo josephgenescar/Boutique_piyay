@@ -5,39 +5,81 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
-# Retire site_url ak display_url pou evite konfli lokal
-# Netlify ap detekte yo otomatikman
-
-editor:
-  preview: false
+locale: 'fr'
 
 collections:
+  # 1. PWODWI YO
   - name: "products"
-    label: "🛒 Tout Pwodwi"
+    label: "📦 Produits"
+    label_singular: "Produit"
     folder: "_products"
     create: true
     slug: "{{slug}}"
+    editor:
+      preview: true
     fields:
-      - { label: "Titre du produit", name: "title", widget: "string" }
-      - { label: "Catégorie", name: "category", widget: "string" }
-      - { label: "Prix Actuel (HTG)", name: "price", widget: "number" }
-      - { label: "Ancien Prix (Vente Flash)", name: "old_price", widget: "number", required: false }
-      - { label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false }
-      - { label: "Image principale", name: "image", widget: "image" }
+      - {label: "Titre", name: "title", widget: "string"}
+      - {label: "Prix (HTG)", name: "price", widget: "number"}
+      - {label: "Ancien Prix", name: "old_price", widget: "number", required: false}
+      - {label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false}
+      - {label: "Image Principale", name: "image", widget: "image"}
       - label: "Galerie d'images"
         name: "images"
         widget: "list"
         required: false
-        field: { label: "Image", name: "img", widget: "image" }
-      - { label: "Description", name: "body", widget: "markdown" }
+        field: {label: "Image", name: "img", widget: "image"}
+      - {label: "Description", name: "body", widget: "markdown"}
+      - label: "Catégorie"
+        name: "category"
+        widget: "select"
+        options: ["electronique", "habillement", "maison", "alimentation", "beaute"]
 
+  # 2. KATEGORI YO
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Nom de la Catégorie", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image Bulle (Accueil)", name: "image", widget: "image" }
-      - { label: "Layout", name: "layout", widget: "hidden", default: "category" }
+      - {label: "Nom", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Image Bulle", name: "image", widget: "image"}
+      - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
+
+  # 3. PAJ YO (About, Contact, etc.)
+  - name: "pages"
+    label: "📄 Pages"
+    files:
+      - label: "À Propos"
+        name: "about"
+        file: "about.markdown"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Contenu", name: "body", widget: "markdown"}
+      
+      - label: "Politique de Confidentialité"
+        name: "privacy"
+        file: "privacy-policy.md"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Contenu", name: "body", widget: "markdown"}
+
+  # 4. PARAMÈT SIT LA
+  - name: "settings"
+    label: "⚙️ Paramètres"
+    files:
+      - label: "Configuration Générale"
+        name: "general"
+        file: "_data/settings.yml"
+        fields:
+          - {label: "Nom du Site", name: "site_name", widget: "string"}
+          - {label: "Slogan", name: "description", widget: "text"}
+          - {label: "Logo", name: "logo", widget: "image"}
+          - {label: "Email de Contact", name: "email", widget: "string"}
+          - {label: "WhatsApp", name: "whatsapp", widget: "string"}
+          - label: "Réseaux Sociaux"
+            name: "social"
+            widget: "object"
+            fields:
+              - {label: "Facebook", name: "facebook", widget: "string", required: false}
+              - {label: "Instagram", name: "instagram", widget: "string", required: false}

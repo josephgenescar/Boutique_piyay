@@ -8,29 +8,25 @@
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
-      /* Background Glassmorphism Vert */
+      /* Nou mete background nan sou yon pseudo-eleman pou l pa bloke CMS la */
       body {
         margin: 0;
         padding: 0;
-        background: #0f172a; /* Fon nwa ble pou fè vèt la parèt byen */
-        overflow: hidden;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background: #0f172a;
+        min-height: 100vh;
       }
 
-      /* Ti sèk k ap flote nan background nan */
       body::before, body::after {
         content: "";
-        position: absolute;
-        width: 300px;
-        height: 300px;
+        position: fixed; /* Fixed pou yo pa bouje lè w ap scroll */
+        width: 400px;
+        height: 400px;
         border-radius: 50%;
-        background: linear-gradient(#22c55e, #10b981); /* Vèt vivan */
+        background: linear-gradient(#22c55e, #10b981);
         z-index: -1;
-        filter: blur(50px);
-        animation: animate 10s infinite alternate;
+        filter: blur(80px);
+        opacity: 0.4;
+        animation: animate 15s infinite alternate;
       }
 
       body::before {
@@ -42,25 +38,22 @@
         bottom: -10%;
         right: -10%;
         background: linear-gradient(#059669, #34d399);
-        animation-delay: -5s;
+        animation-delay: -7s;
       }
 
       @keyframes animate {
-        from { transform: translate(0, 0); }
-        to { transform: translate(100px, 50px); }
+        from { transform: translate(0, 0) scale(1); }
+        to { transform: translate(50px, 50px) scale(1.1); }
       }
 
-      /* Effet de verre (Glassmorphism) sou veso CMS la */
+      /* Styles pou CMS la parèt byen sou background nan */
       #nc-root {
-        background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: transparent !important;
       }
 
       /* Style pou bouton Login Netlify a */
       .netlify-identity-button {
-        background-color: #10b981 !important; /* Bouton Vèt */
+        background-color: #10b981 !important;
         color: white !important;
         border-radius: 8px !important;
         padding: 12px 24px !important;
