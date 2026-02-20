@@ -1,23 +1,21 @@
-site_name: "Boutique Piyay"
-description: "Byenvini nan Boutique Piyay, pi bon kote pou jwenn pwodwi ou bezwen ak pi bon pri."
-logo: "/assets/images/logo.png"
-email: "josephgenescar@gmail.com"
-phone1: "+509 4886-8964"
-phone2: "+509 4068-3108"
-whatsapp: "50948868964"
-address: "Port-au-Prince, Haïti"
-
-social:
-  facebook: "https://facebook.com/boutiquepiyay"
-  instagram: "https://instagram.com/boutiquepiyay"
-  twitter: ""
-
+site_name: Boutique Piyay
+phone1: +509 4886-8964
+phone2: +509 4068-3108
 payment:
-  moncash: "4886-8964"
-  natcash: "4068-3108"
+  moncash: 4886-8964
+  natcash: 4068-3108
   cash_enabled: true
-
+logo: file:///C:/Users/PC/Downloads/boutique-piyay-banner.html
+social:
+  facebook: https://facebook.com/boutiquepiyay
+  instagram: https://instagram.com/boutiquepiyay
+  twitter: ""
 shipping:
   pap_fee: 0
   province_fee: 100
   free_shipping_threshold: 1000
+whatsapp: "50948868964"
+address: Port-au-Prince, Haïti
+description: Byenvini nan Boutique Piyay, pi bon kote pou jwenn pwodwi ou bezwen
+  ak pi bon pri.
+email: josephgenescar@gmail.com
