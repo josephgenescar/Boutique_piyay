@@ -7,13 +7,73 @@
     <title>Boutique Piyay — Administration</title>
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+      /* Background Glassmorphism Vert */
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0f172a; /* Fon nwa ble pou fè vèt la parèt byen */
+        overflow: hidden;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Ti sèk k ap flote nan background nan */
+      body::before, body::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: linear-gradient(#22c55e, #10b981); /* Vèt vivan */
+        z-index: -1;
+        filter: blur(50px);
+        animation: animate 10s infinite alternate;
+      }
+
+      body::before {
+        top: -10%;
+        left: -10%;
+      }
+
+      body::after {
+        bottom: -10%;
+        right: -10%;
+        background: linear-gradient(#059669, #34d399);
+        animation-delay: -5s;
+      }
+
+      @keyframes animate {
+        from { transform: translate(0, 0); }
+        to { transform: translate(100px, 50px); }
+      }
+
+      /* Effet de verre (Glassmorphism) sou veso CMS la */
+      #nc-root {
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Style pou bouton Login Netlify a */
+      .netlify-identity-button {
+        background-color: #10b981 !important; /* Bouton Vèt */
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 12px 24px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+      }
+    </style>
   </head>
   <body>
-    <!-- Decap CMS (Nouvo non Netlify CMS) -->
+    <!-- Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-      // Jesyon login
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", user => {
           if (!user) {
