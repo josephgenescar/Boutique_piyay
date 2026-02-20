@@ -13,17 +13,23 @@
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
-  <body style="background-color: white; margin: 0; padding: 0;">
-    <div style="width: 100%; margin: 0; padding: 0;">
-      {% include header.html %}
+  <body style="background-color: #f4f4f4; margin: 0; padding: 0; display: flex; justify-content: center;">
+    <div style="width: 100%; background-color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
 
-      <main class="page-content" aria-label="Content">
-        <div class="wrapper" style="width: 100%; max-width: 100%; padding: 0;">
-          {{ content }}
-        </div>
+      <!-- Header a dwe pran 100% -->
+      <div style="width: 100%;">
+        {% include header.html %}
+      </div>
+
+      <main class="page-content" style="width: 100%; flex: 1;">
+        {{ content }}
       </main>
 
-      {% include footer.html %}
+      <!-- Footer a dwe pran 100% -->
+      <div style="width: 100%;">
+        {% include footer.html %}
+      </div>
+
     </div>
 
     <!-- Sèl Script nou bezwen an -->
