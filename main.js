@@ -1,58 +1,13 @@
 // ==========================================
-// BOUTIQUE PIYAY - CORE JAVASCRIPT (VERSION FINALE)
+// BOUTIQUE PIYAY - CORE JAVASCRIPT
 // ==========================================
 
+// 1. GESTION DU PANIER
 let cart = [];
 try {
     cart = JSON.parse(localStorage.getItem('piyay_cart')) || [];
 } catch(e) {
     cart = [];
-}
-
-// 1. AJOUTER AU PANIER
-function orderProduct(title, price, id) {
-    console.log("Ajout du produit :", title);
-    let quantity = 1;
-
-    // Si nous sommes sur la page produit, nous prenons la quantité dans l'input
-    const qtyInput = document.getElementById('prod-qty');
-    if (qtyInput) {
-        quantity = parseInt(qtyInput.value) || 1;
-    }
-
-    const existingItem = cart.find(item => item.title === title);
-    if (existingItem) {
-        existingItem.quantity += quantity;
-    } else {
-        cart.push({ title, price: parseFloat(price), quantity });
-    }
-    
-    saveCart();
-    updateCartUI();
-
-    // Feedback visuel
-    alert("✅ " + title + " a été ajouté au panier !");
-}
-
-// CHANGER LA QUANTITÉ DANS LE PANIER
-function updateCartQty(index, val) {
-    if (cart[index]) {
-        cart[index].quantity += val;
-        if (cart[index].quantity < 1) {
-            cart.splice(index, 1); // Retirer si < 1
-        }
-        saveCart();
-        updateCartUI();
-        renderOrderSummary(); // Rafraîchir l'affichage du modal
-    }
-}
-
-// RETIRER UN ARTICLE
-function removeItem(index) {
-    cart.splice(index, 1);
-    saveCart();
-    updateCartUI();
-    renderOrderSummary();
 }
 
 function saveCart() {
@@ -64,11 +19,44 @@ function updateCartUI() {
     const badge = document.getElementById('cart-badge');
     if (badge) {
         badge.innerText = totalItems;
-        badge.style.display = 'block';
+        badge.style.display = totalItems > 0 ? 'flex' : 'none';
     }
 }
 
-// 2. OUVRIR LE MODAL DU PANIER
+function orderProduct(title, price, id) {
+    let quantity = 1;
+    const qtyInput = document.getElementById('prod-qty');
+    if (qtyInput) quantity = parseInt(qtyInput.value) || 1;
+
+    const existingItem = cart.find(item => item.title === title);
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cart.push({ title, price: parseFloat(price), quantity });
+    }
+    
+    saveCart();
+    updateCartUI();
+    alert("✅ " + title + " ajouté au panier !");
+}
+
+function updateCartQty(index, val) {
+    if (cart[index]) {
+        cart[index].quantity += val;
+        if (cart[index].quantity < 1) cart.splice(index, 1);
+        saveCart();
+        updateCartUI();
+        renderOrderSummary();
+    }
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    saveCart();
+    updateCartUI();
+    renderOrderSummary();
+}
+
 function openOrderModal() {
     const modal = document.getElementById('order-modal');
     if (modal) {
@@ -115,7 +103,6 @@ function renderOrderSummary() {
     summaryDiv.innerHTML = html;
 }
 
-// 3. CONFIRMER LA COMMANDE
 function submitOrder() {
     const name = document.getElementById('customer-name').value.trim();
     const phone = document.getElementById('customer-phone').value.trim();
@@ -126,81 +113,62 @@ function submitOrder() {
         return;
     }
 
-    if (cart.length === 0) {
-        alert("Votre panier est vide !");
-        return;
-    }
-
-    let message = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n`;
-    message += `👤 *Client :* ${name}\n`;
-    message += `📱 *Téléphone :* ${phone}\n`;
-    message += `💳 *Paiement :* ${payment}\n\n`;
-    message += `*📦 ARTICLES :*\n`;
-    
+    let message = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n👤 *Client :* ${name}\n📱 *Tél :* ${phone}\n💳 *Paiement :* ${payment}\n\n*📦 ARTICLES :*\n`;
     let total = 0;
     cart.forEach(item => {
         message += `- ${item.quantity}x ${item.title} (${item.price * item.quantity} HTG)\n`;
         total += (item.price * item.quantity);
     });
-    
     message += `\n*💰 TOTAL : ${total} HTG*`;
 
-    const whatsappUrl = `https://wa.me/50948868964?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappUrl, '_blank');
-
-    // Optionnel: Vider le panier après commande
-    // cart = []; saveCart(); updateCartUI(); closeOrderModal();
+    window.open(`https://wa.me/50948868964?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-// 4. RECHERCHE EN DIRECT
-let searchData = [];
-fetch('/search.json').then(res => res.json()).then(data => searchData = data);
-
+// 2. RECHERCHE EN DIRECT (Améliorée)
 function liveSearch() {
     let input = document.getElementById('search-input');
-    if (!input) return;
-    let term = input.value.toLowerCase();
-    let resultsDiv = document.getElementById('search-results');
+    let drop = document.getElementById('search-results');
+    if (!input || !drop) return;
 
-    if (term.length < 2) {
-        if (resultsDiv) resultsDiv.style.display = 'none';
-        return;
-    }
+    let val = input.value.toLowerCase();
+    if (val.length < 2) { drop.style.display = 'none'; return; }
 
-    let filtered = searchData.filter(item =>
-        item.title.toLowerCase().includes(term) ||
-        (item.category && item.category.toLowerCase().includes(term))
-    ).slice(0, 10);
+    let cards = document.querySelectorAll('.product-card, .flash-card');
+    let results = [];
 
-    if (resultsDiv) {
-        if (filtered.length > 0) {
-            resultsDiv.innerHTML = filtered.map(item => `
-                <a href="${item.url}" class="search-item" style="display:flex; align-items:center; padding:10px; text-decoration:none; color:#333; border-bottom:1px solid #eee;">
-                    <img src="${item.image}" style="width:40px; height:40px; object-fit:cover; margin-right:10px; border-radius:5px;">
-                    <div>
-                        <div style="font-weight:bold; font-size:14px;">${item.title}</div>
-                        <div style="font-size:12px; color:#ff4747;">${item.price} HTG</div>
-                    </div>
-                </a>
-            `).join('');
-            resultsDiv.style.display = 'block';
-        } else {
-            resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Aucun résultat trouvé 😕</div>';
-            resultsDiv.style.display = 'block';
+    cards.forEach(c => {
+        let title = (c.querySelector('h3') || {}).innerText || "";
+        let price = (c.querySelector('.price') || c.querySelector('.new-price') || {}).innerText || "";
+        let img = (c.querySelector('img') || {}).src || "";
+        let link = (c.querySelector('a') || {}).href || "#";
+
+        if (title.toLowerCase().includes(val)) {
+            results.push({ title, price, img, link });
         }
+    });
+
+    if (results.length === 0) {
+        drop.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Aucun résultat trouvé</div>';
+    } else {
+        drop.innerHTML = results.slice(0, 6).map(r => `
+            <a href="${r.link}" class="search-item" style="display:flex; align-items:center; padding:10px; text-decoration:none; color:#333; border-bottom:1px solid #eee;">
+                <img src="${r.img}" style="width:40px; height:40px; object-fit:cover; margin-right:10px; border-radius:5px;">
+                <div><strong>${r.title}</strong><br><span style="color:#ff4747;">${r.price}</span></div>
+            </a>
+        `).join('');
     }
+    drop.style.display = 'block';
 }
 
 // INITIALISATION
 document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
-    // Fermer le dropdown si on clique ailleurs
+
+    // Fermer le dropdown de recherche si on clique ailleurs
     document.addEventListener('click', (e) => {
-        const searchBox = document.querySelector('.search-box');
-        if (searchBox && !searchBox.contains(e.target)) {
-            const res = document.getElementById('search-results');
-            if(res) res.style.display = 'none';
+        const searchResults = document.getElementById('search-results');
+        if (searchResults && !e.target.closest('.search-wrap')) {
+            searchResults.style.display = 'none';
         }
     });
 });
