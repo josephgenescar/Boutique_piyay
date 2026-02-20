@@ -13,12 +13,12 @@
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
-  <body style="background-color: #f8f9fa;">
-    <div style="max-width: 1200px; margin: 0 auto; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+  <body style="background-color: white; margin: 0; padding: 0;">
+    <div style="width: 100%; margin: 0; padding: 0;">
       {% include header.html %}
 
       <main class="page-content" aria-label="Content">
-        <div class="wrapper">
+        <div class="wrapper" style="width: 100%; max-width: 100%; padding: 0;">
           {{ content }}
         </div>
       </main>
