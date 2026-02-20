@@ -104,9 +104,9 @@
 
       <!-- Actions -->
       <div class="header-actions">
-        <button id="account-action-btn" class="act-btn">
+        <a href="/admin/" class="act-btn" title="Administration">
           <span>👤</span><small>Compte</small>
-        </button>
+        </a>
         <button class="act-btn" onclick="openOrderModal()" title="Panier">
           <span>🛒</span>
           <div class="cart-badge" id="cart-badge" style="display:none;">0</div>
@@ -129,47 +129,10 @@
         <a href="#" class="nav-lnk">Catégories ▾</a>
         <div class="drop-menu">
           {% for cat in site.categories %}
-          <a href="{{ cat.url }}">{{ cat.title }}</a>
+          <a href="{{ cat.url }}">{{ cat.display_name | default: cat.title }}</a>
           {% endfor %}
-          <a href="/kategori/accessoires-electronique/">⚡ Électronique</a>
-          <a href="/kategori/habillement/">👗 Habillement</a>
-          <a href="/kategori/maison/">🏠 Maison</a>
         </div>
       </div>
     </div>
   </nav>
 </header>
-
-<script>
-// --- OTANTIFIKASYON NETLIFY ---
-document.addEventListener('DOMContentLoaded', function() {
-    const accountBtn = document.getElementById('account-action-btn');
-    if (!accountBtn) return;
-
-    const accountLabel = accountBtn.querySelector('small');
-
-    const updateAccountButton = (user) => {
-        if (user) {
-            accountLabel.textContent = 'Déconnexion';
-            accountBtn.onclick = () => netlifyIdentity.logout();
-        } else {
-            accountLabel.textContent = 'Compte';
-            accountBtn.onclick = () => netlifyIdentity.open();
-        }
-    };
-
-    if (window.netlifyIdentity) {
-        updateAccountButton(netlifyIdentity.currentUser());
-        netlifyIdentity.on('init', user => updateAccountButton(user));
-        netlifyIdentity.on('login', user => {
-            netlifyIdentity.close();
-            updateAccountButton(user);
-        });
-        netlifyIdentity.on('logout', () => {
-            updateAccountButton(null);
-        });
-    } else {
-        console.error('Netlify Identity widget not found.');
-    }
-});
-</script>
