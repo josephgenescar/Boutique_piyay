@@ -8,65 +8,77 @@ public_folder: "/assets/images/uploads"
 locale: 'fr'
 
 collections:
-  # 1. PWODWI YO
+  # 1. PWODWI YO (KONTWÒL TOTAL)
   - name: "products"
     label: "📦 Produits"
     folder: "_products"
     create: true
+    slug: "{{slug}}"
     fields:
       - {label: "Titre", name: "title", widget: "string"}
       - {label: "Prix (HTG)", name: "price", widget: "number"}
+      - {label: "Ancien Prix", name: "old_price", widget: "number", required: false}
       - {label: "Catégorie", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["display_name"]}
       - {label: "Image Principale", name: "image", widget: "image"}
-      - {label: "Description", name: "body", widget: "markdown"}
       - {label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false, required: false}
+      - {label: "Tailles disponibles (ex: S, M, L, XL)", name: "sizes", widget: "list", field: {label: "Taille", name: "size", widget: "string"}, required: false}
+      - {label: "Couleurs/Formes (ex: Rouge, Carré)", name: "variants", widget: "list", field: {label: "Variante", name: "variant", widget: "string"}, required: false}
+      - {label: "Description Détaillée", name: "body", widget: "markdown"}
 
   # 2. KATEGORI YO
   - name: "categories"
     label: "🗂 Catégories"
     folder: "_categories"
     create: true
-    slug: "{{title}}"
     fields:
-      - {label: "Identifiant (slug, ex: electronique)", name: "title", widget: "string"}
-      - {label: "Nom Affiché (ex: Électronique)", name: "display_name", widget: "string"}
-      - {label: "Image Bulle", name: "image", widget: "image"}
+      - {label: "Identifiant (slug)", name: "title", widget: "string"}
+      - {label: "Nom Affiché", name: "display_name", widget: "string"}
+      - {label: "Image Bulle (Ronde)", name: "image", widget: "image"}
+      - {label: "Image Banner (Haut de page)", name: "banner_image", widget: "image", required: false}
+      - {label: "Description", name: "description", widget: "text", required: false}
       - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
 
-  # 3. PAJ YO
-  - name: "pages"
-    label: "📄 Pages"
+  # 3. KONTWÒL PAJ AKÈY (HERO BANNER, ETC)
+  - name: "content"
+    label: "🏠 Contenu du Site"
     files:
-      - label: "À Propos"
-        name: "about"
-        file: "about.markdown"
+      - label: "Page d'Accueil (Hero & Pubs)"
+        name: "homepage"
+        file: "_data/homepage.yml"
         fields:
-          - {label: "Titre", name: "title", widget: "string"}
-          - {label: "Contenu", name: "body", widget: "markdown"}
-      - label: "Politique de Confidentialité"
-        name: "privacy"
-        file: "privacy-policy.md"
-        fields:
-          - {label: "Titre", name: "title", widget: "string"}
-          - {label: "Contenu", name: "body", widget: "markdown"}
+          - label: "Hero Banner"
+            name: "hero"
+            widget: "object"
+            fields:
+              - {label: "Image de fond", name: "bg_image", widget: "image"}
+              - {label: "Petit Badge (ex: Vente Flash)", name: "badge", widget: "string"}
+              - {label: "Grand Titre", name: "title", widget: "string"}
+              - {label: "Sous-titre", name: "subtitle", widget: "string"}
+              - {label: "Texte du Bouton", name: "btn_text", widget: "string"}
+          - label: "Bannières de Promotion (Ads)"
+            name: "promotions"
+            widget: "list"
+            fields:
+              - {label: "Image", name: "image", widget: "image"}
+              - {label: "Lien (URL)", name: "url", widget: "string", required: false}
+              - {label: "Active ?", name: "active", widget: "boolean", default: true}
 
-  # 4. PARAMÈT SIT LA
+  # 4. PARAMÈT & FOOTER
   - name: "settings"
-    label: "⚙️ Paramètres du Site"
+    label: "⚙️ Paramètres & Footer"
     files:
-      - label: "Infos Générales & Réseaux Sociaux"
+      - label: "Infos Boutique & Réseaux Sociaux"
         name: "general"
         file: "_data/settings.yml"
         fields:
           - {label: "Nom du Site", name: "site_name", widget: "string"}
-          - {label: "Slogan / Description Courte", name: "description", widget: "text"}
-          - {label: "Logo", name: "logo", widget: "image", required: false}
-          - {label: "Email de Contact", name: "email", widget: "string"}
+          - {label: "Email", name: "email", widget: "string"}
+          - {label: "Texte de copyright Footer", name: "footer_copy", widget: "string"}
           - label: "Réseaux Sociaux"
             name: "social"
             widget: "object"
             fields:
-              - {label: "Lien Facebook", name: "facebook", widget: "string", required: false}
-              - {label: "Lien Instagram", name: "instagram", widget: "string", required: false}
-              - {label: "Numéro WhatsApp (ex: 50948868964)", name: "whatsapp", widget: "string", required: false}
-              - {label: "Lien TikTok", name: "tiktok", widget: "string", required: false}
+              - {label: "Facebook", name: "facebook", widget: "string", required: false}
+              - {label: "Instagram", name: "instagram", widget: "string", required: false}
+              - {label: "WhatsApp", name: "whatsapp", widget: "string", required: false}
+              - {label: "TikTok", name: "tiktok", widget: "string", required: false}

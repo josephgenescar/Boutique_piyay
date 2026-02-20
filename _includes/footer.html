@@ -1,44 +1,46 @@
+<!-- Font Awesome pou ikòn yo -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <style>
 .main-footer {
     background: #111827;
     color: #d1d5db;
-    padding: 60px 0;
+    padding: 60px 0 30px;
     margin-top: 50px;
     border-top: 4px solid var(--primary, #ff4747);
 }
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 40px;
 }
 
 .footer-col h3 {
     color: white;
-    font-size: 16px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 18px;
+    margin-bottom: 25px;
     font-family: 'Poppins', sans-serif;
+    font-weight: 700;
 }
 
 .footer-col p, .footer-col li, .footer-col a {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.8;
     color: #9ca3af;
-    transition: color 0.3s;
+    transition: 0.3s;
 }
 
 .footer-col a:hover {
-    color: white;
+    color: #ff4747;
 }
 
 .footer-col ul { list-style: none; padding: 0; }
-.footer-col li { margin-bottom: 10px; }
+.footer-col li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
 
 .social-icons {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     margin-top: 20px;
 }
 
@@ -52,80 +54,71 @@
     background: #374151;
     color: white;
     font-size: 18px;
-    transition: background 0.3s, transform 0.3s;
+    transition: all 0.3s;
 }
 
 .social-icons a:hover {
-    background: var(--primary, #ff4747);
-    transform: translateY(-3px);
+    background: #ff4747;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 71, 71, 0.4);
 }
 
 .footer-bottom {
     text-align: center;
     margin-top: 50px;
-    padding-top: 30px;
+    padding-top: 25px;
     border-top: 1px solid #374151;
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: 14px;
+    color: #6b7280;
 }
 </style>
 
 <footer class="main-footer">
     <div class="container">
         <div class="footer-grid">
-            <!-- Kolòn 1: About -->
+            <!-- Kolòn 1: About & Social -->
             <div class="footer-col">
                 <h3>Boutique Piyay</h3>
-                <p>{{ site.description }}</p>
+                <p>Votre boutique de confiance pour tous vos besoins au meilleur prix. Qualité, rapidité et service client exceptionnel.</p>
                 <div class="social-icons">
                     {% if site.data.settings.social.facebook %}
-                        <a href="{{ site.data.settings.social.facebook }}" target="_blank">f</a>
+                        <a href="{{ site.data.settings.social.facebook }}" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                     {% endif %}
                     {% if site.data.settings.social.instagram %}
-                        <a href="{{ site.data.settings.social.instagram }}" target="_blank">i</a>
+                        <a href="{{ site.data.settings.social.instagram }}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
                     {% endif %}
                     {% if site.data.settings.social.whatsapp %}
-                        <a href="https://wa.me/{{ site.data.settings.social.whatsapp }}" target="_blank">w</a>
+                        <a href="https://wa.me/{{ site.data.settings.social.whatsapp }}" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     {% endif %}
-                     {% if site.data.settings.social.tiktok %}
-                        <a href="{{ site.data.settings.social.tiktok }}" target="_blank">t</a>
+                    {% if site.data.settings.social.tiktok %}
+                        <a href="{{ site.data.settings.social.tiktok }}" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Kolòn 2: Lyen rapid -->
+            <!-- Kolòn 2: Navigation -->
             <div class="footer-col">
-                <h3>Lyen Rapid</h3>
+                <h3>Navigation</h3>
                 <ul>
-                    <li><a href="/">Akèy</a></li>
-                    <li><a href="/#flash-sale">Vant Flash</a></li>
-                    <li><a href="/about.markdown">Sou Nou</a></li>
-                    <li><a href="/privacy-policy.md">Politik Konfidansyalite</a></li>
+                    <li><i class="fas fa-chevron-right" style="font-size: 10px;"></i> <a href="/">Accueil</a></li>
+                    <li><i class="fas fa-chevron-right" style="font-size: 10px;"></i> <a href="/#flash-sale">Ventes Flash</a></li>
+                    <li><i class="fas fa-chevron-right" style="font-size: 10px;"></i> <a href="/#categories-section">Catégories</a></li>
                 </ul>
             </div>
 
-            <!-- Kolòn 3: Kategori -->
+            <!-- Kolòn 3: Contact Infos -->
             <div class="footer-col">
-                <h3>Kategori</h3>
+                <h3>Contactez-nous</h3>
                 <ul>
-                    {% for cat in site.categories limit: 4 %}
-                    <li><a href="{{ cat.url }}">{{ cat.display_name | default: cat.title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <!-- Kolòn 4: Kontak -->
-            <div class="footer-col">
-                <h3>Kontak</h3>
-                <ul>
-                    <li>📧 <a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
-                    <li>💬 <a href="https://wa.me/{{ site.data.settings.social.whatsapp }}">WhatsApp</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+                    <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/{{ site.data.settings.social.whatsapp }}">Service Client WhatsApp</a></li>
+                    <li><i class="fas fa-map-marker-alt"></i> Saint-Domingue ➔ Haïti</li>
                 </ul>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; {% now 'Y' %} {{ site.title }}. Tout dwa rezève.</p>
+            <p>&copy; {% now "%Y" %} {{ site.title }}. Tout dwa rezève. Garanti pa Boutique Piyay.</p>
         </div>
     </div>
 </footer>
