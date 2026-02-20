@@ -6,42 +6,26 @@
 
     {% seo %}
 
-    <!-- ORDRE DES STYLES IMPORTANT -->
-    <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
-    <link rel="stylesheet" href="{{ "/assets/css/custom.css" | relative_url }}">
-    <link rel="stylesheet" href="{{ "/assets/css/glassmorphism.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "/style.css" | relative_url }}">
 
     {% feed_meta %}
 
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
-  <body>
-    {% include header.html %}
+  <body style="background-color: #f8f9fa;">
+    <div style="max-width: 1200px; margin: 0 auto; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+      {% include header.html %}
 
-    <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        {{ content }}
-      </div>
-    </main>
+      <main class="page-content" aria-label="Content">
+        <div class="wrapper">
+          {{ content }}
+        </div>
+      </main>
 
-    {% include footer.html %}
+      {% include footer.html %}
+    </div>
 
-    <!-- Scripts -->
-    <script src="{{ "/assets/js/cart.js" | relative_url }}"></script>
-    <script src="{{ "/assets/js/animations.js" | relative_url }}"></script>
-
-    <!-- Netlify Identity Logic -->
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
-    </script>
+    <script src="{{ "/main.js" | relative_url }}"></script>
   </body>
 </html>

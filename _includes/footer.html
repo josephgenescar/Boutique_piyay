@@ -1,3 +1,131 @@
-<footer>
-  <p>&copy; 2026 Boutique Universelle</p>
+<style>
+.main-footer {
+    background: #111827;
+    color: #d1d5db;
+    padding: 60px 0;
+    margin-top: 50px;
+    border-top: 4px solid var(--primary, #ff4747);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+}
+
+.footer-col h3 {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.footer-col p, .footer-col li, .footer-col a {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #9ca3af;
+    transition: color 0.3s;
+}
+
+.footer-col a:hover {
+    color: white;
+}
+
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col li { margin-bottom: 10px; }
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #374151;
+    color: white;
+    font-size: 18px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.social-icons a:hover {
+    background: var(--primary, #ff4747);
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #374151;
+    font-size: 13px;
+    color: #9ca3af;
+}
+</style>
+
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <!-- Kolòn 1: About -->
+            <div class="footer-col">
+                <h3>Boutique Piyay</h3>
+                <p>{{ site.description }}</p>
+                <div class="social-icons">
+                    {% if site.data.settings.social.facebook %}
+                        <a href="{{ site.data.settings.social.facebook }}" target="_blank">f</a>
+                    {% endif %}
+                    {% if site.data.settings.social.instagram %}
+                        <a href="{{ site.data.settings.social.instagram }}" target="_blank">i</a>
+                    {% endif %}
+                    {% if site.data.settings.social.whatsapp %}
+                        <a href="https://wa.me/{{ site.data.settings.social.whatsapp }}" target="_blank">w</a>
+                    {% endif %}
+                     {% if site.data.settings.social.tiktok %}
+                        <a href="{{ site.data.settings.social.tiktok }}" target="_blank">t</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Kolòn 2: Lyen rapid -->
+            <div class="footer-col">
+                <h3>Lyen Rapid</h3>
+                <ul>
+                    <li><a href="/">Akèy</a></li>
+                    <li><a href="/#flash-sale">Vant Flash</a></li>
+                    <li><a href="/about.markdown">Sou Nou</a></li>
+                    <li><a href="/privacy-policy.md">Politik Konfidansyalite</a></li>
+                </ul>
+            </div>
+
+            <!-- Kolòn 3: Kategori -->
+            <div class="footer-col">
+                <h3>Kategori</h3>
+                <ul>
+                    {% for cat in site.categories limit: 4 %}
+                    <li><a href="{{ cat.url }}">{{ cat.display_name | default: cat.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Kolòn 4: Kontak -->
+            <div class="footer-col">
+                <h3>Kontak</h3>
+                <ul>
+                    <li>📧 <a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+                    <li>💬 <a href="https://wa.me/{{ site.data.settings.social.whatsapp }}">WhatsApp</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; {% now 'Y' %} {{ site.title }}. Tout dwa rezève.</p>
+        </div>
+    </div>
 </footer>
