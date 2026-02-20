@@ -3,26 +3,28 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER KI GEN NOUVO BANNER OU A AK TEKS LA -->
-<section id="hero-marketplace" class="main-hero-custom">
-  <!-- Kontni Banner HTML la kòm background -->
-  <div class="hero-bg-layer">
-    {% include boutique-piyay-banner.html %}
-  </div>
-
-  <!-- Tèks ki te sou imaj la anvan an -->
-  <div class="hero-content container">
-    <div class="hero-text-box">
-        <span class="badge-flash">🔥 Vente Flash -50%</span>
-        <h1>Offres exceptionnelles sur nos collections !</h1>
-        <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
-        <a href="#flash-sale" class="btn-primary-hero">Profiter des offres 🛍️</a>
+<!-- 1. HERO BANNER AVEC MARGIN ET PADDING -->
+<div class="hero-wrapper-container">
+  <section id="hero-marketplace" class="main-hero-custom">
+    <!-- Kontni Banner HTML la kòm background -->
+    <div class="hero-bg-layer">
+      {% include boutique-piyay-banner.html %}
     </div>
-  </div>
-</section>
+
+    <!-- Tèks ki te sou imaj la (nou ajiste pozisyon l pou l pa kouvri logo a trop) -->
+    <div class="hero-content container">
+      <div class="hero-text-box">
+          <span class="badge-flash">🔥 Vente Flash -50%</span>
+          <h1>Offres exceptionnelles sur nos collections !</h1>
+          <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
+          <a href="#flash-sale" class="btn-primary-hero">Profiter des offres 🛍️</a>
+      </div>
+    </div>
+  </section>
+</div>
 
 <!-- 2. AFFICHAGE DES PUBS DU HAUT -->
-<section class="ads-top container" style="padding-top: 20px;">
+<section class="ads-top container" style="padding-top: 10px;">
     {% for ad in site.promotions %}
         {% if ad.active and ad.position == "top" %}
             <div class="ad-banner">
@@ -129,16 +131,25 @@ title: Accueil - Boutique Piyay
 <script src="/main.js"></script>
 
 <style>
-/* CSS POU KONBINE BANNER A AK TEKS LA */
+/* NOUVO WRAPPER POU BAY MARGIN SOU KOTE YO */
+.hero-wrapper-container {
+    padding: 20px 4% 0; /* Margin-top 20px, espas sou kote yo (4%) */
+    width: 100%;
+    background-color: white;
+}
+
 .main-hero-custom {
     position: relative;
     width: 100%;
-    height: 450px; /* Menm wotè ak banner a */
+    max-width: 1300px;
+    height: 450px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    margin-bottom: 30px;
+    margin: 0 auto;
+    border-radius: 30px; /* Bèl fòm awondi */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
 }
 
 .hero-bg-layer {
@@ -148,14 +159,20 @@ title: Accueil - Boutique Piyay
     width: 100%;
     height: 100%;
     z-index: 1;
-    transform: scale(1.1); /* Pou asire l kouvri tout lajè a byen */
 }
 
-/* Nou fose banner anndan an pran tout plas la */
+/* Nou asire n banner la pa gen pwòp background body li ki anpeche l parèt byen */
 .hero-bg-layer iframe, .hero-bg-layer .banner {
     width: 100% !important;
     height: 100% !important;
     border-radius: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+/* Nou kache logo ki anndan banner a pou l pa konfli ak tèks nou an, oswa nou rann li transparan */
+.hero-bg-layer .logo-area {
+    opacity: 0.3 !important; /* Nou bese l pou tèks anlè a ka parèt byen */
 }
 
 .hero-content {
@@ -163,53 +180,57 @@ title: Accueil - Boutique Piyay
     z-index: 10;
     text-align: center;
     color: white;
+    width: 100%;
+    padding: 0 30px;
+    background: rgba(0, 0, 0, 0.2); /* Yon ti kras nwa pou tèks la soti pi byen */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero-text-box h1 {
-    font-size: 2.5rem;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
-    margin: 15px 0;
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
+    text-shadow: 2px 2px 12px rgba(0,0,0,0.9);
+    margin: 10px 0;
+    font-weight: 900;
 }
 
 .hero-text-box p {
-    font-size: 1.2rem;
-    text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
-    margin-bottom: 25px;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
 .badge-flash {
     background: #ff4747;
     color: white;
-    padding: 5px 15px;
+    padding: 6px 16px;
     border-radius: 50px;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
+    display: inline-block;
 }
 
 .btn-primary-hero {
     background: #ff4747;
     color: white;
-    padding: 12px 30px;
-    border-radius: 8px;
+    padding: 14px 35px;
+    border-radius: 12px;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 800;
     font-size: 16px;
-    box-shadow: 0 4px 15px rgba(255, 71, 71, 0.4);
+    box-shadow: 0 6px 25px rgba(255, 71, 71, 0.5);
+    display: inline-block;
 }
 
-/* GRID & CARDS */
+/* RESTE DU DESIGN */
 .category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
 .cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; }
 .bubble-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #ff4747; margin: 0 auto 10px; overflow: hidden; background: #fff; }
 .bubble-img img { width: 100%; height: 100%; object-fit: cover; }
 
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-.product-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; }
-.card-img img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; }
-.price { color: #ff4747; font-weight: bold; font-size: 16px; margin: 8px 0; }
-.add-to-cart { width: 100%; padding: 8px; background: #ff4747; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-
-/* MODAL */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-.modal-content { background: white; width: 95%; max-width: 500px; border-radius: 15px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 20px; }
+.product-card { background: white; border: 1px solid #eee; border-radius: 15px; padding: 15px; }
 </style>
