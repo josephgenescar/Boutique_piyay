@@ -49,7 +49,7 @@ title: Accueil - Boutique Piyay
                     <div class="flash-prices">
                         <span class="new-price">{{ product.price }} HTG</span>
                     </div>
-                    <button class="btn-flash-buy" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">Ajouter</button>
+                    <button class="btn-flash-buy" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
                 </div>
             </div>
             {% endif %}
@@ -57,86 +57,71 @@ title: Accueil - Boutique Piyay
     </div>
 </section>
 
-<!-- 4. CATÉGORIES (BULLES) -->
+<!-- 4. CATÉGORIES (BULLES DINAMIK) -->
 <section id="categories-section" class="container">
   <div class="section-header">
     <h2>Parcourir par Catégorie</h2>
   </div>
   <div class="category-bubbles">
-    <a href="/kategori.html?cat=accessoires-electronique" class="cat-bubble">
+    {% for cat in site.categories %}
+    <a href="{{ cat.url }}" class="cat-bubble">
       <div class="bubble-img">
-        <img src="/assets/images/uploads/images-3-.jpg" alt="Électronique" onerror="this.parentElement.innerHTML='⚡'">
+        <img src="{{ cat.image }}" alt="{{ cat.display_name | default: cat.title }}" onerror="this.parentElement.innerHTML='🛍️'">
       </div>
-      <span>⚡ Électronique</span>
+      <span>{{ cat.display_name | default: cat.title }}</span>
     </a>
-    <a href="/kategori.html?cat=habillement" class="cat-bubble">
-      <div class="bubble-img">
-        <img src="/assets/images/uploads/habillement.jpg" alt="Habillement" onerror="this.parentElement.innerHTML='👗'">
-      </div>
-      <span>👗 Habillement</span>
-    </a>
-    <a href="/kategori.html?cat=maison" class="cat-bubble">
-      <div class="bubble-img">
-        <img src="/assets/images/uploads/maison.jpg" alt="Maison" onerror="this.parentElement.innerHTML='🏠'">
-      </div>
-      <span>🏠 Maison</span>
-    </a>
+    {% endfor %}
   </div>
 </section>
 
-<!-- 5. REKÒMANDE (CHARGE DARI LOKALSTORAGE) -->
+<!-- 5. REKÒMANDE -->
 <section id="recommandations" class="container">
   <div class="section-header">
     <h2>✨ Rekòmande pou ou</h2>
   </div>
-  <div id="recommendedProducts" class="product-grid">
-    <!-- Charge dari JavaScript -->
+  <div class="product-grid">
+    {% for product in site.products limit:12 %}
+      {% unless product.flash_sale %}
+      <div class="product-card">
+          <div class="card-img">
+              <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
+          </div>
+          <div class="card-info">
+              <h3>{{ product.title }}</h3>
+              <div class="price">{{ product.price }} HTG</div>
+              <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter au panier</button>
+          </div>
+      </div>
+      {% endunless %}
+    {% endfor %}
   </div>
 </section>
 
-<!-- 6. OPEN FOR BUSINESS -->
-<section id="open-for-business" class="container">
-    <div class="business-card">
-        <div class="business-content">
-            <h2>📢 Open for Business</h2>
-            <p>Faites la promotion de votre business sur Boutique Piyay !</p>
-            <button class="btn-promo-request" onclick="openPromoModal()">Soumettre ma demande 🚀</button>
-        </div>
-    </div>
-</section>
-
-<!-- MODAL PROMO -->
-<div id="promo-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content" style="max-width: 500px;">
+<!-- 6. MODAL PANIER -->
+<div id="order-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
         <div class="modal-header">
-            <h2>Demande de Promotion</h2>
-            <button class="modal-close" onclick="closePromoModal()">✕</button>
+            <h2>Mon Panier 🛒</h2>
+            <button class="modal-close" onclick="closeOrderModal()">✕</button>
         </div>
-        <div class="modal-body">
-            <form name="demande-promotion" method="POST" data-netlify="true">
-                <input type="hidden" name="form-name" value="demande-promotion">
-                <div class="form-group">
-                    <label>Nom du Business</label>
-                    <input type="text" name="business-name" required placeholder="Votre marque" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Email de contact</label>
-                    <input type="email" name="email" required placeholder="email@exemple.com" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Description du projet</label>
-                    <textarea name="message" required placeholder="Décrivez votre produit..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; height: 100px;"></textarea>
-                </div>
-                <button type="submit" class="btn-confirm-order" style="margin-top: 20px; width: 100%;">Envoyer ma demande ✅</button>
-            </form>
+        <div id="order-summary" class="modal-body"></div>
+        <div class="modal-footer">
+            <div class="order-form">
+                <input type="text" id="customer-name" placeholder="Votre nom complet" required>
+                <input type="tel" id="customer-phone" placeholder="Numéro WhatsApp" required>
+                <select id="payment-method">
+                    <option value="MonCash">MonCash</option>
+                    <option value="NatCash">NatCash</option>
+                    <option value="Cash à la livraison">Cash à la livraison</option>
+                </select>
+                <button class="btn-confirm-order" onclick="submitOrder()">Confirmer via WhatsApp ✅</button>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="/main.js"></script>
 <script>
-function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
-function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
-
 function startFlashTimer(duration) {
     var timer = duration, hours, minutes, seconds;
     setInterval(function () {
@@ -151,69 +136,35 @@ function startFlashTimer(duration) {
         if (--timer < 0) { timer = duration; }
     }, 1000);
 }
-
-// ─── CHARGE REKÒMANDE DARI LOKALSTORAGE ──────────────
-function loadRecommended() {
-  var products = JSON.parse(localStorage.getItem('bp_products') || '[]');
-  var featured = products.filter(p => p.featured).slice(0, 12);
-  
-  var container = document.getElementById('recommendedProducts');
-  if (featured.length === 0) {
-    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;"><p>Poko gen pwodwi rekòmande</p></div>';
-    return;
-  }
-  
-  container.innerHTML = featured.map(p => {
-    return '<div class="product-card">' +
-      '<div class="card-img">' +
-        (p.image ? '<img src="' + p.image + '" alt="' + p.title + '" onerror="this.style.display=\'none\'">' : '<span style="display:flex;align-items:center;justify-content:center;height:100%;font-size:40px;">🛍️</span>') +
-      '</div>' +
-      '<div class="card-info">' +
-        '<h3>' + p.title + '</h3>' +
-        '<p style="font-size:12px;color:#666;margin-bottom:8px;">' + p.description.substring(0, 50) + '...</p>' +
-        '<div style="color:#ff4747; font-weight:700; font-size:16px; margin-bottom:10px;">' + p.price + ' HTG</div>' +
-        '<button class="add-to-cart" onclick="orderProduct(\'' + p.title + '\', ' + p.price + ', \'' + p.id + '\')">🛒 Ajoute</button>' +
-      '</div>' +
-      '</div>';
-  }).join('');
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  startFlashTimer(3600 * 2.5);
-  loadRecommended();
-});
+document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 * 2.5); });
 </script>
 
 <style>
-/* CSS RECONSTITUÉ ET SÉCURISÉ */
+/* CSS MODAL & GRID */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+.modal-content { background: white; width: 95%; max-width: 500px; border-radius: 15px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
+.order-form input, .order-form select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; }
+.btn-confirm-order { width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+
 #hero-marketplace {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/assets/images/uploads/images.jpg');
     background-size: cover; background-position: center;
-    height: 320px; display: flex; align-items: center; justify-content: center;
-    color: white; margin-bottom: 30px; border-radius: 15px; margin-top: 10px;
-    text-align: center;
+    height: 350px; display: flex; align-items: center; justify-content: center;
+    color: white; margin-bottom: 30px; border-radius: 15px; text-align: center;
 }
-.hero-content h1 { font-size: 2.2rem; margin: 10px 0; color: #fff !important; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
-.hero-content p { color: #eee !important; font-size: 1.1rem; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
-
-.flash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.timer { background: #222; color: #ff4747; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-family: 'Poppins', sans-serif; }
-
-.flash-grid { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-.flash-card { min-width: 190px; background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; box-shadow: var(--shadow-sm); }
-.flash-card img { height: 130px; object-fit: cover; width: 100%; border-radius: 8px; }
-
 .category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
-.cat-bubble { text-align: center; min-width: 90px; text-decoration: none; color: #333; }
-.bubble-img { width: 75px; height: 75px; border-radius: 50%; border: 2px solid #ff4747; margin: 0 auto 8px; overflow: hidden; background: #fff; box-shadow: var(--shadow-sm); }
+.cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; transition: 0.3s; }
+.cat-bubble:hover { transform: scale(1.1); }
+.bubble-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #ff4747; margin: 0 auto 10px; overflow: hidden; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .bubble-img img { width: 100%; height: 100%; object-fit: cover; }
+.cat-bubble span { font-weight: 600; font-size: 14px; }
 
-.business-card {
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
-    padding: 40px; border-radius: 20px; color: white; display: flex; align-items: center; justify-content: space-between;
-}
-.btn-promo-request { background: white; color: #b21f1f; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 3000; }
-.modal-content { background: white; width: 95%; max-width: 500px; border-radius: 20px; padding: 30px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+.product-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; }
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+.card-img img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; }
+.price { color: #ff4747; font-weight: bold; font-size: 16px; margin: 8px 0; }
+.add-to-cart { width: 100%; padding: 8px; background: #ff4747; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
 </style>

@@ -31,8 +31,11 @@ collections:
       - {label: "Description", name: "body", widget: "markdown"}
       - label: "Catégorie"
         name: "category"
-        widget: "select"
-        options: ["electronique", "habillement", "maison", "alimentation", "beaute"]
+        widget: "relation"
+        collection: "categories"
+        search_fields: ["title"]
+        value_field: "{{slug}}"
+        display_fields: ["title"]
 
   # 2. KATEGORI YO
   - name: "categories"
@@ -41,34 +44,19 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Nom de la Catégorie", name: "title", widget: "string"}
-      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Identifiant (slug, ex: electronique)", name: "title", widget: "string"}
+      - {label: "Nom Affiché (ex: Électronique)", name: "display_name", widget: "string"}
+      - {label: "Description", name: "description", widget: "text", required: false}
       - {label: "Image Bulle (Accueil)", name: "image", widget: "image"}
       - {label: "Image Banner (Haut de page)", name: "banner_image", widget: "image", required: false}
-      - label: "Galerie de la catégorie"
-        name: "gallery"
-        widget: "list"
-        required: false
-        field: {label: "Image", name: "image", widget: "image"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
 
-  # 3. PAJ YO (About, Contact, etc.)
+  # 3. PAJ YO
   - name: "pages"
     label: "📄 Pages"
     files:
-      - label: "À Propos"
-        name: "about"
-        file: "about.markdown"
-        fields:
-          - {label: "Titre", name: "title", widget: "string"}
-          - {label: "Contenu", name: "body", widget: "markdown"}
-      
-      - label: "Politique de Confidentialité"
-        name: "privacy"
-        file: "privacy-policy.md"
-        fields:
-          - {label: "Titre", name: "title", widget: "string"}
-          - {label: "Contenu", name: "body", widget: "markdown"}
+      - {label: "À Propos", name: "about", file: "about.markdown"}
+      - {label: "Politique de Confidentialité", name: "privacy", file: "privacy-policy.md"}
 
   # 4. PARAMÈT SIT LA
   - name: "settings"
@@ -83,9 +71,3 @@ collections:
           - {label: "Logo", name: "logo", widget: "image"}
           - {label: "Email de Contact", name: "email", widget: "string"}
           - {label: "WhatsApp", name: "whatsapp", widget: "string"}
-          - label: "Réseaux Sociaux"
-            name: "social"
-            widget: "object"
-            fields:
-              - {label: "Facebook", name: "facebook", widget: "string", required: false}
-              - {label: "Instagram", name: "instagram", widget: "string", required: false}

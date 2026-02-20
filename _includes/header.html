@@ -27,13 +27,11 @@
 .search-form button:hover { background:#e03636; }
 
 /* Résultats */
-#search-drop { position:absolute; top:calc(100% + 6px); left:0; right:0; background:white; border:1px solid #eee; border-radius:var(--radius-md,12px); box-shadow:0 10px 30px rgba(0,0,0,.12); z-index:200; max-height:380px; overflow-y:auto; }
-.s-item { display:flex; align-items:center; gap:12px; padding:12px 15px; border-bottom:1px solid #f9f9f9; text-decoration:none; color:inherit; transition:.2s; }
-.s-item:hover { background:#fff5f5; }
-.s-item:last-child { border:none; }
-.s-item img { width:48px; height:48px; object-fit:cover; border-radius:8px; background:#f3f4f6; flex-shrink:0; }
-.s-item-info strong { display:block; font-size:14px; }
-.s-item-info span { color:#ff4747; font-weight:700; font-size:13px; }
+#search-results { position:absolute; top:calc(100% + 6px); left:0; right:0; background:white; border:1px solid #eee; border-radius:var(--radius-md,12px); box-shadow:0 10px 30px rgba(0,0,0,.12); z-index:200; max-height:380px; overflow-y:auto; }
+.search-item { display:flex; align-items:center; gap:12px; padding:12px 15px; border-bottom:1px solid #f9f9f9; text-decoration:none; color:inherit; transition:.2s; }
+.search-item:hover { background:#fff5f5; }
+.search-item:last-child { border:none; }
+.search-item img { width:48px; height:48px; object-fit:cover; border-radius:8px; background:#f3f4f6; flex-shrink:0; }
 
 /* Actions */
 .header-actions { display:flex; align-items:center; gap:14px; flex-shrink:0; }
@@ -98,20 +96,20 @@
       <!-- Rechèch -->
       <div class="search-wrap">
         <form class="search-form" onsubmit="return false;">
-          <input type="text" id="search-inp" placeholder="🔍 Rechercher un produit..." oninput="liveSearch(this.value)" autocomplete="off">
+          <input type="text" id="search-input" placeholder="🔍 Rechercher un produit..." oninput="liveSearch()" autocomplete="off">
           <button type="submit">Chercher</button>
         </form>
-        <div id="search-drop" style="display:none;"></div>
+        <div id="search-results" style="display:none;"></div>
       </div>
 
       <!-- Actions -->
       <div class="header-actions">
-        <a href="/admin/account.html" class="act-btn">
+        <button id="account-action-btn" class="act-btn">
           <span>👤</span><small>Compte</small>
-        </a>
-        <button class="act-btn" onclick="toggleCart()" title="Panier">
+        </button>
+        <button class="act-btn" onclick="openOrderModal()" title="Panier">
           <span>🛒</span>
-          <div class="cart-badge" id="cart-count" style="display:none;">0</div>
+          <div class="cart-badge" id="cart-badge" style="display:none;">0</div>
           <small>Panier</small>
         </button>
         <button class="mob-toggle" onclick="document.getElementById('main-nav').classList.toggle('open')">☰</button>
@@ -143,40 +141,35 @@
 </header>
 
 <script>
-function liveSearch(val) {
-  var drop = document.getElementById('search-drop');
-  if (!val || val.length < 2) { drop.style.display = 'none'; return; }
+// --- OTANTIFIKASYON NETLIFY ---
+document.addEventListener('DOMContentLoaded', function() {
+    const accountBtn = document.getElementById('account-action-btn');
+    if (!accountBtn) return;
 
-  var cards = document.querySelectorAll('.product-card, .flash-card');
-  var results = [];
+    const accountLabel = accountBtn.querySelector('small');
 
-  cards.forEach(function(c) {
-    var title = (c.querySelector('h3 a') || c.querySelector('h3') || {}).textContent || '';
-    var price = (c.querySelector('.price') || c.querySelector('.new-price') || {}).textContent || '';
-    var img = (c.querySelector('img') || {}).src || '';
-    var link = (c.querySelector('a') || {}).href || '#';
-    if (title && title.toLowerCase().indexOf(val.toLowerCase()) !== -1) {
-      results.push({ title: title.trim(), price: price.trim(), img: img, link: link });
+    const updateAccountButton = (user) => {
+        if (user) {
+            accountLabel.textContent = 'Déconnexion';
+            accountBtn.onclick = () => netlifyIdentity.logout();
+        } else {
+            accountLabel.textContent = 'Compte';
+            accountBtn.onclick = () => netlifyIdentity.open();
+        }
+    };
+
+    if (window.netlifyIdentity) {
+        updateAccountButton(netlifyIdentity.currentUser());
+        netlifyIdentity.on('init', user => updateAccountButton(user));
+        netlifyIdentity.on('login', user => {
+            netlifyIdentity.close();
+            updateAccountButton(user);
+        });
+        netlifyIdentity.on('logout', () => {
+            updateAccountButton(null);
+        });
+    } else {
+        console.error('Netlify Identity widget not found.');
     }
-  });
-
-  if (results.length === 0) {
-    drop.innerHTML = '<div style="padding:18px;text-align:center;color:#999;font-size:14px;">Aucun résultat pour "' + val + '"</div>';
-  } else {
-    drop.innerHTML = results.slice(0, 6).map(function(r) {
-      return '<a href="' + r.link + '" class="s-item">' +
-        '<img src="' + r.img + '" alt="' + r.title + '" onerror="this.style.background=\'#f3f4f6\'">' +
-        '<div class="s-item-info"><strong>' + r.title + '</strong><span>' + r.price + '</span></div>' +
-        '</a>';
-    }).join('');
-  }
-  drop.style.display = 'block';
-}
-
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.search-wrap')) {
-    var d = document.getElementById('search-drop');
-    if (d) d.style.display = 'none';
-  }
 });
 </script>

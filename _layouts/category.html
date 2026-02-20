@@ -2,121 +2,95 @@
 layout: default
 ---
 
-<!-- 1. BANNER OU GALERIE DE LA CATÉGORIE -->
-<div class="category-header-area">
-    {% if page.gallery and page.gallery.size > 0 %}
-        <!-- Si gen plizyè foto, nou montre yo nan yon bèl Grid -->
-        <div class="category-gallery">
-            {% for item in page.gallery %}
-                <div class="gallery-item">
-                    <img src="{{ item.image }}" alt="{{ page.title }}">
-                </div>
-            {% endfor %}
+<div class="category-header" style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 60px 20px; text-align: center; color: white; border-radius: 0 0 30px 30px; margin-bottom: 40px;">
+    <div class="container">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">{{ page.display_name | default: page.title }}</h1>
+        <p style="opacity: 0.9; font-size: 1.1rem;">{{ page.description }}</p>
+
+        {% assign count = 0 %}
+        {% for product in site.products %}
+            {% if product.category == page.title or product.category == page.slug %}
+                {% assign count = count | plus: 1 %}
+            {% endif %}
+        {% endfor %}
+        <div style="margin-top: 15px; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 0.9rem;">
+            {{ count }} pwodwi disponib
         </div>
-    {% else %}
-        <!-- Si se yon sèl foto, nou montre banyè a jan sa te ye a -->
-        <div class="category-banner-premium" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ page.banner_image | default: page.image }}');">
-            <div class="container">
-                <div class="banner-text">
-                    <h1>{{ page.title }}</h1>
-                    <p>{{ page.description }}</p>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    </div>
 </div>
 
-{% if page.gallery and page.gallery.size > 0 %}
-    <div class="container category-info-text">
-        <h1>{{ page.title }}</h1>
-        <p>{{ page.description }}</p>
-    </div>
-{% endif %}
-
 <div class="container">
-    <div class="category-main-layout">
-        <!-- SIDEBAR -->
-        <aside class="sidebar-filters">
-            <h3>Explorer {{ page.title }}</h3>
-            <div class="promo-box-sidebar">
-                <span>⚡ OFFRES SPÉCIALES</span>
-                <p>Le meilleur de Saint-Domingue à votre portée.</p>
-            </div>
-        </aside>
+    <!-- FILTRES RAPIDES -->
+    <div class="filter-bar" style="display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
+        <button class="filter-btn active" onclick="filterCategory('tout')">Tout Pwodwi</button>
+        <button class="filter-btn" onclick="filterCategory('recommande')">⭐ Rekòmande</button>
+        <button class="filter-btn" onclick="filterCategory('prix-bas')">💰 Pri Ba → Wo</button>
+        <button class="filter-btn" onclick="filterCategory('prix-haut')">💰 Pri Wo → Ba</button>
+    </div>
 
-        <!-- GRILLE DE PRODUITS -->
-        <div class="products-area">
-            <div class="product-grid">
-                {% assign found_products = false %}
-                {% assign current_cat = page.title | downcase %}
-
-                {% for product in site.products %}
-                    {% assign prod_cat = product.category | downcase %}
-                    {% if prod_cat == current_cat %}
-                        {% assign found_products = true %}
-                        <div class="product-card">
-                            <div class="card-img">
-                                <a href="{{ product.url }}">
-                                    <img src="{{ product.image }}" alt="{{ product.title }}">
-                                </a>
-                            </div>
-                            <div class="card-info">
-                                <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
-                                <div class="price-container">
-                                    <span class="price">{{ product.price }} HTG</span>
-                                </div>
-                                <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">
-                                    🛒 Ajouter
-                                </button>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-
-                {% if found_products == false %}
-                    <div class="no-products-found">
-                        <p>Aucun produit trouvé dans cette catégorie. Ajoutez-en via l'administration !</p>
-                        <a href="/" class="btn-primary">Retour à l'accueil</a>
+    <div id="category-grid" class="product-grid">
+        {% assign found = false %}
+        {% for product in site.products %}
+            {% if product.category == page.title or product.category == page.slug %}
+                {% assign found = true %}
+                <div class="product-card" data-price="{{ product.price }}" data-featured="{{ product.featured | default: false }}">
+                    <div class="card-img">
+                        <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
                     </div>
-                {% endif %}
+                    <div class="card-info">
+                        <h3>{{ product.title }}</h3>
+                        <div class="price">{{ product.price }} HTG</div>
+                        {% if product.old_price %}
+                            <div style="text-decoration: line-through; color: #999; font-size: 0.8rem; margin-top: -5px; margin-bottom: 8px;">{{ product.old_price }} HTG</div>
+                        {% endif %}
+                        <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter au panier</button>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if found == false %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #888;">
+                <span style="font-size: 4rem; display: block; margin-bottom: 20px;">😔</span>
+                <h3>Poko gen pwodwi nan kategori sa a</h3>
+                <p>N ap ajoute nouvo pwodwi talè konsa. Rete branche !</p>
+                <a href="/" class="btn-primary" style="display: inline-block; margin-top: 20px; background: #ff4747; color: white; padding: 10px 25px; border-radius: 8px; text-decoration: none; font-weight: bold;">Retounen nan Akèy</a>
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
 
 <style>
-/* STYLE GALERIE KATEGORI */
-.category-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 10px;
-    padding: 10px;
-    height: 350px;
-    overflow: hidden;
+.filter-btn {
+    background: white; border: 1px solid #eee; padding: 8px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: 600; font-size: 14px; transition: 0.3s;
 }
-.gallery-item { height: 100%; }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.filter-btn.active, .filter-btn:hover { background: #ff4747; color: white; border-color: #ff4747; }
 
-.category-info-text { text-align: center; padding: 30px 0; border-bottom: 1px solid #eee; margin-bottom: 30px; }
-.category-info-text h1 { font-size: 2.5rem; color: var(--primary); }
-
-.category-banner-premium {
-    height: 250px;
-    background-size: cover !important;
-    background-position: center !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-    border-radius: 0 0 20px 20px;
-}
-
-.category-main-layout { display: flex; gap: 30px; margin-top: 20px; }
-.sidebar-filters { width: 250px; flex-shrink: 0; }
-
-@media (max-width: 768px) {
-    .category-gallery { grid-template-columns: 1fr; height: auto; }
-    .category-main-layout { flex-direction: column; }
-}
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+.product-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; }
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.card-img img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
+.price { color: #ff4747; font-weight: bold; font-size: 18px; margin: 10px 0; }
+.add-to-cart { width: 100%; padding: 10px; background: #ff4747; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
 </style>
+
+<script>
+function filterCategory(type) {
+    const grid = document.getElementById('category-grid');
+    const cards = Array.from(grid.getElementsByClassName('product-card'));
+    const btns = document.querySelectorAll('.filter-btn');
+
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    if (type === 'prix-bas') {
+        cards.sort((a, b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+    } else if (type === 'prix-haut') {
+        cards.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+    }
+
+    // Pour cet exemple, on vide et on ré-ajoute dans l'ordre
+    grid.innerHTML = '';
+    cards.forEach(c => grid.appendChild(c));
+}
+</script>
