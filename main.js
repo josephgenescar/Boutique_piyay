@@ -113,7 +113,8 @@ function submitOrder() {
         return;
     }
 
-    let message = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n👤 *Client :* ${name}\n📱 *Tél :* ${phone}\n💳 *Paiement :* ${payment}\n\n*📦 ARTICLES :*\n`;
+    let message = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n👤 *Client :* ${name}\n📱 *Tél :* ${phone}\n💳 *Paiement :* ${payment}\n
+*📦 ARTICLES :*\n`;
     let total = 0;
     cart.forEach(item => {
         message += `- ${item.quantity}x ${item.title} (${item.price * item.quantity} HTG)\n`;
@@ -124,7 +125,7 @@ function submitOrder() {
     window.open(`https://wa.me/50948868964?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-// 2. RECHERCHE EN DIRECT (Améliorée)
+// 2. RECHERCHE EN DIRECT
 function liveSearch() {
     let input = document.getElementById('search-input');
     let drop = document.getElementById('search-results');
@@ -160,11 +161,34 @@ function liveSearch() {
     drop.style.display = 'block';
 }
 
+// 3. FLASH SALE TIMER
+function startFlashTimer(duration) {
+    let timer = duration, hours, minutes, seconds;
+    const countdown = document.getElementById('countdown');
+    if (!countdown) return; // Si pa gen timer, pa kouri
+
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    setInterval(() => {
+        hours = parseInt(timer / 3600, 10);
+        minutes = parseInt((timer % 3600) / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        if(hoursEl) hoursEl.textContent = hours < 10 ? "0" + hours : hours;
+        if(minutesEl) minutesEl.textContent = minutes < 10 ? "0" + minutes : minutes;
+        if(secondsEl) secondsEl.textContent = seconds < 10 ? "0" + seconds : seconds;
+
+        if (--timer < 0) timer = duration;
+    }, 1000);
+}
+
 // INITIALISATION
 document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
+    startFlashTimer(3600 * 2.5);
 
-    // Fermer le dropdown de recherche si on clique ailleurs
     document.addEventListener('click', (e) => {
         const searchResults = document.getElementById('search-results');
         if (searchResults && !e.target.closest('.search-wrap')) {

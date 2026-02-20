@@ -3,25 +3,13 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER RECTANGULAIRE -->
-<section id="hero-marketplace">
-  <div class="hero-content container">
-    <div class="hero-text-box">
-        <span class="badge">🔥 Vente Flash -50%</span>
-        <h1>Offres exceptionnelles sur nos collections !</h1>
-        <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
-        <a href="#flash-sale" class="btn-primary">Profiter des offres 🛍️</a>
-    </div>
-  </div>
-</section>
-
-<!-- 2. NOUVO BANNER KI SOTI NAN INCLUDES -->
-<div class="custom-banner-container">
+<!-- 1. BANNER PRENSIPAL (RANPLASE HERO UNPLASH) -->
+<div class="main-banner-wrap">
   {% include boutique-piyay-banner.html %}
 </div>
 
-<!-- 3. AFFICHAGE DES PUBS DU HAUT -->
-<section class="ads-top container">
+<!-- 2. AFFICHAGE DES PUBS DU HAUT -->
+<section class="ads-top container" style="padding-top: 20px;">
     {% for ad in site.promotions %}
         {% if ad.active and ad.position == "top" %}
             <div class="ad-banner">
@@ -31,7 +19,7 @@ title: Accueil - Boutique Piyay
     {% endfor %}
 </section>
 
-<!-- 4. FLASH SALE SECTION -->
+<!-- 3. FLASH SALE SECTION -->
 <section id="flash-sale" class="container">
     <div class="flash-header">
         <div class="flash-title">
@@ -62,7 +50,7 @@ title: Accueil - Boutique Piyay
     </div>
 </section>
 
-<!-- 5. CATÉGORIES (BULLES DINAMIK) -->
+<!-- 4. CATÉGORIES (BULLES DINAMIK) -->
 <section id="categories-section" class="container">
   <div class="section-header">
     <h2>Parcourir par Catégorie</h2>
@@ -79,7 +67,7 @@ title: Accueil - Boutique Piyay
   </div>
 </section>
 
-<!-- 6. REKÒMANDE -->
+<!-- 5. REKÒMANDE -->
 <section id="recommandations" class="container">
   <div class="section-header">
     <h2>✨ Rekòmande pou ou</h2>
@@ -102,7 +90,7 @@ title: Accueil - Boutique Piyay
   </div>
 </section>
 
-<!-- 7. MODAL PANIER -->
+<!-- 6. MODAL PANIER -->
 <div id="order-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <div class="modal-header">
@@ -145,10 +133,18 @@ document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 
 </script>
 
 <style>
-/* Stil pou asire banner a pran tout lajè a tou */
-.custom-banner-container {
-    width: 100%;
+/* CSS POU RANN BANNER A 100% EPI SAN ESPAS */
+.main-banner-wrap {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden;
+}
+
+/* Nou asire n ke kòd ki anndan banner a tou pran 100% */
+.main-banner-wrap > * {
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 /* CSS MODAL & GRID */
@@ -159,12 +155,6 @@ document.addEventListener('DOMContentLoaded', function() { startFlashTimer(3600 
 .order-form input, .order-form select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; }
 .btn-confirm-order { width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
 
-#hero-marketplace {
-    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop');
-    background-size: cover; background-position: center;
-    height: 350px; display: flex; align-items: center; justify-content: center;
-    color: white; margin-bottom: 30px; border-radius: 15px; text-align: center;
-}
 .category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
 .cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; transition: 0.3s; }
 .cat-bubble:hover { transform: scale(1.1); }
