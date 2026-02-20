@@ -55,8 +55,18 @@ collections:
   - name: "pages"
     label: "📄 Pages"
     files:
-      - {label: "À Propos", name: "about", file: "about.markdown"}
-      - {label: "Politique de Confidentialité", name: "privacy", file: "privacy-policy.md"}
+      - label: "À Propos"
+        name: "about"
+        file: "about.markdown"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Contenu", name: "body", widget: "markdown"}
+      - label: "Politique de Confidentialité"
+        name: "privacy"
+        file: "privacy-policy.md"
+        fields:
+          - {label: "Titre", name: "title", widget: "string"}
+          - {label: "Contenu", name: "body", widget: "markdown"}
 
   # 4. PARAMÈT SIT LA
   - name: "settings"
