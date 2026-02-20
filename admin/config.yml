@@ -41,9 +41,15 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Nom", name: "title", widget: "string"}
+      - {label: "Nom de la Catégorie", name: "title", widget: "string"}
       - {label: "Description", name: "description", widget: "text"}
-      - {label: "Image Bulle", name: "image", widget: "image"}
+      - {label: "Image Bulle (Accueil)", name: "image", widget: "image"}
+      - {label: "Image Banner (Haut de page)", name: "banner_image", widget: "image", required: false}
+      - label: "Galerie de la catégorie"
+        name: "gallery"
+        widget: "list"
+        required: false
+        field: {label: "Image", name: "image", widget: "image"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
 
   # 3. PAJ YO (About, Contact, etc.)
