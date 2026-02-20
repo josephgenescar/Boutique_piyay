@@ -5,7 +5,7 @@ payment:
   moncash: 4886-8964
   natcash: 4068-3108
   cash_enabled: true
-logo: file:///C:/Users/PC/Downloads/boutique-piyay-banner.html
+logo: /assets/images/uploads/chatgpt_image_16_févr._2026__11_51_32-removebg-preview.png
 social:
   facebook: https://facebook.com/boutiquepiyay
   instagram: https://instagram.com/boutiquepiyay
