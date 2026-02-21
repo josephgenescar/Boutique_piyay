@@ -20,9 +20,15 @@ collections:
       - {label: "Ancien Prix", name: "old_price", widget: "number", required: false}
       - {label: "Catégorie", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["display_name"]}
       - {label: "Image Principale", name: "image", widget: "image"}
+      - label: "Galerie d'images (Autres photos)"
+        name: "images"
+        widget: "list"
+        required: false
+        fields:
+          - {label: "Image", name: "img", widget: "image"}
       - {label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false, required: false}
-      - {label: "Tailles disponibles (ex: S, M, L, XL)", name: "sizes", widget: "list", field: {label: "Taille", name: "size", widget: "string"}, required: false}
-      - {label: "Couleurs/Formes (ex: Rouge, Carré)", name: "variants", widget: "list", field: {label: "Variante", name: "variant", widget: "string"}, required: false}
+      - {label: "Tailles disponibles (ex: S, M, L)", name: "sizes" , widget: "list", required: false, fields: [{label: "Taille", name: "size", widget: "string"}]}
+      - {label: "Couleurs / Modèles (ex: Rouge, Bleu)", name: "variants", widget: "list", required: false, fields: [{label: "Variante", name: "variant", widget: "string"}]}
       - {label: "Description Détaillée", name: "body", widget: "markdown"}
 
   # 2. KATEGORI YO
@@ -38,29 +44,28 @@ collections:
       - {label: "Description", name: "description", widget: "text", required: false}
       - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
 
-  # 3. KONTWÒL PAJ AKÈY (HERO BANNER, ETC)
+  # 3. KONTWÒL PAJ AKÈY (HERO, BANNER, ETC)
   - name: "content"
     label: "🏠 Contenu du Site"
     files:
-      - label: "Page d'Accueil (Hero & Pubs)"
+      - label: "Page d'Accueil"
         name: "homepage"
         file: "_data/homepage.yml"
         fields:
-          - label: "Hero Banner"
+          - label: "Hero / Banner Principal"
             name: "hero"
             widget: "object"
             fields:
-              - {label: "Image de fond", name: "bg_image", widget: "image"}
-              - {label: "Petit Badge (ex: Vente Flash)", name: "badge", widget: "string"}
-              - {label: "Grand Titre", name: "title", widget: "string"}
+              - {label: "Titre", name: "title", widget: "string"}
               - {label: "Sous-titre", name: "subtitle", widget: "string"}
-              - {label: "Texte du Bouton", name: "btn_text", widget: "string"}
-          - label: "Bannières de Promotion (Ads)"
+              - {label: "Image de fond", name: "bg_image", widget: "image"}
+          - label: "Promotions (Ads)"
             name: "promotions"
             widget: "list"
             fields:
+              - {label: "Titre", name: "title", widget: "string"}
               - {label: "Image", name: "image", widget: "image"}
-              - {label: "Lien (URL)", name: "url", widget: "string", required: false}
+              - {label: "Lien", name: "url", widget: "string"}
               - {label: "Active ?", name: "active", widget: "boolean", default: true}
 
   # 4. PARAMÈT & FOOTER
@@ -72,13 +77,12 @@ collections:
         file: "_data/settings.yml"
         fields:
           - {label: "Nom du Site", name: "site_name", widget: "string"}
-          - {label: "Email", name: "email", widget: "string"}
-          - {label: "Texte de copyright Footer", name: "footer_copy", widget: "string"}
+          - {label: "Email de Contact", name: "email", widget: "string"}
           - label: "Réseaux Sociaux"
             name: "social"
             widget: "object"
             fields:
-              - {label: "Facebook", name: "facebook", widget: "string", required: false}
-              - {label: "Instagram", name: "instagram", widget: "string", required: false}
-              - {label: "WhatsApp", name: "whatsapp", widget: "string", required: false}
-              - {label: "TikTok", name: "tiktok", widget: "string", required: false}
+              - {label: "Facebook (Lien)", name: "facebook", widget: "string", required: false}
+              - {label: "Instagram (Lien)", name: "instagram", widget: "string", required: false}
+              - {label: "WhatsApp (Numéro)", name: "whatsapp", widget: "string", required: false}
+              - {label: "TikTok (Lien)", name: "tiktok", widget: "string", required: false}
