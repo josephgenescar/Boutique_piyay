@@ -2,81 +2,65 @@
 layout: default
 ---
 
+{% assign category_id = page.title %}
+{% assign category_products = site.products | where: "category", category_id %}
+{% assign count = category_products | size %}
+
 <div class="category-header" style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 60px 20px; text-align: center; color: white; border-radius: 0 0 30px 30px; margin-bottom: 40px;">
     <div class="container">
-        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">{{ page.display_name | default: page.title }}</h1>
-        <p style="opacity: 0.9; font-size: 1.1rem;">{{ page.description }}</p>
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 900;">{{ page.display_name | default: page.title }}</h1>
+        <p style="opacity: 0.9; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">{{ page.description }}</p>
 
-        {% assign count = 0 %}
-        {% for product in site.products %}
-            {% if product.category == page.title or product.category == page.slug %}
-                {% assign count = count | plus: 1 %}
-            {% endif %}
-        {% endfor %}
-        <div style="margin-top: 15px; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 0.9rem;">
+        <div style="margin-top: 20px; background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: bold;">
             {{ count }} pwodwi disponib
         </div>
     </div>
 </div>
 
 <div class="container">
-    <!-- FILTRES RAPIDES -->
-    <div class="filter-bar" style="display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
+    {% if count > 0 %}
+    <!-- FILTRES -->
+    <div class="filter-bar" style="display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; justify-content: center;">
         <button class="filter-btn active" onclick="filterCategory('tout')">Tout Pwodwi</button>
-        <button class="filter-btn" onclick="filterCategory('recommande')">⭐ Rekòmande</button>
-        <button class="filter-btn" onclick="filterCategory('prix-bas')">💰 Pri Ba → Wo</button>
-        <button class="filter-btn" onclick="filterCategory('prix-haut')">💰 Pri Wo → Ba</button>
+        <button class="filter-btn" onclick="filterCategory('prix-bas')">Pri Ba → Wo</button>
+        <button class="filter-btn" onclick="filterCategory('prix-haut')">Pri Wo → Ba</button>
     </div>
 
     <div id="category-grid" class="product-grid">
-        {% assign found = false %}
-        {% for product in site.products %}
-            {% if product.category == page.title or product.category == page.slug %}
-                {% assign found = true %}
-                <div class="product-card" data-price="{{ product.price }}" data-featured="{{ product.featured | default: false }}">
-                    <div class="card-img">
-                        <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
-                    </div>
-                    <div class="card-info">
-                        <h3>{{ product.title }}</h3>
-                        <div class="price">{{ product.price }} HTG</div>
-                        {% if product.old_price %}
-                            <div style="text-decoration: line-through; color: #999; font-size: 0.8rem; margin-top: -5px; margin-bottom: 8px;">{{ product.old_price }} HTG</div>
-                        {% endif %}
-                        <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter au panier</button>
-                    </div>
+        {% for product in category_products %}
+            <div class="product-card" data-price="{{ product.price }}">
+                <div class="card-img">
+                    <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
                 </div>
-            {% endif %}
-        {% endfor %}
-
-        {% if found == false %}
-            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #888;">
-                <span style="font-size: 4rem; display: block; margin-bottom: 20px;">😔</span>
-                <h3>Poko gen pwodwi nan kategori sa a</h3>
-                <p>N ap ajoute nouvo pwodwi talè konsa. Rete branche !</p>
-                <a href="/" class="btn-primary" style="display: inline-block; margin-top: 20px; background: #ff4747; color: white; padding: 10px 25px; border-radius: 8px; text-decoration: none; font-weight: bold;">Retounen nan Akèy</a>
+                <div class="card-info">
+                    <h3>{{ product.title }}</h3>
+                    <div class="price">{{ product.price }} HTG</div>
+                    <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter au panier</button>
+                </div>
             </div>
-        {% endif %}
+        {% endfor %}
     </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: #888;">
+        <span style="font-size: 4rem; display: block; margin-bottom: 20px;">😔</span>
+        <h3 style="font-weight: 800;">Poko gen pwodwi nan kategori sa a</h3>
+        <p>Ajoute pwodwi nan kategori <strong>{{ category_id }}</strong> nan Admin CMS la pou yo parèt isit la.</p>
+        <a href="/" class="btn-primary" style="display: inline-block; margin-top: 25px; background: #ff4747; color: white; padding: 12px 30px; border-radius: 10px; text-decoration: none; font-weight: bold;">Retounen nan Akèy</a>
+    </div>
+    {% endif %}
 </div>
 
 <style>
 .filter-btn {
-    background: white; border: 1px solid #eee; padding: 8px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: 600; font-size: 14px; transition: 0.3s;
+    background: white; border: 1px solid #eee; padding: 10px 20px; border-radius: 10px; cursor: pointer; white-space: nowrap; font-weight: 700; font-size: 14px; transition: 0.3s;
 }
-.filter-btn.active, .filter-btn:hover { background: #ff4747; color: white; border-color: #ff4747; }
-
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-.product-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; }
-.product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-.card-img img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
-.price { color: #ff4747; font-weight: bold; font-size: 18px; margin: 10px 0; }
-.add-to-cart { width: 100%; padding: 10px; background: #ff4747; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.filter-btn.active, .filter-btn:hover { background: #ff4747; color: white; border-color: #ff4747; box-shadow: 0 4px 12px rgba(255, 71, 71, 0.2); }
 </style>
 
 <script>
 function filterCategory(type) {
     const grid = document.getElementById('category-grid');
+    if (!grid) return;
     const cards = Array.from(grid.getElementsByClassName('product-card'));
     const btns = document.querySelectorAll('.filter-btn');
 
@@ -89,7 +73,6 @@ function filterCategory(type) {
         cards.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
     }
 
-    // Pour cet exemple, on vide et on ré-ajoute dans l'ordre
     grid.innerHTML = '';
     cards.forEach(c => grid.appendChild(c));
 }

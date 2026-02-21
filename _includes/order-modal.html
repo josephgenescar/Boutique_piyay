@@ -1,74 +1,79 @@
-<!-- Order Modal Global -->
-<div id="order-modal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>📋 Confirmer votre commande</h2>
-      <button class="modal-close" onclick="closeOrderModal()">✕</button>
+<!-- MODAL PANIER (POU TOUT PAJ) -->
+<div id="order-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 style="font-size: 20px; font-weight: 800;">Mon Panier 🛒</h2>
+            <button class="modal-close" onclick="closeOrderModal()">✕</button>
+        </div>
+
+        <div id="order-summary" class="modal-body">
+            <!-- Kontni ap parèt via JS -->
+        </div>
+
+        <div class="modal-footer" style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 15px;">
+            <div class="order-form">
+                <input type="text" id="customer-name" placeholder="Votre nom complet" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <input type="tel" id="customer-phone" placeholder="Numéro WhatsApp" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+
+                <select id="payment-method" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="MonCash">MonCash</option>
+                    <option value="NatCash">NatCash</option>
+                    <option value="Cash à la livraison">Cash à la livraison</option>
+                </select>
+
+                <button class="btn-confirm-order" onclick="submitOrder()" style="width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;">
+                    Confirmer via WhatsApp ✅
+                </button>
+            </div>
+        </div>
     </div>
-
-    <div class="modal-body">
-      <!-- Résumé du Panier -->
-      <div id="order-summary"></div>
-
-      <div class="order-form">
-        <div class="form-group">
-            <label for="customer-name">👤 Nom complet</label>
-            <input type="text" id="customer-name" placeholder="Ex: Jean Philippe" required>
-        </div>
-
-        <div class="form-group">
-            <label for="customer-phone">📱 Numéro de téléphone</label>
-            <input type="tel" id="customer-phone" placeholder="Ex: +509 4886-8964" required>
-        </div>
-
-        <div class="form-group">
-            <label for="payment-method">💳 Mode de paiement</label>
-            <select id="payment-method" required>
-                <option value="">-- Choisir une option --</option>
-                <option value="Moncash">💸 Moncash</option>
-                <option value="Natcash">💳 Natcash</option>
-                <option value="Espèces">💵 Espèces à la Livraison</option>
-            </select>
-        </div>
-      </div>
-
-      <div class="payment-info-box">
-        <p><strong>ℹ️ Info Paiement :</strong></p>
-        <p>📲 Moncash : 4886-8964</p>
-        <p>💳 Natcash : 4068-3108</p>
-      </div>
-
-      <button class="btn-confirm-order" onclick="submitOrder()">✅ Confirmer la commande</button>
-    </div>
-  </div>
 </div>
 
 <style>
+/* CSS POU MODAL PANIER */
 .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-    justify-content: center; align-items: center; z-index: 2000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
 }
+
 .modal-content {
-    background: white; width: 90%; max-width: 500px; border-radius: 20px;
-    padding: 30px; color: #333; max-height: 90vh; overflow-y: auto;
+    background: white;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 25px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
-.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #888; }
 
-#order-summary { background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-.order-item-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-.order-total-row { border-top: 2px solid #ddd; padding-top: 10px; margin-top: 10px; font-weight: 800; font-size: 18px; color: #ff4747; text-align: right; }
-
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
-.form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
-
-.payment-info-box { background: #fff5f5; border: 1px dashed #ff4747; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 13px; }
-
-.btn-confirm-order {
-    width: 100%; background: #25d366; color: white; border: none; padding: 15px;
-    border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
-.btn-confirm-order:hover { background: #128c7e; transform: translateY(-2px); }
+
+.modal-close {
+    background: #f3f4f6;
+    border: none;
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>

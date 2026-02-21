@@ -8,81 +8,56 @@ public_folder: "/assets/images/uploads"
 locale: 'fr'
 
 collections:
-  # 1. PWODWI YO (KONTWÒL TOTAL)
+  # 1. PWODWI YO (Akseswa chanm yo)
   - name: "products"
-    label: "📦 Produits"
+    label: "📦 Pwodwi (Akseswa)"
     folder: "_products"
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Titre", name: "title", widget: "string"}
-      - {label: "Prix (HTG)", name: "price", widget: "number"}
-      - {label: "Ancien Prix", name: "old_price", widget: "number", required: false}
-      - {label: "Catégorie", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["display_name"]}
-      - {label: "Image Principale", name: "image", widget: "image"}
-      - label: "Galerie d'images (Autres photos)"
+      - {label: "Non Pwodwi a", name: "title", widget: "string"}
+      - {label: "Pri (HTG)", name: "price", widget: "number"}
+      - {label: "Ansyen Pri (opsyonèl)", name: "old_price", widget: "number", required: false}
+      - {label: "Kategori", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["display_name"]}
+      - {label: "Foto Prensipal (Pòt la)", name: "image", widget: "image"}
+      - label: "Lòt Foto (Galeri chanm nan)"
         name: "images"
         widget: "list"
         required: false
         fields:
-          - {label: "Image", name: "img", widget: "image"}
+          - {label: "Foto", name: "img", widget: "image"}
       - {label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false, required: false}
-      - {label: "Tailles disponibles (ex: S, M, L)", name: "sizes" , widget: "list", required: false, fields: [{label: "Taille", name: "size", widget: "string"}]}
-      - {label: "Couleurs / Modèles (ex: Rouge, Bleu)", name: "variants", widget: "list", required: false, fields: [{label: "Variante", name: "variant", widget: "string"}]}
-      - {label: "Description Détaillée", name: "body", widget: "markdown"}
+      - {label: "Gwosè/Size (ex: S, M, L)", name: "sizes", widget: "list", required: false, fields: [{label: "Size", name: "size", widget: "string"}]}
+      - {label: "Koulè/Kalite (ex: Wouj, Po)", name: "variants", widget: "list", required: false, fields: [{label: "Kalite", name: "variant", widget: "string"}]}
+      - {label: "Deskripsyon Detaye", name: "body", widget: "markdown"}
 
-  # 2. KATEGORI YO
+  # 2. KATEGORI YO (Chanm yo)
   - name: "categories"
-    label: "🗂 Catégories"
+    label: "🗂 Kategori (Chanm)"
     folder: "_categories"
     create: true
     fields:
-      - {label: "Identifiant (slug)", name: "title", widget: "string"}
-      - {label: "Nom Affiché", name: "display_name", widget: "string"}
-      - {label: "Image Bulle (Ronde)", name: "image", widget: "image"}
-      - {label: "Image Banner (Haut de page)", name: "banner_image", widget: "image", required: false}
-      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "ID Kategori (slug, ex: rad)", name: "title", widget: "string"}
+      - {label: "Non k ap parèt (ex: Bèl Rad)", name: "display_name", widget: "string"}
+      - {label: "Foto Bulle (Pòt wonn)", name: "image", widget: "image"}
+      - {label: "Deskripsyon Chanm nan", name: "description", widget: "text", required: false}
       - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
 
-  # 3. KONTWÒL PAJ AKÈY (HERO, BANNER, ETC)
-  - name: "content"
-    label: "🏠 Contenu du Site"
-    files:
-      - label: "Page d'Accueil"
-        name: "homepage"
-        file: "_data/homepage.yml"
-        fields:
-          - label: "Hero / Banner Principal"
-            name: "hero"
-            widget: "object"
-            fields:
-              - {label: "Titre", name: "title", widget: "string"}
-              - {label: "Sous-titre", name: "subtitle", widget: "string"}
-              - {label: "Image de fond", name: "bg_image", widget: "image"}
-          - label: "Promotions (Ads)"
-            name: "promotions"
-            widget: "list"
-            fields:
-              - {label: "Titre", name: "title", widget: "string"}
-              - {label: "Image", name: "image", widget: "image"}
-              - {label: "Lien", name: "url", widget: "string"}
-              - {label: "Active ?", name: "active", widget: "boolean", default: true}
-
-  # 4. PARAMÈT & FOOTER
+  # 3. KONTWÒL KAY LA (Paj Akèy & Footer)
   - name: "settings"
-    label: "⚙️ Paramètres & Footer"
+    label: "⚙️ Kontwòl Kay la (Settings)"
     files:
-      - label: "Infos Boutique & Réseaux Sociaux"
+      - label: "Enfòmasyon & Rezo Sosyal"
         name: "general"
         file: "_data/settings.yml"
         fields:
-          - {label: "Nom du Site", name: "site_name", widget: "string"}
-          - {label: "Email de Contact", name: "email", widget: "string"}
-          - label: "Réseaux Sociaux"
+          - {label: "Non Boutik la", name: "site_name", widget: "string"}
+          - {label: "Email Kontak", name: "email", widget: "string"}
+          - label: "Rezo Sosyal"
             name: "social"
             widget: "object"
             fields:
-              - {label: "Facebook (Lien)", name: "facebook", widget: "string", required: false}
-              - {label: "Instagram (Lien)", name: "instagram", widget: "string", required: false}
-              - {label: "WhatsApp (Numéro)", name: "whatsapp", widget: "string", required: false}
-              - {label: "TikTok (Lien)", name: "tiktok", widget: "string", required: false}
+              - {label: "WhatsApp", name: "whatsapp", widget: "string"}
+              - {label: "Facebook", name: "facebook", widget: "string", required: false}
+              - {label: "Instagram", name: "instagram", widget: "string", required: false}
+              - {label: "TikTok", name: "tiktok", widget: "string", required: false}

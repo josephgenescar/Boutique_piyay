@@ -13,26 +13,26 @@
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
-  <body style="background-color: #f4f4f4; margin: 0; padding: 0; display: flex; justify-content: center;">
-    <div style="width: 100%; background-color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
+  <body style="background-color: #f4f4f4; margin: 0; padding: 0;">
+    <div style="width: 100%; background-color: white; min-height: 100vh; display: flex; flex-direction: column;">
 
-      <!-- Header a dwe pran 100% -->
-      <div style="width: 100%;">
-        {% include header.html %}
-      </div>
+      <!-- Header -->
+      {% include header.html %}
 
-      <main class="page-content" style="width: 100%; flex: 1;">
+      <!-- Content -->
+      <main class="page-content" style="flex: 1;">
         {{ content }}
       </main>
 
-      <!-- Footer a dwe pran 100% -->
-      <div style="width: 100%;">
-        {% include footer.html %}
-      </div>
+      <!-- Footer -->
+      {% include footer.html %}
+
+      <!-- MODAL PANIER (ENPÒTAN!) -->
+      {% include order-modal.html %}
 
     </div>
 
-    <!-- Sèl Script nou bezwen an -->
+    <!-- Script prensipal -->
     <script src="{{ "/main.js" | relative_url }}"></script>
   </body>
 </html>
