@@ -3,14 +3,16 @@ layout: default
 title: Accueil - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER KI GEN NOUVO BANNER OU A AK TEKS LA -->
+<!-- 1. HERO BANNER AVEC MARGIN ET TEXTE BIEN PLACÉ -->
 <div class="hero-wrapper-container">
   <section id="hero-marketplace" class="main-hero-custom">
+    <!-- Kontni Banner HTML la kòm background -->
     <div class="hero-bg-layer">
       {% include boutique-piyay-banner.html %}
     </div>
 
-    <div class="hero-content container">
+    <!-- Tèks nou plase pi ba pou l pa kouvri logo banner a -->
+    <div class="hero-content">
       <div class="hero-text-box">
           <span class="badge-flash">🔥 Vente Flash -50%</span>
           <h1>Offres exceptionnelles sur nos collections !</h1>
@@ -104,25 +106,25 @@ title: Accueil - Boutique Piyay
 </section>
 
 <style>
-/* NOUVO WRAPPER POU BAY MARGIN SOU KOTE YO */
+/* WRAPPER POU MARGIN SOU KOTE YO */
 .hero-wrapper-container {
     padding: 20px 4% 0;
     width: 100%;
-    background-color: white;
 }
 
 .main-hero-custom {
     position: relative;
     width: 100%;
     max-width: 1300px;
-    height: 450px;
+    height: 500px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end; /* Nou voye tèks la anba nèt */
     overflow: hidden;
     margin: 0 auto;
     border-radius: 30px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
 .hero-bg-layer {
@@ -134,7 +136,13 @@ title: Accueil - Boutique Piyay
     z-index: 1;
 }
 
-.hero-bg-layer .logo-area { opacity: 0.3 !important; }
+.hero-bg-layer iframe, .hero-bg-layer .banner {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
 
 .hero-content {
     position: relative;
@@ -142,52 +150,50 @@ title: Accueil - Boutique Piyay
     text-align: center;
     color: white;
     width: 100%;
-    padding: 0 30px;
-    background: rgba(0, 0, 0, 0.2);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding-bottom: 40px; /* Nou ba l yon ti espas anba */
 }
 
 .hero-text-box h1 {
-    font-size: clamp(1.5rem, 4vw, 2.8rem);
-    text-shadow: 2px 2px 12px rgba(0,0,0,0.9);
-    margin: 10px 0;
+    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+    text-shadow: 2px 2px 15px rgba(0,0,0,1);
+    margin: 8px 0;
     font-weight: 900;
 }
 
 .hero-text-box p {
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
-    margin-bottom: 20px;
-    font-weight: 600;
+    font-size: clamp(0.8rem, 1.8vw, 1.1rem);
+    text-shadow: 1px 1px 8px rgba(0,0,0,1);
+    margin-bottom: 15px;
 }
 
 .badge-flash {
     background: #ff4747;
     color: white;
-    padding: 6px 16px;
+    padding: 5px 14px;
     border-radius: 50px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 12px;
     display: inline-block;
 }
 
 .btn-primary-hero {
     background: #ff4747;
     color: white;
-    padding: 14px 35px;
-    border-radius: 12px;
+    padding: 12px 30px;
+    border-radius: 10px;
     text-decoration: none;
     font-weight: 800;
-    font-size: 16px;
-    box-shadow: 0 6px 25px rgba(255, 71, 71, 0.5);
+    font-size: 15px;
+    box-shadow: 0 6px 20px rgba(255, 71, 71, 0.6);
     display: inline-block;
 }
 
+/* RESTE DU DESIGN */
 .category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
 .cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; }
 .bubble-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #ff4747; margin: 0 auto 10px; overflow: hidden; background: #fff; }
 .bubble-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 20px; }
+.product-card { background: white; border: 1px solid #eee; border-radius: 15px; padding: 15px; }
 </style>
