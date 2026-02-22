@@ -1,199 +1,221 @@
 ---
 layout: default
-title: Accueil - Boutique Piyay
+title: Boutique Piyay - Accueil
 ---
 
-<!-- 1. HERO BANNER AVEC MARGIN ET TEXTE BIEN PLACÉ -->
-<div class="hero-wrapper-container">
-  <section id="hero-marketplace" class="main-hero-custom">
-    <!-- Kontni Banner HTML la kòm background -->
-    <div class="hero-bg-layer">
-      {% include boutique-piyay-banner.html %}
+<link rel="stylesheet" href="{{ '/assets/css/aliexpress-homepage.css' | relative_url }}">
+<script defer src="{{ '/assets/js/homepage-interactions.js' | relative_url }}"></script>
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1>🛍️ Bienvenue à Boutique Piyay</h1>
+    <p>Découvrez les meilleures offres sur nos produits premium</p>
+    <div class="hero-buttons">
+      <a href="#flash-deals" class="btn-primary">🔥 Ventes Flash</a>
+      <a href="/shop.html" class="btn-secondary">🛒 Parcourir</a>
     </div>
-
-    <!-- Tèks nou plase pi ba pou l pa kouvri logo banner a -->
-    <div class="hero-content">
-      <div class="hero-text-box">
-          <span class="badge-flash">🔥 Vente Flash -50%</span>
-          <h1>Offres exceptionnelles sur nos collections !</h1>
-          <p>Qualité Premium • Meilleur Prix • Livraison Rapide</p>
-          <a href="#flash-sale" class="btn-primary-hero">Profiter des offres 🛍️</a>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- 2. AFFICHAGE DES PUBS DU HAUT -->
-<section class="ads-top container" style="padding-top: 10px;">
-    {% for ad in site.promotions %}
-        {% if ad.active and ad.position == "top" %}
-            <div class="ad-banner">
-                <a href="{{ ad.url | default: '#' }}"><img src="{{ ad.image }}" alt="{{ ad.title }}"></a>
-            </div>
-        {% endif %}
-    {% endfor %}
-</section>
-
-<!-- 3. FLASH SALE SECTION -->
-<section id="flash-sale" class="container">
-    <div class="flash-header">
-        <div class="flash-title">
-            <span class="flash-icon">⚡</span>
-            <h2>Vente Flash</h2>
-            <div id="countdown" class="timer">
-                <span id="hours">02</span>:<span id="minutes">30</span>:<span id="seconds">00</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="flash-grid">
-        {% for product in site.products %}
-            {% if product.flash_sale %}
-            <div class="flash-card">
-                <div class="discount-badge">SOLDE</div>
-                <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
-                <div class="flash-info">
-                    <h3>{{ product.title }}</h3>
-                    <div class="flash-prices">
-                        <span class="new-price">{{ product.price }} HTG</span>
-                    </div>
-                    <button class="btn-flash-buy" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter</button>
-                </div>
-            </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-</section>
-
-<!-- 4. CATÉGORIES -->
-<section id="categories-section" class="container">
-  <div class="section-header">
-    <h2>Parcourir par Catégorie</h2>
   </div>
-  <div class="category-bubbles">
-    {% for cat in site.categories %}
-    <a href="{{ cat.url }}" class="cat-bubble">
-      <div class="bubble-img">
-        <img src="{{ cat.image }}" alt="{{ cat.display_name | default: cat.title }}" onerror="this.parentElement.innerHTML='🛍️'">
+</section>
+
+<!-- SEARCH & FILTER BAR -->
+<section class="search-filter-section">
+  <div class="search-filter-container">
+    <div class="search-filter-row">
+      <div class="search-input-group">
+        <input
+          type="text"
+          id="search-input-home"
+          placeholder="🔍 Chercher un produit..."
+          oninput="liveSearchHome()"
+          autocomplete="off">
+        <div id="search-results-home" style="display:none; position:absolute; top:100%; left:0; right:0; max-height:300px; overflow-y:auto; background:white; border:1px solid #eee; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:100;"></div>
       </div>
-      <span>{{ cat.display_name | default: cat.title }}</span>
+      <select class="filter-select">
+        <option value="">Toutes les catégories</option>
+        {% for cat in site.categories %}
+          <option value="{{ cat.slug }}">{{ cat.display_name | default: cat.title }}</option>
+        {% endfor %}
+      </select>
+      <select class="filter-select">
+        <option value="">Tous les prix</option>
+        <option value="0-200">0 - 200 HTG</option>
+        <option value="200-500">200 - 500 HTG</option>
+        <option value="500-1000">500 - 1000+ HTG</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES CAROUSEL -->
+<section class="categories-section">
+  <h2 class="section-title">🏪 Parcourir par Catégorie</h2>
+  <div class="categories-carousel">
+    {% for cat in site.categories %}
+    <a href="{{ cat.url }}" class="category-item">
+      <div class="category-icon">
+        {% if cat.icon %}{{ cat.icon }}{% else %}🏷️{% endif %}
+      </div>
+      <span class="category-name">{{ cat.display_name | default: cat.title }}</span>
     </a>
     {% endfor %}
   </div>
 </section>
 
-<!-- 5. REKÒMANDE -->
-<section id="recommandations" class="container">
-  <div class="section-header">
-    <h2>✨ Rekòmande pou ou</h2>
+<!-- FLASH DEALS SECTION -->
+<section id="flash-deals" class="flash-deals-section">
+  <div class="flash-header">
+    <div class="flash-title-group">
+      <span class="flash-icon">⚡</span>
+      <h2 class="section-title" style="margin:0;">Ventes Flash</h2>
+    </div>
+    <div class="flash-countdown">
+      <span>Se termine dans:</span>
+      <span class="countdown-timer" id="countdown-display">23:59:59</span>
+    </div>
   </div>
-  <div class="product-grid">
+
+  <div class="flash-deals-grid">
+    {% assign flash_products = site.products | where: "flash_sale", true | sort: "discount_percent" | reverse %}
+    {% for product in flash_products limit:8 %}
+    <div class="deal-card" data-product-title="{{ product.title }}">
+      <div class="deal-image-wrapper">
+        <img src="{{ product.featured_image | default: product.image }}" alt="{{ product.title }}" class="deal-image">
+        {% if product.discount_percent %}
+        <div class="deal-discount">-{{ product.discount_percent }}%</div>
+        {% endif %}
+        <div class="deal-badge">Flash</div>
+      </div>
+      <div class="deal-info">
+        <h3 class="deal-title">{{ product.title }}</h3>
+        <div class="deal-price-group">
+          <span class="deal-price-current">{{ product.price }} HTG</span>
+          {% if product.original_price %}
+          <span class="deal-price-old">{{ product.original_price }} HTG</span>
+          {% endif %}
+        </div>
+        <div class="deal-rating">
+          <span class="stars">⭐⭐⭐⭐⭐</span>
+          <span>(0)</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- WHY BUY FROM US - TRUST INDICATORS -->
+<section class="trust-indicators">
+  <div class="trust-grid">
+    <div class="trust-item">
+      <div class="trust-icon">✅</div>
+      <h3 class="trust-title">Produits Authenticités</h3>
+      <p class="trust-description">Tous nos produits sont 100% authentiques et vérifiés</p>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🚚</div>
+      <h3 class="trust-title">Livraison Rapide</h3>
+      <p class="trust-description">Livraison en 24-48h dans tout Haïti</p>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">💰</div>
+      <h3 class="trust-title">Meilleur Prix</h3>
+      <p class="trust-description">Prix compétitifs garantis</p>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🛡️</div>
+      <h3 class="trust-title">Sécurisé & Confiant</h3>
+      <p class="trust-description">Paiement sécurisé avec plusieurs options</p>
+    </div>
+  </div>
+</section>
+
+<!-- HERO RECOMMENDATIONS BANNER -->
+<section class="hero-recommendations">
+  <h2>✨ Juste pour toi</h2>
+  <p>Découvrez nos sélections personnalisées</p>
+</section>
+
+<!-- RECOMMENDATIONS SECTION -->
+<section class="recommendations-section">
+  <h2 class="section-title">🌟 Produits Recommandés</h2>
+  <div class="products-grid">
     {% for product in site.products limit:12 %}
       {% unless product.flash_sale %}
-      <div class="product-card">
-          <div class="card-img">
-              <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
+      <div class="product-card-home" data-product-title="{{ product.title }}">
+        <div class="product-image-wrapper">
+          <img src="{{ product.featured_image | default: product.image }}" alt="{{ product.title }}" class="product-image-home">
+          {% if product.new_arrival %}
+          <div class="deal-badge">Nouveau</div>
+          {% endif %}
+        </div>
+        <div class="product-info-home">
+          <div class="product-category-home">{{ product.category | capitalize }}</div>
+          <h3 class="product-title-home">{{ product.title }}</h3>
+          <div class="product-rating-home">
+            <span class="stars">⭐⭐⭐⭐⭐</span>
+            <span>(0)</span>
           </div>
-          <div class="card-info">
-              <h3>{{ product.title }}</h3>
-              <div class="price">{{ product.price }} HTG</div>
-              <button class="add-to-cart" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}')">🛒 Ajouter au panier</button>
-          </div>
+          <div class="product-price-home">{{ product.price }} HTG</div>
+          {% if product.in_stock %}
+            <button class="product-button-home" onclick="addToCartHome('{{ product.title }}', {{ product.price }}, '{{ product.featured_image | default: product.image }}')">
+              🛒 Ajouter
+            </button>
+          {% else %}
+            <button class="product-button-home" disabled style="opacity:0.5; cursor:not-allowed;">
+              Indisponible
+            </button>
+          {% endif %}
+        </div>
       </div>
       {% endunless %}
     {% endfor %}
   </div>
 </section>
 
+<!-- PROMOTIONAL BANNER -->
+<section class="promotional-banner">
+  <h3>🎁 Livraison Gratuite</h3>
+  <p>Sur toutes les commandes de 1000 HTG et plus!</p>
+</section>
+
+<!-- MORE PRODUCTS SECTION -->
+<section class="recommendations-section">
+  <h2 class="section-title">🔥 Tendances du Jour</h2>
+  <div class="products-grid">
+    {% for product in site.products offset:12 limit:12 %}
+      <div class="product-card-home" data-product-title="{{ product.title }}">
+        <div class="product-image-wrapper">
+          <img src="{{ product.featured_image | default: product.image }}" alt="{{ product.title }}" class="product-image-home">
+        </div>
+        <div class="product-info-home">
+          <div class="product-category-home">{{ product.category | capitalize }}</div>
+          <h3 class="product-title-home">{{ product.title }}</h3>
+          <div class="product-rating-home">
+            <span class="stars">⭐⭐⭐⭐⭐</span>
+            <span>(0)</span>
+          </div>
+          <div class="product-price-home">{{ product.price }} HTG</div>
+          {% if product.in_stock %}
+            <button class="product-button-home" onclick="addToCartHome('{{ product.title }}', {{ product.price }}, '{{ product.featured_image | default: product.image }}')">
+              🛒 Ajouter
+            </button>
+          {% else %}
+            <button class="product-button-home" disabled style="opacity:0.5; cursor:not-allowed;">
+              Indisponible
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
 <style>
-/* WRAPPER POU MARGIN SOU KOTE YO */
-.hero-wrapper-container {
-    padding: 20px 4% 0;
-    width: 100%;
-}
-
-.main-hero-custom {
-    position: relative;
-    width: 100%;
-    max-width: 1300px;
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end; /* Nou voye tèks la anba nèt */
-    overflow: hidden;
-    margin: 0 auto;
-    border-radius: 30px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-}
-
-.hero-bg-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-.hero-bg-layer iframe, .hero-bg-layer .banner {
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    color: white;
-    width: 100%;
-    padding-bottom: 40px; /* Nou ba l yon ti espas anba */
-}
-
-.hero-text-box h1 {
-    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
-    text-shadow: 2px 2px 15px rgba(0,0,0,1);
-    margin: 8px 0;
-    font-weight: 900;
-}
-
-.hero-text-box p {
-    font-size: clamp(0.8rem, 1.8vw, 1.1rem);
-    text-shadow: 1px 1px 8px rgba(0,0,0,1);
-    margin-bottom: 15px;
-}
-
-.badge-flash {
-    background: #ff4747;
-    color: white;
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 12px;
-    display: inline-block;
-}
-
-.btn-primary-hero {
-    background: #ff4747;
-    color: white;
-    padding: 12px 30px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 15px;
-    box-shadow: 0 6px 20px rgba(255, 71, 71, 0.6);
-    display: inline-block;
-}
-
-/* RESTE DU DESIGN */
-.category-bubbles { display: flex; gap: 20px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
-.cat-bubble { text-align: center; min-width: 100px; text-decoration: none; color: #333; }
-.bubble-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #ff4747; margin: 0 auto 10px; overflow: hidden; background: #fff; }
-.bubble-img img { width: 100%; height: 100%; object-fit: cover; }
-
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 20px; }
-.product-card { background: white; border: 1px solid #eee; border-radius: 15px; padding: 15px; }
+  /* Hide original styles that conflict */
+  .hero-wrapper-container { display: none; }
+  #categories-section { display: none; }
+  #recommandations { display: none; }
+  .ads-top { display: none; }
+  #flash-sale { display: none; }
 </style>

@@ -3,800 +3,223 @@ layout: default
 title: Tous les Produits
 ---
 
-<div class="shop-page">
-  <div class="shop-header">
-    <h1>🛍️ Tous nos Produits</h1>
-    <p>Découvrez notre collection complète</p>
-  </div>
+<link rel="stylesheet" href="{{ '/assets/css/aliexpress-shop-page.css' | relative_url }}">
+<script defer src="{{ '/assets/js/shop-filters.js' | relative_url }}"></script>
 
-  <!-- Filters and Search -->
-  <div class="filters-section">
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="🔍 Rechercher un produit..." onkeyup="filterProducts()">
+<div class="shop-container">
+  <!-- SIDEBAR FILTERS -->
+  <aside class="shop-sidebar">
+    <!-- SEARCH FILTER -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        🔍 Rechercher
+        <span class="filter-toggle">▼</span>
+      </div>
+      <div class="filter-content">
+        <input
+          type="text"
+          id="shop-search"
+          placeholder="Chercher un produit..."
+          class="filter-option"
+          style="width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+      </div>
     </div>
 
-    <div class="filter-controls">
-      <!-- Category Filter -->
-      <div class="filter-group">
-        <label>Catégorie:</label>
-        <select id="categoryFilter" onchange="filterProducts()">
-          <option value="">Toutes</option>
-          <option value="electronique">Électronique</option>
-          <option value="habillement">Habillement</option>
-          <option value="maison">Maison</option>
-          <option value="alimentation">Alimentation</option>
-          <option value="beaute">Beauté</option>
-          <option value="accessoires">Accessoires</option>
+    <!-- CATEGORY FILTER -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        🏷️ Catégorie
+        <span class="filter-toggle">▼</span>
+      </div>
+      <div class="filter-content" style="max-height: 300px;">
+        <select id="category-filter" style="width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+          <option value="">Toutes les catégories</option>
+          {% for cat in site.categories %}
+            <option value="{{ cat.slug }}">{{ cat.display_name | default: cat.title }}</option>
+          {% endfor %}
         </select>
       </div>
+    </div>
 
-      <!-- Price Range Filter -->
-      <div class="filter-group">
-        <label>Prix:</label>
-        <select id="priceFilter" onchange="filterProducts()">
-          <option value="">Tous les prix</option>
-          <option value="0-200">0 - 200 HTG</option>
-          <option value="200-500">200 - 500 HTG</option>
-          <option value="500-1000">500 - 1000 HTG</option>
-          <option value="1000+">1000+ HTG</option>
-        </select>
+    <!-- PRICE FILTER -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        💰 Prix
+        <span class="filter-toggle">▼</span>
       </div>
+      <div class="filter-content">
+        <div class="price-range-wrapper">
+          <div class="price-inputs">
+            <input type="number" id="price-min" class="price-input" placeholder="Min" value="0">
+            <span class="price-separator">-</span>
+            <input type="number" id="price-max" class="price-input" placeholder="Max" value="10000">
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <!-- Sort Filter -->
-      <div class="filter-group">
-        <label>Trier par:</label>
-        <select id="sortFilter" onchange="filterProducts()">
+    <!-- STOCK FILTER -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        📦 Disponibilité
+        <span class="filter-toggle">▼</span>
+      </div>
+      <div class="filter-content">
+        <div class="filter-option">
+          <input type="checkbox" id="filter-in-stock">
+          <label for="filter-in-stock">En stock seulement</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEALS FILTER -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        🎁 Promotions
+        <span class="filter-toggle">▼</span>
+      </div>
+      <div class="filter-content">
+        <div class="filter-option">
+          <input type="checkbox" id="filter-on-sale">
+          <label for="filter-on-sale">En promotion</label>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="filter-free-shipping">
+          <label for="filter-free-shipping">Livraison gratuite</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- RATING FILTER -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        ⭐ Note
+        <span class="filter-toggle">▼</span>
+      </div>
+      <div class="filter-content">
+        <div class="filter-option">
+          <input type="radio" name="rating" id="rating-4plus" value="4" data-filter="rating">
+          <label for="rating-4plus">4+ ⭐ et plus</label>
+        </div>
+        <div class="filter-option">
+          <input type="radio" name="rating" id="rating-3plus" value="3" data-filter="rating">
+          <label for="rating-3plus">3+ ⭐ et plus</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESET BUTTON -->
+    <button id="reset-filters-btn" class="reset-filters-btn" style="width: 100%; padding: 10px; margin-top: 15px;">
+      🔄 Réinitialiser
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="shop-main">
+    <!-- HEADER -->
+    <div class="shop-header-top">
+      <h1 class="header-title">🛍️ Tous les Produits</h1>
+      <div class="header-controls">
+        <select id="sort-select" class="sort-select">
           <option value="newest">Plus récents</option>
-          <option value="price-low">Prix croissant</option>
-          <option value="price-high">Prix décroissant</option>
-          <option value="name">Nom A-Z</option>
           <option value="popular">Plus populaires</option>
+          <option value="price-low">Prix ↗</option>
+          <option value="price-high">Prix ↘</option>
+          <option value="name">Nom (A-Z)</option>
         </select>
-      </div>
-
-      <!-- Stock Filter -->
-      <div class="filter-group">
-        <label>
-          <input type="checkbox" id="inStockOnly" onchange="filterProducts()">
-          En stock seulement
-        </label>
-      </div>
-
-      <!-- Sale Filter -->
-      <div class="filter-group">
-        <label>
-          <input type="checkbox" id="onSaleOnly" onchange="filterProducts()">
-          En promotion
-        </label>
       </div>
     </div>
 
-    <button class="reset-filters" onclick="resetFilters()">🔄 Réinitialiser</button>
-  </div>
+    <!-- ACTIVE FILTERS TAGS -->
+    <div id="active-filters" class="active-filters" style="display: none;"></div>
 
-  <!-- Results Count -->
-  <div class="results-info">
-    <span id="resultsCount">0</span> produit(s) trouvé(s)
-  </div>
+    <!-- RESULTS COUNT -->
+    <div style="padding: 10px 20px; background: white; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <span id="results-count">0</span> produit(s) trouvé(s)
+    </div>
 
-  <!-- Products Grid -->
-  <div class="products-grid" id="productsGrid">
-    {% for product in site.products %}
-    <div class="product-card"
-         data-category="{{ product.category }}"
-         data-price="{{ product.price }}"
-         data-name="{{ product.title | downcase }}"
-         data-in-stock="{{ product.in_stock }}"
-         data-on-sale="{{ product.flash_sale }}"
-         data-date="{{ product.date }}">
+    <!-- PRODUCTS GRID -->
+    <div id="products-grid-shop" class="products-grid-shop">
+      {% for product in site.products %}
+      <div class="product-card-shop"
+           data-price="{{ product.price }}"
+           data-category="{{ product.category }}"
+           data-sold="{{ product.sold | default: 0 }}"
+           data-date="{{ product.date }}"
+           data-in-stock="{{ product.in_stock | default: true }}"
+           data-on-sale="{{ product.flash_sale | default: false }}"
+           data-rating="{{ product.rating | default: 5 }}">
 
-      <a href="{{ product.url }}" class="product-link">
-        <div class="product-image">
-          <img src="{{ product.featured_image }}" alt="{{ product.title }}" loading="lazy">
+        <!-- Image Section -->
+        <div class="product-image-shop">
+          <img src="{{ product.featured_image | default: product.image }}" alt="{{ product.title }}" class="product-img-shop">
 
           <!-- Badges -->
-          {% if product.flash_sale %}
-          <div class="badge sale-badge">-{{ product.discount_percent }}%</div>
-          {% endif %}
-
-          {% if product.new_arrival %}
-          <div class="badge new-badge">Nouveau</div>
-          {% endif %}
-
-          {% unless product.in_stock %}
-          <div class="out-of-stock-overlay">Rupture de stock</div>
-          {% endunless %}
-
-          <!-- Quick View Button -->
-          <button class="quick-view-btn" onclick="quickView(event, '{{ product.url }}')">
-            👁️ Vue rapide
-          </button>
-        </div>
-
-        <div class="product-details">
-          <div class="product-category">{{ product.category | capitalize }}</div>
-          <h3 class="product-title">{{ product.title }}</h3>
-
-          {% if product.excerpt %}
-          <p class="product-excerpt">{{ product.excerpt | truncate: 80 }}</p>
-          {% endif %}
-
-          <div class="product-rating">
-            <span class="stars">⭐⭐⭐⭐⭐</span>
-            <span class="rating-count">(0)</span>
-          </div>
-
-          <div class="product-price">
-            {% if product.original_price %}
-            <span class="original-price">{{ product.original_price }} HTG</span>
+          <div class="product-badges-shop">
+            {% if product.flash_sale %}
+              <span class="badge-shop">-{{ product.discount_percent | default: 20 }}%</span>
             {% endif %}
-            <span class="current-price">{{ product.price }} HTG</span>
+            {% if product.new_arrival %}
+              <span class="badge-shop badge-new">Nouveau</span>
+            {% endif %}
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions-shop">
+            <button class="quick-action-btn" onclick="addToCartShop('{{ product.title }}', {{ product.price }}, '{{ product.featured_image | default: product.image }}')">
+              🛒 Ajouter
+            </button>
+            <button class="quick-action-btn" onclick="toggleWishlistShop(event, '{{ product.title }}')">
+              ❤️ Favori
+            </button>
           </div>
         </div>
-      </a>
 
-      <div class="product-actions">
-        {% if product.in_stock %}
-        <button class="add-to-cart-quick" onclick="addToCartQuick(event, '{{ product.title }}', {{ product.price }}, '{{ product.featured_image }}')">
-          🛒 Ajouter
-        </button>
-        {% else %}
-        <button class="notify-btn-small" disabled>
-          Indisponible
-        </button>
-        {% endif %}
+        <!-- Product Info -->
+        <div class="product-details-shop">
+          <div class="product-seller-shop">
+            {% if product.seller %}{{ product.seller }}{% else %}Boutique Piyay{% endif %}
+          </div>
 
-        <button class="wishlist-btn" onclick="toggleWishlist(event, '{{ product.title }}')">
-          🤍
-        </button>
+          <h3 class="product-title-shop">{{ product.title }}</h3>
+
+          <div class="product-rating-shop">
+            <span class="stars">⭐⭐⭐⭐⭐</span>
+            <span>({{ product.reviews_count | default: 0 }})</span>
+          </div>
+
+          {% if product.sold %}
+          <div class="product-sold-shop">
+            {{ product.sold }} vendus
+          </div>
+          {% endif %}
+
+          <div class="product-price-shop">
+            <div class="price-row">
+              <span class="product-price-current-shop">{{ product.price }} HTG</span>
+              {% if product.original_price %}
+                <span class="product-price-original-shop">{{ product.original_price }} HTG</span>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if product.in_stock %}
+            <button class="add-to-cart-btn-shop" onclick="addToCartShop('{{ product.title }}', {{ product.price }}, '{{ product.featured_image | default: product.image }}')">
+              🛒 Ajouter au panier
+            </button>
+          {% else %}
+            <button class="add-to-cart-btn-shop" disabled style="opacity: 0.5; cursor: not-allowed;">
+              Indisponible
+            </button>
+          {% endif %}
+        </div>
       </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
-
-  <!-- Load More Button -->
-  <div class="load-more-section" style="display: none;">
-    <button class="load-more-btn" onclick="loadMore()">
-      Charger plus de produits
-    </button>
-  </div>
-
-  <!-- No Results Message -->
-  <div id="noResults" class="no-results" style="display: none;">
-    <div class="no-results-icon">🔍</div>
-    <h3>Aucun produit trouvé</h3>
-    <p>Essayez de modifier vos filtres ou votre recherche</p>
-    <button onclick="resetFilters()">Réinitialiser les filtres</button>
-  </div>
-</div>
-
-<!-- Quick View Modal -->
-<div id="quickViewModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeQuickView()">&times;</span>
-    <div id="quickViewContent"></div>
-  </div>
+  </main>
 </div>
 
 <style>
-.shop-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.shop-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.shop-header h1 {
-  font-size: 42px;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.filters-section {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  margin-bottom: 30px;
-}
-
-.search-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 15px 20px;
-  border: 2px solid #e5e7eb;
-  border-radius: 50px;
-  font-size: 16px;
-  transition: all 0.3s;
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: #4facfe;
-  box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
-}
-
-.filter-controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.filter-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.filter-group select {
-  width: 100%;
-  padding: 10px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.reset-filters {
-  padding: 10px 20px;
-  background: #f3f4f6;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-
-.reset-filters:hover {
-  background: #e5e7eb;
-}
-
-.results-info {
-  margin-bottom: 20px;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
-}
-
-.product-card {
-  background: white;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s;
-  position: relative;
-}
-
-.product-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-}
-
-.product-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-
-.product-image {
-  position: relative;
-  overflow: hidden;
-  height: 280px;
-  background: #f9fafb;
-}
-
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s;
-}
-
-.product-card:hover .product-image img {
-  transform: scale(1.1);
-}
-
-.badge {
-  position: absolute;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-  z-index: 2;
-}
-
-.sale-badge {
-  top: 10px;
-  right: 10px;
-  background: #ef4444;
-}
-
-.new-badge {
-  top: 10px;
-  left: 10px;
-  background: #10b981;
-}
-
-.out-of-stock-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.7);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  z-index: 3;
-}
-
-.quick-view-btn {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  padding: 10px 20px;
-  background: white;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: 500;
-  opacity: 0;
-  transition: all 0.3s;
-  z-index: 4;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.product-card:hover .quick-view-btn {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.product-details {
-  padding: 20px;
-}
-
-.product-category {
-  font-size: 12px;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-
-.product-title {
-  font-size: 18px;
-  margin: 0 0 10px 0;
-  font-weight: 600;
-  color: #111827;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.product-excerpt {
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.product-rating {
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.stars {
-  color: #fbbf24;
-}
-
-.rating-count {
-  color: #9ca3af;
-  font-size: 12px;
-  margin-left: 5px;
-}
-
-.product-price {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.original-price {
-  text-decoration: line-through;
-  color: #9ca3af;
-  font-size: 14px;
-}
-
-.current-price {
-  font-size: 22px;
-  font-weight: bold;
-  color: #4facfe;
-}
-
-.product-actions {
-  display: flex;
-  gap: 10px;
-  padding: 0 20px 20px;
-}
-
-.add-to-cart-quick {
-  flex: 1;
-  padding: 12px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.add-to-cart-quick:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
-}
-
-.notify-btn-small {
-  flex: 1;
-  padding: 12px;
-  background: #e5e7eb;
-  color: #6b7280;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: not-allowed;
-}
-
-.wishlist-btn {
-  width: 45px;
-  padding: 12px;
-  background: #f3f4f6;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.wishlist-btn:hover {
-  background: #fee2e2;
-}
-
-.wishlist-btn.active {
-  background: #fecaca;
-}
-
-.wishlist-btn.active::after {
-  content: '❤️';
-  position: absolute;
-}
-
-.no-results {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.no-results-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-  opacity: 0.5;
-}
-
-.no-results h3 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.no-results p {
-  color: #6b7280;
-  margin-bottom: 20px;
-}
-
-.no-results button {
-  padding: 12px 30px;
-  background: #4facfe;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  animation: fadeIn 0.3s;
-}
-
-.modal-content {
-  background: white;
-  margin: 5% auto;
-  padding: 30px;
-  width: 90%;
-  max-width: 900px;
-  border-radius: 15px;
-  max-height: 85vh;
-  overflow-y: auto;
-  animation: slideIn 0.3s;
-}
-
-.close {
-  float: right;
-  font-size: 32px;
-  font-weight: bold;
-  cursor: pointer;
-  line-height: 20px;
-}
-
-.close:hover {
-  color: #ef4444;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@media (max-width: 768px) {
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-  }
-
-  .filter-controls {
-    grid-template-columns: 1fr;
-  }
-
-  .product-image {
-    height: 180px;
-  }
-
-  .product-title {
-    font-size: 14px;
-  }
-
-  .current-price {
-    font-size: 16px;
-  }
-}
+  /* Hide old styles */
+  .shop-page { display: none; }
 </style>
-
-<script>
-let allProducts = [];
-
-function initializeProducts() {
-  const productCards = document.querySelectorAll('.product-card');
-  allProducts = Array.from(productCards);
-  updateResultsCount();
-}
-
-function filterProducts() {
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  const category = document.getElementById('categoryFilter').value;
-  const priceRange = document.getElementById('priceFilter').value;
-  const sortBy = document.getElementById('sortFilter').value;
-  const inStockOnly = document.getElementById('inStockOnly').checked;
-  const onSaleOnly = document.getElementById('onSaleOnly').checked;
-
-  let filtered = allProducts.filter(product => {
-    // Search filter
-    const name = product.dataset.name;
-    if (searchTerm && !name.includes(searchTerm)) return false;
-
-    // Category filter
-    if (category && product.dataset.category !== category) return false;
-
-    // Price filter
-    if (priceRange) {
-      const price = parseFloat(product.dataset.price);
-      if (priceRange === '0-200' && (price < 0 || price > 200)) return false;
-      if (priceRange === '200-500' && (price < 200 || price > 500)) return false;
-      if (priceRange === '500-1000' && (price < 500 || price > 1000)) return false;
-      if (priceRange === '1000+' && price < 1000) return false;
-    }
-
-    // Stock filter
-    if (inStockOnly && product.dataset.inStock !== 'true') return false;
-
-    // Sale filter
-    if (onSaleOnly && product.dataset.onSale !== 'true') return false;
-
-    return true;
-  });
-
-  // Sort products
-  filtered.sort((a, b) => {
-    switch(sortBy) {
-      case 'price-low':
-        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-      case 'price-high':
-        return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-      case 'name':
-        return a.dataset.name.localeCompare(b.dataset.name);
-      case 'newest':
-        return new Date(b.dataset.date) - new Date(a.dataset.date);
-      default:
-        return 0;
-    }
-  });
-
-  // Update display
-  const grid = document.getElementById('productsGrid');
-  allProducts.forEach(product => product.style.display = 'none');
-
-  if (filtered.length === 0) {
-    document.getElementById('noResults').style.display = 'block';
-  } else {
-    document.getElementById('noResults').style.display = 'none';
-    filtered.forEach(product => product.style.display = 'block');
-  }
-
-  updateResultsCount(filtered.length);
-}
-
-function resetFilters() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('categoryFilter').value = '';
-  document.getElementById('priceFilter').value = '';
-  document.getElementById('sortFilter').value = 'newest';
-  document.getElementById('inStockOnly').checked = false;
-  document.getElementById('onSaleOnly').checked = false;
-  filterProducts();
-}
-
-function updateResultsCount(count) {
-  if (count === undefined) {
-    count = allProducts.filter(p => p.style.display !== 'none').length;
-  }
-  document.getElementById('resultsCount').textContent = count;
-}
-
-function addToCartQuick(e, title, price, image) {
-  e.preventDefault();
-  e.stopPropagation();
-
-  // Add to cart logic
-  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  const existingItem = cart.find(item => item.title === title);
-
-  if (existingItem) {
-    existingItem.quantity++;
-  } else {
-    cart.push({ title, price, image, quantity: 1 });
-  }
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-  if (typeof updateCartCount === 'function') updateCartCount();
-
-  // Show notification
-  showNotification('✅ Ajouté au panier!');
-}
-
-function toggleWishlist(e, title) {
-  e.preventDefault();
-  e.stopPropagation();
-
-  const btn = e.target;
-  btn.classList.toggle('active');
-
-  let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-
-  if (btn.classList.contains('active')) {
-    wishlist.push(title);
-    showNotification('❤️ Ajouté aux favoris!');
-  } else {
-    wishlist = wishlist.filter(item => item !== title);
-    showNotification('Retiré des favoris');
-  }
-
-  localStorage.setItem('wishlist', JSON.stringify(wishlist));
-}
-
-function quickView(e, url) {
-  e.preventDefault();
-  e.stopPropagation();
-
-  // Load product via AJAX
-  fetch(url)
-    .then(response => response.text())
-    .then(html => {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const content = doc.querySelector('.product-container');
-
-      if (content) {
-        document.getElementById('quickViewContent').innerHTML = content.innerHTML;
-        document.getElementById('quickViewModal').style.display = 'block';
-      }
-    });
-}
-
-function closeQuickView() {
-  document.getElementById('quickViewModal').style.display = 'none';
-}
-
-function showNotification(message) {
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.textContent = message;
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 10000;
-  `;
-
-  document.body.appendChild(notification);
-
-  setTimeout(() => {
-    notification.remove();
-  }, 2000);
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-  initializeProducts();
-
-  // Load wishlist states
-  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-  document.querySelectorAll('.product-card').forEach(card => {
-    const title = card.querySelector('.product-title').textContent;
-    if (wishlist.includes(title)) {
-      card.querySelector('.wishlist-btn').classList.add('active');
-    }
-  });
-});
-
-// Close modal on outside click
-window.onclick = function(event) {
-  const modal = document.getElementById('quickViewModal');
-  if (event.target === modal) {
-    closeQuickView();
-  }
-}
-</script>

@@ -2,102 +2,422 @@
 layout: default
 ---
 
-<div class="product-page-container container">
-  <!-- Fil d'Ariane -->
-  <nav class="breadcrumb">
-    <a href="/">Accueil</a> /
-    <a href="/kategori/{{ page.category }}">{{ page.category }}</a> /
-    <span>{{ page.title }}</span>
-  </nav>
+<link rel="stylesheet" href="{{ '/assets/css/aliexpress-product-detail.css' | relative_url }}">
 
-  <div class="product-main-flex">
-    <!-- 1. GALERIE D'IMAGES -->
-    <div class="product-gallery">
-      <div class="main-img-box">
-        <img id="current-main-img" src="{{ page.image }}" alt="{{ page.title }}">
+<!-- BREADCRUMB -->
+<div class="breadcrumb-product">
+  <a href="/">🏠 Accueil</a>
+  <span>/</span>
+  <a href="/shop.html">🛍️ Tous les produits</a>
+  <span>/</span>
+  <a href="#">{{ page.category | capitalize }}</a>
+  <span>/</span>
+  <span>{{ page.title }}</span>
+</div>
+
+<!-- MAIN PRODUCT CONTAINER -->
+<div class="product-page-container">
+
+  <!-- PRODUCT MAIN LAYOUT -->
+  <div class="product-main-container">
+
+    <!-- LEFT: GALLERY -->
+    <div class="product-gallery-section">
+      <div class="gallery-main-wrapper">
+        <img
+          id="main-product-image"
+          src="{{ page.featured_image | default: page.image }}"
+          alt="{{ page.title }}"
+          class="gallery-main-image">
+        <div class="gallery-image-count">
+          <span id="image-count">1</span>/
+          <span id="total-images">
+            {% if page.images %}{{ page.images | size | plus: 1 }}{% else %}1{% endif %}
+          </span>
+        </div>
       </div>
 
-      {% if page.images %}
-      <div class="thumb-list">
-        <div class="thumb active" onclick="updateMainImg('{{ page.image }}', this)">
-          <img src="{{ page.image }}" alt="">
+      <!-- THUMBNAIL GALLERY -->
+      <div class="gallery-thumbnails" id="thumbnail-gallery">
+        <div class="gallery-thumbnail active" onclick="switchImage('{{ page.featured_image | default: page.image }}', 0)">
+          <img src="{{ page.featured_image | default: page.image }}" alt="">
         </div>
-        {% for item in page.images %}
-        <div class="thumb" onclick="updateMainImg('{{ item.img }}', this)">
-          <img src="{{ item.img }}" alt="">
-        </div>
-        {% endfor %}
+        {% if page.images %}
+          {% for img in page.images %}
+          <div class="gallery-thumbnail" onclick="switchImage('{{ img.image | default: img }}', {{ forloop.index }})">
+            <img src="{{ img.image | default: img }}" alt="">
+          </div>
+          {% endfor %}
+        {% endif %}
       </div>
-      {% endif %}
     </div>
 
-    <!-- 2. INFOS PRODUIT -->
-    <div class="product-details">
-      <h1 class="prod-title">{{ page.title }}</h1>
+    <!-- RIGHT: PRODUCT DETAILS -->
+    <div class="product-details-section">
 
-      <div class="prod-rating">
-        <span class="stars">⭐⭐⭐⭐⭐</span>
-        <span class="rev-count">(0 avis)</span>
-      </div>
+      <!-- HEADER INFO -->
+      <div class="product-header-info">
+        <h1 class="product-title-detail">{{ page.title }}</h1>
 
-      <div class="prod-price-box">
-        <span class="current-price">{{ page.price }} HTG</span>
-        {% if page.old_price %}
-          <span class="old-price">{{ page.old_price }} HTG</span>
-        {% endif %}
-      </div>
-
-      <div class="prod-description">
-        {{ content }}
-      </div>
-
-      <!-- Options (Admin Controlled) -->
-      <div class="prod-options">
-        {% if page.sizes %}
-        <div class="opt-group">
-          <label>Taille :</label>
-          <select id="prod-size">
-            {% for s in page.sizes %}
-              <option value="{{ s.size }}">{{ s.size }}</option>
-            {% endfor %}
-          </select>
+        <div class="product-rating-detail">
+          <div class="rating-stars">
+            <span class="stars">⭐⭐⭐⭐⭐</span>
+            <span class="rating-count">(0 avis)</span>
+          </div>
+          <a href="#reviews" class="rating-link">Voir les avis →</a>
         </div>
-        {% endif %}
+      </div>
 
+      <!-- SELLER INFO -->
+      <div class="seller-info-box">
+        <div class="seller-details">
+          <div class="seller-badge">🏪</div>
+          <div class="seller-info">
+            <div class="seller-name">Boutique Piyay</div>
+            <div class="seller-ratings">⭐⭐⭐⭐⭐ 98% positifs</div>
+          </div>
+        </div>
+        <button class="seller-action" onclick="contactSeller()">Contacter</button>
+      </div>
+
+      <!-- PRICE SECTION -->
+      <div class="price-section">
+        <div class="price-display">
+          <span class="price-currency">HTG</span>
+          <span class="price-main">{{ page.price }}</span>
+          {% if page.original_price %}
+            <span class="price-original">{{ page.original_price }}</span>
+            <span class="price-discount">-{{ page.discount_percent | default: 20 }}%</span>
+          {% endif %}
+        </div>
+        <div class="shipping-info">
+          ✈️ <span class="accent">Livraison gratuite</span> dès 1000 HTG
+        </div>
+      </div>
+
+      <!-- STOCK STATUS -->
+      {% if page.in_stock != false %}
+      <div class="stock-status">
+        <div class="stock-indicator">
+          <span>✅ En stock</span>
+          <span style="font-size: 12px; color: #666;">(85% vendu) </span>
+        </div>
+        <div class="stock-bar">
+          <div class="stock-bar-fill"></div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- VARIANTS -->
+      <div class="variants-section">
+
+        <!-- COLORS/SIZE -->
         {% if page.variants %}
-        <div class="opt-group">
-          <label>Couleur / Modèle :</label>
-          <div class="variant-chips">
-            {% for v in page.variants %}
-              <button class="chip" onclick="selectVariant(this)">{{ v.variant }}</button>
+        <div class="variant-group">
+          <div class="variant-label">
+            Couleur / Modèle
+            <span class="variant-required">*</span>
+          </div>
+          <div class="variant-options" id="variants-container">
+            {% for variant in page.variants %}
+              <button
+                class="variant-option"
+                onclick="selectVariant(this, '{{ variant.name | default: variant }}')">
+                {{ variant.name | default: variant }}
+              </button>
             {% endfor %}
           </div>
         </div>
         {% endif %}
+
+        <!-- SIZE -->
+        {% if page.sizes %}
+        <div class="variant-group">
+          <div class="variant-label">
+            Taille
+            <span class="variant-required">*</span>
+          </div>
+          <div class="variant-options" id="sizes-container">
+            {% for size in page.sizes %}
+              <button
+                class="variant-option"
+                onclick="selectSize(this, '{{ size.size | default: size }}')">
+                {{ size.size | default: size }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- QUANTITY -->
+        <div class="variant-group">
+          <div class="variant-label">Quantité</div>
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="quantity-selector">
+              <button class="qty-btn" onclick="decreaseQty()">−</button>
+              <input type="number" id="product-quantity" class="qty-input" value="1" min="1" max="9999">
+              <button class="qty-btn" onclick="increaseQty()">+</button>
+            </div>
+            <span id="available-qty" style="font-size: 13px; color: #666;">En stock: 85</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Achat -->
-      <div class="purchase-box">
-        <div class="qty-selector">
-          <button onclick="changeQty(-1)">-</button>
-          <input type="number" id="prod-qty" value="1" min="1">
-          <button onclick="changeQty(1)">+</button>
-        </div>
-        <button class="btn-add-main" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}')">
+      <!-- ACTION BUTTONS -->
+      <div class="purchase-section">
+        <button class="btn-add-cart" onclick="addProductToCart('{{ page.title }}', {{ page.price }}, '{{ page.featured_image | default: page.image }}')">
           🛒 Ajouter au panier
+        </button>
+        <button class="btn-buy-now" onclick="buyNow('{{ page.title }}', {{ page.price }})">
+          ⚡ Acheter maintenant
+        </button>
+        <button class="btn-wishlist" id="wishlist-btn" onclick="toggleWishlistProduct('{{ page.title }}')">
+          🤍
         </button>
       </div>
 
-      <div class="prod-meta">
-        <p><strong>Disponibilité :</strong> En Stock ✅</p>
-        <p><strong>Livraison :</strong> Rapide (24-48h)</p>
+    </div>
+
+  </div>
+
+  <!-- PRODUCT TABS -->
+  <div class="product-tabs">
+    <div class="tabs-header">
+      <button class="tab-button active" onclick="switchTab(this, 'description')">📝 Description</button>
+      <button class="tab-button" onclick="switchTab(this, 'specifications')">📋 Spécifications</button>
+      <button class="tab-button" onclick="switchTab(this, 'shipping')">🚚 Expédition & Livraison</button>
+      <button class="tab-button" onclick="switchTab(this, 'reviews')">⭐ Avis</button>
+    </div>
+
+    <div class="tabs-content">
+      <!-- DESCRIPTION TAB -->
+      <div class="tab-pane active" id="description">
+        <h3>Description du produit</h3>
+        <div style="line-height: 1.8; color: #666;">
+          {{ content }}
+        </div>
+      </div>
+
+      <!-- SPECIFICATIONS TAB -->
+      <div class="tab-pane" id="specifications">
+        <h3>Spécifications</h3>
+        <div class="specifications-list">
+          <div class="spec-item">
+            <span class="spec-label">Catégorie</span>
+            <span class="spec-value">{{ page.category | capitalize }}</span>
+          </div>
+          {% if page.material %}
+          <div class="spec-item">
+            <span class="spec-label">Matériau</span>
+            <span class="spec-value">{{ page.material }}</span>
+          </div>
+          {% endif %}
+          {% if page.color %}
+          <div class="spec-item">
+            <span class="spec-label">Couleur</span>
+            <span class="spec-value">{{ page.color }}</span>
+          </div>
+          {% endif %}
+          {% if page.weight %}
+          <div class="spec-item">
+            <span class="spec-label">Poids</span>
+            <span class="spec-value">{{ page.weight }}</span>
+          </div>
+          {% endif %}
+          {% if page.dimensions %}
+          <div class="spec-item">
+            <span class="spec-label">Dimensions</span>
+            <span class="spec-value">{{ page.dimensions }}</span>
+          </div>
+          {% endif %}
+          <div class="spec-item">
+            <span class="spec-label">Disponibilité</span>
+            <span class="spec-value">{% if page.in_stock != false %}En stock{% else %}Indisponible{% endif %}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHIPPING TAB -->
+      <div class="tab-pane" id="shipping">
+        <h3>Expédition & Livraison</h3>
+        <p>📦 <strong>Livraison gratuite</strong> pour les commandes de 1000 HTG ou plus</p>
+        <p>⏱️ <strong>Délai de livraison:</strong> 24-48 heures en Haïti</p>
+        <p>🚚 <strong>Options de paiement:</strong> Moncash, Natcash, Espèces à la livraison</p>
+        <p>🔄 <strong>Politique de retour:</strong> 14 jours pour retour gratuit</p>
+      </div>
+
+      <!-- REVIEWS TAB -->
+      <div class="tab-pane" id="reviews">
+        <h3>Avis clients</h3>
+        <p style="color: #999; font-style: italic;">Aucun avis pour le moment. Soyez le premier à laisser un avis!</p>
       </div>
     </div>
   </div>
+
+  <!-- SIMILAR PRODUCTS -->
+  <div class="similar-products-section">
+    <h2>🔍 Produits similaires</h2>
+    <div class="similar-products-grid">
+      {% for product in site.products limit:4 %}
+        {% unless product.title == page.title %}
+        <div class="similar-product-card" onclick="window.location.href='{{ product.url }}'">
+          <div style="aspect-ratio: 1; overflow: hidden; background: #f9f9f9;">
+            <img src="{{ product.featured_image | default: product.image }}" alt="{{ product.title }}" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div style="padding: 12px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 14px;">{{ product.title }}</h4>
+            <div style="color: #FF5722; font-weight: 700; font-size: 16px;">{{ product.price }} HTG</div>
+          </div>
+        </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+
 </div>
 
-<style>
-.product-page-container { padding: 40px 20px; }
+<script>
+// Image Gallery
+function switchImage(imageSrc, index) {
+  document.getElementById('main-product-image').src = imageSrc;
+  document.getElementById('image-count').textContent = index + 1;
+
+  document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
+    thumb.classList.toggle('active', i === index);
+  });
+}
+
+// Variants
+function selectVariant(element, variantName) {
+  document.querySelectorAll('#variants-container .variant-option').forEach(el => {
+    el.classList.remove('selected');
+  });
+  element.classList.add('selected');
+}
+
+// Size
+function selectSize(element, sizeName) {
+  document.querySelectorAll('#sizes-container .variant-option').forEach(el => {
+    el.classList.remove('selected');
+  });
+  element.classList.add('selected');
+}
+
+// Quantity
+function increaseQty() {
+  const input = document.getElementById('product-quantity');
+  input.value = parseInt(input.value) + 1;
+}
+
+function decreaseQty() {
+  const input = document.getElementById('product-quantity');
+  if (parseInt(input.value) > 1) {
+    input.value = parseInt(input.value) - 1;
+  }
+}
+
+// Add to Cart
+function addProductToCart(title, price, image) {
+  const qty = parseInt(document.getElementById('product-quantity').value) || 1;
+
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const existingItem = cart.find(item => item.title === title);
+
+  if (existingItem) {
+    existingItem.quantity += qty;
+  } else {
+    cart.push({ title, price, image, quantity: qty });
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  showNotificationProduct(`✅ ${qty}x "${title}" ajouté au panier!`);
+  updateCartBadge();
+}
+
+// Wishlist
+function toggleWishlistProduct(title) {
+  const btn = document.getElementById('wishlist-btn');
+  let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+  if (wishlist.includes(title)) {
+    wishlist = wishlist.filter(item => item !== title);
+    btn.classList.remove('active');
+    showNotificationProduct('💔 Retiré des favoris');
+  } else {
+    wishlist.push(title);
+    btn.classList.add('active');
+    showNotificationProduct('❤️ Ajouté aux favoris!');
+  }
+
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+}
+
+// Tabs
+function switchTab(button, tabId) {
+  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+  button.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// Notification
+function showNotificationProduct(message) {
+  const notification = document.createElement('div');
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    animation: slideInRight 0.3s ease-out;
+  `;
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.style.animation = 'slideOutRight 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+  }, 2500);
+}
+
+function buyNow(title, price) {
+  addProductToCart(title, price, '');
+  window.location.href = '/checkout.html';
+}
+
+function contactSeller() {
+  window.open('https://wa.me/50948868964?text=Bonjour, je suis intéressé par un produit', '_blank');
+}
+
+// Load wishlist state
+document.addEventListener('DOMContentLoaded', () => {
+  const title = document.querySelector('.product-title-detail').textContent;
+  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  if (wishlist.includes(title)) {
+    document.getElementById('wishlist-btn').classList.add('active');
+  }
+
+  // Add animation styles
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideInRight {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+});
+</script>
 .breadcrumb { margin-bottom: 20px; color: #888; font-size: 14px; }
 .breadcrumb a { color: #ff4747; text-decoration: none; }
 
