@@ -18,30 +18,7 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# Konfigirasyon Koleksyon yo
-collections:
-  products:
-    output: true
-    permalink: /pwodwi/:path/
-  categories:
-    output: true
-    permalink: /kategori/:path/
 
-# Defaults pou koleksyon yo
-defaults:
-  - scope:
-      path: ""
-      type: "products"
-    values:
-      layout: "product"
-
-# Ekskli fichye sa yo
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - node_modules/
-  - vendor/
-  - .netlify/
 
 # Konfigirasyon Netlify CMS
 netlify_cms:
@@ -86,6 +63,15 @@ defaults:
     values:
       layout: "seller"
       published: true
+
+
+# Ekskli fichye sa yo
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  - .netlify/
 
 # ==================================================
 # ENFÒMASYON POU AJOUTE NAN PWODWI MARKDOWN YO
