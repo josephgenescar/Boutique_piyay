@@ -49,3 +49,55 @@ netlify_cms:
   admin_index_path: "admin/index.html"
   public_folder: "assets/images/uploads"
   media_folder: "assets/images/uploads"
+# ==================================================
+# AJOUTE SA NAN _config.yml EGZISTAN OU A
+# (kopye eklere yo sèlman — pa ranplase tout fichye a)
+# ==================================================
+
+# Sellers collection (ajoute nan sections 'collections' ou a)
+# Egzanp si ou gen deja:
+#   collections:
+#     products:
+#       output: true
+# Ajoute sellers anba sa:
+
+collections:
+  products:
+    output: true
+    permalink: /pwodwi/:slug/
+  categories:
+    output: true
+    permalink: /kategori/:slug/
+  sellers:
+    output: true
+    permalink: /vendeur/:slug/
+
+# Defaults — ajoute nan sections 'defaults' ou a
+defaults:
+  - scope:
+      path: ""
+      type: "products"
+    values:
+      layout: "product"
+      published: true
+  - scope:
+      path: ""
+      type: "sellers"
+    values:
+      layout: "seller"
+      published: true
+
+# ==================================================
+# ENFÒMASYON POU AJOUTE NAN PWODWI MARKDOWN YO
+# Egzanp: _products/mon-produit.md
+# Ajoute 'seller: boutique-piyay' nan front matter
+# ==================================================
+
+# Egzanp pwodwi update:
+# ---
+# title: "T-Shirt Premium"
+# price: 500
+# seller: boutique-piyay   <--- AJOUTE SA
+# in_stock: true
+# ...
+# ---
