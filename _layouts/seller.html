@@ -1,0 +1,620 @@
+---
+layout: default
+---
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --orange: #FF5722;
+    --orange-pale: #FFF3EF;
+    --navy: #0D1B2A;
+    --navy-light: #1A2E45;
+    --gold: #FFB300;
+    --green: #00C853;
+    --gray-100: #F8F9FA;
+    --gray-200: #EAEDF0;
+    --gray-500: #8A94A6;
+    --gray-700: #4A5568;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: #F4F5F7; color: var(--navy); }
+
+  /* ========== SELLER COVER ========== */
+  .seller-cover {
+    height: 200px;
+    background: linear-gradient(135deg, var(--navy) 0%, #1E3A5F 60%, var(--orange) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .seller-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('{{ page.cover_image | relative_url }}') center/cover no-repeat;
+    opacity: 0.4;
+  }
+  {% if page.cover_image %}
+  .seller-cover { background: var(--navy); }
+  .seller-cover::before { opacity: 1; }
+  {% endif %}
+
+  /* ========== SELLER HEADER ========== */
+  .seller-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+    position: relative;
+  }
+  .seller-header-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 24px 28px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    margin-top: -50px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .seller-avatar {
+    width: 90px; height: 90px;
+    border-radius: 16px;
+    background: var(--orange);
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 4px solid white;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-top: -20px;
+  }
+  .seller-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .seller-identity { flex: 1; min-width: 0; }
+  .seller-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .verified-icon {
+    background: #1DA1F2;
+    color: white;
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .seller-tagline { font-size: 0.9rem; color: var(--gray-500); margin-top: 4px; }
+  .seller-location { font-size: 0.82rem; color: var(--gray-500); margin-top: 2px; }
+
+  .seller-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .btn-follow {
+    padding: 10px 22px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-follow:hover { background: #FF7043; }
+  .btn-follow.following { background: var(--gray-200); color: var(--gray-700); }
+  .btn-message {
+    padding: 10px 22px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-message:hover { background: #20b858; }
+
+  /* Seller stats */
+  .seller-stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .seller-stat {
+    text-align: center;
+    padding: 10px 16px;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    min-width: 80px;
+  }
+  .s-stat-num {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .s-stat-label { font-size: 0.72rem; color: var(--gray-500); font-weight: 500; }
+
+  /* Rating badge */
+  .seller-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFF9E0;
+    border-radius: 100px;
+    padding: 8px 16px;
+    border: 1.5px solid var(--gold);
+  }
+  .seller-rating .stars { color: var(--gold); font-size: 0.9rem; }
+  .seller-rating .num { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 0.95rem; }
+  .seller-rating .cnt { font-size: 0.75rem; color: var(--gray-500); }
+
+  /* ========== MAIN LAYOUT ========== */
+  .seller-layout {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* Sidebar info */
+  .seller-sidebar { display: flex; flex-direction: column; gap: 14px; }
+  .info-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 18px;
+  }
+  .info-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gray-500);
+    margin-bottom: 12px;
+  }
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 0.88rem;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .info-val { flex: 1; line-height: 1.4; }
+  .info-val strong { color: var(--navy); font-weight: 600; display: block; }
+
+  .response-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #E8F5E9;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ========== PRODUCTS SECTION ========== */
+  .seller-products {}
+  .seller-prods-header {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .prods-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--navy);
+    flex: 1;
+  }
+  .prods-count {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  .prods-search {
+    padding: 8px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 180px;
+  }
+  .prods-search:focus { border-color: var(--orange); }
+
+  /* Product grid */
+  .seller-prods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 12px;
+  }
+  .s-prod-card {
+    background: white;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .s-prod-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .s-prod-img { aspect-ratio: 1; overflow: hidden; background: var(--gray-100); position: relative; }
+  .s-prod-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+  .s-prod-card:hover .s-prod-img img { transform: scale(1.05); }
+  .s-prod-badge {
+    position: absolute;
+    top: 6px; left: 6px;
+    background: var(--orange);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 100px;
+    font-family: 'Sora', sans-serif;
+  }
+  .s-prod-info { padding: 10px; }
+  .s-prod-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+  }
+  .s-prod-price { font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 800; color: var(--orange); }
+  .s-prod-stock { font-size: 0.72rem; color: var(--green); font-weight: 600; }
+  .s-prod-stock.low { color: #E65100; }
+
+  /* ========== ALL SELLERS PAGE ========== */
+  .sellers-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+  .sellers-page-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sellers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .seller-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .seller-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .seller-card-cover {
+    height: 90px;
+    background: linear-gradient(135deg, var(--navy), #1E3A5F);
+    position: relative;
+  }
+  .seller-card-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .seller-card-body { padding: 14px; }
+  .seller-card-top { display: flex; align-items: flex-end; gap: 12px; margin-top: -30px; margin-bottom: 10px; }
+  .sc-avatar {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: var(--orange);
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid white;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .sc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .sc-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--navy);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .sc-tagline { font-size: 0.8rem; color: var(--gray-500); margin-top: 2px; }
+  .sc-meta { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .sc-badge {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    display: flex; align-items: center; gap: 4px;
+    font-weight: 500;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 860px) {
+    .seller-layout { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 540px) {
+    .seller-header-card { flex-direction: column; align-items: flex-start; }
+    .seller-prods-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<!-- SELLER COVER -->
+<div class="seller-cover">
+  {% if page.cover_image %}
+    <img src="{{ page.cover_image | relative_url }}" alt="Cover {{ page.name }}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+  {% endif %}
+</div>
+
+<!-- SELLER HEADER -->
+<div class="seller-header">
+  <div class="seller-header-card">
+    <div class="seller-avatar">
+      {% if page.logo %}
+        <img src="{{ page.logo | relative_url }}" alt="{{ page.name }}">
+      {% else %}
+        {{ page.name | upcase | slice: 0 }}
+      {% endif %}
+    </div>
+
+    <div class="seller-identity">
+      <div class="seller-name">
+        {{ page.name }}
+        {% if page.verified %}<span class="verified-icon">✓</span>{% endif %}
+      </div>
+      {% if page.tagline %}<div class="seller-tagline">{{ page.tagline }}</div>{% endif %}
+      {% if page.location %}<div class="seller-location">📍 {{ page.location }}</div>{% endif %}
+    </div>
+
+    <div>
+      <div class="seller-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="num">{{ page.rating | default: "4.5" }}</span>
+        <span class="cnt">({{ page.review_count | default: 0 }} evaliyasyon)</span>
+      </div>
+      <div class="seller-actions" style="margin-top: 10px;">
+        <button class="btn-follow" id="followBtn" onclick="toggleFollow('{{ page.slug }}')">➕ Swiv</button>
+        <a class="btn-message"
+           href="https://wa.me/{{ page.whatsapp | remove: '+' | remove: ' ' | remove: '-' }}?text=Bonjou%20{{ page.name | uri_escape }}!"
+           target="_blank">
+          💬 Kontakte
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seller Stats -->
+  <div class="seller-stats" style="margin-top:16px;margin-bottom:4px;">
+    {% assign seller_products = site.products | where: "seller", page.slug %}
+    <div class="seller-stat">
+      <div class="s-stat-num">{{ seller_products.size }}</div>
+      <div class="s-stat-label">Pwodwi</div>
+    </div>
+    <div class="seller-stat">
+      <div class="s-stat-num">{{ page.sales_count | default: 0 }}</div>
+      <div class="s-stat-label">Vant</div>
+    </div>
+    <div class="seller-stat">
+      <div class="s-stat-num">{{ page.followers | default: 0 }}</div>
+      <div class="s-stat-label">Suivan</div>
+    </div>
+    <div class="seller-stat">
+      <div class="s-stat-num">{{ page.response_rate | default: "98" }}%</div>
+      <div class="s-stat-label">Repons</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="seller-layout">
+
+  <!-- Sidebar -->
+  <div class="seller-sidebar">
+    <div class="info-card">
+      <div class="info-title">ℹ️ Enfòmasyon</div>
+      {% if page.description %}
+      <div style="font-size:0.88rem;color:var(--gray-700);line-height:1.6;padding:8px 0;border-bottom:1px solid var(--gray-200);">
+        {{ page.description }}
+      </div>
+      {% endif %}
+      <div class="info-row">
+        <span class="info-icon">📅</span>
+        <div class="info-val">
+          <strong>Manm depi</strong>
+          {{ page.member_since | default: "2025" }}
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">🚚</span>
+        <div class="info-val">
+          <strong>Livrezon</strong>
+          {{ page.shipping_info | default: "24-48h toupatou Ayiti" }}
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">🔄</span>
+        <div class="info-val">
+          <strong>Politik Retou</strong>
+          {{ page.return_policy | default: "7 jou apre livrezon" }}
+        </div>
+      </div>
+      {% if page.specialties %}
+      <div class="info-row">
+        <span class="info-icon">⭐</span>
+        <div class="info-val">
+          <strong>Spesyalite</strong>
+          {{ page.specialties }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="info-card">
+      <div class="response-bar">
+        <span>⚡ Repons Rapid</span>
+        <span>{{ page.response_time | default: "< 1è" }}</span>
+      </div>
+    </div>
+
+    {% if page.categories %}
+    <div class="info-card">
+      <div class="info-title">🏷️ Kategori</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        {% for cat in page.categories %}
+          <span style="padding:4px 12px;background:var(--orange-pale);color:var(--orange);border-radius:100px;font-size:0.78rem;font-weight:600;">{{ cat }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Products -->
+  <div class="seller-products">
+    <div class="seller-prods-header">
+      <span class="prods-title">🛍️ Pwodwi {{ page.name }}</span>
+      {% assign seller_products = site.products | where: "seller", page.slug %}
+      <span class="prods-count">{{ seller_products.size }} pwodwi</span>
+      <input class="prods-search" type="text" id="sellerSearch" placeholder="Chèche..." oninput="filterSellerProds(this.value)">
+    </div>
+
+    <div class="seller-prods-grid" id="sellerProdsGrid">
+      {% assign seller_products = site.products | where: "seller", page.slug | where: "published", true %}
+      {% if seller_products.size > 0 %}
+        {% for prod in seller_products %}
+          <a class="s-prod-card" href="{{ prod.url | relative_url }}"
+             data-title="{{ prod.title | downcase }}">
+            <div class="s-prod-img">
+              <img src="{{ prod.featured_image | relative_url }}" alt="{{ prod.title }}" loading="lazy"
+                   onerror="this.src='https://via.placeholder.com/300x300/F4F5F7/999?text=📦'">
+              {% if prod.featured %}<span class="s-prod-badge">⚡ Flash</span>{% endif %}
+            </div>
+            <div class="s-prod-info">
+              <div class="s-prod-title">{{ prod.title }}</div>
+              <div class="s-prod-price">{{ prod.price | number_with_delimiter }} HTG</div>
+              {% if prod.in_stock %}
+                {% if prod.stock_quantity and prod.stock_quantity < 5 %}
+                  <div class="s-prod-stock low">⚠️ {{ prod.stock_quantity }} rete</div>
+                {% else %}
+                  <div class="s-prod-stock">✅ Disponib</div>
+                {% endif %}
+              {% else %}
+                <div class="s-prod-stock low">❌ Vann</div>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      {% else %}
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-500);">
+          <div style="font-size:2.5rem;margin-bottom:10px;">📦</div>
+          <div>Okenn pwodwi poko pou vandè sa a.</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+// Search seller products
+function filterSellerProds(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.s-prod-card[data-title]').forEach(card => {
+    card.style.display = !q || card.dataset.title.includes(q) ? '' : 'none';
+  });
+}
+
+// Follow toggle
+function toggleFollow(sellerSlug) {
+  let following = JSON.parse(localStorage.getItem('piyay_following') || '[]');
+  const btn = document.getElementById('followBtn');
+  const idx = following.indexOf(sellerSlug);
+  if (idx >= 0) {
+    following.splice(idx, 1);
+    btn.textContent = '➕ Swiv';
+    btn.classList.remove('following');
+    showToast('👋 Ou pa swiv ' + '{{ page.name | escape }}' + ' ankò');
+  } else {
+    following.push(sellerSlug);
+    btn.textContent = '✅ Ap Swiv';
+    btn.classList.add('following');
+    showToast('🎉 Ou kounye a swiv {{ page.name | escape }}!');
+  }
+  localStorage.setItem('piyay_following', JSON.stringify(following));
+}
+
+// Init follow button
+function initFollow() {
+  const following = JSON.parse(localStorage.getItem('piyay_following') || '[]');
+  if (following.includes('{{ page.slug }}')) {
+    const btn = document.getElementById('followBtn');
+    if (btn) { btn.textContent = '✅ Ap Swiv'; btn.classList.add('following'); }
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('sellerToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'sellerToast';
+    t.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#0D1B2A;color:white;padding:12px 20px;border-radius:10px;font-family:Sora,sans-serif;font-size:0.88rem;font-weight:600;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.3);transform:translateY(80px);opacity:0;transition:all 0.3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.transform = 'translateY(0)'; t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', initFollow);
+</script>

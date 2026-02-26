@@ -25,27 +25,60 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# Konfigirasyon Koleksyon yo
+
+
+# Konfigirasyon Netlify CMS
+netlify_cms:
+  admin_config_path: "admin/config.yml"
+  admin_index_path: "admin/index.html"
+  public_folder: "assets/images/uploads"
+  media_folder: "assets/images/uploads"
+# ==================================================
+# AJOUTE SA NAN _config.yml EGZISTAN OU A
+# (kopye eklere yo sèlman — pa ranplase tout fichye a)
+# ==================================================
+
+# Sellers collection (ajoute nan sections 'collections' ou a)
+# Egzanp si ou gen deja:
+#   collections:
+#     products:
+#       output: true
+# Ajoute sellers anba sa:
+
 collections:
   products:
     output: true
-    permalink: /pwodwi/:path/
+    permalink: /pwodwi/:slug/
   categories:
     output: true
-    permalink: /kategori/:path/
+    permalink: /kategori/:slug/
+  sellers:
+    output: true
+    permalink: /vendeur/:slug/
 
-# Defaults pou koleksyon yo
+# Defaults — ajoute nan sections 'defaults' ou a
 defaults:
   - scope:
       path: ""
       type: "products"
     values:
       layout: "product"
+<<<<<<< HEAD
   - scope:
       path: ""
       type: "categories"
     values:
       layout: "category"
+=======
+      published: true
+  - scope:
+      path: ""
+      type: "sellers"
+    values:
+      layout: "seller"
+      published: true
+
+>>>>>>> d027aac2b72f348e19ef15fafbba28d44bd28a87
 
 # Ekskli fichye sa yo
 exclude:
@@ -55,9 +88,17 @@ exclude:
   - vendor/
   - .netlify/
 
-# Konfigirasyon Netlify CMS
-netlify_cms:
-  admin_config_path: "admin/config.yml"
-  admin_index_path: "admin/index.html"
-  public_folder: "assets/images/uploads"
-  media_folder: "assets/images/uploads"
+# ==================================================
+# ENFÒMASYON POU AJOUTE NAN PWODWI MARKDOWN YO
+# Egzanp: _products/mon-produit.md
+# Ajoute 'seller: boutique-piyay' nan front matter
+# ==================================================
+
+# Egzanp pwodwi update:
+# ---
+# title: "T-Shirt Premium"
+# price: 500
+# seller: boutique-piyay   <--- AJOUTE SA
+# in_stock: true
+# ...
+# ---
