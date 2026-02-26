@@ -4,6 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" href="{{ "/assets/images/logo.png" | relative_url }}">
+    <link rel="apple-touch-icon" href="{{ "/assets/images/logo.png" | relative_url }}">
+
     {% seo %}
 
     <link rel="stylesheet" href="{{ "/style.css" | relative_url }}">
@@ -27,7 +31,7 @@
       <!-- Footer -->
       {% include footer.html %}
 
-      <!-- MODAL PANIER (ENPÒTAN!) -->
+      <!-- MODAL PANIER -->
       {% include order-modal.html %}
 
     </div>

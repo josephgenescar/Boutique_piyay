@@ -2,21 +2,22 @@
 title: Boutique Piyay
 email: josephgenescar@gmail.com
 description: >- 
-  Byenvini nan Boutique Piyay, pi bon kote pou jwenn pwodwi ou bezwen.
+  Byenvini nan Boutique Piyay, pi bon kote pou jwenn pwodwi ou bezwen ak pi bon pri sou mache a. Nou asire livrezon soti Saint-Domingue pou Ayiti.
 baseurl: ""
 url: "https://boutique-piyay.netlify.app"
-logo: /assets/images/logo.png
+logo: "/assets/images/logo.png"
 
 # Enfòmasyon sou Otè a
 author:
   name: "Joseph Genescar"
   twitter: "josephgenescar"
 
-# SEO
+# SEO & Social Sharing
 social:
   name: Boutique Piyay
   links:
     - https://www.facebook.com/joseph.genescar
+  image: "/assets/images/logo.png" # Imaj ki pral parèt sou WhatsApp
 
 # Konfigirasyon Build la
 markdown: kramdown
