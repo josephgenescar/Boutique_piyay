@@ -5,11 +5,18 @@ description: >-
   Byenvini nan Boutique Piyay, pi bon kote pou jwenn pwodwi ou bezwen.
 baseurl: ""
 url: "https://boutique-piyay.netlify.app"
+logo: /assets/images/logo.png
 
 # Enfòmasyon sou Otè a
 author:
   name: "Joseph Genescar"
   twitter: "josephgenescar"
+
+# SEO
+social:
+  name: Boutique Piyay
+  links:
+    - https://www.facebook.com/joseph.genescar
 
 # Konfigirasyon Build la
 markdown: kramdown
@@ -34,6 +41,11 @@ defaults:
       type: "products"
     values:
       layout: "product"
+  - scope:
+      path: ""
+      type: "categories"
+    values:
+      layout: "category"
 
 # Ekskli fichye sa yo
 exclude:
