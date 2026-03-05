@@ -1,0 +1,11 @@
+---
+layout: none
+---
+[
+  {% for cat in site.categories %}
+    {
+      "id": {{ cat.title | jsonify }},
+      "name": {{ cat.display_name | default: cat.title | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]

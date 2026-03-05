@@ -1,127 +1,116 @@
 <style>
-/* ===== HEADER — konpatib ak style.css rouge egzistan ===== */
+/* ===== HEADER — Kreyòl Modèn & Responsive ===== */
 .main-header { background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.08); position:sticky; top:0; z-index:1000; width: 100%; }
+.top-bar { background:#222; color:#fff; padding:6px 0; font-size:11px; font-weight:600; }
+.top-bar .container { display:flex; justify-content:space-between; align-items:center; padding: 0 15px; }
+.top-bar-links { display:flex; gap:10px; }
+.top-bar a { color:#ccc; text-decoration:none; }
 
-.top-bar { background:#222; color:#fff; padding:9px 0; font-size:13px; font-weight:600; letter-spacing:.5px; }
-.top-bar .container { display:flex; justify-content:space-between; align-items:center; }
-.top-bar a { color:#ccc; text-decoration:none; transition:.3s; font-weight:400; }
-.top-bar a:hover { color:#ff4747; }
-.top-bar-links { display:flex; gap:20px; }
+.header-main { padding:10px 0; border-bottom: 1px solid #f0f0f0; }
+.header-main .container { display:flex; align-items:center; justify-content: space-between; padding: 0 15px; gap: 10px; }
 
-.header-main { padding:12px 0; }
-.header-main .container { display:flex; align-items:center; gap:20px; justify-content: space-between; }
-
-/* Logo */
-.logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
-.logo img { height:44px; width:auto; }
-.logo span { font-size:20px; font-weight:800; font-family:'Poppins',sans-serif;
+.logo { display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0; }
+.logo img { height:32px; width:auto; }
+.logo span { font-size:16px; font-weight:800; font-family:'Poppins',sans-serif;
   background:linear-gradient(135deg,#ff4747,#ff8c42);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
 
-/* Barre Rechèch */
-.search-wrap { flex:1; max-width:600px; position:relative; margin: 0 20px; }
-.search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; transition:.3s; background: #f9f9f9; }
-.search-form:focus-within { border-color:#ff4747; box-shadow:0 0 0 3px rgba(255,71,71,.12); background: #fff; }
-.search-form input { flex:1; padding:10px 20px; border:none; outline:none; font-size:14px; font-family:'Inter',sans-serif; background: transparent; }
-.search-form button { padding:10px 25px; background:var(--primary,#ff4747); border:none; color:white; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; transition:.3s; }
-.search-form button:hover { background:#e03636; }
+.search-wrap { flex:1; max-width:500px; position:relative; margin: 0 15px; }
+.search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; background: #f9f9f9; height: 40px; }
+.search-form input { flex:1; padding:0 15px; border:none; outline:none; font-size:13px; background: transparent; }
+.search-form button { padding:0 15px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 12px; }
 
-/* Résultats */
-#search-results { position:absolute; top:calc(100% + 6px); left:0; right:0; background:white; border:1px solid #eee; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.12); z-index:200; max-height:380px; overflow-y:auto; }
+.header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.account-info { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #333; text-decoration: none; padding: 6px 12px; background: #f4f4f4; border-radius: 50px; }
+.account-info.primary { background:#ff4747; color:white; }
 
-/* Actions */
-.header-actions { display:flex; align-items:center; gap:20px; flex-shrink:0; }
-.act-btn { display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none; cursor:pointer; font-size:22px; text-decoration:none; color:#333; position:relative; transition:.3s; }
-.act-btn:hover { color:#ff4747; }
-.act-btn small { font-size:11px; font-family:'Inter',sans-serif; font-weight:600; }
-.cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:19px; height:19px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; border: 2px solid white; }
+.act-btn { display:flex; flex-direction:column; align-items:center; background:none; border:none; cursor:pointer; color:#333; position:relative; padding: 0; }
+.act-btn span { font-size: 22px; }
+.act-btn small { font-size:9px; font-weight:700; }
+.cart-badge { position:absolute; top:-5px; right:-5px; background:#ff4747; color:white; border-radius:50%; width:16px; height:16px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 1.5px solid white; }
 
-/* Nav */
-.site-nav { background:#fff; border-top:1px solid #f1f1f1; border-bottom: 1px solid #f1f1f1; }
-.site-nav .container { display:flex; gap:10px; align-items:center; justify-content: center; padding: 0; }
-.nav-lnk { display:block; padding:15px 20px; color:#444; text-decoration:none; font-size:14px; font-weight:600; white-space:nowrap; border-bottom:3px solid transparent; transition:.3s; font-family:'Inter',sans-serif; }
-.nav-lnk:hover, .nav-lnk.active { color:#ff4747; border-bottom-color:#ff4747; background: #fffafa; }
+/* NAVIGATION */
+.site-nav { background: #fff; border-bottom: 1px solid #eee; }
+.nav-scroll { display:flex; gap:15px; padding:10px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.nav-scroll::-webkit-scrollbar { display: none; }
+.nav-lnk { text-decoration: none; color: #555; font-size: 13px; font-weight: 600; transition: 0.3s; }
+.nav-lnk:hover { color: #ff4747; }
 
-/* Mobile toggle */
-.mob-toggle { display:none; background:none; border:none; font-size:26px; cursor:pointer; color:#333; }
-
-@media (max-width:992px) {
-  .search-wrap { margin: 0 10px; }
-}
-
-@media (max-width:768px) {
-  .top-bar-links { display:none; }
-  .search-wrap { display:none; }
-  .act-btn small { display:none; }
-  .mob-toggle { display:block; }
-  .logo span { font-size:16px; }
-  .site-nav { display:none; }
-  .site-nav.open { display:block; }
-  .site-nav .container { flex-direction:column; align-items:stretch; padding:10px; gap:0; }
-  .nav-lnk { padding: 12px 15px; border-bottom: none; border-left: 3px solid transparent; }
-  .nav-lnk:hover, .nav-lnk.active { border-left-color: #ff4747; border-bottom-color: transparent; }
+/* MOBILE ADJUSTMENTS */
+@media (max-width: 768px) {
+  .top-bar { display: none; } /* Kache top bar sou mobil pou espas */
+  .search-wrap { display: none; } /* Kache search bar nan header (nou ka mete l anba) */
+  .logo span { font-size: 14px; }
+  .logo img { height: 28px; }
+  .account-info { padding: 5px 8px; font-size: 10px; }
 }
 </style>
 
-<!-- Favicon Config -->
-<link rel="icon" type="image/png" href="/assets/images/logo.png">
-<link rel="apple-touch-icon" href="/assets/images/logo.png">
-
 <header class="main-header">
-  <!-- Top Bar -->
   <div class="top-bar">
     <div class="container">
-      <span>🚚 Livraison rapide : Saint-Domingue ➔ Haïti 🇭🇹</span>
+      <span>🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
       <div class="top-bar-links">
-        <a href="mailto:josephgenescar@gmail.com">📧 josephgenescar@gmail.com</a>
         <a href="https://wa.me/50948868964" target="_blank">💬 WhatsApp</a>
       </div>
     </div>
   </div>
 
-  <!-- Header Prensipal -->
   <div class="header-main">
     <div class="container">
-
-      <!-- Logo -->
       <a href="/" class="logo">
         <img src="/assets/images/logo.png" alt="Boutique Piyay">
         <span>BOUTIQUE PIYAY</span>
       </a>
 
-      <!-- Rechèch -->
       <div class="search-wrap">
         <form class="search-form" onsubmit="return false;">
-          <input type="text" id="search-input" placeholder="🔍 Rechercher un produit..." oninput="liveSearch()" autocomplete="off">
-          <button type="submit">Chercher</button>
+          <input type="text" id="search-input" placeholder="Chèche..." oninput="liveSearch()" autocomplete="off">
+          <button type="submit">OK</button>
         </form>
-        <div id="search-results" style="display:none;"></div>
+        <div id="search-results" style="display:none; position:absolute; top:45px; width:100%; background:white; z-index:100; box-shadow:0 5px 15px rgba(0,0,0,0.1);"></div>
       </div>
 
-      <!-- Actions -->
       <div class="header-actions">
-        <button class="act-btn" onclick="openOrderModal()" title="Panier">
+        <div id="authLinks" style="display: flex; gap: 5px;">
+            <a href="/login.html" class="account-info">🔑 Kont</a>
+            <a href="/signup.html" class="account-info primary">Enskri</a>
+        </div>
+        <div id="userInfo" style="display: none;">
+            <a href="/dashboard.html" class="account-info">👤 Mwen</a>
+        </div>
+        <button class="act-btn" onclick="openOrderModal()">
           <span>🛒</span>
           <div class="cart-badge" id="cart-badge" style="display:none;">0</div>
-          <small>Panier</small>
+          <small>Panye</small>
         </button>
-        <button class="mob-toggle" onclick="document.getElementById('main-nav').classList.toggle('open')">☰</button>
       </div>
-
     </div>
   </div>
 
-  <!-- Navigation SANTRE -->
-  <nav class="site-nav" id="main-nav">
-    <div class="container">
-      <a href="/" class="nav-lnk {% if page.url == '/' %}active{% endif %}">Tout</a>
-      <a href="/#flash-sale" class="nav-lnk">🔥 Meilleures ventes</a>
-      <a href="/#recommandations" class="nav-lnk">⭐ Notés 5 étoiles</a>
-      <a href="/#recommandations" class="nav-lnk">Nouveautés</a>
-
+  <nav class="site-nav">
+    <div class="nav-scroll">
+      <a href="/" class="nav-lnk">Tout</a>
+      <a href="/vendre.html" class="nav-lnk" style="color:#ff4747; font-weight:800;">🚀 Vann</a>
       {% for cat in site.categories %}
       <a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>
       {% endfor %}
     </div>
   </nav>
 </header>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    // Sèvi ak Supabase ki nan main.js si l egziste deja
+    async function updateHeaderAuth() {
+        if (typeof supabase !== 'undefined') {
+            const sup = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+            const { data: { user } } = await sup.auth.getUser();
+            if (user) {
+                document.getElementById('authLinks').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'flex';
+            }
+        }
+    }
+    updateHeaderAuth();
+</script>

@@ -1,0 +1,113 @@
+---
+layout: default
+title: Boutik Machann - Boutique Piyay
+---
+
+<div class="container" style="padding: 40px 20px;">
+    <!-- Seller Header -->
+    <div id="seller-header" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 40px;">
+        <div style="width: 100px; height: 100px; background: #ff4747; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px; font-weight: 800;" id="sellerInitial">M</div>
+        <h1 id="sellerName" style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0;">Boutik Machann</h1>
+        <p style="color: #666; margin-top: 10px;">Manm verifye depi {{ "now" | date: "%Y" }}</p>
+    </div>
+
+    <!-- VENTE FLASH SECTION (Se JS k ap afiche l si gen pwodwi) -->
+    <div id="flashSection" style="display: none; background: #ff4747; padding: 30px; border-radius: 20px; color: white; margin-bottom: 40px; position: relative; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h2 style="margin: 0; font-weight: 900; font-size: 24px;">⚡ VENTE FLASH MACHANN</h2>
+                <p style="margin: 5px 0 0; opacity: 0.9;">Pwofite de gwo rabè sa yo anvan tan an fini!</p>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 20px;" id="sellerTimer">
+                00:00:00
+            </div>
+        </div>
+        <div id="flashGrid" class="product-grid" style="margin-top: 25px;"></div>
+    </div>
+
+    <!-- TOUT PWODWI -->
+    <div class="section-header">
+        <h2 id="listTitle">📦 Tout Pwodwi</h2>
+    </div>
+    <div id="seller-products-grid" class="product-grid">
+        <div class="loading-msg" style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">⏳ Chaje pwodwi yo...</div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const SUP_URL_V = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+    const SUP_KEY_V = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+    const supabaseV = libsupabase.createClient(SUP_URL_V, SUP_KEY_V);
+
+    async function loadSellerProfile() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sellerId = urlParams.get('id');
+        if (!sellerId) { window.location.href = "/"; return; }
+
+        try {
+            const { data: products, error } = await supabaseV.from('user_products').select('*').eq('seller_id', sellerId).order('created_at', { ascending: false });
+            if (error) throw error;
+
+            const flashGrid = document.getElementById('flashGrid');
+            const mainGrid = document.getElementById('seller-products-grid');
+
+            const flashProds = products.filter(p => p.is_flash_sale);
+            const normalProds = products.filter(p => !p.is_flash_sale);
+
+            // Afiche Flash si genyen
+            if (flashProds.length > 0) {
+                document.getElementById('flashSection').style.display = 'block';
+                startSellerTimer();
+                flashGrid.innerHTML = flashProds.map(p => `
+                    <div class="product-card" style="border: none;">
+                        <div class="card-img">
+                            <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
+                            <div style="position:absolute; top:10px; left:10px; background:#ff4747; color:white; padding:4px 8px; border-radius:5px; font-weight:900; font-size:10px;">FLASH</div>
+                        </div>
+                        <div class="card-info">
+                            <h3 style="color:#333;">${p.title}</h3>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="color:#ff4747; font-weight:900; font-size:18px;">${p.flash_price} HTG</span>
+                                <span style="text-decoration:line-through; color:#aaa; font-size:13px;">${p.price} HTG</span>
+                            </div>
+                            <button class="add-to-cart" onclick="orderProduct('${p.title}', '${p.flash_price}', '${p.id}', '${p.image_url}')">Ajouter</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Afiche Pwodwi Nòmal
+            if (normalProds.length === 0 && flashProds.length === 0) {
+                mainGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">Machann sa a poko gen pwodwi.</div>';
+            } else {
+                mainGrid.innerHTML = normalProds.map(p => `
+                    <div class="product-card">
+                        <div class="card-img">
+                            <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
+                        </div>
+                        <div class="card-info">
+                            <h3>${p.title}</h3>
+                            <div class="price">${p.price} HTG</div>
+                            <button class="add-to-cart" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">Ajouter au panier</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+        } catch (error) { console.error(error); }
+    }
+
+    function startSellerTimer() {
+        let time = 3600 * 5; // 5 èdtan pa defo
+        setInterval(() => {
+            let h = Math.floor(time / 3600);
+            let m = Math.floor((time % 3600) / 60);
+            let s = time % 60;
+            document.getElementById('sellerTimer').innerText = `${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+            if (time > 0) time--;
+        }, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSellerProfile);
+</script>

@@ -86,6 +86,23 @@
     font-size: 14px;
 }
 
+.footer-legal-links {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-legal-links a {
+    color: #64748b;
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.footer-legal-links a:hover {
+    color: #ff4747;
+}
+
 .design-by {
     margin-top: 10px;
     font-weight: 600;
@@ -100,10 +117,9 @@
 <footer class="main-footer">
     <div class="container">
         <div class="footer-grid">
-            <!-- Kolòn 1: About & Info -->
             <div class="footer-col">
                 <h3 style="background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">BOUTIQUE PIYAY</h3>
-                <p>Pi bon kote pou w jwenn pwodwi bon jan kalite ak pi bon pri sou mache a. Nou asire livrezon ou an sekirite soti Saint-Domingue pou rive Ayiti.</p>
+                <p>Pi bon kote pou w jwenn pwodwi bon jan kalite ak pi bon pri sou mache a. Nou asire livrezon ou an sekirite nan tout peyi a.</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/joseph.genescar" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://youtube.com/@josephgenescar?si=ZyxNqeHDQccJ8tX0" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
@@ -112,7 +128,6 @@
                 </div>
             </div>
 
-            <!-- Kolòn 2: Lyen Rapid -->
             <div class="footer-col">
                 <h3>Kategori</h3>
                 <ul>
@@ -122,19 +137,22 @@
                 </ul>
             </div>
 
-            <!-- Kolòn 3: Kontak -->
             <div class="footer-col">
                 <h3>Kontakte Nou</h3>
                 <ul>
                     <li><i class="fas fa-phone-alt" style="color: #ff4747;"></i> <span>+509 4886-8964</span></li>
                     <li><i class="fas fa-envelope" style="color: #ff4747;"></i> <a href="mailto:josephgenescar@gmail.com">josephgenescar@gmail.com</a></li>
-                    <li><i class="fas fa-map-marker-alt" style="color: #ff4747;"></i> <span>Saint-Domingue ➔ Haïti 🇭🇹</span></li>
+                    <li><i class="fas fa-map-marker-alt" style="color: #ff4747;"></i> <span>Livraison rapide nan tout peyi a 🇭🇹</span></li>
                 </ul>
             </div>
         </div>
 
         <div class="footer-bottom">
             <p>&copy; {{ "now" | date: "%Y" }} <strong>Boutique Piyay</strong>. Tout dwa rezève.</p>
+            <div class="footer-legal-links">
+                <a href="/politique-confidentialite/">Politik Konfidansyalite</a>
+                <a href="#">Kondisyon Itilizasyon</a>
+            </div>
             <div class="design-by">Design by <span>Rivayo-tech Entreprise</span></div>
         </div>
     </div>

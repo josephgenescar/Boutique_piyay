@@ -1,0 +1,145 @@
+---
+layout: default
+title: Detay Pwodwi - Marketplace
+---
+
+<div id="product-detail-view" class="container" style="padding: 40px 20px; min-height: 80vh;">
+    <!-- Loading State -->
+    <div id="loading" style="text-align: center; padding: 100px 0;">
+        <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
+        <p style="margin-top: 20px; color: #666; font-weight: 600;">Nou ap rale detay pwodwi a...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" style="display: none; text-align: center; padding: 100px 0;">
+        <h1 style="font-size: 5rem; color: #ff4747;">Oops!</h1>
+        <p id="errorMsg" style="font-size: 1.2rem; color: #666;"></p>
+        <a href="/" class="btn-primary-hero" style="margin-top: 20px; display: inline-block;">Retounen nan Akèy</a>
+    </div>
+
+    <!-- Content State -->
+    <div id="content" style="display: none;">
+        <div class="breadcrumb-container" style="margin-bottom: 30px; font-size: 14px; color: #888;">
+            <a href="/" style="text-decoration: none; color: #ff4747;">Akèy</a> /
+            <span id="breadcrumbCat">Marketplace</span> /
+            <strong id="breadcrumbTitle">Pwodwi</strong>
+        </div>
+
+        <div class="product-detail-flex" style="display: flex; gap: 50px; flex-wrap: wrap;">
+            <!-- GAUCHE: IMAGE -->
+            <div style="flex: 1; min-width: 320px;">
+                <div style="width: 100%; aspect-ratio: 1/1; border-radius: 20px; overflow: hidden; border: 1px solid #eee; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                    <img id="pImg" src="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+            </div>
+
+            <!-- DROITE: INFO -->
+            <div style="flex: 1.2; min-width: 320px;">
+                <span id="pCat" style="background: #fff0f0; color: #ff4747; padding: 5px 12px; border-radius: 50px; font-size: 12px; font-weight: 700; text-transform: uppercase;"></span>
+                <h1 id="pTitle" style="font-size: 2.5rem; margin: 15px 0; color: #222; font-weight: 900; line-height: 1.1;"></h1>
+
+                <div style="margin: 25px 0; display: flex; align-items: center; gap: 20px;">
+                    <span id="pPrice" style="font-size: 36px; font-weight: 900; color: #ff4747;"></span>
+                    <span style="color: #666; font-size: 18px;">HTG</span>
+                </div>
+
+                <div style="padding: 20px; background: #fdfdfd; border: 1px solid #f0f0f0; border-radius: 15px; margin-bottom: 30px;">
+                    <div style="margin-bottom: 15px; font-weight: 600; color: #444;">Quantité :</div>
+                    <div class="qty-selector" style="display: inline-flex; border: 2px solid #eee; border-radius: 10px; overflow: hidden; background: #fff;">
+                        <button onclick="changeQty(-1)" style="width: 45px; height: 45px; border: none; background: none; font-size: 20px; cursor: pointer;">-</button>
+                        <input type="number" id="prod-qty" value="1" min="1" style="width: 60px; text-align: center; border: none; font-weight: 800; font-size: 18px; outline: none;">
+                        <button onclick="changeQty(1)" style="width: 45px; height: 45px; border: none; background: none; font-size: 20px; cursor: pointer;">+</button>
+                    </div>
+                </div>
+
+                <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button id="addBtn" style="padding: 18px; background: #222; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        🛒 Ajoute nan panye
+                    </button>
+                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.3);">
+                        ⚡ Achte Kounye a
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 25px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="font-size: 13px; color: #666;">✅ Verifié par Boutique Piyay</div>
+                        <div style="font-size: 13px; color: #666;">🛡️ Peman sekirize</div>
+                        <div style="font-size: 13px; color: #666;">🚚 Livrezon 24-48h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.qty-selector button:hover { background: #f9f9f9; color: #ff4747; }
+.actions button:hover { transform: translateY(-3px); opacity: 0.9; }
+</style>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL_DET = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+    const SUPABASE_KEY_DET = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+    const supabaseDet = supabase.createClient(SUPABASE_URL_DET, SUPABASE_KEY_DET);
+
+    async function loadProductDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        if (!productId) {
+            showError("Nou pa jwenn ID pwodwi a.");
+            return;
+        }
+
+        try {
+            const { data: product, error } = await supabaseDet
+                .from('user_products')
+                .select('*')
+                .eq('id', productId)
+                .single();
+
+            if (error || !product) throw new Error("Pwodwi sa a pa egziste nan baz done nou an.");
+
+            // Rempli done yo
+            document.getElementById('pTitle').innerText = product.title;
+            document.getElementById('breadcrumbTitle').innerText = product.title;
+            document.getElementById('pPrice').innerText = product.price;
+            document.getElementById('pImg').src = product.image_url;
+            document.getElementById('pCat').innerText = product.category || "Marketplace";
+            document.getElementById('breadcrumbCat').innerText = product.category || "Marketplace";
+
+            // Bouton Actions
+            document.getElementById('addBtn').onclick = () => {
+                orderProduct(product.title, product.price, product.id, product.image_url);
+            };
+            document.getElementById('buyBtn').onclick = () => {
+                orderProduct(product.title, product.price, product.id, product.image_url);
+                setTimeout(() => window.location.href = "/checkout", 500);
+            };
+
+            // Afiche kontni
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+        } catch (err) {
+            showError(err.message);
+        }
+    }
+
+    function showError(msg) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('errorMsg').innerText = msg;
+    }
+
+    function changeQty(val) {
+        let input = document.getElementById('prod-qty');
+        let current = parseInt(input.value);
+        if (current + val >= 1) input.value = current + val;
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProductDetails);
+</script>

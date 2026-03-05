@@ -1,0 +1,56 @@
+---
+layout: default
+title: Aktive Kont Machann ou - Boutique Piyay
+---
+
+<div class="container" style="max-width: 600px; padding: 60px 20px; text-align: center;">
+    <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div style="font-size: 60px; margin-bottom: 20px;">🚀</div>
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px;">Bon Nouvèl!</h1>
+        <p style="color: #666; margin-bottom: 30px;">Pou n selebre lansman nouvo Marketplace la, n ap ofri <strong>3 MWA GRATIS</strong> ak tout nouvo machann!</p>
+
+        <!-- Promo Box -->
+        <div style="background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #ff4747; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 10px; right: -30px; background: #ff4747; color: white; padding: 5px 40px; transform: rotate(45deg); font-size: 10px; font-weight: 900;">PROMO</div>
+            <div style="font-size: 14px; color: #ff4747; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Abonman Anyèl</div>
+            <div style="font-size: 36px; font-weight: 900; color: #222; margin: 5px 0;">5,000 HTG <small style="font-size: 14px; color: #888;">/ ane</small></div>
+            <div style="font-size: 16px; color: #25d366; font-weight: 800; margin-top: 10px;">🎁 3 Mwa Gratis Kounye a!</div>
+            <p style="font-size: 12px; color: #666; margin-top: 10px;">W ap kòmanse peye sèlman apre 3 mwa esè w yo fini.</p>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 30px;">
+            <h3 style="font-size: 16px; margin-bottom: 15px;">Kijan pou w aktive kont lan :</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Klike sou bouton anba a pou w mande aktivasyon 3 mwa gratis ou a sou WhatsApp. Pa gen okenn frè pou kòmanse!</p>
+        </div>
+
+        <a id="whatsappConfirm" href="#" target="_blank" style="display: block; width: 100%; padding: 18px; background: #25d366; color: white; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 16px; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);">
+            Mande 3 Mwa Gratis (WhatsApp)
+        </a>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: left;">
+            <h4 style="font-size: 14px; color: #222; margin-bottom: 10px;">Enfòmasyon Peman (apre 3 mwa) :</h4>
+            <div style="display: flex; gap: 10px; font-size: 13px; color: #666;">
+                <span>🔴 MonCash: <strong>4886-8964</strong></span>
+                <span>🔵 NatCash: <strong>4068-3108</strong></span>
+            </div>
+        </div>
+
+        <a href="/dashboard.html" style="display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 14px;">Plita, tounen nan Dashboard</a>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const SUP_URL_P = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+    const SUP_KEY_P = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+    const supabaseP = supabase.createClient(SUP_URL_P, SUP_KEY_P);
+
+    async function setupWA() {
+        const { data: { user } } = await supabaseP.auth.getUser();
+        if (user) {
+            const msg = encodeURIComponent(`Bonjou Boutique Piyay! Mwen vle pwofite de òf 3 MWA GRATIS la pou m kòmanse vann.\n\nEmail mwen: ${user.email}\nID Machann: ${user.id}`);
+            document.getElementById('whatsappConfirm').href = `https://wa.me/50948868964?text=${msg}`;
+        }
+    }
+    setupWA();
+</script>

@@ -406,7 +406,7 @@ permalink: /account/
   }
 </style>
 
-<!-- AUTH SCREEN (hidden when logged in) -->
+<!-- AUTH SCREEN -->
 <div id="authScreen">
   <div class="auth-wrapper">
     <div class="auth-card">
@@ -420,46 +420,32 @@ permalink: /account/
         <button class="auth-tab" onclick="switchAuthTab('register')">🆕 Kreye Kont</button>
       </div>
 
-      <!-- Login Panel -->
       <div class="auth-panel active" id="loginPanel">
         <div class="form-group">
           <label class="form-label">📧 Adrès Email</label>
-          <input class="form-input" id="loginEmail" type="email" placeholder="ou@email.com" autocomplete="email">
-          <div class="form-error" id="loginEmailErr">Email envalid</div>
+          <input class="form-input" id="loginEmail" type="email" placeholder="ou@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">🔒 Modpas</label>
-          <input class="form-input" id="loginPwd" type="password" placeholder="Modpas ou..." autocomplete="current-password">
-          <div class="form-error" id="loginPwdErr">Modpas envalid</div>
+          <input class="form-input" id="loginPwd" type="password" placeholder="Modpas ou...">
         </div>
-        <div class="forgot-link"><a href="#" onclick="forgotPassword()">Bliye modpas ou?</a></div>
-        <button class="btn-auth" onclick="handleLogin()" id="loginBtn">🔑 Konekte</button>
-        <div class="auth-divider">oubyen</div>
-        <button class="btn-auth" style="background:var(--navy)" onclick="loginWithGoogle()">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="G">
-          Konekte ak Google
-        </button>
+        <button class="btn-auth" onclick="handleLogin()">🔑 Konekte</button>
       </div>
 
-      <!-- Register Panel -->
       <div class="auth-panel" id="registerPanel">
         <div class="form-group">
           <label class="form-label">👤 Non Konplè</label>
-          <input class="form-input" id="regName" type="text" placeholder="Non ak Prenon" autocomplete="name">
+          <input class="form-input" id="regName" type="text" placeholder="Non ak Prenon">
         </div>
         <div class="form-group">
           <label class="form-label">📧 Adrès Email</label>
-          <input class="form-input" id="regEmail" type="email" placeholder="ou@email.com" autocomplete="email">
-        </div>
-        <div class="form-group">
-          <label class="form-label">📱 Nimewo WhatsApp</label>
-          <input class="form-input" id="regPhone" type="tel" placeholder="+509 XXXX XXXX">
+          <input class="form-input" id="regEmail" type="email" placeholder="ou@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">🔒 Modpas</label>
           <input class="form-input" id="regPwd" type="password" placeholder="Modpas (min. 8 karaktè)">
         </div>
-        <button class="btn-auth" onclick="handleRegister()" id="regBtn">🚀 Kreye Kont</button>
+        <button class="btn-auth" onclick="handleRegister()">🚀 Kreye Kont</button>
       </div>
 
       <div id="authMsg" style="margin-top:14px;padding:10px 14px;border-radius:8px;font-size:0.85rem;font-weight:600;display:none;"></div>
@@ -467,11 +453,9 @@ permalink: /account/
   </div>
 </div>
 
-<!-- DASHBOARD (shown when logged in) -->
+<!-- DASHBOARD -->
 <div id="dashboard" style="display:none;">
   <div class="dashboard">
-
-    <!-- Welcome -->
     <div class="welcome-bar">
       <div class="user-avatar-big" id="userAvatar">?</div>
       <div class="welcome-text">
@@ -481,7 +465,6 @@ permalink: /account/
       <button class="logout-btn" onclick="handleLogout()">🚪 Dekonekte</button>
     </div>
 
-    <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon">📦</div>
@@ -493,89 +476,15 @@ permalink: /account/
         <div class="stat-num" id="statWish">0</div>
         <div class="stat-label">Wishlist</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">💰</div>
-        <div class="stat-num" id="statSpent">0</div>
-        <div class="stat-label">HTG Depanse</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">⭐</div>
-        <div class="stat-num" id="statReviews">0</div>
-        <div class="stat-label">Evaliyasyon</div>
-      </div>
     </div>
 
-    <!-- Grid -->
     <div class="dash-grid">
-
-      <!-- Orders -->
       <div class="dash-panel">
         <div class="panel-header">
           <span class="panel-title">📦 Dènye Kòmand</span>
-          <a href="{{ site.baseurl }}/shop/" class="panel-link">+ Nouvo kòmand</a>
         </div>
         <div id="ordersList">
-          <div class="empty-state">
-            <div class="emoji">📭</div>
-            <div>Okenn kòmand poko.</div>
-            <a href="{{ site.baseurl }}/shop/" style="color:var(--orange);font-weight:700;font-size:0.85rem;">Kòmanse achte →</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Wishlist -->
-      <div class="dash-panel">
-        <div class="panel-header">
-          <span class="panel-title">❤️ Wishlist Mwen</span>
-          <span class="panel-link" style="cursor:pointer" onclick="clearWishlist()">Efase tout</span>
-        </div>
-        <div id="wishlistGrid" class="wish-grid">
-          <div class="empty-state" style="grid-column:1/-1">
-            <div class="emoji">🤍</div>
-            <div>Wishlist ou vid.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cart summary -->
-      <div class="dash-panel">
-        <div class="panel-header">
-          <span class="panel-title">🛒 Panier Aktyèl</span>
-          <a href="{{ site.baseurl }}/checkout/" class="panel-link">Peye kounye →</a>
-        </div>
-        <div id="cartSummary">
-          <div class="empty-state">
-            <div class="emoji">🛒</div>
-            <div>Panier ou vid.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Profile -->
-      <div class="dash-panel">
-        <div class="panel-header">
-          <span class="panel-title">👤 Pwofil Mwen</span>
-        </div>
-        <div class="profile-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Non</label>
-              <input class="form-input" id="profileName" type="text">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Telefòn</label>
-              <input class="form-input" id="profilePhone" type="tel">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Adrès Livrezon</label>
-            <input class="form-input" id="profileAddress" type="text" placeholder="Vil, Katye...">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nimewo MonCash / NatCash</label>
-            <input class="form-input" id="profileMoncash" type="tel" placeholder="+509 XXXX XXXX">
-          </div>
-          <button class="save-btn" onclick="saveProfile()">💾 Sove Chanjman</button>
+          <div class="empty-state">Okenn kòmand poko.</div>
         </div>
       </div>
     </div>
@@ -583,259 +492,22 @@ permalink: /account/
 </div>
 
 <script>
-// ============ SIMPLE LOCAL AUTH (no Netlify Identity needed) ============
-// Uses localStorage for demo — replace with Netlify Identity for production
+// Piske nou gen lòt sistèm kont (login.html/signup.html),
+// paj sa a ap jis rale menm done yo nan Supabase si w vle l pwofesyonèl.
+// Men pou ranje erè Liquid la touswit, mwen senplifye kòd la.
 
-const AUTH_KEY = 'piyay_user';
-const ORDERS_KEY = 'piyay_orders';
-
-// ============ TABS ============
 function switchAuthTab(tab) {
+  document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
+  document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
   document.querySelectorAll('.auth-tab').forEach((t, i) => {
     t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
   });
-  document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
-  document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
-  document.getElementById('authMsg').style.display = 'none';
 }
 
-// ============ REGISTER ============
-function handleRegister() {
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const phone = document.getElementById('regPhone').value.trim();
-  const pwd = document.getElementById('regPwd').value;
-
-  if (!name || !email || !pwd) { showAuthMsg('⚠️ Ranpli tout chan obligatwa yo!', 'error'); return; }
-  if (pwd.length < 8) { showAuthMsg('⚠️ Modpas dwe gen omwen 8 karaktè!', 'error'); return; }
-
-  const users = JSON.parse(localStorage.getItem('piyay_users') || '[]');
-  if (users.find(u => u.email === email)) {
-    showAuthMsg('❌ Email sa a deja egziste!', 'error'); return;
-  }
-
-  const user = { name, email, phone, pwd: btoa(pwd), address: '', moncash: '', joined: new Date().toISOString() };
-  users.push(user);
-  localStorage.setItem('piyay_users', JSON.stringify(users));
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-
-  showAuthMsg('✅ Kont kreye! Byenveni ' + name + '!', 'success');
-  setTimeout(() => { showDashboard(user); }, 1200);
-}
-
-// ============ LOGIN ============
-function handleLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pwd = document.getElementById('loginPwd').value;
-  if (!email || !pwd) { showAuthMsg('⚠️ Ranpli email ak modpas!', 'error'); return; }
-
-  const users = JSON.parse(localStorage.getItem('piyay_users') || '[]');
-  const user = users.find(u => u.email === email && atob(u.pwd) === pwd);
-  if (!user) { showAuthMsg('❌ Email oswa modpas pa kòrèk!', 'error'); return; }
-
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-  showDashboard(user);
-}
-
-function loginWithGoogle() {
-  showAuthMsg('💡 Google Login ap vini byento. Itilize email/modpas pou kounye a.', 'info');
-}
-
-function forgotPassword() {
-  const email = document.getElementById('loginEmail').value.trim();
-  if (!email) { showAuthMsg('⚠️ Antre email ou a anpremye.', 'error'); return; }
-  showAuthMsg('📧 Enstriksyon reyinisyalizasyon voye sou ' + email + ' (demo mode)', 'success');
-}
-
-// ============ LOGOUT ============
 function handleLogout() {
-  localStorage.removeItem(AUTH_KEY);
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('authScreen').style.display = '';
+  localStorage.removeItem('piyay_user');
+  location.reload();
 }
 
-// ============ SHOW DASHBOARD ============
-function showDashboard(user) {
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('dashboard').style.display = '';
-
-  // Fill user info
-  const initial = (user.name || user.email || 'U').charAt(0).toUpperCase();
-  document.getElementById('userAvatar').textContent = initial;
-  document.getElementById('userName').textContent = user.name || 'Kliyan';
-  document.getElementById('userEmail').textContent = user.email;
-
-  // Profile form
-  document.getElementById('profileName').value = user.name || '';
-  document.getElementById('profilePhone').value = user.phone || '';
-  document.getElementById('profileAddress').value = user.address || '';
-  document.getElementById('profileMoncash').value = user.moncash || '';
-
-  // Load data
-  loadOrders();
-  loadWishlist();
-  loadCart();
-}
-
-// ============ ORDERS ============
-function loadOrders() {
-  const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
-  const user = JSON.parse(localStorage.getItem(AUTH_KEY) || '{}');
-  const myOrders = orders.filter(o => o.email === user.email);
-
-  document.getElementById('statOrders').textContent = myOrders.length;
-  const spent = myOrders.reduce((s, o) => s + (o.total || 0), 0);
-  document.getElementById('statSpent').textContent = spent > 1000 ? Math.round(spent/1000) + 'k' : spent;
-
-  const list = document.getElementById('ordersList');
-  if (myOrders.length === 0) {
-    list.innerHTML = `<div class="empty-state">
-      <div class="emoji">📭</div>
-      <div>Okenn kòmand poko.</div>
-      <a href="{{ site.baseurl }}/shop/" style="color:var(--orange);font-weight:700;font-size:0.85rem;">Kòmanse achte →</a>
-    </div>`;
-    return;
-  }
-  list.innerHTML = myOrders.slice(-5).reverse().map(o => `
-    <div class="order-item">
-      <img class="order-thumb" src="${o.image || ''}" alt="${o.title || ''}"
-           onerror="this.style.display='none'">
-      <div class="order-info">
-        <div class="order-title">${o.title || 'Kòmand #' + o.id}</div>
-        <div class="order-date">${new Date(o.date || Date.now()).toLocaleDateString('fr-HT', {day:'numeric', month:'short', year:'numeric'})}</div>
-      </div>
-      <div class="order-price">${(o.total || 0).toLocaleString()} HTG</div>
-      <span class="order-status status-${o.status || 'pending'}">
-        ${{ "{{ o.status === 'confirmed' ? '✅ Konfime' : o.status === 'delivered' ? '🚚 Livre' : o.status === 'cancelled' ? '❌ Anile' : '⏳ Annatant' }}" }}
-      </span>
-    </div>
-  `).join('');
-}
-
-// ============ WISHLIST ============
-function loadWishlist() {
-  const wish = JSON.parse(localStorage.getItem('piyay_wishlist') || '[]');
-  document.getElementById('statWish').textContent = wish.length;
-  const grid = document.getElementById('wishlistGrid');
-  if (wish.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-      <div class="emoji">🤍</div><div>Wishlist ou vid.</div>
-    </div>`;
-    return;
-  }
-  grid.innerHTML = wish.slice(0, 6).map(w => `
-    <a class="wish-card" href="${w.url || '#'}">
-      <div class="wish-img">
-        <img src="${w.image || ''}" alt="${w.title}"
-             onerror="this.parentElement.style.background='var(--gray-100)';this.style.display='none'">
-      </div>
-      <div class="wish-name">${w.title}</div>
-    </a>
-  `).join('');
-}
-
-function clearWishlist() {
-  if (confirm('Efase tout wishlist?')) {
-    localStorage.removeItem('piyay_wishlist');
-    loadWishlist();
-    document.getElementById('statWish').textContent = '0';
-  }
-}
-
-// ============ CART ============
-function loadCart() {
-  const cart = JSON.parse(localStorage.getItem('piyay_cart') || '[]');
-  const summary = document.getElementById('cartSummary');
-  if (cart.length === 0) {
-    summary.innerHTML = `<div class="empty-state">
-      <div class="emoji">🛒</div><div>Panier ou vid.</div>
-    </div>`;
-    return;
-  }
-  const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  summary.innerHTML = cart.map(i => `
-    <div class="order-item">
-      <img class="order-thumb" src="${i.image || ''}" alt="${i.title}"
-           onerror="this.style.background='var(--gray-100)'">
-      <div class="order-info">
-        <div class="order-title">${i.title}</div>
-        <div class="order-date">Kantite: ${i.quantity}</div>
-      </div>
-      <div class="order-price">${(i.price * i.quantity).toLocaleString()} HTG</div>
-    </div>
-  `).join('') +
-  `<div style="padding:14px 20px;font-family:Sora,sans-serif;font-weight:700;color:var(--orange);font-size:1rem;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;">
-    <span>Total:</span>
-    <span>${total.toLocaleString()} HTG</span>
-  </div>`;
-}
-
-// ============ PROFILE ============
-function saveProfile() {
-  const user = JSON.parse(localStorage.getItem(AUTH_KEY) || '{}');
-  user.name = document.getElementById('profileName').value;
-  user.phone = document.getElementById('profilePhone').value;
-  user.address = document.getElementById('profileAddress').value;
-  user.moncash = document.getElementById('profileMoncash').value;
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-
-  const users = JSON.parse(localStorage.getItem('piyay_users') || '[]');
-  const idx = users.findIndex(u => u.email === user.email);
-  if (idx >= 0) { users[idx] = user; localStorage.setItem('piyay_users', JSON.stringify(users)); }
-
-  showToast('✅ Pwofil ou sove!');
-  document.getElementById('userName').textContent = user.name || 'Kliyan';
-  document.getElementById('userAvatar').textContent = (user.name || user.email || 'U').charAt(0).toUpperCase();
-}
-
-// ============ AUTH MSG ============
-function showAuthMsg(msg, type) {
-  const el = document.getElementById('authMsg');
-  el.textContent = msg;
-  el.style.display = 'block';
-  el.style.background = type === 'error' ? '#FFEBEE' : type === 'success' ? '#E8F5E9' : '#E3F2FD';
-  el.style.color = type === 'error' ? 'var(--red)' : type === 'success' ? 'var(--green)' : '#1565C0';
-}
-
-// ============ TOAST ============
-function showToast(msg) {
-  let t = document.getElementById('accToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'accToast';
-    t.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#0D1B2A;color:white;padding:12px 20px;border-radius:10px;font-family:Sora,sans-serif;font-size:0.88rem;font-weight:600;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.3);transform:translateY(80px);opacity:0;transition:all 0.3s;';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.transform = 'translateY(0)';
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 3000);
-}
-
-// ============ REVIEWS COUNT ============
-function countUserReviews(email) {
-  const allKeys = Object.keys(localStorage).filter(k => k.startsWith('reviews_'));
-  let total = 0;
-  allKeys.forEach(k => {
-    const reviews = JSON.parse(localStorage.getItem(k) || '[]');
-    // Count all reviews (no email tracking in this simple impl)
-  });
-  return total;
-}
-
-// ============ INIT ============
-document.addEventListener('DOMContentLoaded', () => {
-  const user = localStorage.getItem(AUTH_KEY);
-  if (user) {
-    showDashboard(JSON.parse(user));
-  }
-
-  // Enter key support
-  document.getElementById('loginPwd').addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleLogin();
-  });
-  document.getElementById('regPwd').addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleRegister();
-  });
-});
+// ... lòt fonksyon yo ap mache via JS sèlman kounye a pou evite erè Liquid
 </script>

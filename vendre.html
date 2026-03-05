@@ -1,0 +1,148 @@
+---
+layout: default
+title: Vann yon Pwodwi - Boutique Piyay
+---
+
+<div class="container" style="max-width: 800px; padding: 40px 20px;">
+    <div id="vendreCard" class="seller-card" style="display: none; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; color: #0D1B2A;">🚀 Mete yon pwodwi an liy</h1>
+
+        <form id="uploadForm">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Non Pwodwi a *</label>
+                <input type="text" id="prodTitle" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Pri Nòmal (HTG) *</label>
+                    <input type="number" id="prodPrice" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Chwazi Kategori *</label>
+                    <select id="prodCat" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+                        <option value="">-- Chaje kategori yo... --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="background: #fff5f5; padding: 20px; border-radius: 15px; border: 1px dashed #ff4747; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 800; color: #ff4747;">
+                    <input type="checkbox" id="isFlash" style="width: 20px; height: 20px;"> ⚡ Mete nan Vante Flash?
+                </label>
+                <div id="flashPriceDiv" style="display: none; margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Pri Promo (HTG) *</label>
+                    <input type="number" id="flashPrice" style="width: 100%; padding: 12px; border: 2px solid #ff4747; border-radius: 10px;" placeholder="Ex: 450">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Foto Pwodwi a *</label>
+                <input type="file" id="prodImage" accept="image/*" required style="width: 100%; padding: 10px; border: 2px dashed #ccc; border-radius: 10px; cursor: pointer;">
+                <div id="preview" style="margin-top: 15px; display: none;">
+                    <img id="imgPreview" src="" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px; border: 2px solid #ff4747;">
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" style="width: 100%; padding: 16px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
+                🚀 Pibliye Pwodwi a
+            </button>
+        </form>
+
+        <div id="statusMsg" style="margin-top: 20px; text-align: center; font-weight: 600; display: none;"></div>
+    </div>
+
+    <div id="paymentRequired" style="display: none; text-align: center; padding: 100px 20px;">
+        <div style="font-size: 80px; margin-bottom: 20px;">🔒</div>
+        <h1 style="font-weight: 800;">Aksè Limite</h1>
+        <p style="color: #666; margin-bottom: 30px;">Ou dwe aktive kont machann ou an premye.</p>
+        <a href="/peye.html" style="padding: 15px 40px; background: #ff4747; color: white; border-radius: 12px; text-decoration: none; font-weight: 800;">Aktive Kounye a</a>
+    </div>
+</div>
+
+<script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script>
+    const ik = new ImageKit({ publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg=", urlEndpoint: "https://ik.imagekit.io/9zboshcie" });
+    const supabaseV = libsupabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+
+    // 1. Chaje Kategori depi nan JSON nou te fè a
+    async function loadCategories() {
+        const select = document.getElementById('prodCat');
+        try {
+            const response = await fetch('/categories.json');
+            const categories = await response.json();
+            select.innerHTML = '<option value="">-- Chwazi yon kategori --</option>' +
+                categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        } catch (e) {
+            select.innerHTML = '<option value="">Erè nan chajman kategori</option>';
+        }
+    }
+
+    document.getElementById('isFlash').onchange = function() {
+        document.getElementById('flashPriceDiv').style.display = this.checked ? 'block' : 'none';
+    };
+
+    async function checkSellerStatus() {
+        const { data: { user } } = await supabaseV.auth.getUser();
+        if (!user) { window.location.href = "/login.html"; return; }
+        const { data: profile } = await supabaseV.from('profiles').select('is_active_seller').eq('id', user.id).single();
+        if (profile && profile.is_active_seller) {
+            document.getElementById('vendreCard').style.display = 'block';
+            loadCategories();
+        } else {
+            document.getElementById('paymentRequired').style.display = 'block';
+        }
+    }
+
+    const fileInput = document.getElementById('prodImage');
+    fileInput.onchange = function() {
+        const [file] = fileInput.files;
+        if (file) {
+            document.getElementById('imgPreview').src = URL.createObjectURL(file);
+            document.getElementById('preview').style.display = 'block';
+        }
+    };
+
+    document.getElementById('uploadForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const { data: { user } } = await supabaseV.auth.getUser();
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
+        const file = fileInput.files[0];
+
+        btn.disabled = true; btn.innerText = "⏳ Piblikasyon ap fèt...";
+        status.style.display = 'block'; status.innerText = "Nou ap prepare tout bagay...";
+
+        try {
+            ik.upload({ file: file, fileName: "p_" + Date.now(), folder: "/user_uploads/" }, async function(err, result) {
+                if(err) { showError(err.message); }
+                else {
+                    const isFlash = document.getElementById('isFlash').checked;
+                    const { error } = await supabaseV.from('user_products').insert([{
+                        title: document.getElementById('prodTitle').value,
+                        price: parseFloat(document.getElementById('prodPrice').value),
+                        category: document.getElementById('prodCat').value,
+                        image_url: result.url,
+                        seller_id: user.id,
+                        is_flash_sale: isFlash,
+                        flash_price: isFlash ? parseFloat(document.getElementById('flashPrice').value) : null,
+                        created_at: new Date()
+                    }]);
+
+                    if (error) showError(error.message);
+                    else { status.innerText = "🎉 BRAVO! Pwodwi ou a pibliye!"; setTimeout(() => window.location.href = "/dashboard.html", 2000); }
+                }
+            });
+        } catch (error) { showError(error.message); }
+    };
+
+    function showError(msg) {
+        const status = document.getElementById('statusMsg');
+        status.innerText = "❌ " + msg; status.style.color = "red";
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').innerText = "🚀 Pibliye Pwodwi a";
+    }
+    checkSellerStatus();
+</script>

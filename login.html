@@ -1,0 +1,68 @@
+---
+layout: default
+title: Konekte - Boutique Piyay
+---
+
+<div class="container" style="max-width: 500px; padding: 60px 20px;">
+    <div class="auth-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px;">👋 Bonretou!</h1>
+        <p style="color: #666; margin-bottom: 30px;">Konekte sou kont ou pou w jere boutik ou a.</p>
+
+        <form id="loginForm">
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
+                <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+            </div>
+            <div style="margin-bottom: 25px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Modpas</label>
+                <input type="password" id="password" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+            </div>
+
+            <button type="submit" id="loginBtn" style="width: 100%; padding: 16px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
+                Konekte Kounye a
+            </button>
+        </form>
+
+        <p style="margin-top: 25px; font-size: 14px; color: #666;">
+            Ou poko gen kont? <a href="/signup.html" style="color: #ff4747; font-weight: 700; text-decoration: none;">Kreye yon kont gratis</a>
+        </p>
+        <div id="msg" style="margin-top: 20px; font-weight: 600; display: none;"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById('loginForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('loginBtn');
+        const msg = document.getElementById('msg');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        btn.disabled = true;
+        btn.innerText = "⏳ Verifikasyon...";
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            msg.innerText = "❌ Erè: " + error.message;
+            msg.style.color = "red";
+            msg.style.display = "block";
+            btn.disabled = false;
+            btn.innerText = "Konekte Kounye a";
+        } else {
+            msg.innerText = "✅ Siksè! Wap redireksyon...";
+            msg.style.color = "green";
+            msg.style.display = "block";
+            localStorage.setItem('piyay_user', JSON.stringify(data.user));
+            setTimeout(() => { window.location.href = "/dashboard.html"; }, 1500);
+        }
+    };
+</script>
