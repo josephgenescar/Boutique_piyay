@@ -1,48 +1,83 @@
 <style>
-/* ===== HEADER — Kreyòl Modèn & Responsive ===== */
-.main-header { background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.08); position:sticky; top:0; z-index:1000; width: 100%; }
-.top-bar { background:#222; color:#fff; padding:6px 0; font-size:11px; font-weight:600; }
+/* ===== HEADER — Kreyòl Modèn & Animé ak Ble ===== */
+.main-header { box-shadow:0 2px 15px rgba(0,0,0,0.1); position:sticky; top:0; z-index:1000; width: 100%; background: #fff; }
+.top-bar { background:#111; color:#fff; padding:6px 0; font-size:11px; font-weight:600; border-bottom: 1px solid rgba(255,255,255,0.1); }
 .top-bar .container { display:flex; justify-content:space-between; align-items:center; padding: 0 15px; }
 .top-bar-links { display:flex; gap:10px; }
 .top-bar a { color:#ccc; text-decoration:none; }
 
-.header-main { padding:10px 0; border-bottom: 1px solid #f0f0f0; }
+/* 1. ANIMASYON GRADIENT LOGO (ALE ADWAT - MELANJE AK BLE) */
+.header-main {
+    padding:10px 0;
+    background: linear-gradient(90deg, #ffffff, #fff1f1, #e0f2fe, #fff1f1, #ffffff);
+    background-size: 200% 100%;
+    animation: move-right 10s linear infinite;
+    border-bottom: 1px solid #eee;
+}
+
+@keyframes move-right {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
 .header-main .container { display:flex; align-items:center; justify-content: space-between; padding: 0 15px; gap: 10px; }
 
 .logo { display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0; }
-.logo img { height:32px; width:auto; }
-.logo span { font-size:16px; font-weight:800; font-family:'Poppins',sans-serif;
+.logo img { height:34px; width:auto; }
+.logo span { font-size:18px; font-weight:900; font-family:'Sora', sans-serif;
   background:linear-gradient(135deg,#ff4747,#ff8c42);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
 
 .search-wrap { flex:1; max-width:500px; position:relative; margin: 0 15px; }
-.search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; background: #f9f9f9; height: 40px; }
+.search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; background: #fff; height: 42px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 .search-form input { flex:1; padding:0 15px; border:none; outline:none; font-size:13px; background: transparent; }
-.search-form button { padding:0 15px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 12px; }
+.search-form button { padding:0 20px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 13px; }
 
+/* BOUTON AUTH YO */
 .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.account-info { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #333; text-decoration: none; padding: 6px 12px; background: #f4f4f4; border-radius: 50px; }
-.account-info.primary { background:#ff4747; color:white; }
+.btn-auth {
+    display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800;
+    text-decoration: none; padding: 9px 16px; border-radius: 50px;
+    transition: all 0.3s ease; text-transform: uppercase;
+}
+.btn-login { background: #0f172a; color: white; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
+.btn-signup {
+    background: linear-gradient(135deg, #ff4747, #ff8c42); color: white;
+    box-shadow: 0 4px 12px rgba(255, 71, 71, 0.3);
+    animation: pulse-orange 2s infinite;
+}
+
+@keyframes pulse-orange {
+    0% { transform: scale(1); }
+    70% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+/* 2. ANIMASYON GRADIENT KATEGORI (SOTI DWAT ALE GÒCH - MELANJE AK BLE GLACÉ) */
+.site-nav {
+    background: linear-gradient(270deg, #ffffff, #f0f9ff, #e5e7eb, #f0f9ff, #ffffff);
+    background-size: 200% 100%;
+    animation: move-left 10s linear infinite;
+    border-bottom: 1px solid #eee;
+}
+
+@keyframes move-left {
+    0% { background-position: 200% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.nav-scroll { display:flex; gap:18px; padding:12px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.nav-scroll::-webkit-scrollbar { display: none; }
+.nav-lnk { text-decoration: none; color: #475569; font-size: 13px; font-weight: 700; transition: 0.3s; }
+.nav-lnk:hover { color: #ff4747; transform: translateY(-2px); }
 
 .act-btn { display:flex; flex-direction:column; align-items:center; background:none; border:none; cursor:pointer; color:#333; position:relative; padding: 0; }
-.act-btn span { font-size: 22px; }
-.act-btn small { font-size:9px; font-weight:700; }
-.cart-badge { position:absolute; top:-5px; right:-5px; background:#ff4747; color:white; border-radius:50%; width:16px; height:16px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 1.5px solid white; }
+.cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:18px; height:18px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 2px solid white; }
 
-/* NAVIGATION */
-.site-nav { background: #fff; border-bottom: 1px solid #eee; }
-.nav-scroll { display:flex; gap:15px; padding:10px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-.nav-scroll::-webkit-scrollbar { display: none; }
-.nav-lnk { text-decoration: none; color: #555; font-size: 13px; font-weight: 600; transition: 0.3s; }
-.nav-lnk:hover { color: #ff4747; }
-
-/* MOBILE ADJUSTMENTS */
 @media (max-width: 768px) {
-  .top-bar { display: none; } /* Kache top bar sou mobil pou espas */
-  .search-wrap { display: none; } /* Kache search bar nan header (nou ka mete l anba) */
+  .top-bar, .search-wrap { display: none; }
   .logo span { font-size: 14px; }
-  .logo img { height: 28px; }
-  .account-info { padding: 5px 8px; font-size: 10px; }
+  .btn-auth { padding: 6px 12px; font-size: 10px; }
 }
 </style>
 
@@ -65,24 +100,24 @@
 
       <div class="search-wrap">
         <form class="search-form" onsubmit="return false;">
-          <input type="text" id="search-input" placeholder="Chèche..." oninput="liveSearch()" autocomplete="off">
+          <input type="text" id="search-input" placeholder="Chèche yon pwodwi..." oninput="liveSearch()" autocomplete="off">
           <button type="submit">OK</button>
         </form>
-        <div id="search-results" style="display:none; position:absolute; top:45px; width:100%; background:white; z-index:100; box-shadow:0 5px 15px rgba(0,0,0,0.1);"></div>
+        <div id="search-results" style="display:none; position:absolute; top:46px; width:100%; background:white; z-index:100; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-radius: 12px;"></div>
       </div>
 
       <div class="header-actions">
-        <div id="authLinks" style="display: flex; gap: 5px;">
-            <a href="/login.html" class="account-info">🔑 Kont</a>
-            <a href="/signup.html" class="account-info primary">Enskri</a>
+        <div id="authLinks" style="display: flex; gap: 10px;">
+            <a href="/login.html" class="btn-auth btn-login">🔑 Kont</a>
+            <a href="/signup.html" class="btn-auth btn-signup">✨ Enskri</a>
         </div>
         <div id="userInfo" style="display: none;">
-            <a href="/dashboard.html" class="account-info">👤 Mwen</a>
+            <a href="/dashboard.html" class="btn-auth btn-login">👤 Mwen</a>
         </div>
         <button class="act-btn" onclick="openOrderModal()">
           <span>🛒</span>
           <div class="cart-badge" id="cart-badge" style="display:none;">0</div>
-          <small>Panye</small>
+          <small style="font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 2px;">Panye</small>
         </button>
       </div>
     </div>
@@ -90,8 +125,8 @@
 
   <nav class="site-nav">
     <div class="nav-scroll">
-      <a href="/" class="nav-lnk">Tout</a>
-      <a href="/vendre.html" class="nav-lnk" style="color:#ff4747; font-weight:800;">🚀 Vann</a>
+      <a href="/" class="nav-lnk">Tout Pwodwi</a>
+      <a href="/vendre.html" class="nav-lnk" style="color:#ff4747; font-weight:900;">🚀 Vann pa w</a>
       {% for cat in site.categories %}
       <a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>
       {% endfor %}
@@ -101,7 +136,6 @@
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    // Sèvi ak Supabase ki nan main.js si l egziste deja
     async function updateHeaderAuth() {
         if (typeof supabase !== 'undefined') {
             const sup = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");

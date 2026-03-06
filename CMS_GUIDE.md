@@ -2,6 +2,8 @@
 
 Gid sa a ap ede w jere boutik ou a pwofesyonèlman san ou pa bezwen manyen kòd sit la.
 
+---
+
 ## 1. Kouman pou w antre nan pati Admin nan
 1.  Louvri navigatè w epi tape: `votre-site.com/admin/`
 2.  Konekte ak kont Netlify ou oswa imèl ou te itilize a.
@@ -12,45 +14,57 @@ Gid sa a ap ede w jere boutik ou a pwofesyonèlman san ou pa bezwen manyen kòd 
 Anvan ou ajoute yon pwodwi, fòk kategori a egziste deja.
 1.  Klike sou **"🗂 Kategori (Chanm)"** nan meni goch la.
 2.  **Ajoute :** Klike sou "Nouveau Kategori".
-    *   **ID Kategori :** Mete yon non kout san espas (eg: `rad-fi`). Sa a trè enpòtan pou lyen yo mache.
-    *   **Non k ap parèt :** Non kliyan an ap wè (eg: `Rad pou Fi`).
-    *   **Foto Bulle :** Chwazi yon bèl foto wonn pou kategori a.
 3.  **Pibliye :** Klike sou bouton "Publier" anlè a.
 
 ---
 
-## 3. Ajoute yon nouvo Pwodwi 📦
+## 3. Ajoute yon nouvo Pwodwi 📦 (Pwodwi pa w)
 1.  Klike sou **"📦 Pwodwi (Akseswa)"**.
-2.  Klike sou **"Nouveau Produit"**.
-3.  Ranpli enfòmasyon yo:
-    *   **Non Pwodwi a :** Tit k ap parèt la.
-    *   **Pri (HTG) :** Chif sèlman (eg: `2500`).
-    *   **Kategori :** Chwazi kategori a nan lis la (sa a konekte pwodwi a otomatikman).
-    *   **Foto Prensipal :** Foto k ap parèt nan lis la.
-    *   **Vente Flash :** Koche kaz sa a si ou vle l parèt nan seksyon promo a ak kontè a.
-    *   **Deskripsyon :** Ou ka mete detay sou materyèl, fòm, elatriye.
-4.  **Pibliye :** Klike sou "Publier".
+2.  Ranpli enfòmasyon yo: Tit, Pri, Kategori, Foto.
+3.  **Vente Flash :** Koche kaz sa a si ou vle l parèt nan seksyon promo a ak kontè a.
 
 ---
 
-## 4. Konsèy pou sit la rete "Haut Gamme" ✨
+## 4. Jere Marketplace Machann yo (Supabase) 🚀
+Piske machann yo se nan **Supabase** yo ye, men kijan pou w jere yo :
+
+### ✅ Aktive yon Machann (3 Mwa Gratis)
+Lè yon machann mande aktivasyon sou WhatsApp :
+1.  Ale nan dashboard **Supabase** ou a.
+2.  Chèche tab `profiles` la.
+3.  Jwenn liy ki gen imèl machann nan.
+4.  Modifye kolòn `subscription_ends_at` : Mete yon dat ki koresponn ak **3 mwa** depi jodi a.
+5.  **Kòd Referans :** Si l te mete yon kòd lè l t ap enskri, w ap wè l nan kolòn `referred_by_code`. Sa ap pèmèt ou ajoute mwa anplis pou moun ki te envite l la.
+
+### 💰 Pri Abònman
+*   **Pri anyèl :** 5,000 HTG.
+*   Lè yon machann peye, ou jis pwolonje dat la nan Supabase pou **1 ane** (12 mwa).
+
+---
+
+## 5. Sistèm Referans (Growth Loop) 🎁
+Pou platfòm nan grandi, machann yo gen yon kòd referans nan Dashboard yo.
+*   **Kado :** 2 mwa gratis pou moun ki envite a.
+*   **Kijan pou w wè l :** Nan tab `profiles` la, gade kolòn `referred_by_code` pou w wè ki nouvo machann ki itilize kòd yon lòt.
+*   **Aksyon :** Lè w wè yon nouvo machann enskri ak kòd yon ansyen, ajoute **2 mwa** gratis nan dat ekspirasyon ansyen machann nan.
+
+---
+
+## 6. Konsèy pou sit la rete "Haut Gamme" ✨
 
 ### 🖼 Kalite Foto
-*   Sèvi ak foto ki **Kare (1:1)** pou yo pa parèt koupe mal nan kat yo.
-*   Eseye pou foto yo gen menm kalite background (eg: blan oswa koulè klè) pou sit la parèt pwòp.
+*   Sèvi ak foto ki **Kare (1:1)** pou yo pa parèt koupe mal.
+*   Background klè (blan oswa koulè inifòm) bay plis konfyans.
 
 ### 🏷 Rechèch la
-Sistèm nan entèlijan. Depi ou mete mo kle nan Tit la oswa nan Deskripsyon an, kliyan an ap jwenn li lè l tape l nan bare rechèch la.
-
-### 💰 Peman ak Livrezon
-Si ou chanje nimewo MonCash ou oswa pri livrezon an, ou ka fè sa nan seksyon **"⚙️ Kontwòl Kay la (Settings)"**.
+Sistèm nan entèlijan. Depi ou mete mo kle nan Tit la, kliyan an ap jwenn li lè l tape l nan bare rechèch la.
 
 ---
 
 ## 🛠 Si gen yon pwoblèm?
-Si ou pibliye yon bagay epi li pa parèt touswit:
-1.  Tann 1 a 2 minit (Netlify ap rebati sit la).
+1.  Tann 1 a 2 minit apre modifikasyon nan Admin Netlify la.
 2.  Rafrechi paj la (F5).
+3.  Pou machann yo, chanjman yo fèt **touswit** (an tan reyèl) piske yo nan Supabase.
 
 ---
 *Gid sa a fèt pou ede Boutique Piyay grandi! 🚀*

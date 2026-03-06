@@ -2,158 +2,199 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
+/* FOOTER NEON & LUMINEUX DESIGN */
 .main-footer {
-    background: #0f172a;
+    background: #020617; /* Nwa pwofon */
     color: #cbd5e1;
-    padding: 70px 0 30px;
-    margin-top: 60px;
-    border-top: 5px solid #ff4747;
+    padding: 80px 0 40px;
+    margin-top: 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* LIY LUMINEUZ (GLOWING LINE) */
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff4747, #ff8c42, #00d2ff, #ff4747, transparent);
+    background-size: 200% 100%;
+    animation: shimmer-footer 3s linear infinite;
+    box-shadow: 0 0 20px rgba(255, 71, 71, 0.8);
+}
+
+@keyframes shimmer-footer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
 }
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 50px;
+    position: relative;
+    z-index: 2;
 }
 
+/* TIT YO KI GEN GWO EFÈ LUMINEUX */
 .footer-col h3 {
     color: #fff;
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 25px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Sora', sans-serif;
     font-weight: 800;
-    position: relative;
-    padding-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    /* Efè Neon */
+    text-shadow: 0 0 10px rgba(255, 71, 71, 0.8), 0 0 20px rgba(255, 71, 71, 0.4);
+    animation: glow-pulse 2s ease-in-out infinite alternate;
 }
 
-.footer-col h3::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 40px;
-    height: 3px;
-    background: #ff4747;
-    border-radius: 10px;
+@keyframes glow-pulse {
+    from { text-shadow: 0 0 10px rgba(255, 71, 71, 0.6), 0 0 20px rgba(255, 71, 71, 0.2); }
+    to { text-shadow: 0 0 20px rgba(255, 71, 71, 1), 0 0 30px rgba(255, 71, 71, 0.6); }
 }
 
-.footer-col p, .footer-col li, .footer-col a {
+/* TÈKS KI BRIYE DOUSMAN */
+.footer-col p {
     font-size: 15px;
     line-height: 1.8;
+    color: #cbd5e1;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+}
+
+.footer-links-list { list-style: none; padding: 0; }
+.footer-links-list li { margin-bottom: 15px; }
+.footer-links-list a {
     color: #94a3b8;
     text-decoration: none;
     transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
 }
 
-.footer-col a:hover {
+.footer-links-list a i {
     color: #ff4747;
-    padding-left: 5px;
+    filter: drop-shadow(0 0 5px #ff4747);
 }
 
-.footer-col ul { list-style: none; padding: 0; }
-.footer-col li { margin-bottom: 15px; display: flex; align-items: center; gap: 12px; }
+.footer-links-list a:hover {
+    color: #fff;
+    transform: translateX(8px);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
 
-.social-icons {
+/* IKÒN SOSYAL KI FLÈCH */
+.social-glow-wrap {
     display: flex;
     gap: 15px;
     margin-top: 25px;
 }
 
-.social-icons a {
+.social-glow-wrap a {
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
     border-radius: 12px;
-    background: #1e293b;
+    background: rgba(255, 255, 255, 0.05);
     color: white;
     font-size: 20px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.4s;
 }
 
-.social-icons a:hover {
+.social-glow-wrap a:hover {
     background: #ff4747;
-    transform: translateY(-8px) rotate(8deg);
-    box-shadow: 0 10px 20px rgba(255, 71, 71, 0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 0 25px #ff4747;
+    border-color: #ff4747;
 }
 
-.footer-bottom {
-    text-align: center;
-    margin-top: 60px;
+/* FOOTER BOTTOM */
+.footer-bottom-luminous {
+    margin-top: 70px;
     padding-top: 30px;
-    border-top: 1px solid #1e293b;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.footer-bottom-luminous p {
     font-size: 14px;
+    color: #64748b;
 }
 
-.footer-legal-links {
+.glow-brand {
+    color: #ff4747;
+    font-weight: 800;
+    text-shadow: 0 0 8px rgba(255, 71, 71, 0.5);
+}
+
+.powered-tag {
     margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.footer-legal-links a {
-    color: #64748b;
     font-size: 12px;
-    text-decoration: underline;
+    color: #475569;
 }
 
-.footer-legal-links a:hover {
+.powered-tag span {
     color: #ff4747;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(255, 71, 71, 0.4);
 }
 
-.design-by {
-    margin-top: 10px;
-    font-weight: 600;
-    color: #64748b;
-}
-
-.design-by span {
+/* TI PEYI A KI GEN FLAG GLOW */
+.map-marker-glow {
     color: #ff4747;
+    filter: drop-shadow(0 0 5px #ff4747);
 }
 </style>
 
 <footer class="main-footer">
     <div class="container">
         <div class="footer-grid">
+            <!-- BOUTIQUE INFO -->
             <div class="footer-col">
-                <h3 style="background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">BOUTIQUE PIYAY</h3>
-                <p>Pi bon kote pou w jwenn pwodwi bon jan kalite ak pi bon pri sou mache a. Nou asire livrezon ou an sekirite nan tout peyi a.</p>
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/joseph.genescar" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://youtube.com/@josephgenescar?si=ZyxNqeHDQccJ8tX0" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-                    <a href="https://www.tiktok.com/@j.m.gfilms3?_r=1&_t=ZN-94FaMABDQLG" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://wa.me/50948868964" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <h3 style="color: #fff; border-left: 4px solid #ff4747; padding-left: 15px;">Boutique Piyay</h3>
+                <p>Platfòm kote kalite rankontre ak bon pri. Pi bon sèvis livrezon nan tout peyi a pou tout kliyan ak machann nou yo.</p>
+                <div class="social-glow-wrap">
+                    <a href="https://www.facebook.com/joseph.genescar" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://youtube.com/@josephgenescar" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.tiktok.com/@j.m.gfilms3" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://wa.me/50948868964" target="_blank"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
 
+            <!-- LYEN RAPID -->
             <div class="footer-col">
-                <h3>Kategori</h3>
-                <ul>
-                    <li><i class="fas fa-arrow-right" style="font-size: 10px; color: #ff4747;"></i> <a href="/">Tout Pwodwi</a></li>
-                    <li><i class="fas fa-arrow-right" style="font-size: 10px; color: #ff4747;"></i> <a href="/#flash-sale">Vente Flash 🔥</a></li>
-                    <li><i class="fas fa-arrow-right" style="font-size: 10px; color: #ff4747;"></i> <a href="/#categories-section">Parcourir les catégories</a></li>
+                <h3>Lyen Rapid</h3>
+                <ul class="footer-links-list">
+                    <li><a href="/"><i class="fas fa-shopping-cart"></i> Tout Pwodwi</a></li>
+                    <li><a href="/vendre.html"><i class="fas fa-plus-circle"></i> Vann yon pwodwi</a></li>
+                    <li><a href="/#flash-sale"><i class="fas fa-bolt"></i> Vante Flash 🔥</a></li>
+                    <li><a href="/peye.html"><i class="fas fa-shield-alt"></i> Aktive Kont Machann</a></li>
                 </ul>
             </div>
 
+            <!-- KONTAK -->
             <div class="footer-col">
                 <h3>Kontakte Nou</h3>
-                <ul>
-                    <li><i class="fas fa-phone-alt" style="color: #ff4747;"></i> <span>+509 4886-8964</span></li>
-                    <li><i class="fas fa-envelope" style="color: #ff4747;"></i> <a href="mailto:josephgenescar@gmail.com">josephgenescar@gmail.com</a></li>
-                    <li><i class="fas fa-map-marker-alt" style="color: #ff4747;"></i> <span>Livraison rapide nan tout peyi a 🇭🇹</span></li>
+                <ul class="footer-links-list">
+                    <li><a href="tel:+50948868964"><i class="fas fa-phone-alt"></i> +509 4886-8964</a></li>
+                    <li><a href="mailto:josephgenescar@gmail.com"><i class="fas fa-envelope"></i> josephgenescar@gmail.com</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt map-marker-glow"></i> Tout peyi a 🇭🇹</a></li>
                 </ul>
             </div>
         </div>
 
-        <div class="footer-bottom">
-            <p>&copy; {{ "now" | date: "%Y" }} <strong>Boutique Piyay</strong>. Tout dwa rezève.</p>
-            <div class="footer-legal-links">
-                <a href="/politique-confidentialite/">Politik Konfidansyalite</a>
-                <a href="#">Kondisyon Itilizasyon</a>
-            </div>
-            <div class="design-by">Design by <span>Rivayo-tech Entreprise</span></div>
+        <div class="footer-bottom-luminous">
+            <p>&copy; {{ "now" | date: "%Y" }} <span class="glow-brand">Boutique Piyay</span>. Tout dwa rezève.</p>
+            <div class="powered-tag">Powered by <span>Rivayo-tech Entreprise</span></div>
         </div>
     </div>
 </footer>

@@ -9,14 +9,6 @@ title: Akèy - Boutique Piyay
     <div class="hero-bg-layer">
       {% include boutique-piyay-banner.html %}
     </div>
-    <div class="hero-content">
-      <div class="hero-text-box">
-          <span class="badge-flash">🔥 Vante Flash -50%</span>
-          <h1 class="animate-text">Gwo rabè sou tout koleksyon nou yo!</h1>
-          <p class="animate-subtext">Kalite Premium • Pi bon Pri • Livraison Rapid</p>
-          <a href="#flash-sale" class="btn-primary-hero pulse">Pwofite rabè yo 🛍️</a>
-      </div>
-    </div>
   </section>
 </div>
 
@@ -27,6 +19,7 @@ title: Akèy - Boutique Piyay
             <span class="flash-icon-box">⚡</span>
             <h2>Vante Flash</h2>
         </div>
+        <!-- TIMER FIX (HORIZONTAL) -->
         <div id="countdown" class="timer-modern">
             <div class="t-segment"><span id="hours">02</span><small>h</small></div>
             <div class="t-divider">:</div>
@@ -35,46 +28,52 @@ title: Akèy - Boutique Piyay
             <div class="t-segment"><span id="seconds">00</span><small>s</small></div>
         </div>
     </div>
-    <div class="flash-grid">
-        {% for product in site.products %}
-            {% if product.flash_sale %}
-            <div class="flash-card-modern">
-                <div class="discount-badge-modern">RABÈ</div>
-                <div class="card-img-wrap">
-                    <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
-                </div>
-                <div class="flash-info">
-                    <h3>{{ product.title }}</h3>
-                    <div class="flash-prices">
-                        <span class="new-price">{{ product.price }} HTG</span>
+
+    <!-- FLASH SLIDER FIX (HORIZONTAL) -->
+    <div class="flash-slider-container">
+        <div class="flash-slider-inner">
+            {% for product in site.products %}
+                {% if product.flash_sale %}
+                <div class="flash-card-mini">
+                    <div class="discount-tag">RABÈ</div>
+                    <div class="mini-img-wrap">
+                        <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
                     </div>
-                    <button class="btn-flash-buy-modern" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute</button>
+                    <div class="mini-info">
+                        <h3>{{ product.title }}</h3>
+                        <div class="mini-price">{{ product.price }} HTG</div>
+                        <button class="btn-mini-add" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute</button>
+                    </div>
                 </div>
-            </div>
-            {% endif %}
-        {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
 </section>
 
-<!-- 3. MARKETPLACE SECTION (SUPABASE) -->
-<section id="user-market" class="container section-margin marketplace-bg">
-  <div class="section-header-modern">
-    <div class="header-icon">🚀</div>
-    <div class="header-text">
-        <h2>Marketplace Machann yo</h2>
-        <p>Dekouvri pwodwi inik machann nou yo ap ofri w.</p>
+<!-- 3. MARKETPLACE SECTION -->
+<section id="user-market" class="container section-margin">
+  <div class="marketplace-card-container">
+    <div class="marketplace-header-content">
+        <div class="header-main-text">
+            <div class="badge-new">NOUVO</div>
+            <h2 class="sora">Marketplace Machann yo 🚀</h2>
+            <p>Dekouvri pwodwi inik machann nou yo ap ofri w.</p>
+        </div>
+        <div class="header-action">
+            <a href="/vendre.html" class="btn-sell-now">Vann yon pwodwi →</a>
+        </div>
     </div>
-    <a href="/vendre.html" class="btn-outline-seller">Mete pa w la tou →</a>
-  </div>
-  <div id="supabase-products-grid" class="product-grid-modern">
-    <div class="loading-msg">⏳ Chaje pwodwi machann yo...</div>
+    <div id="supabase-products-grid" class="product-grid-modern">
+        <div class="loading-msg">⏳ Chaje pwodwi machann yo...</div>
+    </div>
   </div>
 </section>
 
-<!-- 4. CATÉGORIES -->
+<!-- 4. CATÉGORIES (HORIZONTAL BUBBLES) -->
 <section id="categories-section" class="container section-margin">
   <div class="section-header-modern">
-    <h2>Chwazi pa Kategori</h2>
+    <h2 class="sora">Chwazi pa Kategori</h2>
   </div>
   <div class="category-bubbles-modern">
     {% for cat in site.categories %}
@@ -91,7 +90,7 @@ title: Akèy - Boutique Piyay
 <!-- 5. REKÒMANDE -->
 <section id="recommandations" class="container section-margin">
   <div class="section-header-modern">
-    <h2>✨ Rekòmande pou ou</h2>
+    <h2 class="sora">✨ Rekòmande pou ou</h2>
   </div>
   <div class="product-grid-modern">
     {% for product in site.products limit:12 %}
@@ -103,7 +102,7 @@ title: Akèy - Boutique Piyay
           <div class="card-info">
               <h3>{{ product.title }}</h3>
               <div class="price-modern">{{ product.price }} HTG</div>
-              <button class="btn-add-modern" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute nan panye</button>
+              <button class="btn-add-modern" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute</button>
           </div>
       </div>
       {% endunless %}
@@ -112,70 +111,78 @@ title: Akèy - Boutique Piyay
 </section>
 
 <style>
-/* VARIABLES */
-:root { --primary: #ff4747; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; --radius: 20px; --shadow: 0 10px 25px rgba(0,0,0,0.08); }
-.section-margin { margin-top: 80px; margin-bottom: 80px; }
-.main-hero-custom { position: relative; width: 100%; max-width: 1300px; height: 450px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; overflow: hidden; margin: 0 auto; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.hero-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-.hero-bg-layer::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%); z-index: 2; }
-.hero-bg-layer iframe, .hero-bg-layer .banner { width: 100% !important; height: 100% !important; border: none !important; }
-.hero-content { position: relative; z-index: 10; text-align: center; color: white; width: 100%; padding-bottom: 60px; pointer-events: none; }
-.hero-text-box { pointer-events: auto; padding: 0 20px; }
-.hero-text-box h1 { font-size: clamp(1.2rem, 4vw, 2rem); text-shadow: 2px 2px 15px rgba(0,0,0,0.8); margin: 10px 0; font-weight: 900; line-height: 1.2; }
-.hero-text-box p { font-size: clamp(0.8rem, 2vw, 1rem); text-shadow: 1px 1px 10px rgba(0,0,0,0.8); margin-bottom: 20px; font-weight: 500; }
-.badge-flash { background: #ff4747; color: white; padding: 6px 16px; border-radius: 50px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 10px rgba(255, 71, 71, 0.4); margin-bottom: 10px; }
-.btn-primary-hero { background: #ff4747; color: white; padding: 14px 35px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 16px; box-shadow: 0 8px 25px rgba(255, 71, 71, 0.5); display: inline-block; transition: all 0.3s ease; }
-.section-header-modern { display: flex; align-items: center; gap: 20px; margin-bottom: 35px; }
-.header-icon { width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 8px 20px rgba(255,71,71,0.25); }
-.header-text h2 { margin: 0; font-size: 28px; font-weight: 800; color: var(--dark); }
-.header-text p { margin: 5px 0 0; color: var(--gray); }
-.flash-header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
-.timer-modern { display: flex; gap: 10px; align-items: center; }
-.t-segment { background: var(--dark); color: white; padding: 10px 15px; border-radius: 12px; font-weight: 800; font-size: 20px; display: flex; flex-direction: column; align-items: center; line-height: 1; }
-.t-segment small { font-size: 10px; text-transform: uppercase; margin-top: 4px; opacity: 0.6; }
-.t-divider { font-weight: 900; font-size: 24px; color: var(--dark); }
-.product-grid-modern { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-.product-card-modern { background: white; border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; border: 1px solid #f1f5f9; }
-.product-card-modern:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); border-color: var(--primary); }
-.card-img-wrap { aspect-ratio: 1; overflow: hidden; border-radius: 15px; margin-bottom: 15px; background: #f8fafc; }
-.card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-.card-info h3 { font-size: 16px; margin: 0 0 10px; font-weight: 700; color: var(--dark); height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.price-modern { color: var(--primary); font-weight: 900; font-size: 20px; margin-bottom: 15px; }
-.btn-add-modern { width: 100%; background: #f1f5f9; border: none; padding: 12px; border-radius: 12px; font-weight: 700; color: var(--dark); cursor: pointer; transition: 0.3s; }
-.btn-add-modern:hover { background: var(--primary); color: white; }
-.category-bubbles-modern { display: flex; gap: 25px; overflow-x: auto; padding: 20px 5px; scrollbar-width: none; }
-.cat-bubble-modern { text-align: center; min-width: 110px; text-decoration: none; color: var(--dark); transition: 0.3s; }
-.cat-bubble-modern:hover { transform: scale(1.1); }
-.bubble-img-modern { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); margin: 0 auto 15px; overflow: hidden; background: white; padding: 5px; box-shadow: 0 8px 20px rgba(255,71,71,0.15); }
+/* CORE */
+:root { --primary: #ff4747; --dark: #0f172a; --radius: 20px; --shadow: 0 10px 25px rgba(0,0,0,0.05); }
+.section-margin { margin-top: 50px; margin-bottom: 50px; }
+
+/* HERO */
+.main-hero-custom { position: relative; width: 100%; max-width: 1300px; height: 350px; overflow: hidden; margin: 0 auto; border-radius: 30px; }
+.hero-bg-layer { position: absolute; inset: 0; z-index: 1; }
+
+/* FLASH HEADER & TIMER (HORIZONTAL) */
+.flash-header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+.timer-modern { display: flex; align-items: center; gap: 8px; }
+.t-segment { background: #222; color: white; padding: 6px 10px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; min-width: 45px; }
+.t-segment span { font-size: 18px; font-weight: 900; line-height: 1; }
+.t-segment small { font-size: 9px; text-transform: uppercase; opacity: 0.7; margin-top: 2px; }
+.t-divider { font-weight: 900; font-size: 20px; color: #222; }
+
+/* FLASH SLIDER (HORIZONTAL) */
+.flash-slider-container { width: 100%; overflow: hidden; }
+.flash-slider-inner { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+.flash-slider-inner::-webkit-scrollbar { display: none; }
+.flash-card-mini { min-width: 170px; max-width: 170px; background: white; border-radius: 15px; padding: 10px; box-shadow: var(--shadow); position: relative; border: 1px solid #f0f0f0; }
+.mini-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; }
+.mini-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.mini-info h3 { font-size: 13px; margin: 10px 0 5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-price { color: var(--primary); font-weight: 800; font-size: 15px; margin-bottom: 10px; }
+.btn-mini-add { width: 100%; background: #f4f4f4; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
+.discount-tag { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 5px; z-index: 5; }
+
+/* MARKETPLACE */
+.marketplace-card-container { background: #fff; padding: 30px; border-radius: 30px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; }
+.marketplace-header-content { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 2px solid #f8fafc; padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
+.header-main-text h2 { font-size: 28px; margin: 0; color: var(--dark); }
+.btn-sell-now { background: var(--dark); color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.3s; }
+.btn-sell-now:hover { background: var(--primary); transform: translateY(-3px); }
+
+/* BUBBLES (HORIZONTAL) */
+.category-bubbles-modern { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+.cat-bubble-modern { text-align: center; min-width: 100px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 13px; }
+.bubble-img-modern { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); margin: 0 auto 10px; overflow: hidden; padding: 3px; background: white; }
 .bubble-img-modern img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.btn-outline-seller { padding: 10px 20px; border: 2px solid var(--primary); border-radius: 12px; text-decoration: none; color: var(--primary); font-weight: 800; font-size: 14px; transition: 0.3s; margin-left: auto; }
-.btn-outline-seller:hover { background: var(--primary); color: white; }
-@media (max-width: 768px) { .product-grid-modern { grid-template-columns: repeat(2, 1fr); gap: 15px; } .btn-outline-seller { display: none; } }
+
+/* PRODUCT GRID */
+.product-grid-modern { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+.product-card-modern { background: white; border-radius: 20px; padding: 15px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; transition: 0.3s; }
+.btn-add-modern { width: 100%; background: #f1f5f9; border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 768px) {
+    .main-hero-custom { height: 220px; border-radius: 0; }
+    .product-grid-modern { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .flash-header-modern { justify-content: center; }
+}
 </style>
 
 <script>
+    const supabaseHome = typeof supabase !== 'undefined' ? supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13") : null;
     async function loadUserMarketplaceModern() {
         const grid = document.getElementById('supabase-products-grid');
-        if (!grid) return;
+        if (!grid || !supabaseHome) return;
         try {
             const { data: products, error } = await supabaseHome.from('user_products').select('*').order('created_at', { ascending: false }).limit(8);
-            if (error) throw error;
-            if (!products || products.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">Pa gen pwodwi machann pou kounye a.</div>';
-                return;
+            if (!error && products) {
+                grid.innerHTML = products.map(p => `
+                    <div class="product-card-modern">
+                        <div class="card-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a></div>
+                        <div class="card-info">
+                            <h3>${p.title}</h3>
+                            <div class="price-modern">${p.price} HTG</div>
+                            <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
+                        </div>
+                    </div>
+                `).join('');
             }
-            grid.innerHTML = products.map(p => `
-                <div class="product-card-modern">
-                    <div class="card-img-wrap">
-                        <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
-                    </div>
-                    <div class="card-info">
-                        <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
-                        <div class="price-modern">${p.price} HTG</div>
-                        <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
-                    </div>
-                </div>
-            `).join('');
         } catch (e) { console.error(e); }
     }
     document.addEventListener('DOMContentLoaded', loadUserMarketplaceModern);

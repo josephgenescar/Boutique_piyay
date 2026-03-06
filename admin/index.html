@@ -1,54 +1,80 @@
 <!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <title>Boutique Piyay — Administration</title>
-    <!-- Netlify Identity Widget -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background: #f1f5f9; /* Nou mete yon background klè pou evite konfli ak tèks */
-      }
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boutique Piyay - Admin CMS</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <!-- Supabase JS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Netlify CMS App -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
 
-      /* Style pou asire tèks nan dropdowns yo vizib */
-      .nc-app-container select,
-      .nc-app-container input,
-      .nc-controlPane-widget div {
-        color: #1e293b !important;
-      }
+  <script>
+    const CMS = window.CMS;
+    const SUP_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+    const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+    const supabaseAdmin = supabase.createClient(SUP_URL, SUP_KEY);
 
-      /* Si ou vle garde yon ti touche design san bloke vizibilite */
-      body::before {
-        content: "";
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        z-index: -1;
-      }
+    // 1. KREYASYON DASHBOARD "INSIGHTS" POU ADMIN
+    const MarketplaceInsights = createClass({
+      getInitialState: function() {
+        return { stats: { sellers: 0, orders: 0, feedback: [] }, loading: true };
+      },
+      componentDidMount: async function() {
+        try {
+          // Rale Feedback ak Statistik
+          const { count: sellerCount } = await supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true });
+          const { count: orderCount } = await supabaseAdmin.from('orders').select('*', { count: 'exact', head: true });
 
-      #nc-root {
-        background: transparent !important;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+          // Chèche Feedback (mwen sipoze ou gen yon tab 'feedback' oswa nou ka wè mesaj yo)
+          const { data: feedbackData } = await supabaseAdmin.from('orders').select('*').order('created_at', { ascending: false }).limit(5);
 
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
+          this.setState({
+            stats: {
+              sellers: sellerCount || 0,
+              orders: orderCount || 0,
+              feedback: feedbackData || []
+            },
+            loading: false
+          });
+        } catch (e) { console.error(e); }
+      },
+      render: function() {
+        const { stats, loading } = this.state;
+        return h('div', { style: { padding: '20px', fontFamily: 'sans-serif' } },
+          h('h1', { style: { color: '#ff4747' } }, '🚀 Marketplace Live Insights'),
+          loading ? h('p', null, 'Chajman done yo...') : h('div', null,
+            h('div', { style: { display: 'flex', gap: '20px', marginBottom: '30px' } },
+              h('div', { style: { flex: 1, background: '#f4f4f4', padding: '20px', borderRadius: '10px', textAlign: 'center' } },
+                h('h2', { style: { margin: 0 } }, stats.sellers),
+                h('p', { style: { margin: 0, fontSize: '12px', color: '#666' } }, 'Machann Enskri')
+              ),
+              h('div', { style: { flex: 1, background: '#f4f4f4', padding: '20px', borderRadius: '10px', textAlign: 'center' } },
+                h('h2', { style: { margin: 0 } }, stats.orders),
+                h('p', { style: { margin: 0, fontSize: '12px', color: '#666' } }, 'Kòmand Total')
+              )
+            ),
+            h('h3', null, '📦 Dènye Aktivite / Feedback'),
+            h('ul', { style: { listStyle: 'none', padding: 0 } },
+              stats.feedback.map(f => h('li', { style: { padding: '15px', borderBottom: '1px solid #eee' } },
+                h('strong', null, f.customer_name),
+                h('span', null, ` te achte: ${f.product_title} (${f.total_price} HTG)`),
+                h('div', { style: { fontSize: '11px', color: '#aaa' } }, new Date(f.created_at).toLocaleString())
+              ))
+            ),
+            h('p', { style: { marginTop: '20px', fontStyle: 'italic', fontSize: '12px', color: '#888' } },
+              'Remak: Done sa yo soti dirèkteman nan Supabase an tan reyèl.'
+            )
+          )
+        );
       }
-    </script>
-  </body>
+    });
+
+    // Anrejistre Preview a pou Koleksyon "marketplace_admin"
+    CMS.registerPreviewTemplate("marketplace_admin", MarketplaceInsights);
+  </script>
+</body>
 </html>

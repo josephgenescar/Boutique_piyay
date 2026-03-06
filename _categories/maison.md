@@ -1,9 +1,7 @@
 ---
-title: Maison
-description: Tout sa ou bezwen pou rann kay ou pi bèl ak pi konfòtab.
-image: /assets/images/uploads/maison-ac.webp
+title: "maison"
+display_name: "Maison & Bureau"
+image: "/assets/images/home.png"
 layout: category
-sub_categories:
-  - Cuisine
-  - Decoration
 ---
+Tout sa ou bezwen pou lakay ou ak biwo w: mèb, dekorasyon ak founiti.

@@ -1,154 +1,179 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
 
-/* ===================== CONFIGURATION GLOBALE ===================== */
+/* ===================== CONFIGURATION PREMIUM ===================== */
 :root {
   --primary: #ff4747;
-  --primary-hover: #e03636;
-  --secondary: #222;
-  --bg-light: #f8f9fa;
+  --primary-dark: #e03636;
+  --secondary: #0f172a; /* Nwa fonse modèn */
+  --accent: #ff8c42; /* Orange pou ti detay */
+  --bg-main: #f8fafc; /* Gri trè lejè pwofesyonèl */
   --white: #ffffff;
-  --text-main: #333;
-  --text-muted: #666;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --glass: rgba(255, 255, 255, 0.8);
+  --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --radius-md: 16px;
+  --radius-lg: 24px;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/* !!! ENPÒTAN POU RESPONSIVITE !!! */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-light);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-main);
+  background-image: radial-gradient(at 0% 0%, rgba(255, 71, 71, 0.03) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, rgba(15, 23, 42, 0.02) 0px, transparent 50%);
   color: var(--text-main);
-  line-height: 1.6;
+  line-height: 1.5;
   overflow-x: hidden;
-  width: 100%;
 }
 
 .container {
-  width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 20px;
 }
 
-/* ===================== GRIDS RESPONSIVE ===================== */
-.product-grid {
+/* ===================== TITRES & TEXTES ===================== */
+h1, h2, h3, .sora {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ===================== PRODUCT GRID & CARDS ===================== */
+.product-grid-modern {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
   padding: 20px 0;
-  width: 100%;
 }
 
-@media (min-width: 600px) {
-  .product-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 992px) {
-  .product-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
-  }
-}
-
-.product-card {
+.product-card-modern {
   background: var(--white);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  padding: 12px;
   box-shadow: var(--shadow-sm);
-  transition: 0.3s;
-  border: 1px solid #eee;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 100%; /* Fose l respekte grid la */
 }
 
-.card-img {
+.product-card-modern:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.card-img-wrap {
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1;
+  border-radius: 12px;
   overflow: hidden;
-  background: #f9f9f9;
+  background: #f1f5f9;
+  margin-bottom: 15px;
 }
 
-.card-img img {
+.card-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.6s ease;
 }
 
-.card-info {
-  padding: 12px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.product-card-modern:hover .card-img-wrap img {
+  transform: scale(1.1);
 }
 
 .card-info h3 {
-  font-size: 14px;
+  font-size: 15px;
+  color: var(--secondary);
   margin-bottom: 8px;
-  line-height: 1.3;
-  color: var(--text-main);
-  height: 2.6em;
+  height: 45px;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.price {
-  font-size: 16px;
+.price-modern {
+  font-size: 18px;
   font-weight: 800;
   color: var(--primary);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-/* ===================== BOUTONS ===================== */
-.add-to-cart {
+/* ===================== BOUTONS PREMIUM ===================== */
+.btn-add-modern {
   width: 100%;
-  background: var(--primary);
+  padding: 12px;
+  background: var(--secondary);
   color: white;
   border: none;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.add-to-cart:hover {
-  background: var(--primary-hover);
+.btn-add-modern:hover {
+  background: var(--primary);
+  box-shadow: 0 8px 15px rgba(255, 71, 71, 0.3);
 }
 
-/* ===================== BANNER RESPONSIVE ===================== */
+/* ===================== SECTIONS & HEADERS ===================== */
+.section-header-modern {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.section-header-modern h2 {
+  font-size: 28px;
+  color: var(--secondary);
+  position: relative;
+  display: inline-block;
+}
+
+.section-header-modern h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* ===================== MARKETPLACE BG ===================== */
+.marketplace-bg {
+  background: #fff;
+  padding: 60px 0;
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 100px rgba(15, 23, 42, 0.03);
+}
+
+/* ===================== RESPONSIVE ===================== */
 @media (max-width: 768px) {
-  .main-hero-custom {
-    height: 300px !important;
-    width: 96% !important;
-    margin: 15px auto !important;
+  .product-grid-modern {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
-  .hero-text-box h1 {
-    font-size: 1.6rem !important;
-  }
-
-  .hero-wrapper-container {
-    padding: 10px 2% 0 !important;
+  .section-header-modern h2 {
+    font-size: 22px;
   }
 }

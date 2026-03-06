@@ -3,72 +3,174 @@ layout: default
 title: Kreye yon Kont - Boutique Piyay
 ---
 
-<div class="container" style="max-width: 500px; padding: 60px 20px;">
-    <div class="auth-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
-        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px;">👋 Byenvini!</h1>
-        <p style="color: #666; margin-bottom: 30px;">Kreye kont ou pou w kòmanse vann sou Boutique Piyay.</p>
+<style>
+/* DIZAY MODÈN POU PAJ AUTH */
+.auth-page-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top right, rgba(255, 71, 71, 0.05), transparent),
+                radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.05), transparent);
+}
+
+.auth-card-premium {
+    background: white;
+    width: 100%;
+    max-width: 450px;
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.auth-card-premium:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+}
+
+.auth-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.auth-header p {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* STYLE POU INPUT YO */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 8px;
+    margin-left: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 20px;
+    border: 2px solid #f1f5f9;
+    border-radius: 15px;
+    background: #f8fafc;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    color: #1e293b;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #ff4747;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(255, 71, 71, 0.1);
+    transform: scale(1.02);
+}
+
+/* BOUTON PWISAN */
+.btn-submit-premium {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+}
+
+.btn-submit-premium:hover {
+    background: #ff4747;
+    box-shadow: 0 10px 25px rgba(255, 71, 71, 0.4);
+    transform: translateY(-2px);
+}
+
+.ref-box {
+    background: #fff5f5;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px dashed #ff4747;
+    margin-bottom: 25px;
+}
+</style>
+
+<div class="auth-page-wrapper">
+    <div class="auth-card-premium">
+        <div class="auth-header" style="text-align: center;">
+            <span style="font-size: 40px;">👋</span>
+            <h1>Byenvini!</h1>
+            <p>Kreye kont ou pou w kòmanse vann sou Boutique Piyay.</p>
+        </div>
 
         <form id="signupForm">
-            <div style="margin-bottom: 20px; text-align: left;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Non Konplè</label>
-                <input type="text" id="fullName" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
-            </div>
-            <div style="margin-bottom: 20px; text-align: left;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
-                <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
-            </div>
-            <div style="margin-bottom: 25px; text-align: left;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Modpas (min 6 karaktè)</label>
-                <input type="password" id="password" required minlength="6" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+            <div class="input-group">
+                <label>Non Konplè</label>
+                <input type="text" id="fullName" placeholder="Eg: Jean Paul" required>
             </div>
 
-            <button type="submit" id="signupBtn" style="width: 100%; padding: 16px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
-                Kreye Kont Mwen
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Eg: jean@gmail.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>Modpas</label>
+                <input type="password" id="password" placeholder="••••••••" required minlength="6">
+            </div>
+
+            <div class="ref-box">
+                <label style="display: block; font-size: 11px; font-weight: 800; color: #ff4747; margin-bottom: 5px; text-transform: uppercase;">🎁 Kòd Referans (Opsyonèl)</label>
+                <input type="text" id="refBy" placeholder="Eg: PIYAY-XXXX" style="width: 100%; padding: 10px; border: 1px solid #ffcbcb; border-radius: 10px; font-family: monospace; background: white;">
+            </div>
+
+            <button type="submit" id="signupBtn" class="btn-submit-premium">
+                KREYE KONT MWE
             </button>
         </form>
 
-        <p style="margin-top: 25px; font-size: 14px; color: #666;">
-            Ou gen kont deja? <a href="/login.html" style="color: #ff4747; font-weight: 700; text-decoration: none;">Konekte isit la</a>
+        <p style="margin-top: 25px; font-size: 14px; color: #64748b; text-align: center;">
+            Ou gen kont deja? <a href="/login.html" style="color: #ff4747; font-weight: 800; text-decoration: none;">Konekte isit la</a>
         </p>
-        <div id="msg" style="margin-top: 20px; font-weight: 600; display: none;"></div>
+        <div id="msg" style="margin-top: 20px; font-weight: 700; text-align: center; display: none;"></div>
     </div>
 </div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+    const supS = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
     document.getElementById('signupForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('signupBtn');
         const msg = document.getElementById('msg');
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const fullName = document.getElementById('fullName').value;
+        btn.disabled = true; btn.innerText = "⏳ Preparasyon...";
 
-        btn.disabled = true;
-        btn.innerText = "⏳ Preparasyon...";
-
-        const { data, error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-                data: { full_name: fullName }
-            }
+        const { error } = await supS.auth.signUp({
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            options: { data: { full_name: document.getElementById('fullName').value, referred_by_code: document.getElementById('refBy').value.trim() } }
         });
 
         if (error) {
-            msg.innerText = "❌ Erè: " + error.message;
-            msg.style.color = "red";
-            msg.style.display = "block";
-            btn.disabled = false;
-            btn.innerText = "Kreye Kont Mwen";
+            msg.innerText = "❌ " + error.message; msg.style.color = "red"; msg.style.display = "block";
+            btn.disabled = false; btn.innerText = "KREYE KONT MWE";
         } else {
-            msg.innerText = "✅ Siksè! Tcheke imèl ou pou konfime kont lan.";
-            msg.style.color = "green";
-            msg.style.display = "block";
+            msg.innerText = "✅ Siksè! Tcheke imèl ou."; msg.style.color = "green"; msg.style.display = "block";
             setTimeout(() => { window.location.href = "/login.html"; }, 3000);
         }
     };

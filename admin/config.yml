@@ -8,56 +8,46 @@ public_folder: "/assets/images/uploads"
 locale: 'fr'
 
 collections:
-  # 1. PWODWI YO (Akseswa chanm yo)
+  # 1. MARKETPLACE INSIGHTS (Done ki soti nan Supabase)
+  - name: "marketplace_admin"
+    label: "🚀 Marketplace Insights (Live)"
+    files:
+      - label: "Statistik & Feedback"
+        name: "insights"
+        file: "_data/marketplace_insights.yml" # Fichye sa a ap sèvi kòm "placeholder"
+        fields:
+          - {label: "Nòt Admin", name: "admin_notes", widget: "text", default: "Paj sa a pèmèt ou wè sa k ap pase nan Supabase an tan reyèl."}
+
+  # 2. PWODWI YO (Akseswa chanm yo)
   - name: "products"
     label: "📦 Pwodwi (Akseswa)"
     folder: "_products"
     create: true
-    slug: "{{slug}}"
     fields:
       - {label: "Non Pwodwi a", name: "title", widget: "string"}
       - {label: "Pri (HTG)", name: "price", widget: "number"}
-      - {label: "Ansyen Pri (opsyonèl)", name: "old_price", widget: "number", required: false}
       - {label: "Kategori", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["display_name"]}
-      - {label: "Foto Prensipal (Pòt la)", name: "image", widget: "image"}
-      - label: "Lòt Foto (Galeri chanm nan)"
-        name: "images"
-        widget: "list"
-        required: false
-        fields:
-          - {label: "Foto", name: "img", widget: "image"}
-      - {label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false, required: false}
-      - {label: "Gwosè/Size (ex: S, M, L)", name: "sizes", widget: "list", required: false, fields: [{label: "Size", name: "size", widget: "string"}]}
-      - {label: "Koulè/Kalite (ex: Wouj, Po)", name: "variants", widget: "list", required: false, fields: [{label: "Kalite", name: "variant", widget: "string"}]}
-      - {label: "Deskripsyon Detaye", name: "body", widget: "markdown"}
+      - {label: "Foto Prensipal", name: "image", widget: "image"}
+      - {label: "Vente Flash ?", name: "flash_sale", widget: "boolean", default: false}
+      - {label: "Deskripsyon", name: "body", widget: "markdown"}
 
-  # 2. KATEGORI YO (Chanm yo)
+  # 3. KATEGORI YO
   - name: "categories"
     label: "🗂 Kategori (Chanm)"
     folder: "_categories"
     create: true
     fields:
-      - {label: "ID Kategori (slug, ex: rad)", name: "title", widget: "string"}
-      - {label: "Non k ap parèt (ex: Bèl Rad)", name: "display_name", widget: "string"}
-      - {label: "Foto Bulle (Pòt wonn)", name: "image", widget: "image"}
-      - {label: "Deskripsyon Chanm nan", name: "description", widget: "text", required: false}
-      - {label: "Layout", name: "layout", widget: "hidden", default: "category"}
+      - {label: "ID Kategori", name: "title", widget: "string"}
+      - {label: "Non k ap parèt", name: "display_name", widget: "string"}
+      - {label: "Foto", name: "image", widget: "image"}
 
-  # 3. KONTWÒL KAY LA (Paj Akèy & Footer)
+  # 4. SETTINGS
   - name: "settings"
-    label: "⚙️ Kontwòl Kay la (Settings)"
+    label: "⚙️ Kontwòl Kay la"
     files:
       - label: "Enfòmasyon & Rezo Sosyal"
         name: "general"
         file: "_data/settings.yml"
         fields:
-          - {label: "Non Boutik la", name: "site_name", widget: "string"}
           - {label: "Email Kontak", name: "email", widget: "string"}
-          - label: "Rezo Sosyal"
-            name: "social"
-            widget: "object"
-            fields:
-              - {label: "WhatsApp", name: "whatsapp", widget: "string"}
-              - {label: "Facebook", name: "facebook", widget: "string", required: false}
-              - {label: "Instagram", name: "instagram", widget: "string", required: false}
-              - {label: "TikTok", name: "tiktok", widget: "string", required: false}
+          - {label: "WhatsApp Admin", name: "whatsapp", widget: "string"}
