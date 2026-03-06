@@ -5,11 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Boutique Piyay - Admin CMS</title>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <!-- Supabase JS -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    /* Style pou Dashboard la parèt byen nan CMS la */
+    .admin-db { font-family: 'Inter', sans-serif; color: #1e293b; padding: 20px; }
+    .db-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid #ff4747; text-align: center; }
+    .stat-card h2 { margin: 0; font-size: 32px; color: #0f172a; }
+    .stat-card p { margin: 5px 0 0; font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; }
+    .db-section { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .db-section h3 { margin-top: 0; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .table-list { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .table-list th { text-align: left; padding: 10px; background: #f8fafc; color: #64748b; }
+    .table-list td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
+    .badge { padding: 4px 8px; border-radius: 50px; font-size: 10px; font-weight: 800; }
+    .badge-active { background: #dcfce7; color: #15803d; }
+    .badge-pending { background: #fef9c3; color: #854d0e; }
+  </style>
 </head>
 <body>
-  <!-- Netlify CMS App -->
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
 
   <script>
@@ -18,62 +32,86 @@
     const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
     const supabaseAdmin = supabase.createClient(SUP_URL, SUP_KEY);
 
-    // 1. KREYASYON DASHBOARD "INSIGHTS" POU ADMIN
     const MarketplaceInsights = createClass({
       getInitialState: function() {
-        return { stats: { sellers: 0, orders: 0, feedback: [] }, loading: true };
+        return {
+          sellers: [],
+          products: [],
+          orders: [],
+          loading: true
+        };
       },
       componentDidMount: async function() {
+        this.fetchData();
+      },
+      fetchData: async function() {
         try {
-          // Rale Feedback ak Statistik
-          const { count: sellerCount } = await supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true });
-          const { count: orderCount } = await supabaseAdmin.from('orders').select('*', { count: 'exact', head: true });
-
-          // Chèche Feedback (mwen sipoze ou gen yon tab 'feedback' oswa nou ka wè mesaj yo)
-          const { data: feedbackData } = await supabaseAdmin.from('orders').select('*').order('created_at', { ascending: false }).limit(5);
+          const { data: profiles } = await supabaseAdmin.from('profiles').select('*').order('created_at', { ascending: false });
+          const { data: prods } = await supabaseAdmin.from('user_products').select('*').order('created_at', { ascending: false }).limit(10);
+          const { data: ords } = await supabaseAdmin.from('orders').select('*').order('created_at', { ascending: false }).limit(10);
 
           this.setState({
-            stats: {
-              sellers: sellerCount || 0,
-              orders: orderCount || 0,
-              feedback: feedbackData || []
-            },
+            sellers: profiles || [],
+            products: prods || [],
+            orders: ords || [],
             loading: false
           });
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Erè chajman:", e); }
       },
       render: function() {
-        const { stats, loading } = this.state;
-        return h('div', { style: { padding: '20px', fontFamily: 'sans-serif' } },
-          h('h1', { style: { color: '#ff4747' } }, '🚀 Marketplace Live Insights'),
-          loading ? h('p', null, 'Chajman done yo...') : h('div', null,
-            h('div', { style: { display: 'flex', gap: '20px', marginBottom: '30px' } },
-              h('div', { style: { flex: 1, background: '#f4f4f4', padding: '20px', borderRadius: '10px', textAlign: 'center' } },
-                h('h2', { style: { margin: 0 } }, stats.sellers),
-                h('p', { style: { margin: 0, fontSize: '12px', color: '#666' } }, 'Machann Enskri')
-              ),
-              h('div', { style: { flex: 1, background: '#f4f4f4', padding: '20px', borderRadius: '10px', textAlign: 'center' } },
-                h('h2', { style: { margin: 0 } }, stats.orders),
-                h('p', { style: { margin: 0, fontSize: '12px', color: '#666' } }, 'Kòmand Total')
-              )
-            ),
-            h('h3', null, '📦 Dènye Aktivite / Feedback'),
-            h('ul', { style: { listStyle: 'none', padding: 0 } },
-              stats.feedback.map(f => h('li', { style: { padding: '15px', borderBottom: '1px solid #eee' } },
-                h('strong', null, f.customer_name),
-                h('span', null, ` te achte: ${f.product_title} (${f.total_price} HTG)`),
-                h('div', { style: { fontSize: '11px', color: '#aaa' } }, new Date(f.created_at).toLocaleString())
+        const { sellers, products, orders, loading } = this.state;
+
+        if (loading) return h('div', { className: 'admin-db' }, '⏳ Nou ap rale tout enfòmasyon nan Supabase...');
+
+        return h('div', { className: 'admin-db' },
+          h('h1', { style: { marginBottom: '30px', fontWeight: '800' } }, '📊 Marketplace Sant Kontwòl'),
+
+          // 1. STATS CARDS
+          h('div', { className: 'db-grid' },
+            h('div', { className: 'stat-card' }, h('h2', null, sellers.length), h('p', null, 'Machann Total')),
+            h('div', { className: 'stat-card', style: {borderColor: '#25d366'} }, h('h2', null, sellers.filter(s => s.is_active_seller).length), h('p', null, 'Machann Aktif')),
+            h('div', { className: 'stat-card', style: {borderColor: '#3b82f6'} }, h('h2', null, products.length), h('p', null, 'Pwodwi Pibliye'))
+          ),
+
+          // 2. LIS MACHANN YO
+          h('div', { className: 'db-section' },
+            h('h3', null, '👥 Dènye Machann Enskri'),
+            h('table', { className: 'table-list' },
+              h('thead', null, h('tr', null, h('th', null, 'Non'), h('th', null, 'Status'), h('th', null, 'Kòd Ref'), h('th', null, 'Envite Pa'))),
+              h('tbody', null, sellers.slice(0, 5).map(s =>
+                h('tr', null,
+                  h('td', null, s.full_name || s.email),
+                  h('td', null, h('span', { className: `badge ${s.is_active_seller ? 'badge-active' : 'badge-pending'}` }, s.is_active_seller ? 'AKTIF' : 'ATANN')),
+                  h('td', null, s.referral_code || '-'),
+                  h('td', null, s.referred_by_code || '-')
+                )
               ))
-            ),
-            h('p', { style: { marginTop: '20px', fontStyle: 'italic', fontSize: '12px', color: '#888' } },
-              'Remak: Done sa yo soti dirèkteman nan Supabase an tan reyèl.'
             )
-          )
+          ),
+
+          // 3. DÈNYE PWODWI YO
+          h('div', { className: 'db-section' },
+            h('h3', null, '📦 Dènye Pwodwi ki Mete sou Sit la'),
+            h('table', { className: 'table-list' },
+              h('thead', null, h('tr', null, h('th', null, 'Pwodwi'), h('th', null, 'Pri'), h('th', null, 'Kategori'))),
+              h('tbody', null, products.map(p =>
+                h('tr', null,
+                  h('td', null, p.title),
+                  h('td', { style: { fontWeight: '700', color: '#ff4747' } }, `${p.price} HTG`),
+                  h('td', null, p.category)
+                )
+              ))
+            )
+          ),
+
+          h('button', {
+            onClick: () => { this.setState({loading: true}); this.fetchData(); },
+            style: { padding: '10px 20px', background: '#0f172a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }
+          }, '🔄 Rafrechi Done yo')
         );
       }
     });
 
-    // Anrejistre Preview a pou Koleksyon "marketplace_admin"
     CMS.registerPreviewTemplate("marketplace_admin", MarketplaceInsights);
   </script>
 </body>
