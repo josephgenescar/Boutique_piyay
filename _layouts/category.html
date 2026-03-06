@@ -6,21 +6,23 @@ layout: default
 {% assign category_products = site.products | where: "category", category_id %}
 {% assign count = category_products | size %}
 
-<div class="category-header" style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 60px 20px; text-align: center; color: white; border-radius: 0 0 30px 30px; margin-bottom: 40px;">
-    <div class="container">
-        <h1 style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 900;">{{ page.display_name | default: page.title }}</h1>
-        <p style="opacity: 0.9; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">{{ page.description }}</p>
-
-        <div style="margin-top: 20px; background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: bold;">
-            {{ count }} pwodwi disponib
+<!-- NOUVO HEADER AVÈK FOTO KATEGORI A -->
+<div class="category-hero" style="background-image: url('{{ page.image }}');">
+    <div class="hero-overlay">
+        <div class="container">
+            <h1 class="hero-title">{{ page.display_name | default: page.title }}</h1>
+            <p class="hero-desc">{{ page.description }}</p>
+            <div class="hero-badge">
+                <span id="product-count-label">{{ count }} pwodwi disponib</span>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="container">
+<div class="container" style="margin-top: 40px;">
     {% if count > 0 %}
     <!-- FILTRES -->
-    <div class="filter-bar" style="display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; justify-content: center;">
+    <div class="filter-bar">
         <button class="filter-btn active" onclick="filterCategory('tout', this)">Tout Pwodwi</button>
         <button class="filter-btn" onclick="filterCategory('prix-bas', this)">Pri Ba → Wo</button>
         <button class="filter-btn" onclick="filterCategory('prix-haut', this)">Pri Wo → Ba</button>
@@ -44,17 +46,54 @@ layout: default
     <div style="text-align: center; padding: 60px 20px; color: #888;">
         <span style="font-size: 4rem; display: block; margin-bottom: 20px;">😔</span>
         <h3 style="font-weight: 800;">Poko gen pwodwi nan kategori sa a</h3>
-        <p>Ajoute pwodwi nan kategori <strong>{{ category_id }}</strong> nan Admin CMS la pou yo parèt isit la.</p>
-        <a href="/" class="btn-primary" style="display: inline-block; margin-top: 25px; background: #ff4747; color: white; padding: 12px 30px; border-radius: 10px; text-decoration: none; font-weight: bold;">Retounen nan Akèy</a>
+        <p>Ajoute pwodwi nan kategori <strong>{{ category_id }}</strong> nan Admin CMS la oswa sou Marketplace la.</p>
+        <a href="/" class="btn-primary-back">Retounen nan Akèy</a>
     </div>
     {% endif %}
 </div>
 
 <style>
-.filter-btn {
-    background: white; border: 1px solid #eee; padding: 10px 20px; border-radius: 10px; cursor: pointer; white-space: nowrap; font-weight: 700; font-size: 14px; transition: 0.3s;
+/* STYLE POU HERO KATEGORI */
+.category-hero {
+    width: 100%;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
-.filter-btn.active, .filter-btn:hover { background: #ff4747; color: white; border-color: #ff4747; box-shadow: 0 4px 12px rgba(255, 71, 71, 0.2); }
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 0 20px;
+}
+
+.hero-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 10px; text-shadow: 2px 2px 15px rgba(0,0,0,0.5); }
+.hero-desc { font-size: 1.1rem; opacity: 0.9; max-width: 700px; margin: 0 auto 20px; }
+.hero-badge { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 8px 25px; border-radius: 50px; display: inline-block; font-weight: 800; border: 1px solid rgba(255,255,255,0.3); }
+
+/* FILTRES */
+.filter-bar { display: flex; gap: 12px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; justify-content: center; }
+.filter-btn { background: white; border: 1px solid #eee; padding: 12px 24px; border-radius: 15px; cursor: pointer; white-space: nowrap; font-weight: 700; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+.filter-btn.active, .filter-btn:hover { background: #ff4747; color: white; border-color: #ff4747; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 71, 71, 0.3); }
+
+.btn-primary-back { display: inline-block; margin-top: 25px; background: #0f172a; color: white; padding: 15px 35px; border-radius: 15px; text-decoration: none; font-weight: 800; transition: 0.3s; }
+.btn-primary-back:hover { background: #ff4747; transform: scale(1.05); }
+
+@media (max-width: 768px) {
+    .category-hero { height: 220px; border-radius: 0 0 30px 30px; }
+    .hero-title { font-size: 2rem; }
+    .filter-bar { justify-content: flex-start; padding-left: 15px; }
+}
 </style>
 
 <script>
@@ -63,16 +102,10 @@ function filterCategory(type, btn) {
     if (!grid) return;
     const cards = Array.from(grid.getElementsByClassName('product-card'));
     const btns = document.querySelectorAll('.filter-btn');
-
     btns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
-    if (type === 'prix-bas') {
-        cards.sort((a, b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
-    } else if (type === 'prix-haut') {
-        cards.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
-    }
-
+    if (type === 'prix-bas') { cards.sort((a, b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price)); }
+    else if (type === 'prix-haut') { cards.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price)); }
     grid.innerHTML = '';
     cards.forEach(c => grid.appendChild(c));
 }

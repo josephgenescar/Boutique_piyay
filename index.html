@@ -19,7 +19,6 @@ title: Akèy - Boutique Piyay
             <span class="flash-icon-box">⚡</span>
             <h2>Vante Flash</h2>
         </div>
-        <!-- TIMER FIX (HORIZONTAL) -->
         <div id="countdown" class="timer-modern">
             <div class="t-segment"><span id="hours">02</span><small>h</small></div>
             <div class="t-divider">:</div>
@@ -29,7 +28,6 @@ title: Akèy - Boutique Piyay
         </div>
     </div>
 
-    <!-- FLASH SLIDER FIX (HORIZONTAL) -->
     <div class="flash-slider-container">
         <div class="flash-slider-inner">
             {% for product in site.products %}
@@ -51,26 +49,7 @@ title: Akèy - Boutique Piyay
     </div>
 </section>
 
-<!-- 3. MARKETPLACE SECTION -->
-<section id="user-market" class="container section-margin">
-  <div class="marketplace-card-container">
-    <div class="marketplace-header-content">
-        <div class="header-main-text">
-            <div class="badge-new">NOUVO</div>
-            <h2 class="sora">Marketplace Machann yo 🚀</h2>
-            <p>Dekouvri pwodwi inik machann nou yo ap ofri w.</p>
-        </div>
-        <div class="header-action">
-            <a href="/vendre.html" class="btn-sell-now">Vann yon pwodwi →</a>
-        </div>
-    </div>
-    <div id="supabase-products-grid" class="product-grid-modern">
-        <div class="loading-msg">⏳ Chaje pwodwi machann yo...</div>
-    </div>
-  </div>
-</section>
-
-<!-- 4. CATÉGORIES (HORIZONTAL BUBBLES) -->
+<!-- 3. CATÉGORIES (MOUNT ANLÈ MARKETPLACE) -->
 <section id="categories-section" class="container section-margin">
   <div class="section-header-modern">
     <h2 class="sora">Chwazi pa Kategori</h2>
@@ -87,26 +66,22 @@ title: Akèy - Boutique Piyay
   </div>
 </section>
 
-<!-- 5. REKÒMANDE -->
-<section id="recommandations" class="container section-margin">
-  <div class="section-header-modern">
-    <h2 class="sora">✨ Rekòmande pou ou</h2>
-  </div>
-  <div class="product-grid-modern">
-    {% for product in site.products limit:12 %}
-      {% unless product.flash_sale %}
-      <div class="product-card-modern">
-          <div class="card-img-wrap">
-              <a href="{{ product.url }}"><img src="{{ product.image }}" alt="{{ product.title }}"></a>
-          </div>
-          <div class="card-info">
-              <h3>{{ product.title }}</h3>
-              <div class="price-modern">{{ product.price }} HTG</div>
-              <button class="btn-add-modern" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute</button>
-          </div>
-      </div>
-      {% endunless %}
-    {% endfor %}
+<!-- 4. MARKETPLACE SECTION -->
+<section id="user-market" class="container section-margin">
+  <div class="marketplace-card-container">
+    <div class="marketplace-header-content">
+        <div class="header-main-text">
+            <div class="badge-new">NOUVO</div>
+            <h2 class="sora">Marketplace Machann yo 🚀</h2>
+            <p>Dekouvri pwodwi inik machann nou yo ap ofri w.</p>
+        </div>
+        <div class="header-action">
+            <a href="/vendre.html" class="btn-sell-now">Vann yon pwodwi →</a>
+        </div>
+    </div>
+    <div id="supabase-products-grid" class="product-grid-modern">
+        <div class="loading-msg">⏳ Chaje pwodwi machann yo...</div>
+    </div>
   </div>
 </section>
 
@@ -127,7 +102,7 @@ title: Akèy - Boutique Piyay
 .t-segment small { font-size: 9px; text-transform: uppercase; opacity: 0.7; margin-top: 2px; }
 .t-divider { font-weight: 900; font-size: 20px; color: #222; }
 
-/* FLASH SLIDER (HORIZONTAL) */
+/* FLASH SLIDER */
 .flash-slider-container { width: 100%; overflow: hidden; }
 .flash-slider-inner { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
 .flash-slider-inner::-webkit-scrollbar { display: none; }
@@ -146,7 +121,7 @@ title: Akèy - Boutique Piyay
 .btn-sell-now { background: var(--dark); color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.3s; }
 .btn-sell-now:hover { background: var(--primary); transform: translateY(-3px); }
 
-/* BUBBLES (HORIZONTAL) */
+/* BUBBLES */
 .category-bubbles-modern { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
 .cat-bubble-modern { text-align: center; min-width: 100px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 13px; }
 .bubble-img-modern { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); margin: 0 auto 10px; overflow: hidden; padding: 3px; background: white; }
@@ -170,13 +145,13 @@ title: Akèy - Boutique Piyay
         const grid = document.getElementById('supabase-products-grid');
         if (!grid || !supabaseHome) return;
         try {
-            const { data: products, error } = await supabaseHome.from('user_products').select('*').order('created_at', { ascending: false }).limit(8);
+            const { data: products, error } = await supabaseHome.from('user_products').select('*').order('created_at', { ascending: false }).limit(20);
             if (!error && products) {
                 grid.innerHTML = products.map(p => `
                     <div class="product-card-modern">
                         <div class="card-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a></div>
                         <div class="card-info">
-                            <h3>${p.title}</h3>
+                            <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
                             <div class="price-modern">${p.price} HTG</div>
                             <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
                         </div>
