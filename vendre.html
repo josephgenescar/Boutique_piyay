@@ -5,13 +5,11 @@ title: Vann yon Pwodwi - Boutique Piyay
 
 <div class="container" style="max-width: 800px; padding: 40px 20px;">
 
-    <!-- 1. LOADING STATE -->
     <div id="loading" style="text-align: center; padding: 100px 0;">
         <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
         <p>Verifikasyon kont ou...</p>
     </div>
 
-    <!-- 2. FÒM VAN (Sèlman pou moun ki aktif) -->
     <div id="vendreCard" class="seller-card" style="display: none; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; color: #0D1B2A;">🚀 Mete yon pwodwi an liy</h1>
 
@@ -29,19 +27,22 @@ title: Vann yon Pwodwi - Boutique Piyay
                 <div class="form-group">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Chwazi Kategori *</label>
                     <select id="prodCat" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
-                        <option value="">-- Chwazi yon Kategori --</option>
+                        <option value="">-- Chwazi --</option>
                         <option value="electronique">Électronique</option>
                         <option value="habillement">Mode & Habillement</option>
                         <option value="maison">Maison & Bureau</option>
                         <option value="beaute">Beauté & Cosmétiques</option>
                         <option value="epicerie">Épicerie & Supermarché</option>
-                        <option value="bebe">Bébé & Enfants</option>
-                        <option value="sports">Sports & Loisirs</option>
-                        <option value="bricolage">Bricolage & Jardin</option>
-                        <option value="bijoux">Bijoux & Accessoires</option>
-                        <option value="auto">Auto & Moto</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- OPSYON VANTE FLASH -->
+            <div id="flashOption" style="background: #fff5f5; padding: 20px; border-radius: 15px; border: 1px dashed #ff4747; margin-bottom: 25px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 800; color: #ff4747;">
+                    <input type="checkbox" id="isFlash" style="width: 20px; height: 20px;"> ⚡ Mete nan Vante Flash (7 jou)
+                </label>
+                <p id="flashCountMsg" style="font-size: 11px; color: #666; margin-top: 5px;">Ou ka gen sèlman 3 pwodwi nan vante flash an menm tan.</p>
             </div>
 
             <div class="form-group" style="margin-bottom: 20px;">
@@ -59,14 +60,12 @@ title: Vann yon Pwodwi - Boutique Piyay
         <div id="statusMsg" style="margin-top: 20px; text-align: center; font-weight: 600; display: none;"></div>
     </div>
 
-    <!-- 3. MESSAGE PAYMENT REQUIRED -->
-    <div id="paymentRequired" style="display: none; text-align: center; padding: 60px 20px; background: white; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    <div id="paymentRequired" style="display: none; text-align: center; padding: 60px 20px;">
         <div style="font-size: 80px; margin-bottom: 20px;">🛡️</div>
-        <h1 style="font-weight: 800; color: #0f172a;">Aktivasyon Nesesè</h1>
-        <p style="color: #64748b; margin-bottom: 30px; font-size: 16px;">Kont machann ou an poko aktif. Pwofite <strong>3 mwa gratis</strong> yo pou w kòmanse vann jodi a!</p>
-        <a href="/peye.html" style="display: inline-block; padding: 18px 40px; background: #ff4747; color: white; border-radius: 15px; text-decoration: none; font-weight: 800; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">🚀 Aktive Kont Mwen (Gratis)</a>
+        <h1 style="font-weight: 800;">Aktivasyon Nesesè</h1>
+        <p>Kont machann ou an poko aktif. Aktive l pou w kòmanse vann.</p>
+        <a href="/peye.html" style="display: inline-block; padding: 15px 30px; background: #ff4747; color: white; border-radius: 10px; text-decoration: none; font-weight: 800; margin-top: 20px;">🚀 Aktive Kounye a</a>
     </div>
-
 </div>
 
 <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
@@ -75,71 +74,64 @@ title: Vann yon Pwodwi - Boutique Piyay
 <script>
     const ik = new ImageKit({ publicKey: "public_uNu7y8VCvauuJEXPsd04krw5FEg=", urlEndpoint: "https://ik.imagekit.io/9zboshcie" });
     const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    let flashCount = 0;
 
     async function checkAuthAndStatus() {
         const { data: { user } } = await supV.auth.getUser();
+        if (!user) { window.location.href = "/login.html"; return; }
 
-        // 1. Si li pa konekte, voye l Login
-        if (!user) {
-            window.location.href = "/login.html?next=vendre.html";
-            return;
-        }
-
-        // 2. Tcheke si li aktif nan Supabase
         const { data: profile } = await supV.from('profiles').select('*').eq('id', user.id).single();
-
         document.getElementById('loading').style.display = 'none';
 
-        // Nou konsidere yon machann aktif si li gen yon dat ekspirasyon nan futur
-        const now = new Date();
-        const expiry = profile.subscription_ends_at ? new Date(profile.subscription_ends_at) : null;
-        const isTrial = profile.trial_ends_at ? new Date(profile.trial_ends_at) > now : false;
-
-        if ((expiry && expiry > now) || isTrial || profile.is_active_seller) {
+        if (profile && profile.is_active_seller) {
             document.getElementById('vendreCard').style.display = 'block';
+            // Tcheke konbyen pwodwi flash li genyen deja
+            const { count } = await supV.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('is_flash_sale', true);
+            flashCount = count || 0;
+            if (flashCount >= 3) {
+                document.getElementById('isFlash').disabled = true;
+                document.getElementById('flashCountMsg').innerText = "⚠️ Ou rive nan limit 3 pwodwi vante flash ou yo.";
+                document.getElementById('flashCountMsg').style.color = "red";
+            }
         } else {
             document.getElementById('paymentRequired').style.display = 'block';
         }
     }
 
-    // Image Preview
     document.getElementById('prodImage').onchange = function() {
         const [file] = this.files;
-        if (file) {
-            document.getElementById('imgPreview').src = URL.createObjectURL(file);
-            document.getElementById('preview').style.display = 'block';
-        }
+        if (file) { document.getElementById('imgPreview').src = URL.createObjectURL(file); document.getElementById('preview').style.display = 'block'; }
     };
 
-    // Form Submit
     document.getElementById('uploadForm').onsubmit = async function(e) {
         e.preventDefault();
         const { data: { user } } = await supV.auth.getUser();
         const btn = document.getElementById('submitBtn');
         const status = document.getElementById('statusMsg');
-        const file = document.getElementById('prodImage').files[0];
+        const isFlash = document.getElementById('isFlash').checked;
+
+        if (isFlash && flashCount >= 3) return alert("Ou pa ka mete plis pase 3 pwodwi nan vante flash!");
 
         btn.disabled = true; btn.innerText = "⏳ Piblikasyon...";
-        status.style.display = 'block'; status.innerText = "Preparasyon foto...";
+        status.style.display = 'block'; status.innerText = "Preparasyon...";
 
-        ik.upload({ file: file, fileName: "p_" + Date.now(), folder: "/user_uploads/" }, async function(err, result) {
+        ik.upload({ file: document.getElementById('prodImage').files[0], fileName: "p_" + Date.now(), folder: "/user_uploads/" }, async function(err, result) {
             if(err) { showError(err.message); }
             else {
+                const expiryDate = isFlash ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null;
                 const { error } = await supV.from('user_products').insert([{
                     title: document.getElementById('prodTitle').value,
                     price: parseFloat(document.getElementById('prodPrice').value),
                     category: document.getElementById('prodCat').value,
                     image_url: result.url,
                     seller_id: user.id,
+                    is_flash_sale: isFlash,
+                    flash_expiry: expiryDate,
                     created_at: new Date()
                 }]);
 
                 if (error) showError(error.message);
-                else {
-                    status.style.color = "green";
-                    status.innerText = "🎉 Pwodwi ou a pibliye!";
-                    setTimeout(() => window.location.href = "/dashboard.html", 2000);
-                }
+                else { status.style.color = "green"; status.innerText = "🎉 Pwodwi pibliye!"; setTimeout(() => window.location.href = "/dashboard.html", 2000); }
             }
         });
     };
@@ -150,10 +142,6 @@ title: Vann yon Pwodwi - Boutique Piyay
         document.getElementById('submitBtn').disabled = false;
         document.getElementById('submitBtn').innerText = "🚀 Pibliye Pwodwi a";
     }
-
     document.addEventListener('DOMContentLoaded', checkAuthAndStatus);
 </script>
-
-<style>
-@keyframes spin { 100% { transform: rotate(360deg); } }
-</style>
+<style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>

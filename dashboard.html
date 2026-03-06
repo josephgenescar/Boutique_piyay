@@ -4,98 +4,82 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 ---
 
 <div class="container" style="padding: 40px 20px;">
-    <!-- MODAL NOTIFIKASYON (Abonman) -->
-    <div id="expiryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
-        <div style="background:white; padding:40px; border-radius:25px; max-width:500px; text-align:center;">
-            <div style="font-size:60px; margin-bottom:20px;">⚠️</div>
-            <h2 id="notifTitle" style="font-weight:800; margin-bottom:10px;">Abonman ou fini!</h2>
-            <p id="notifMsg" style="color:#666; line-height:1.6; margin-bottom:30px;"></p>
-            <a href="/peye.html" style="display:block; background:#ff4747; color:white; padding:16px; border-radius:12px; text-decoration:none; font-weight:800;">Renouvle Kounye a (5,000 HTG)</a>
-            <button onclick="document.getElementById('expiryModal').style.display='none'" style="margin-top:15px; background:none; border:none; color:#aaa; cursor:pointer;">Fèmen</button>
-        </div>
-    </div>
-
     <!-- Header Dashboard -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 20px;">
         <div>
             <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0;">🏠 Espas Kontwòl Mwen</h1>
-            <p id="userWelcome" style="color: #666; margin-top: 5px;">Byenvini nan boutik ou a.</p>
+            <p id="userWelcome" style="color: #666; margin-top: 5px;">Chaje enfòmasyon ou yo...</p>
         </div>
         <div style="display: flex; gap: 10px;">
-            <a href="/vendre.html" style="padding: 12px 25px; background: #ff4747; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.3);">
-                ➕ Vann yon Pwodwi
-            </a>
-            <button onclick="logout()" style="padding: 12px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">
-                🚪 Dekonekte
-            </button>
+            <a href="/vendre.html" style="padding: 12px 25px; background: #ff4747; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.3);">➕ Vann yon Pwodwi</a>
+            <button onclick="handleLogout()" style="padding: 12px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Dekonekte</button>
         </div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 320px; gap: 30px;">
-        <!-- KOLÒN GOCH: PWODWI AK KÒMAND -->
+        <!-- KOLÒN GOCH -->
         <div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #ff4747;">
-                    <div style="font-size: 24px; font-weight: 800;" id="prodCount">0</div>
-                    <div style="font-size: 12px; color: #666; font-weight: 600;">Pwodwi an liy</div>
+            <!-- STATS RAPID -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; border-bottom: 4px solid #ff4747; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="font-size: 28px; font-weight: 900;" id="prodCount">0</div>
+                    <div style="font-size: 12px; font-weight: 700; color: #888;">PWODWI EN LIY</div>
                 </div>
-                <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #25d366;">
-                    <div style="font-size: 24px; font-weight: 800;" id="expiryLabel">Tcheke...</div>
-                    <div style="font-size: 12px; color: #666; font-weight: 600;">Jou ki rete</div>
+                <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; border-bottom: 4px solid #25d366; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="font-size: 20px; font-weight: 900; color: #25d366;" id="expiryLabel">Vérification...</div>
+                    <div style="font-size: 12px; font-weight: 700; color: #888;">STATUT ABONMAN</div>
                 </div>
             </div>
 
-            <!-- SEKSYON REFERANS (Growth Loop) -->
-            <div style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 25px; border-radius: 20px; color: white; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.2);">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                    <span style="font-size: 40px;">🎁</span>
+            <!-- REFERANS BOX -->
+            <div style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 30px; border-radius: 25px; color: white; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.2);">
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <span style="font-size: 45px;">🎁</span>
                     <div>
-                        <h2 style="margin: 0; font-size: 18px; font-weight: 800;">Genyen 2 Mwa Gratis!</h2>
-                        <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.9;">Envite yon zanmi machann pou w ka jwenn 2 mwa anplis sou abonman w lan.</p>
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 800;">Genyen 2 Mwa Gratis!</h2>
+                        <p style="margin: 5px 0 0; font-size: 14px; opacity: 0.9;">Pataje kòd sa a ak yon zanmi machann pou nou tou de ka jwenn mwa gratis.</p>
                     </div>
                 </div>
-                <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(255,255,255,0.5);">
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(255,255,255,0.4);">
                     <div>
-                        <small style="display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 3px;">Kòd Referans ou :</small>
-                        <strong id="myRefCode" style="font-family: monospace; font-size: 18px; letter-spacing: 1px;">P-XXXXXX</strong>
+                        <small style="display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; opacity: 0.8;">Kòd Referans ou :</small>
+                        <strong id="myRefCode" style="font-family: monospace; font-size: 22px; letter-spacing: 2px;">CHAJMAN...</strong>
                     </div>
-                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer;">Pataje 🚀</button>
+                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.3s;">Pataje sou WhatsApp 🚀</button>
                 </div>
             </div>
 
-            <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 30px;">
-                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px; font-size: 18px;">📦 Kòmand ki rive yo</h2>
-                <div id="ordersList" style="display: grid; gap: 15px;"></div>
-            </div>
-
-            <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px; font-size: 18px;">🛒 Pwodwi m ap vann yo</h2>
-                <div id="myProductsGrid" class="product-grid"></div>
+            <!-- PWODWI GRID -->
+            <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">🛒 Pwodwi m ap vann yo</h2>
+                <div id="myProductsGrid" class="product-grid-modern" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
+                    <!-- JS ap chaje sa -->
+                </div>
             </div>
         </div>
 
-        <!-- KOLÒN ADWAT: PWOFIL -->
+        <!-- KOLÒN ADWAT -->
         <div>
-            <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: sticky; top: 100px;">
-                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px; font-size: 18px;">👤 Pwofil & Sosyal</h2>
+            <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: sticky; top: 100px; border: 1px solid #f1f5f9;">
+                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px;">👤 Pwofil & Sosyal</h2>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 5px;">WHATSAPP</label>
-                    <input type="tel" id="waNumber" style="width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 8px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">WhatsApp (Ex: 509...)</label>
+                    <input type="tel" id="waNumber" placeholder="5094886..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 5px;">FACEBOOK</label>
-                    <input type="url" id="fbUrl" style="width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 8px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Link Facebook</label>
+                    <input type="url" id="fbUrl" placeholder="https://facebook.com/..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 5px;">INSTAGRAM</label>
-                    <input type="url" id="igUrl" style="width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 8px;">
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Link Instagram</label>
+                    <input type="url" id="igUrl" placeholder="https://instagram.com/..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
                 </div>
 
-                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 12px; background: #222; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">Sove Chanjman</button>
-                <div id="saveStatus" style="margin-top: 10px; font-size: 12px; text-align: center; display: none;"></div>
+                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);">Sove Tout Chanjman</button>
+                <div id="saveStatus" style="margin-top: 15px; font-size: 13px; text-align: center; font-weight: 700; display: none;"></div>
             </div>
         </div>
     </div>
@@ -103,93 +87,92 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supabase = typeof libsupabase !== 'undefined' ? libsupabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13") : (typeof supabase !== 'undefined' ? supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13") : null);
+    const supD = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
     let currentUser = null;
     let myReferralCode = "";
 
     async function initDashboard() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await supD.auth.getUser();
         if (!user) { window.location.href = "/login.html"; return; }
         currentUser = user;
 
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        const { data: profile } = await supD.from('profiles').select('*').eq('id', user.id).single();
         if (profile) {
-            document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || user.email}!`;
+            document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || 'Machann'}!`;
             document.getElementById('waNumber').value = profile.whatsapp || "";
             document.getElementById('fbUrl').value = profile.facebook_url || "";
             document.getElementById('igUrl').value = profile.instagram_url || "";
 
-            // Jenerasyon oswa chajman kòd referans
+            // Jenerasyon oswa Chajman kòd referans
             myReferralCode = profile.referral_code || "P-" + user.id.substring(0,6).toUpperCase();
             document.getElementById('myRefCode').innerText = myReferralCode;
 
-            // Si li pa t gen kòd, n ap sove l kounye a
             if (!profile.referral_code) {
-                await supabase.from('profiles').update({ referral_code: myReferralCode }).eq('id', user.id);
+                await supD.from('profiles').update({ referral_code: myReferralCode }).eq('id', user.id);
             }
 
-            checkExpiration(profile);
+            // Statut Abonman
+            const expiryLabel = document.getElementById('expiryLabel');
+            if (profile.is_active_seller) {
+                expiryLabel.innerText = "AKTIF ✅";
+                expiryLabel.style.color = "#25d366";
+            } else {
+                expiryLabel.innerText = "PENDING ⏳";
+                expiryLabel.style.color = "#facc15";
+            }
         }
         loadMyProducts(user.id);
-        loadMyOrders(user.id);
     }
 
-    function shareReferral() {
-        const msg = `Salut! 👋 M ap envite w vin vann pwodwi w sou *Boutique Piyay*. Sèvi ak kòd referans mwen an *${myReferralCode}* lè w ap enskri pou nou tou de ka jwenn mwa gratis! 🚀\n\nEnskri isit la: ${window.location.origin}/signup.html`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    async function loadMyProducts(userId) {
+        const { data: products } = await supD.from('user_products').select('*').eq('seller_id', userId);
+        const grid = document.getElementById('myProductsGrid');
+        document.getElementById('prodCount').innerText = products ? products.length : 0;
+
+        if (!products || products.length === 0) {
+            grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi pibliye.</p>';
+            return;
+        }
+
+        grid.innerHTML = products.map(p => `
+            <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center;">
+                <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+                <div style="font-weight:800; font-size:13px; height:35px; overflow:hidden;">${p.title}</div>
+                <div style="color:#ff4747; font-weight:900; margin-top:5px;">${p.price} HTG</div>
+            </div>
+        `).join('');
     }
 
     async function saveProfile() {
+        const btn = document.getElementById('saveBtn');
+        const status = document.getElementById('saveStatus');
+        btn.disabled = true; btn.innerText = "⏳ Enregistre...";
+
         const data = {
             whatsapp: document.getElementById('waNumber').value.trim(),
             facebook_url: document.getElementById('fbUrl').value.trim(),
             instagram_url: document.getElementById('igUrl').value.trim()
         };
-        const { error } = await supabase.from('profiles').update(data).eq('id', currentUser.id);
-        const status = document.getElementById('saveStatus');
-        status.innerText = error ? "❌ Erè" : "✅ Sove!";
+
+        const { error } = await supD.from('profiles').update(data).eq('id', currentUser.id);
+
+        btn.disabled = false; btn.innerText = "Sove Tout Chanjman";
         status.style.display = "block";
+        if (error) { status.innerText = "❌ Erè: " + error.message; status.style.color = "red"; }
+        else { status.innerText = "✅ Done sove ak siksè!"; status.style.color = "green"; }
+
         setTimeout(() => status.style.display = "none", 3000);
     }
 
-    async function updateOrderStatus(orderId, newStatus) {
-        await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
-        loadMyOrders(currentUser.id);
+    function shareReferral() {
+        const msg = `Salut! 👋 Vin vann sou *Boutique Piyay*. Sèvi ak kòd referans mwen an *${myReferralCode}* pou w jwenn mwa gratis! 🚀\n\nEnskri isit la: ${window.location.origin}/signup.html`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    async function loadMyOrders(userId) {
-        const list = document.getElementById('ordersList');
-        const { data: orders } = await supabase.from('orders').select('*').eq('seller_id', userId).order('created_at', { ascending: false });
-        if (!orders || orders.length === 0) { list.innerHTML = '<p style="color:#aaa; font-size:13px;">Okenn kòmand poko rive.</p>'; return; }
-        list.innerHTML = orders.map(o => `
-            <div style="padding:15px; background:#f9f9f9; border-radius:12px; margin-bottom:10px; border-left:4px solid ${o.status === 'delivered' ? '#25d366' : '#ff4747'};">
-                <div style="font-weight:800;">${o.product_title}</div>
-                <div style="font-size:12px; color:#666;">Kliyan: ${o.customer_name} (${o.customer_phone})</div>
-                <div style="margin-top:10px; display:flex; gap:10px;">
-                    ${o.status !== 'delivered' ? `<button onclick="updateOrderStatus('${o.id}', 'delivered')" style="background:#25d366; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;">Livre ✅</button>` : '✅ Livre'}
-                </div>
-            </div>
-        `).join('');
+    async function handleLogout() {
+        await supD.auth.signOut();
+        window.location.href = "/";
     }
 
-    async function loadMyProducts(userId) {
-        const { data: products } = await supabase.from('user_products').select('*').eq('seller_id', userId);
-        const grid = document.getElementById('myProductsGrid');
-        document.getElementById('prodCount').innerText = products ? products.length : 0;
-        if (!products || products.length === 0) { grid.innerHTML = '<p style="color:#999; font-size:13px; padding:20px;">Okenn pwodwi.</p>'; return; }
-        grid.innerHTML = products.map(p => `
-            <div style="display:flex; align-items:center; gap:10px; background:#f9f9f9; padding:10px; border-radius:10px; margin-bottom:10px;">
-                <img src="${p.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:5px;">
-                <div style="flex:1;"><div style="font-weight:700; font-size:13px;">${p.title}</div><div style="color:#ff4747; font-size:12px;">${p.price} HTG</div></div>
-            </div>
-        `).join('');
-    }
-
-    function checkExpiration(profile) {
-        const label = document.getElementById('expiryLabel');
-        label.innerText = "Aktif ✅"; label.style.color = "#25d366";
-    }
-
-    async function logout() { await supabase.auth.signOut(); window.location.href = "/"; }
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
