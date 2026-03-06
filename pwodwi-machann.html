@@ -7,139 +7,103 @@ title: Detay Pwodwi - Marketplace
     <!-- Loading State -->
     <div id="loading" style="text-align: center; padding: 100px 0;">
         <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
-        <p style="margin-top: 20px; color: #666; font-weight: 600;">Nou ap rale detay pwodwi a...</p>
-    </div>
-
-    <!-- Error State -->
-    <div id="error" style="display: none; text-align: center; padding: 100px 0;">
-        <h1 style="font-size: 5rem; color: #ff4747;">Oops!</h1>
-        <p id="errorMsg" style="font-size: 1.2rem; color: #666;"></p>
-        <a href="/" class="btn-primary-hero" style="margin-top: 20px; display: inline-block;">Retounen nan Akèy</a>
+        <p style="margin-top: 20px; color: #666; font-weight: 600;">Chajman detay pwodwi...</p>
     </div>
 
     <!-- Content State -->
     <div id="content" style="display: none;">
-        <div class="breadcrumb-container" style="margin-bottom: 30px; font-size: 14px; color: #888;">
-            <a href="/" style="text-decoration: none; color: #ff4747;">Akèy</a> /
-            <span id="breadcrumbCat">Marketplace</span> /
-            <strong id="breadcrumbTitle">Pwodwi</strong>
-        </div>
-
         <div class="product-detail-flex" style="display: flex; gap: 50px; flex-wrap: wrap;">
             <!-- GAUCHE: IMAGE -->
             <div style="flex: 1; min-width: 320px;">
-                <div style="width: 100%; aspect-ratio: 1/1; border-radius: 20px; overflow: hidden; border: 1px solid #eee; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <div style="width: 100%; aspect-ratio: 1/1; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.08); background: #fff;">
                     <img id="pImg" src="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
             </div>
 
             <!-- DROITE: INFO -->
             <div style="flex: 1.2; min-width: 320px;">
-                <span id="pCat" style="background: #fff0f0; color: #ff4747; padding: 5px 12px; border-radius: 50px; font-size: 12px; font-weight: 700; text-transform: uppercase;"></span>
-                <h1 id="pTitle" style="font-size: 2.5rem; margin: 15px 0; color: #222; font-weight: 900; line-height: 1.1;"></h1>
+                <div id="pCat" style="display: inline-block; background: #fff0f0; color: #ff4747; padding: 6px 15px; border-radius: 50px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px;">Kategori</div>
+                <h1 id="pTitle" style="font-size: 2.2rem; margin: 0 0 15px; color: #0f172a; font-weight: 900; line-height: 1.2;"></h1>
 
-                <div style="margin: 25px 0; display: flex; align-items: center; gap: 20px;">
-                    <span id="pPrice" style="font-size: 36px; font-weight: 900; color: #ff4747;"></span>
-                    <span style="color: #666; font-size: 18px;">HTG</span>
+                <div style="font-size: 32px; font-weight: 900; color: #ff4747; margin-bottom: 25px;">
+                    <span id="pPrice">0</span> <small style="font-size: 16px; color: #64748b;">HTG</small>
                 </div>
 
-                <div style="padding: 20px; background: #fdfdfd; border: 1px solid #f0f0f0; border-radius: 15px; margin-bottom: 30px;">
-                    <div style="margin-bottom: 15px; font-weight: 600; color: #444;">Quantité :</div>
-                    <div class="qty-selector" style="display: inline-flex; border: 2px solid #eee; border-radius: 10px; overflow: hidden; background: #fff;">
-                        <button onclick="changeQty(-1)" style="width: 45px; height: 45px; border: none; background: none; font-size: 20px; cursor: pointer;">-</button>
-                        <input type="number" id="prod-qty" value="1" min="1" style="width: 60px; text-align: center; border: none; font-weight: 800; font-size: 18px; outline: none;">
-                        <button onclick="changeQty(1)" style="width: 45px; height: 45px; border: none; background: none; font-size: 20px; cursor: pointer;">+</button>
+                <!-- INFO MACHANN & ADRESSE -->
+                <div style="background: #f8fafc; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
+                    <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">👤 Enfòmasyon Machann</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <div style="width: 45px; height: 45px; background: #ff4747; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;" id="sellerInitial">M</div>
+                        <div>
+                            <div id="sellerName" style="font-weight: 800; color: #0f172a; font-size: 16px;">Machann Boutique</div>
+                            <div id="sellerAddress" style="font-size: 13px; color: #ff4747; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                                📍 <span id="sellerLoc">Zòn non-defini</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REZO SOSYAL -->
+                    <div id="sellerSocials" style="display: flex; gap: 10px; margin-top: 15px;">
+                        <!-- JS ap ajoute icons yo si yo la -->
                     </div>
                 </div>
 
-                <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <button id="addBtn" style="padding: 18px; background: #222; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        🛒 Ajoute nan panye
-                    </button>
-                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.3);">
-                        ⚡ Achte Kounye a
-                    </button>
+                <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">🛒 Panye</button>
+                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">⚡ Achte</button>
                 </div>
 
-                <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 25px;">
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <div style="font-size: 13px; color: #666;">✅ Verifié par Boutique Piyay</div>
-                        <div style="font-size: 13px; color: #666;">🛡️ Peman sekirize</div>
-                        <div style="font-size: 13px; color: #666;">🚚 Livrezon 24-48h</div>
-                    </div>
+                <div style="display: flex; gap: 15px; color: #64748b; font-size: 12px; font-weight: 600;">
+                    <span>🛡️ Peman Sekirize</span>
+                    <span>🚚 Livrezon Rapid</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-@keyframes spin { 100% { transform: rotate(360deg); } }
-.qty-selector button:hover { background: #f9f9f9; color: #ff4747; }
-.actions button:hover { transform: translateY(-3px); opacity: 0.9; }
-</style>
-
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL_DET = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
-    const SUPABASE_KEY_DET = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
-    const supabaseDet = supabase.createClient(SUPABASE_URL_DET, SUPABASE_KEY_DET);
+    const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    async function loadProductDetails() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
-
-        if (!productId) {
-            showError("Nou pa jwenn ID pwodwi a.");
-            return;
-        }
+    async function loadDetails() {
+        const id = new URLSearchParams(window.location.search).get('id');
+        if (!id) return;
 
         try {
-            const { data: product, error } = await supabaseDet
-                .from('user_products')
-                .select('*')
-                .eq('id', productId)
-                .single();
+            const { data: prod, error } = await supV.from('user_products').select('*, profiles(*)').eq('id', id).single();
+            if (error) throw error;
 
-            if (error || !product) throw new Error("Pwodwi sa a pa egziste nan baz done nou an.");
+            document.getElementById('pTitle').innerText = prod.title;
+            document.getElementById('pPrice').innerText = prod.price;
+            document.getElementById('pImg').src = prod.image_url;
+            document.getElementById('pCat').innerText = prod.category || "Marketplace";
 
-            // Rempli done yo
-            document.getElementById('pTitle').innerText = product.title;
-            document.getElementById('breadcrumbTitle').innerText = product.title;
-            document.getElementById('pPrice').innerText = product.price;
-            document.getElementById('pImg').src = product.image_url;
-            document.getElementById('pCat').innerText = product.category || "Marketplace";
-            document.getElementById('breadcrumbCat').innerText = product.category || "Marketplace";
+            // Info Machann
+            const seller = prod.profiles;
+            if (seller) {
+                document.getElementById('sellerName').innerText = seller.full_name || "Machann";
+                document.getElementById('sellerInitial').innerText = (seller.full_name || "M").charAt(0).toUpperCase();
+                document.getElementById('sellerLoc').innerText = seller.address || "Zòn non-defini";
 
-            // Bouton Actions
-            document.getElementById('addBtn').onclick = () => {
-                orderProduct(product.title, product.price, product.id, product.image_url);
-            };
-            document.getElementById('buyBtn').onclick = () => {
-                orderProduct(product.title, product.price, product.id, product.image_url);
-                setTimeout(() => window.location.href = "/checkout", 500);
-            };
+                // Icons Sosyal
+                const socialWrap = document.getElementById('sellerSocials');
+                if (seller.facebook_url) socialWrap.innerHTML += `<a href="${seller.facebook_url}" target="_blank" style="text-decoration:none; font-size:20px;">🔵</a>`;
+                if (seller.instagram_url) socialWrap.innerHTML += `<a href="${seller.instagram_url}" target="_blank" style="text-decoration:none; font-size:20px;">📸</a>`;
+            }
 
-            // Afiche kontni
+            document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url);
+            document.getElementById('buyBtn').onclick = () => { orderProduct(prod.title, prod.price, prod.id, prod.image_url); openOrderModal(); };
+
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';
-
-        } catch (err) {
-            showError(err.message);
-        }
+        } catch (e) { console.error(e); }
     }
 
-    function showError(msg) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('error').style.display = 'block';
-        document.getElementById('errorMsg').innerText = msg;
-    }
-
-    function changeQty(val) {
-        let input = document.getElementById('prod-qty');
-        let current = parseInt(input.value);
-        if (current + val >= 1) input.value = current + val;
-    }
-
-    document.addEventListener('DOMContentLoaded', loadProductDetails);
+    document.addEventListener('DOMContentLoaded', loadDetails);
 </script>
+
+<style>
+@keyframes spin { 100% { transform: rotate(360deg); } }
+button:hover { transform: translateY(-3px); opacity: 0.9; }
+</style>

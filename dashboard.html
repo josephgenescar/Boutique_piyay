@@ -45,40 +45,45 @@ title: Espas Kontwòl Mwen - Boutique Piyay
                         <small style="display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; opacity: 0.8;">Kòd Referans ou :</small>
                         <strong id="myRefCode" style="font-family: monospace; font-size: 22px; letter-spacing: 2px;">CHAJMAN...</strong>
                     </div>
-                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.3s;">Pataje sou WhatsApp 🚀</button>
+                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.3s;">Pataje 🚀</button>
                 </div>
             </div>
 
             <!-- PWODWI GRID -->
             <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
                 <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">🛒 Pwodwi m ap vann yo</h2>
-                <div id="myProductsGrid" class="product-grid-modern" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
+                <div id="myProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
                     <!-- JS ap chaje sa -->
                 </div>
             </div>
         </div>
 
-        <!-- KOLÒN ADWAT -->
+        <!-- KOLÒN ADWAT: PWOFIL & ADRESSE -->
         <div>
             <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: sticky; top: 100px; border: 1px solid #f1f5f9;">
-                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px;">👤 Pwofil & Sosyal</h2>
+                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px;">👤 Pwofil & Adrès</h2>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">WhatsApp (Ex: 509...)</label>
-                    <input type="tel" id="waNumber" placeholder="5094886..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">WhatsApp (509...)</label>
+                    <input type="tel" id="waNumber" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Link Facebook</label>
-                    <input type="url" id="fbUrl" placeholder="https://facebook.com/..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">📍 Zòn / Adrès</label>
+                    <input type="text" id="userAddress" placeholder="Eg: Delmas 33" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Facebook URL</label>
+                    <input type="url" id="fbUrl" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Link Instagram</label>
-                    <input type="url" id="igUrl" placeholder="https://instagram.com/..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Instagram URL</label>
+                    <input type="url" id="igUrl" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
                 </div>
 
-                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);">Sove Tout Chanjman</button>
+                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">Sove Chanjman</button>
                 <div id="saveStatus" style="margin-top: 15px; font-size: 13px; text-align: center; font-weight: 700; display: none;"></div>
             </div>
         </div>
@@ -89,7 +94,6 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 <script>
     const supD = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
     let currentUser = null;
-    let myReferralCode = "";
 
     async function initDashboard() {
         const { data: { user } } = await supD.auth.getUser();
@@ -100,79 +104,57 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         if (profile) {
             document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || 'Machann'}!`;
             document.getElementById('waNumber').value = profile.whatsapp || "";
+            document.getElementById('userAddress').value = profile.address || "";
             document.getElementById('fbUrl').value = profile.facebook_url || "";
             document.getElementById('igUrl').value = profile.instagram_url || "";
+            document.getElementById('myRefCode').innerText = profile.referral_code || "P-" + user.id.substring(0,6).toUpperCase();
 
-            // Jenerasyon oswa Chajman kòd referans
-            myReferralCode = profile.referral_code || "P-" + user.id.substring(0,6).toUpperCase();
-            document.getElementById('myRefCode').innerText = myReferralCode;
-
-            if (!profile.referral_code) {
-                await supD.from('profiles').update({ referral_code: myReferralCode }).eq('id', user.id);
-            }
-
-            // Statut Abonman
-            const expiryLabel = document.getElementById('expiryLabel');
-            if (profile.is_active_seller) {
-                expiryLabel.innerText = "AKTIF ✅";
-                expiryLabel.style.color = "#25d366";
-            } else {
-                expiryLabel.innerText = "PENDING ⏳";
-                expiryLabel.style.color = "#facc15";
-            }
+            const exp = document.getElementById('expiryLabel');
+            if (profile.is_active_seller) { exp.innerText = "AKTIF ✅"; exp.style.color = "#25d366"; }
+            else { exp.innerText = "PENDING ⏳"; exp.style.color = "#facc15"; }
         }
         loadMyProducts(user.id);
-    }
-
-    async function loadMyProducts(userId) {
-        const { data: products } = await supD.from('user_products').select('*').eq('seller_id', userId);
-        const grid = document.getElementById('myProductsGrid');
-        document.getElementById('prodCount').innerText = products ? products.length : 0;
-
-        if (!products || products.length === 0) {
-            grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi pibliye.</p>';
-            return;
-        }
-
-        grid.innerHTML = products.map(p => `
-            <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center;">
-                <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:10px;">
-                <div style="font-weight:800; font-size:13px; height:35px; overflow:hidden;">${p.title}</div>
-                <div style="color:#ff4747; font-weight:900; margin-top:5px;">${p.price} HTG</div>
-            </div>
-        `).join('');
     }
 
     async function saveProfile() {
         const btn = document.getElementById('saveBtn');
         const status = document.getElementById('saveStatus');
-        btn.disabled = true; btn.innerText = "⏳ Enregistre...";
+        btn.disabled = true; btn.innerText = "⏳ Sere...";
 
-        const data = {
+        const { error } = await supD.from('profiles').update({
             whatsapp: document.getElementById('waNumber').value.trim(),
+            address: document.getElementById('userAddress').value.trim(),
             facebook_url: document.getElementById('fbUrl').value.trim(),
             instagram_url: document.getElementById('igUrl').value.trim()
-        };
+        }).eq('id', currentUser.id);
 
-        const { error } = await supD.from('profiles').update(data).eq('id', currentUser.id);
-
-        btn.disabled = false; btn.innerText = "Sove Tout Chanjman";
+        btn.disabled = false; btn.innerText = "Sove Chanjman";
         status.style.display = "block";
-        if (error) { status.innerText = "❌ Erè: " + error.message; status.style.color = "red"; }
-        else { status.innerText = "✅ Done sove ak siksè!"; status.style.color = "green"; }
-
+        status.innerText = error ? "❌ Erè" : "✅ Done sove!";
+        status.style.color = error ? "red" : "green";
         setTimeout(() => status.style.display = "none", 3000);
     }
 
+    async function loadMyProducts(userId) {
+        const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', userId).order('created_at', { ascending: false });
+        const grid = document.getElementById('myProductsGrid');
+        document.getElementById('prodCount').innerText = prods ? prods.length : 0;
+        if (!prods || prods.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi.</p>'; return; }
+        grid.innerHTML = prods.map(p => `
+            <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center;">
+                <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+                <div style="font-weight:800; font-size:13px;">${p.title}</div>
+                <div style="color:#ff4747; font-weight:900; margin-top:5px;">${p.price} HTG</div>
+            </div>
+        `).join('');
+    }
+
     function shareReferral() {
-        const msg = `Salut! 👋 Vin vann sou *Boutique Piyay*. Sèvi ak kòd referans mwen an *${myReferralCode}* pou w jwenn mwa gratis! 🚀\n\nEnskri isit la: ${window.location.origin}/signup.html`;
+        const code = document.getElementById('myRefCode').innerText;
+        const msg = `Salut! 👋 Vin vann sou *Boutique Piyay*. Sèvi ak kòd referans mwen an *${code}* pou nou jwenn mwa gratis! 🚀\n\nEnskri la: ${window.location.origin}/signup.html`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    async function handleLogout() {
-        await supD.auth.signOut();
-        window.location.href = "/";
-    }
-
+    async function handleLogout() { await supD.auth.signOut(); window.location.href = "/"; }
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
