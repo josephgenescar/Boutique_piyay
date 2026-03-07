@@ -16,6 +16,17 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         </div>
     </div>
 
+    <!-- 🛡️ KONSÈY SEKIRITE POU MACHANN (SÈL YO MENM K WÈ L) -->
+    <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.1);">
+        <div style="font-size: 30px;">🛡️</div>
+        <div>
+            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #92400e;">KONSÈY SEKIRITE ENPÒTAN</h3>
+            <p style="margin: 5px 0 0; font-size: 13px; color: #b45309; line-height: 1.4;">
+                Anvan ou deplase pou livre yon pwodwi, nou rekòmande pou w toujou mande kliyan an peye omwen <strong>50% nan kòb la</strong> kòm garanti. Sa ap pwoteje w kont moun ki pa serye epi asire transpò w la pa gaspiye.
+            </p>
+        </div>
+    </div>
+
     <div style="display: grid; grid-template-columns: 1fr 320px; gap: 30px;">
         <!-- KOLÒN GOCH -->
         <div>
@@ -73,16 +84,6 @@ title: Espas Kontwòl Mwen - Boutique Piyay
                     <input type="text" id="userAddress" placeholder="Eg: Delmas 33" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Facebook URL</label>
-                    <input type="url" id="fbUrl" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
-                </div>
-
-                <div style="margin-bottom: 25px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Instagram URL</label>
-                    <input type="url" id="igUrl" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
-                </div>
-
                 <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">Sove Chanjman</button>
                 <div id="saveStatus" style="margin-top: 15px; font-size: 13px; text-align: center; font-weight: 700; display: none;"></div>
             </div>
@@ -105,8 +106,6 @@ title: Espas Kontwòl Mwen - Boutique Piyay
             document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || 'Machann'}!`;
             document.getElementById('waNumber').value = profile.whatsapp || "";
             document.getElementById('userAddress').value = profile.address || "";
-            document.getElementById('fbUrl').value = profile.facebook_url || "";
-            document.getElementById('igUrl').value = profile.instagram_url || "";
             document.getElementById('myRefCode').innerText = profile.referral_code || "P-" + user.id.substring(0,6).toUpperCase();
 
             const exp = document.getElementById('expiryLabel');
@@ -123,9 +122,7 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 
         const { error } = await supD.from('profiles').update({
             whatsapp: document.getElementById('waNumber').value.trim(),
-            address: document.getElementById('userAddress').value.trim(),
-            facebook_url: document.getElementById('fbUrl').value.trim(),
-            instagram_url: document.getElementById('igUrl').value.trim()
+            address: document.getElementById('userAddress').value.trim()
         }).eq('id', currentUser.id);
 
         btn.disabled = false; btn.innerText = "Sove Chanjman";
@@ -139,12 +136,7 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', userId).order('created_at', { ascending: false });
         const grid = document.getElementById('myProductsGrid');
         document.getElementById('prodCount').innerText = prods ? prods.length : 0;
-
-        if (!prods || prods.length === 0) {
-            grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi.</p>';
-            return;
-        }
-
+        if (!prods || prods.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi.</p>'; return; }
         grid.innerHTML = prods.map(p => `
             <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center; position:relative;">
                 <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:10px;">
@@ -157,9 +149,8 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 
     async function handleDeleteProduct(id, title) {
         if (confirm(`Èske ou vle efase "${title}" tout bon?`)) {
-            const { error } = await supD.from('user_products').delete().eq('id', id);
-            if (error) alert("Erè: " + error.message);
-            else loadMyProducts(currentUser.id);
+            await supD.from('user_products').delete().eq('id', id);
+            loadMyProducts(currentUser.id);
         }
     }
 
@@ -169,10 +160,6 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    async function handleLogout() {
-        await supD.auth.signOut();
-        window.location.href = "/";
-    }
-
+    async function handleLogout() { await supD.auth.signOut(); window.location.href = "/"; }
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
