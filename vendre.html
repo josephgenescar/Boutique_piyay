@@ -21,8 +21,8 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div class="form-group">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">PRI (HTG) *</label>
-                    <input type="number" id="prodPrice" required placeholder="Eg: 1500" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">PRI W AP VANN LAN (HTG) *</label>
+                    <input type="number" id="prodPrice" required placeholder="Eg: 500" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
                 </div>
                 <div class="form-group">
                     <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">CHWAZI KATEGORI *</label>
@@ -37,67 +37,69 @@ title: Vann yon Pwodwi - Boutique Piyay
                 </div>
             </div>
 
-            <!-- DESKRIPSYON -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">DESKRIPSYON PWODWI A *</label>
-                <textarea id="prodDesc" required placeholder="Bay plis detay sou sa w ap vann nan (Koulè, kalite, elatriye)..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 100px; font-family: inherit;"></textarea>
+                <textarea id="prodDesc" required placeholder="Bay detay sou pwodwi a..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 80px; font-family: inherit;"></textarea>
             </div>
 
+            <!-- OPSYON VANTE FLASH AVÈK ANSYEN PRI -->
             <div id="flashOption" style="background: #fff5f5; padding: 20px; border-radius: 15px; border: 1px dashed #ff4747; margin-bottom: 25px;">
                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 800; color: #ff4747;">
                     <input type="checkbox" id="isFlash" style="width: 20px; height: 20px;"> ⚡ Mete nan Vante Flash (7 jou)
                 </label>
+
+                <div id="oldPriceDiv" style="display: none; margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #ff4747; font-size: 12px;">ANSYEN PRI (Sa k ap bare a, eg: 700) *</label>
+                    <input type="number" id="oldPrice" placeholder="Eg: 700" style="width: 100%; padding: 12px; border: 1px solid #ffcbcb; border-radius: 10px; background: white;">
+                    <p style="font-size: 10px; color: #666; margin-top: 5px;">Pri w ap vann lan dwe pi piti pase ansyen pri sa a.</p>
+                </div>
                 <p id="flashCountMsg" style="font-size: 11px; color: #666; margin-top: 5px;">Limit 3 pwodwi vante flash.</p>
             </div>
 
             <div class="form-group" style="margin-bottom: 30px;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">FOTO PWODWI A *</label>
-                <input type="file" id="prodImage" accept="image/*" required style="width: 100%; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 12px; cursor: pointer; background: #f8fafc;">
+                <input type="file" id="prodImage" accept="image/*" required style="width: 100%; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc;">
                 <div id="preview" style="margin-top: 20px; display: none; text-align: center;">
-                    <img id="imgPreview" src="" style="width: 180px; height: 180px; object-fit: cover; border-radius: 15px; border: 3px solid #ff4747; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                    <img id="imgPreview" src="" style="width: 180px; height: 180px; object-fit: cover; border-radius: 15px; border: 3px solid #ff4747;">
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn" style="width: 100%; padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.3);">
-                🚀 Pibliye Pwodwi a
-            </button>
+            <button type="submit" id="submitBtn" style="width: 100%; padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">🚀 Pibliye Pwodwi a</button>
         </form>
         <div id="statusMsg" style="margin-top: 25px; text-align: center; font-weight: 700; display: none; padding: 15px; border-radius: 10px;"></div>
     </div>
 
-    <div id="paymentRequired" style="display: none; text-align: center; padding: 80px 20px; background: white; border-radius: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.05);">
+    <div id="paymentRequired" style="display: none; text-align: center; padding: 80px 20px; background: white; border-radius: 30px;">
         <div style="font-size: 80px; margin-bottom: 20px;">🛡️</div>
-        <h1 style="font-weight: 800; color: #0f172a;">Aktivasyon Nesesè</h1>
-        <p style="color: #64748b; margin-bottom: 30px;">Kont machann ou an poko aktif. Aktive l pou w ka kòmanse vann.</p>
-        <a href="/peye.html" style="display: inline-block; padding: 18px 40px; background: #ff4747; color: white; border-radius: 15px; text-decoration: none; font-weight: 800; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.3);">🚀 Aktive Kounye a</a>
+        <h1 style="font-weight: 800;">Aktivasyon Nesesè</h1>
+        <a href="/peye.html" style="display: inline-block; padding: 18px 40px; background: #ff4747; color: white; border-radius: 15px; text-decoration: none; font-weight: 800;">🚀 Aktive Kounye a</a>
     </div>
 </div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
 <script>
     const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
-    let flashCount = 0;
+
+    // Montre/Kache bwat ansyen pri a
+    document.getElementById('isFlash').onchange = function() {
+        document.getElementById('oldPriceDiv').style.display = this.checked ? 'block' : 'none';
+        if (this.checked) document.getElementById('oldPrice').setAttribute('required', true);
+        else document.getElementById('oldPrice').removeAttribute('required');
+    };
 
     async function checkAuthAndStatus() {
         const { data: { user } } = await supV.auth.getUser();
         if (!user) { window.location.href = "/login.html"; return; }
-
         const { data: profile } = await supV.from('profiles').select('*').eq('id', user.id).single();
         document.getElementById('loading').style.display = 'none';
-
         if (profile && profile.is_active_seller) {
             document.getElementById('vendreCard').style.display = 'block';
             const { count } = await supV.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('is_flash_sale', true);
-            flashCount = count || 0;
-            if (flashCount >= 3) {
+            if ((count || 0) >= 3) {
                 document.getElementById('isFlash').disabled = true;
                 document.getElementById('flashCountMsg').innerText = "⚠️ Limit 3 vante flash rive.";
-                document.getElementById('flashCountMsg').style.color = "#ff4747";
             }
-        } else {
-            document.getElementById('paymentRequired').style.display = 'block';
-        }
+        } else { document.getElementById('paymentRequired').style.display = 'block'; }
     }
 
     document.getElementById('prodImage').onchange = function() {
@@ -113,29 +115,23 @@ title: Vann yon Pwodwi - Boutique Piyay
         const file = document.getElementById('prodImage').files[0];
         const isFlash = document.getElementById('isFlash').checked;
 
-        if (!file) return alert("Chwazi yon foto!");
-
-        btn.disabled = true; btn.innerText = "⏳ PIBLIKASYON AP FÈT...";
-        status.style.display = 'block';
-        status.style.background = "#f1f5f9";
-        status.style.color = "#475569";
-        status.innerText = "Chajman done yo...";
+        btn.disabled = true; btn.innerText = "⏳ PIBLIKASYON...";
+        status.style.display = 'block'; status.innerText = "Chajman foto...";
 
         try {
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}.${fileExt}`;
             const filePath = `${user.id}/${fileName}`;
-
-            const { data: uploadData, error: uploadError } = await supV.storage.from('products').upload(filePath, file);
+            const { error: uploadError } = await supV.storage.from('products').upload(filePath, file);
             if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supV.storage.from('products').getPublicUrl(filePath);
-
             const expiryDate = isFlash ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null;
 
             const { error: dbError } = await supV.from('user_products').insert([{
                 title: document.getElementById('prodTitle').value,
                 price: parseFloat(document.getElementById('prodPrice').value),
+                old_price: isFlash ? parseFloat(document.getElementById('oldPrice').value) : null,
                 category: document.getElementById('prodCat').value,
                 description: document.getElementById('prodDesc').value,
                 image_url: publicUrl,
@@ -146,21 +142,12 @@ title: Vann yon Pwodwi - Boutique Piyay
             }]);
 
             if (dbError) throw dbError;
-
-            status.style.background = "#dcfce7";
-            status.style.color = "#15803d";
-            status.innerText = "🎉 Pwodwi ou a pibliye ak siksè!";
+            status.style.color = "green"; status.innerText = "🎉 Pwodwi pibliye!";
             setTimeout(() => window.location.href = "/dashboard.html", 2000);
-
         } catch (err) {
-            status.style.background = "#fee2e2";
-            status.style.color = "#b91c1c";
-            status.innerText = "❌ Erè: " + err.message;
-            btn.disabled = false;
-            btn.innerText = "🚀 ESEYE ANKÒ";
+            status.style.color = "red"; status.innerText = "❌ Erè: " + err.message;
+            btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
         }
     };
-
     document.addEventListener('DOMContentLoaded', checkAuthAndStatus);
 </script>
-<style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>

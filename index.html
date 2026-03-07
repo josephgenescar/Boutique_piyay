@@ -19,6 +19,7 @@ title: Akèy - Boutique Piyay
             <span class="flash-icon-box">⚡</span>
             <h2>Vante Flash</h2>
         </div>
+        <!-- TIMER FIX (HORIZONTAL) -->
         <div id="countdown" class="timer-modern">
             <div class="t-segment"><span id="hours">02</span><small>h</small></div>
             <div class="t-divider">:</div>
@@ -28,7 +29,7 @@ title: Akèy - Boutique Piyay
         </div>
     </div>
 
-    <!-- SLIDER WRAPPER (KOTE TOUT PWODWI FLASH YO PRAL MOUNTE) -->
+    <!-- FLASH SLIDER FIX (HORIZONTAL) -->
     <div class="flash-slider-container">
         <div id="flash-slider-inner" class="flash-slider-inner">
             <!-- Pwodwi Static (Admin) -->
@@ -41,7 +42,12 @@ title: Akèy - Boutique Piyay
                     </div>
                     <div class="mini-info">
                         <h3>{{ product.title }}</h3>
-                        <div class="mini-price">{{ product.price }} HTG</div>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <div class="mini-price">{{ product.price }} HTG</div>
+                            {% if product.old_price %}
+                            <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through;">{{ product.old_price }} HTG</div>
+                            {% endif %}
+                        </div>
                         <button class="btn-mini-add" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute</button>
                     </div>
                 </div>
@@ -52,7 +58,26 @@ title: Akèy - Boutique Piyay
     </div>
 </section>
 
-<!-- 3. CATÉGORIES -->
+<!-- 3. MARKETPLACE SECTION -->
+<section id="user-market" class="container section-margin">
+  <div class="marketplace-card-container">
+    <div class="marketplace-header-content">
+        <div class="header-main-text">
+            <div class="badge-new">NOUVO</div>
+            <h2 class="sora">Marketplace Machann yo 🚀</h2>
+            <p>Dekouvri pwodwi inik machann nou yo ap ofri w nan tout peyi a.</p>
+        </div>
+        <div class="header-action">
+            <a href="/vendre.html" class="btn-sell-now">Vann yon pwodwi →</a>
+        </div>
+    </div>
+    <div id="supabase-products-grid" class="product-grid-modern">
+        <div class="loading-msg">⏳ Chaje pwodwi machann yo...</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. CATÉGORIES -->
 <section id="categories-section" class="container section-margin">
   <div class="section-header-modern">
     <h2 class="sora">Chwazi pa Kategori</h2>
@@ -69,33 +94,10 @@ title: Akèy - Boutique Piyay
   </div>
 </section>
 
-<!-- 4. MARKETPLACE SECTION -->
-<section id="user-market" class="container section-margin">
-  <div class="marketplace-card-container">
-    <div class="marketplace-header-content">
-        <div class="header-main-text">
-            <div class="badge-new">NOUVO</div>
-            <h2 class="sora">Marketplace Machann yo 🚀</h2>
-            <p>Dekouvri pwodwi inik machann nou yo ap ofri w nan tout peyi a.</p>
-        </div>
-        <div class="header-action">
-            <a href="/vendre.html" class="btn-sell-now">Vann pa w la tou →</a>
-        </div>
-    </div>
-    <div id="supabase-products-grid" class="product-grid-modern">
-        <div class="loading-msg">⏳ Chaje pwodwi machann yo...</div>
-    </div>
-  </div>
-</section>
-
 <style>
 /* CORE */
 :root { --primary: #ff4747; --dark: #0f172a; --radius: 20px; --shadow: 0 10px 25px rgba(0,0,0,0.05); }
 .section-margin { margin-top: 50px; margin-bottom: 50px; }
-
-/* HERO */
-.main-hero-custom { position: relative; width: 100%; max-width: 1300px; height: 350px; overflow: hidden; margin: 0 auto; border-radius: 30px; }
-.hero-bg-layer { position: absolute; inset: 0; z-index: 1; }
 
 /* FLASH HEADER & TIMER (HORIZONTAL) */
 .flash-header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
@@ -113,8 +115,8 @@ title: Akèy - Boutique Piyay
 .mini-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; }
 .mini-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .mini-info h3 { font-size: 13px; margin: 10px 0 5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-price { color: var(--primary); font-weight: 800; font-size: 15px; margin-bottom: 10px; }
-.btn-mini-add { width: 100%; background: #f4f4f4; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
+.mini-price { color: var(--primary); font-weight: 800; font-size: 15px; }
+.btn-mini-add { width: 100%; background: #f4f4f4; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; margin-top: 10px; }
 .discount-tag { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 5px; z-index: 5; }
 
 /* MARKETPLACE */
@@ -147,51 +149,44 @@ title: Akèy - Boutique Piyay
 
     async function loadProducts() {
         if (!supabaseHome) return;
-
         try {
-            // 1. CHÈCHE TOUT PWODWI MARKETPLACE (NORMAL + FLASH)
             const { data: products, error } = await supabaseHome.from('user_products').select('*').order('created_at', { ascending: false });
             if (error) throw error;
 
             const slider = document.getElementById('flash-slider-inner');
             const grid = document.getElementById('supabase-products-grid');
 
-            // 2. FILTRE PWODWI FLASH YO POU SLIDER A
+            // PWODWI FLASH
             const flashProducts = products.filter(p => p.is_flash_sale === true);
-            if (flashProducts.length > 0) {
-                flashProducts.forEach(p => {
-                    const card = `
-                        <div class="flash-card-mini">
-                            <div class="discount-tag">FLASH ⚡</div>
-                            <div class="mini-img-wrap">
-                                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
-                            </div>
-                            <div class="mini-info">
-                                <h3>${p.title}</h3>
+            flashProducts.forEach(p => {
+                const oldPriceHtml = p.old_price ? `<div style="font-size: 10px; color: #94a3b8; text-decoration: line-through;">${p.old_price} HTG</div>` : '';
+                const card = `
+                    <div class="flash-card-mini">
+                        <div class="discount-tag">FLASH ⚡</div>
+                        <div class="mini-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a></div>
+                        <div class="mini-info">
+                            <h3>${p.title}</h3>
+                            <div style="display: flex; align-items: baseline; gap: 8px;">
                                 <div class="mini-price">${p.price} HTG</div>
-                                <button class="btn-mini-add" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
+                                ${oldPriceHtml}
                             </div>
+                            <button class="btn-mini-add" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
                         </div>
-                    `;
-                    slider.innerHTML += card;
-                });
-            }
+                    </div>`;
+                slider.innerHTML += card;
+            });
 
-            // 3. METE RÈS PWODWI YO NAN GRID NORMAL LA
-            if (products.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">Pa gen pwodwi machann pou kounye a.</div>';
-            } else {
-                grid.innerHTML = products.map(p => `
-                    <div class="product-card-modern">
-                        <div class="card-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a></div>
-                        <div class="card-info">
-                            <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
-                            <div class="price-modern">${p.price} HTG</div>
-                            <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
-                        </div>
+            // GRID NORMAL
+            grid.innerHTML = products.map(p => `
+                <div class="product-card-modern">
+                    <div class="card-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a></div>
+                    <div class="card-info">
+                        <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
+                        <div class="price-modern">${p.price} HTG</div>
+                        <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
                     </div>
-                `).join('');
-            }
+                </div>
+            `).join('');
         } catch (e) { console.error(e); }
     }
     document.addEventListener('DOMContentLoaded', loadProducts);
