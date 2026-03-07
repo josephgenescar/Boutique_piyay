@@ -75,7 +75,11 @@
 .cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:18px; height:18px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 2px solid white; }
 
 @media (max-width: 768px) {
-  .top-bar, .search-wrap { display: none; }
+  .top-bar { display: none; }
+  .header-main .container { flex-wrap: wrap; justify-content: space-between; }
+  .logo { order: 1; }
+  .header-actions { order: 2; }
+  .search-wrap { order: 3; flex-basis: 100%; margin: 10px 0 0 0; display: block; max-width: none; }
   .logo span { font-size: 14px; }
   .btn-auth { padding: 6px 12px; font-size: 10px; }
 }
@@ -100,7 +104,7 @@
 
       <div class="search-wrap">
         <form class="search-form" onsubmit="return false;">
-          <input type="text" id="search-input" placeholder="Chèche yon pwodwi..." oninput="liveSearch()" autocomplete="off">
+          <input type="text" id="search-input" placeholder="Chèche yon pwodwi..." oninput="if(window.liveSearch) window.liveSearch()" autocomplete="off">
           <button type="submit">OK</button>
         </form>
         <div id="search-results" style="display:none; position:absolute; top:46px; width:100%; background:white; z-index:100; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-radius: 12px;"></div>
@@ -141,8 +145,10 @@
             const sup = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
             const { data: { user } } = await sup.auth.getUser();
             if (user) {
-                document.getElementById('authLinks').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
+                const authLinks = document.getElementById('authLinks');
+                const userInfo = document.getElementById('userInfo');
+                if (authLinks) authLinks.style.display = 'none';
+                if (userInfo) userInfo.style.display = 'flex';
             }
         }
     }

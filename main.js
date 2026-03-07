@@ -218,3 +218,4 @@ window.openOrderModal = openOrderModal;
 window.closeOrderModal = closeOrderModal;
 window.submitOrder = submitOrder;
 window.removeFromCart = removeFromCart;
+window.liveSearch = liveSearch;

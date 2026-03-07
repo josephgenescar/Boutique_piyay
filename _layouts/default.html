@@ -16,6 +16,80 @@
 
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <style>
+      /* Style pou Welcome Bar la */
+      #welcome-social-bar {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: white;
+        padding: 12px 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+        display: none;
+        align-items: center;
+        gap: 12px;
+        z-index: 9999;
+        border-left: 5px solid #ff4747;
+        animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        max-width: 300px;
+      }
+
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+
+      .wsb-icon {
+        width: 40px;
+        height: 40px;
+        background: #fff0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .wsb-content {
+        flex: 1;
+      }
+
+      .wsb-title {
+        display: block;
+        font-weight: 800;
+        font-size: 13px;
+        color: #111;
+        margin-bottom: 2px;
+      }
+
+      .wsb-desc {
+        display: block;
+        font-size: 11px;
+        color: #666;
+      }
+
+      .wsb-close {
+        background: none;
+        border: none;
+        color: #ccc;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 0;
+        line-height: 1;
+      }
+
+      @media (max-width: 480px) {
+        #welcome-social-bar {
+          left: 10px;
+          right: 10px;
+          bottom: 70px; /* Pou l pa kache bouton WhatsApp si w genyen l anba */
+          max-width: calc(100% - 20px);
+        }
+      }
+    </style>
   </head>
   <body style="background-color: #f4f4f4; margin: 0; padding: 0;">
     <div style="width: 100%; background-color: white; min-height: 100vh; display: flex; flex-direction: column;">
@@ -34,9 +108,35 @@
       <!-- MODAL PANIER -->
       {% include order-modal.html %}
 
+      <!-- WELCOME SOCIAL BAR -->
+      <div id="welcome-social-bar">
+        <div class="wsb-icon">🎁</div>
+        <div class="wsb-content">
+          <span class="wsb-title">Byenvini nan Boutique Piyay!</span>
+          <span class="wsb-desc">Jwi pi bon pri yo jodi a. 🚀</span>
+        </div>
+        <button class="wsb-close" onclick="document.getElementById('welcome-social-bar').style.display='none'">&times;</button>
+      </div>
+
     </div>
 
     <!-- Script prensipal -->
     <script src="{{ "/main.js" | relative_url }}"></script>
+
+    <script>
+      // Montre bar la apre 2 segonn
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const bar = document.getElementById('welcome-social-bar');
+          if (bar) bar.style.display = 'flex';
+
+          // Li ka disparèt pou kont li apre 8 segonn si kliyan an pa fè anyen
+          setTimeout(() => {
+            if (bar) bar.style.opacity = '0';
+            setTimeout(() => { if (bar) bar.style.display = 'none'; }, 500);
+          }, 8000);
+        }, 2000);
+      });
+    </script>
   </body>
 </html>
