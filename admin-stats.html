@@ -3,41 +3,29 @@ layout: default
 title: Sant Kontwòl Marketplace - Boutique Piyay
 ---
 
-<!-- 1. FÒM KONEKSYON ADMIN -->
 <div id="admin-login-section" class="container" style="padding: 80px 20px; text-align: center;">
     <div style="max-width: 400px; margin: 0 auto; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee;">
         <div style="font-size: 50px; margin-bottom: 20px;">🛡️</div>
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; font-size: 22px; color: #0f172a; margin-bottom: 10px;">Aksè Administratè</h1>
-        <p style="color: #64748b; font-size: 14px; margin-bottom: 30px;">Konekte ak kont pèsonèl ou ki gen dwa Admin lan.</p>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 30px;">Konekte ak kont pèsonèl ou.</p>
 
-        <div style="text-align: left; margin-bottom: 15px;">
-            <label style="display:block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px;">EMAIL ADMIN</label>
-            <input type="email" id="adminEmail" placeholder="admin@boutiquepiyay.com" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
-        </div>
+        <input type="email" id="adminEmail" placeholder="admin@email.com" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; margin-bottom: 15px;">
+        <input type="password" id="adminPass" placeholder="••••••••" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; margin-bottom: 25px;">
 
-        <div style="text-align: left; margin-bottom: 25px;">
-            <label style="display:block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px;">MODPAS</label>
-            <input type="password" id="adminPass" placeholder="••••••••" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
-        </div>
-
-        <button onclick="handleAdminLogin()" id="loginBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s;">
+        <button onclick="handleAdminLogin()" id="loginBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">
             ANTRE NAN SANT KONTWÒL
         </button>
-        <div id="loginError" style="color: #ff4747; font-size: 13px; margin-top: 15px; font-weight: 600; display: none;"></div>
+        <div id="loginError" style="color: #ff4747; font-size: 13px; margin-top: 15px; display: none;"></div>
     </div>
 </div>
 
-<!-- 2. DASHBOARD ADMIN (Kache pa defo) -->
 <div id="admin-dashboard" class="container" style="display: none; padding: 40px 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
         <div>
-            <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; color: #ff4747;">🛡️ Sant Kontwòl Pwofesyonèl</h1>
-            <p id="adminName" style="color: #666; margin-top: 5px;">Byenvini, Gran Chèf.</p>
+            <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; color: #ff4747;">🛡️ Sant Kontwòl Marketplace</h1>
+            <p id="adminName" style="color: #666; margin-top: 5px;">...</p>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button onclick="loadAdminData()" style="padding: 10px 20px; background: #0f172a; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🔄 Refresh</button>
-            <button onclick="handleAdminLogout()" style="padding: 10px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Logout</button>
-        </div>
+        <button onclick="handleAdminLogout()" style="padding: 10px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Logout</button>
     </div>
 
     <!-- STATS -->
@@ -56,20 +44,36 @@ title: Sant Kontwòl Marketplace - Boutique Piyay
         </div>
     </div>
 
-    <!-- TABLO JESYON -->
-    <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow-x: auto;">
-        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 25px;">👥 Lis Tout Machann yo</h2>
+    <!-- TABLO MACHANN -->
+    <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 40px; overflow-x: auto;">
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 25px;">👥 Jesyon Machann</h2>
         <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
             <thead>
                 <tr style="text-align: left; border-bottom: 2px solid #f1f5f9;">
                     <th style="padding: 15px;">Machann</th>
-                    <th style="padding: 15px;">WhatsApp</th>
-                    <th style="padding: 15px;">Ekspirasyon</th>
+                    <th style="padding: 15px;">WhatsApp / Adrès</th>
                     <th style="padding: 15px;">Status</th>
                     <th style="padding: 15px;">Aksyon</th>
                 </tr>
             </thead>
             <tbody id="sellersTable"></tbody>
+        </table>
+    </div>
+
+    <!-- TABLO PWODWI -->
+    <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow-x: auto;">
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 25px;">📦 Jesyon Pwodwi Marketplace</h2>
+        <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid #f1f5f9;">
+                    <th style="padding: 15px;">Foto</th>
+                    <th style="padding: 15px;">Pwodwi</th>
+                    <th style="padding: 15px;">Pri</th>
+                    <th style="padding: 15px;">Machann</th>
+                    <th style="padding: 15px;">Aksyon</th>
+                </tr>
+            </thead>
+            <tbody id="productsTable"></tbody>
         </table>
     </div>
 </div>
@@ -85,8 +89,6 @@ title: Sant Kontwòl Marketplace - Boutique Piyay
         const errDiv = document.getElementById('loginError');
 
         btn.disabled = true; btn.innerText = "VERIFIKASYON...";
-        errDiv.style.display = "none";
-
         const { data, error } = await supA.auth.signInWithPassword({ email, password: pass });
 
         if (error) {
@@ -94,14 +96,11 @@ title: Sant Kontwòl Marketplace - Boutique Piyay
             errDiv.style.display = "block";
             btn.disabled = false; btn.innerText = "ANTRE NAN SANT KONTWÒL";
         } else {
-            // Tcheke si moun sa a se Admin tout bon nan profil li
             const { data: profile } = await supA.from('profiles').select('role').eq('id', data.user.id).single();
-            if (profile && profile.role === 'admin') {
-                checkAccess();
-            } else {
+            if (profile && profile.role === 'admin') { checkAccess(); }
+            else {
                 await supA.auth.signOut();
-                errDiv.innerText = "⛔ Ou pa gen dwa administratè!";
-                errDiv.style.display = "block";
+                errDiv.innerText = "⛔ Ou pa gen dwa Admin!"; errDiv.style.display = "block";
                 btn.disabled = false; btn.innerText = "ANTRE NAN SANT KONTWÒL";
             }
         }
@@ -122,43 +121,54 @@ title: Sant Kontwòl Marketplace - Boutique Piyay
 
     async function loadAdminData() {
         const { data: profiles } = await supA.from('profiles').select('*').order('created_at', { ascending: false });
-        const { data: prods } = await supA.from('user_products').select('id');
+        const { data: prods } = await supA.from('user_products').select('*, profiles(full_name)').order('created_at', { ascending: false });
 
         document.getElementById('totalSellers').innerText = profiles ? profiles.length : 0;
         document.getElementById('activeSellers').innerText = profiles ? profiles.filter(s => s.is_active_seller).length : 0;
         document.getElementById('totalProducts').innerText = prods ? prods.length : 0;
 
-        const table = document.getElementById('sellersTable');
-        table.innerHTML = profiles.map(s => {
-            const expiry = s.subscription_ends_at ? new Date(s.subscription_ends_at).toLocaleDateString() : (s.trial_ends_at ? new Date(s.trial_ends_at).toLocaleDateString() : 'Okenn');
-            return `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 15px;"><strong>${s.full_name || 'Machann'}</strong><br><small>${s.email}</small></td>
-                    <td style="padding: 15px;">${s.whatsapp || '-'}</td>
-                    <td style="padding: 15px;">${expiry}</td>
-                    <td style="padding: 15px;"><span style="padding:5px 10px; border-radius:50px; font-size:10px; font-weight:800; background:${s.is_active_seller ? '#dcfce7' : '#fee2e2'}; color:${s.is_active_seller ? '#15803d' : '#ef4444'};">${s.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
-                    <td style="padding: 15px;">
-                        <button onclick="toggleSeller('${s.id}', ${s.is_active_seller})" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; cursor:pointer; font-size:11px;">${s.is_active_seller ? 'Bloke' : 'Aktive'}</button>
-                        <button onclick="giveYear('${s.id}')" style="padding:8px 12px; border-radius:8px; background:#ff4747; color:white; border:none; cursor:pointer; font-size:11px; margin-left:5px;">+1 Ane</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        // Sellers Table
+        const sTable = document.getElementById('sellersTable');
+        sTable.innerHTML = profiles.map(s => `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 15px;"><strong>${s.full_name || 'Non-non'}</strong><br><small>${s.email}</small></td>
+                <td style="padding: 15px;">${s.whatsapp || '-'}<br><small>${s.address || 'Pa gen adrès'}</small></td>
+                <td style="padding: 15px;"><span style="padding:5px 10px; border-radius:50px; font-size:10px; font-weight:800; background:${s.is_active_seller ? '#dcfce7' : '#fee2e2'}; color:${s.is_active_seller ? '#15803d' : '#ef4444'};">${s.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
+                <td style="padding: 15px;">
+                    <button onclick="toggleSeller('${s.id}', ${s.is_active_seller})" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; cursor:pointer; font-size:11px;">${s.is_active_seller ? 'Bloke' : 'Aktive'}</button>
+                    <button onclick="giveYear('${s.id}')" style="padding:8px 12px; border-radius:8px; background:#ff4747; color:white; border:none; cursor:pointer; font-size:11px; margin-left:5px;">+1 Ane</button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Products Table
+        const pTable = document.getElementById('productsTable');
+        pTable.innerHTML = prods.map(p => `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px;"><img src="${p.image_url}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;"></td>
+                <td style="padding: 15px;"><strong>${p.title}</strong><br><small>${p.category}</small></td>
+                <td style="padding: 15px; font-weight:800; color:#ff4747;">${p.price} HTG</td>
+                <td style="padding: 15px;">${p.profiles ? p.profiles.full_name : 'Inconnu'}</td>
+                <td style="padding: 15px;">
+                    <button onclick="deleteProduct('${p.id}')" style="padding:8px 12px; border-radius:8px; background:#fee2e2; color:#ef4444; border:none; cursor:pointer; font-size:11px; font-weight:700;">🗑️ Retire</button>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    async function toggleSeller(id, status) {
-        await supA.from('profiles').update({ is_active_seller: !status }).eq('id', id);
-        loadAdminData();
-    }
-
+    async function toggleSeller(id, status) { await supA.from('profiles').update({ is_active_seller: !status }).eq('id', id); loadAdminData(); }
     async function giveYear(id) {
         const d = new Date(); d.setFullYear(d.getFullYear() + 1);
         await supA.from('profiles').update({ subscription_ends_at: d, is_active_seller: true }).eq('id', id);
         alert("Abonman aktive!"); loadAdminData();
     }
-
+    async function deleteProduct(id) {
+        if(confirm("Èske ou vle retire pwodwi sa a nan Marketplace la?")) {
+            await supA.from('user_products').delete().eq('id', id);
+            loadAdminData();
+        }
+    }
     async function handleAdminLogout() { await supA.auth.signOut(); location.reload(); }
-
     checkAccess();
 </script>
 
