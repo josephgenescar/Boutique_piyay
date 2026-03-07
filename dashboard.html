@@ -13,6 +13,19 @@ title: Espas Kontwòl Mwen - Boutique Piyay
     .btn-flash { background: #fff5f5; color: #ff4747; border: 1px solid #ff4747; }
     .btn-edit { background: #f1f5f9; color: #0f172a; border: 1px solid #ddd; }
     .btn-delete { background: none; color: #ef4444; font-size: 10px; margin-top: 5px; }
+
+    /* Modal Style */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none !important; align-items: center; justify-content: center; z-index: 9999; padding: 20px; backdrop-filter: blur(8px); }
+    .modal-overlay.active { display: flex !important; }
+    .flash-modal { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 420px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); }
+    .modal-input { width: 100%; padding: 16px; border: 2px solid #f1f5f9; border-radius: 15px; margin-bottom: 15px; font-weight: 800; font-size: 18px; outline: none; }
+    .percent-box { text-align: center; background: #00C853; color: white; padding: 12px; border-radius: 12px; font-weight: 900; margin-bottom: 20px; }
+
+    /* Pwofil Style */
+    .profile-input-group { margin-bottom: 15px; }
+    .profile-input-group label { display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; }
+    .profile-input-group input { width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600; outline: none; }
+    .profile-input-group input:focus { border-color: #ff4747; background: white; }
 </style>
 
 <div class="dashboard-container">
@@ -27,28 +40,11 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         </div>
     </div>
 
-    <!-- 🛡️ KONSÈY SEKIRITE -->
-    <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 20px; margin-bottom: 25px; display: flex; align-items: flex-start; gap: 15px;">
-        <div style="font-size: 28px;">🛡️</div>
-        <div>
-            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #92400e;">KONSÈY SEKIRITE ENPÒTAN</h3>
-            <p style="margin: 5px 0 0; font-size: 13px; color: #b45309;">Mande 50% kòm garanti avan ou deplase livre pwodwi a.</p>
-        </div>
-    </div>
-
     <div class="main-grid">
         <div class="content-left">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                 <div class="stat-box"><div style="font-size: 28px; font-weight: 900;" id="prodCount">0</div><div style="font-size: 11px; font-weight: 700; color: #94a3b8;">PWODWI</div></div>
                 <div class="stat-box" style="border-color: #25d366;"><div style="font-size: 16px; font-weight: 900; color: #25d366; margin-top: 8px;" id="expiryLabel">...</div><div style="font-size: 11px; font-weight: 700; color: #94a3b8;">STATUT</div></div>
-            </div>
-
-            <div style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 30px; border-radius: 25px; color: white; margin-bottom: 25px;">
-                <h2 style="margin: 0; font-size: 20px; font-weight: 800;">🎁 2 Mwa Gratis!</h2>
-                <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(255,255,255,0.4); margin-top: 15px;">
-                    <div><small style="display: block; font-size: 10px;">KÒD OU:</small><strong id="myRefCode" style="font-family: monospace; font-size: 18px;">...</strong></div>
-                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 800; cursor: pointer;">Pataje 🚀</button>
-                </div>
             </div>
 
             <div class="card-style">
@@ -59,14 +55,48 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 
         <div class="content-right">
             <div class="card-style">
-                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">👤 Pwofil & Adrès</h2>
-                <label style="display: block; font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">WHATSAPP</label>
-                <input type="tel" id="waNumber" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc; margin-bottom: 15px;">
-                <label style="display: block; font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">📍 ADRÈS</label>
-                <input type="text" id="userAddress" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc; margin-bottom: 20px;">
-                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Sove Chanjman</button>
-                <div id="saveStatus" style="margin-top: 10px; font-size: 12px; text-align: center; display: none;"></div>
+                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">👤 Pwofil & Rezo Sosyo</h2>
+
+                <div class="profile-input-group">
+                    <label>WhatsApp</label>
+                    <input type="tel" id="waNumber" placeholder="Eg: 50948868964">
+                </div>
+
+                <div class="profile-input-group">
+                    <label>📍 Adrès Boutique</label>
+                    <input type="text" id="userAddress" placeholder="Ri..., Vil...">
+                </div>
+
+                <div class="profile-input-group">
+                    <label>🔵 Facebook URL</label>
+                    <input type="url" id="fbUrl" placeholder="https://facebook.com/paj-ou">
+                </div>
+
+                <div class="profile-input-group">
+                    <label>📸 Instagram URL</label>
+                    <input type="url" id="igUrl" placeholder="https://instagram.com/paj-ou">
+                </div>
+
+                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px;">Sove Chanjman</button>
+                <div id="saveStatus" style="margin-top: 15px; text-align: center; font-weight: 700; font-size: 13px;"></div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FLASH SALE -->
+<div id="flashModal" class="modal-overlay">
+    <div class="flash-modal">
+        <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px; color: #ff4747; text-align: center;">⚡ Vante Flash</h2>
+        <input type="hidden" id="modalProdId">
+        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">ANSYEN PRI</label>
+        <input type="number" id="modalOldPrice" class="modal-input" oninput="liveCalc()">
+        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">NOUVO PRI</label>
+        <input type="number" id="modalNewPrice" class="modal-input" oninput="liveCalc()">
+        <div id="modalPercent" class="percent-box">Rabè: 0%</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <button onclick="closeFlashModal()" style="padding: 16px; background: #f1f5f9; border: none; border-radius: 15px; font-weight: 700;">Anile</button>
+            <button onclick="saveFlashSettings()" id="modalSaveBtn" style="padding: 16px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800;">Sove</button>
         </div>
     </div>
 </div>
@@ -85,7 +115,8 @@ title: Espas Kontwòl Mwen - Boutique Piyay
             document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || 'Machann'}!`;
             document.getElementById('waNumber').value = profile.whatsapp || "";
             document.getElementById('userAddress').value = profile.address || "";
-            document.getElementById('myRefCode').innerText = profile.referral_code || "P-" + user.id.substring(0,6).toUpperCase();
+            document.getElementById('fbUrl').value = profile.facebook_url || "";
+            document.getElementById('igUrl').value = profile.instagram_url || "";
             const exp = document.getElementById('expiryLabel');
             if (profile.is_active_seller) { exp.innerText = "AKTIF ✅"; exp.style.color = "#25d366"; }
             else { exp.innerText = "PENDING ⏳"; exp.style.color = "#facc15"; }
@@ -104,26 +135,65 @@ title: Espas Kontwòl Mwen - Boutique Piyay
                 <div style="font-weight:800; font-size:11px; height:30px; overflow:hidden;">${p.title}</div>
                 <div style="color:#ff4747; font-weight:900; margin-bottom:8px;">${p.price} HTG</div>
                 <div style="display:flex; flex-direction:column; gap:5px;">
-                    <button onclick="toggleFlash('${p.id}', ${p.is_flash_sale})" class="btn-action btn-flash">${p.is_flash_sale ? '⚡ Retire Flash' : '⚡ Mete Flash'}</button>
+                    <button onclick="openFlashModal('${p.id}', ${p.is_flash_sale}, ${p.price}, ${p.old_price})" class="btn-action btn-flash">${p.is_flash_sale ? '⚡ Retire Flash' : '⚡ Mete Flash'}</button>
                     <a href="/edit-product.html?id=${p.id}" class="btn-action btn-edit">✏️ Modifye</a>
                     <button onclick="handleDeleteProduct('${p.id}')" class="btn-action btn-delete">🗑️ Efase</button>
                 </div>
             </div>`).join('');
     }
 
-    async function toggleFlash(id, status) {
-        if (!status) {
-            const oldP = prompt("Ansyen Pri (sa k ap bare a):", "700");
-            if (oldP) await supD.from('user_products').update({ is_flash_sale: true, old_price: parseFloat(oldP), flash_expiry: new Date(Date.now() + 7*24*60*60*1000) }).eq('id', id);
-        } else { await supD.from('user_products').update({ is_flash_sale: false, old_price: null }).eq('id', id); }
+    function openFlashModal(id, status, price, oldPrice) {
+        if (status) { if(confirm("Retire nan Flash?")) toggleFlashOff(id); return; }
+        document.getElementById('modalProdId').value = id;
+        document.getElementById('modalOldPrice').value = oldPrice || price;
+        document.getElementById('modalNewPrice').value = "";
+        document.getElementById('flashModal').classList.add('active');
+        liveCalc();
+    }
+
+    function closeFlashModal() { document.getElementById('flashModal').classList.remove('active'); }
+
+    function liveCalc() {
+        const op = parseFloat(document.getElementById('modalOldPrice').value) || 0;
+        const np = parseFloat(document.getElementById('modalNewPrice').value) || 0;
+        const res = document.getElementById('modalPercent');
+        if (op > np && np > 0) {
+            const perc = Math.round(((op - np) / op) * 100);
+            res.innerText = `Rabè: -${perc}%`; res.style.background = "#00C853";
+        } else { res.innerText = "Pri nouvo a dwe pi piti"; res.style.background = "#ff4747"; }
+    }
+
+    async function saveFlashSettings() {
+        const id = document.getElementById('modalProdId').value;
+        const op = parseFloat(document.getElementById('modalOldPrice').value);
+        const np = parseFloat(document.getElementById('modalNewPrice').value);
+        if (!op || !np || np >= op) return alert("Pri yo pa kòrèk.");
+        await supD.from('user_products').update({ is_flash_sale: true, old_price: op, price: np }).eq('id', id);
+        closeFlashModal(); loadMyProducts(currentUser.id);
+    }
+
+    async function toggleFlashOff(id) {
+        await supD.from('user_products').update({ is_flash_sale: false, old_price: null }).eq('id', id);
         loadMyProducts(currentUser.id);
     }
 
-    async function handleDeleteProduct(id) { if (confirm("Efase pwodwi sa a?")) { await supD.from('user_products').delete().eq('id', id); loadMyProducts(currentUser.id); } }
     async function saveProfile() {
-        await supD.from('profiles').update({ whatsapp: document.getElementById('waNumber').value.trim(), address: document.getElementById('userAddress').value.trim() }).eq('id', currentUser.id);
-        alert("Sove! ✅");
+        const btn = document.getElementById('saveBtn');
+        const status = document.getElementById('saveStatus');
+        btn.disabled = true; btn.innerText = "⏳ SOVE...";
+        const { error } = await supD.from('profiles').update({
+            whatsapp: document.getElementById('waNumber').value.trim(),
+            address: document.getElementById('userAddress').value.trim(),
+            facebook_url: document.getElementById('fbUrl').value.trim(),
+            instagram_url: document.getElementById('igUrl').value.trim()
+        }).eq('id', currentUser.id);
+        if (error) { status.style.color = "red"; status.innerText = "❌ Erè!"; }
+        else { status.style.color = "green"; status.innerText = "✅ Sove!"; }
+        btn.disabled = false; btn.innerText = "Sove Chanjman";
+        setTimeout(() => status.innerText = "", 3000);
     }
+
+    async function handleDeleteProduct(id) { if (confirm("Efase?")) { await supD.from('user_products').delete().eq('id', id); loadMyProducts(currentUser.id); } }
     async function handleLogout() { await supD.auth.signOut(); window.location.href = "/"; }
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
