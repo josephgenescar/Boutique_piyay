@@ -3,89 +3,139 @@ layout: default
 title: Espas Kontwòl Mwen - Boutique Piyay
 ---
 
-<div class="container" style="padding: 40px 20px;">
-    <!-- Header Dashboard -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 20px;">
+<style>
+    /* DESIGN RESPONSIVE DASHBOARD */
+    .dashboard-container {
+        padding: 20px 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 25px;
+    }
+
+    /* LÈ EKRAN AN PITIT (MOBIL) */
+    @media (max-width: 992px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+        .header-top {
+            flex-direction: column;
+            text-align: center;
+        }
+        .header-actions {
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+        }
+    }
+
+    .card-style {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+    .stat-box {
+        text-align: center;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 15px;
+        border-bottom: 4px solid #ff4747;
+    }
+
+    .btn-action {
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- 1. HEADER -->
+    <div class="card-style header-top" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0;">🏠 Espas Kontwòl Mwen</h1>
-            <p id="userWelcome" style="color: #666; margin-top: 5px;">Chaje enfòmasyon ou yo...</p>
+            <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; font-size: 24px;">🏠 Espas Kontwòl</h1>
+            <p id="userWelcome" style="color: #64748b; margin-top: 5px; font-size: 14px;">Byenvini nan boutik ou a.</p>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <a href="/vendre.html" style="padding: 12px 25px; background: #ff4747; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.3);">➕ Vann yon Pwodwi</a>
-            <button onclick="handleLogout()" style="padding: 12px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Dekonekte</button>
+        <div class="header-actions" style="display: flex; gap: 10px;">
+            <a href="/vendre.html" class="btn-action" style="background: #ff4747; color: white;">➕ Vann</a>
+            <button onclick="handleLogout()" class="btn-action" style="background: #f1f5f9; color: #334155;">🚪 Soti</button>
         </div>
     </div>
 
-    <!-- 🛡️ KONSÈY SEKIRITE POU MACHANN (SÈL YO MENM K WÈ L) -->
-    <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.1);">
-        <div style="font-size: 30px;">🛡️</div>
+    <!-- 2. KONSÈY SEKIRITE -->
+    <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 20px; margin-bottom: 25px; display: flex; align-items: flex-start; gap: 15px;">
+        <div style="font-size: 28px;">🛡️</div>
         <div>
-            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #92400e;">KONSÈY SEKIRITE ENPÒTAN</h3>
-            <p style="margin: 5px 0 0; font-size: 13px; color: #b45309; line-height: 1.4;">
-                Anvan ou deplase pou livre yon pwodwi, nou rekòmande pou w toujou mande kliyan an peye omwen <strong>50% nan kòb la</strong> kòm garanti. Sa ap pwoteje w kont moun ki pa serye epi asire transpò w la pa gaspiye.
+            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #92400e;">KONSÈY SEKIRITE</h3>
+            <p style="margin: 5px 0 0; font-size: 13px; color: #b45309; line-height: 1.5;">
+                Asire w kliyan an peye <strong>50% nan kòb la</strong> avan ou deplase pou livre yon pwodwi.
             </p>
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 320px; gap: 30px;">
+    <div class="main-grid">
         <!-- KOLÒN GOCH -->
-        <div>
-            <!-- STATS RAPID -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-                <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; border-bottom: 4px solid #ff4747; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div class="content-left">
+            <!-- STATS -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                <div class="stat-box">
                     <div style="font-size: 28px; font-weight: 900;" id="prodCount">0</div>
-                    <div style="font-size: 12px; font-weight: 700; color: #888;">PWODWI EN LIY</div>
+                    <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">PWODWI</div>
                 </div>
-                <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; border-bottom: 4px solid #25d366; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <div style="font-size: 20px; font-weight: 900; color: #25d366;" id="expiryLabel">Vérification...</div>
-                    <div style="font-size: 12px; font-weight: 700; color: #888;">STATUT ABONMAN</div>
-                </div>
-            </div>
-
-            <!-- REFERANS BOX -->
-            <div style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 30px; border-radius: 25px; color: white; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.2);">
-                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
-                    <span style="font-size: 45px;">🎁</span>
-                    <div>
-                        <h2 style="margin: 0; font-size: 20px; font-weight: 800;">Genyen 2 Mwa Gratis!</h2>
-                        <p style="margin: 5px 0 0; font-size: 14px; opacity: 0.9;">Pataje kòd sa a ak yon zanmi machann pou nou tou de ka jwenn mwa gratis.</p>
-                    </div>
-                </div>
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(255,255,255,0.4);">
-                    <div>
-                        <small style="display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; opacity: 0.8;">Kòd Referans ou :</small>
-                        <strong id="myRefCode" style="font-family: monospace; font-size: 22px; letter-spacing: 2px;">CHAJMAN...</strong>
-                    </div>
-                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.3s;">Pataje 🚀</button>
+                <div class="stat-box" style="border-color: #25d366;">
+                    <div style="font-size: 16px; font-weight: 900; color: #25d366; margin-top: 8px;" id="expiryLabel">Vérification...</div>
+                    <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">STATUT</div>
                 </div>
             </div>
 
-            <!-- PWODWI GRID -->
-            <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">🛒 Pwodwi m ap vann yo</h2>
-                <div id="myProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
-                    <!-- JS ap chaje sa -->
+            <!-- REFERRAL -->
+            <div style="background: linear-gradient(135deg, #ff4747, #ff8c42); padding: 30px; border-radius: 25px; color: white; margin-bottom: 25px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 800;">🎁 2 Mwa Gratis!</h2>
+                <p style="font-size: 13px; opacity: 0.9; margin: 10px 0 20px;">Envite yon machann pou w jwenn mwa gratis sou abonman w.</p>
+                <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(255,255,255,0.4); flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <small style="display: block; font-size: 10px; font-weight: 800;">KÒD OU:</small>
+                        <strong id="myRefCode" style="font-family: monospace; font-size: 20px;">...</strong>
+                    </div>
+                    <button onclick="shareReferral()" style="background: white; color: #ff4747; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer;">Pataje 🚀</button>
+                </div>
+            </div>
+
+            <!-- LIS PWODWI -->
+            <div class="card-style">
+                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px; border-bottom: 2px solid #f8fafc; padding-bottom: 10px;">🛒 Pwodwi Mwen yo</h2>
+                <div id="myProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+                    <!-- JS Chajman -->
                 </div>
             </div>
         </div>
 
-        <!-- KOLÒN ADWAT -->
-        <div>
-            <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: sticky; top: 100px; border: 1px solid #f1f5f9;">
-                <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px;">👤 Pwofil & Adrès</h2>
-
+        <!-- KOLÒN ADWAT (SIDEBAR) -->
+        <div class="content-right">
+            <div class="card-style">
+                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">👤 Pwofil & Adrès</h2>
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">WhatsApp (509...)</label>
-                    <input type="tel" id="waNumber" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">WHATSAPP</label>
+                    <input type="tel" id="waNumber" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc;">
                 </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">📍 Zòn / Adrès</label>
-                    <input type="text" id="userAddress" placeholder="Eg: Delmas 33" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600;">
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">📍 ZÒN / ADRÈS</label>
+                    <input type="text" id="userAddress" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc;">
                 </div>
-
-                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">Sove Chanjman</button>
-                <div id="saveStatus" style="margin-top: 15px; font-size: 13px; text-align: center; font-weight: 700; display: none;"></div>
+                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Sove Chanjman</button>
+                <div id="saveStatus" style="margin-top: 10px; font-size: 12px; text-align: center; display: none;"></div>
             </div>
         </div>
     </div>
@@ -119,15 +169,13 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         const btn = document.getElementById('saveBtn');
         const status = document.getElementById('saveStatus');
         btn.disabled = true; btn.innerText = "⏳ Sere...";
-
         const { error } = await supD.from('profiles').update({
             whatsapp: document.getElementById('waNumber').value.trim(),
             address: document.getElementById('userAddress').value.trim()
         }).eq('id', currentUser.id);
-
         btn.disabled = false; btn.innerText = "Sove Chanjman";
         status.style.display = "block";
-        status.innerText = error ? "❌ Erè" : "✅ Done sove!";
+        status.innerText = error ? "❌ Erè" : "✅ Sove!";
         status.style.color = error ? "red" : "green";
         setTimeout(() => status.style.display = "none", 3000);
     }
@@ -136,13 +184,13 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', userId).order('created_at', { ascending: false });
         const grid = document.getElementById('myProductsGrid');
         document.getElementById('prodCount').innerText = prods ? prods.length : 0;
-        if (!prods || prods.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi.</p>'; return; }
+        if (!prods || prods.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-size:12px; padding:10px;">Okenn pwodwi.</p>'; return; }
         grid.innerHTML = prods.map(p => `
-            <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center; position:relative;">
-                <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:10px;">
-                <div style="font-weight:800; font-size:13px; height:35px; overflow:hidden;">${p.title}</div>
-                <div style="color:#ff4747; font-weight:900; margin-top:5px; margin-bottom:10px;">${p.price} HTG</div>
-                <button onclick="handleDeleteProduct('${p.id}', '${p.title}')" style="width:100%; padding:8px; background:#fee2e2; color:#ef4444; border:none; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ Efase</button>
+            <div style="background:#f8fafc; padding:10px; border-radius:15px; border:1px solid #e2e8f0; text-align:center;">
+                <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:8px;">
+                <div style="font-weight:800; font-size:11px; height:30px; overflow:hidden;">${p.title}</div>
+                <div style="color:#ff4747; font-weight:900; margin-top:3px; margin-bottom:8px; font-size:12px;">${p.price} HTG</div>
+                <button onclick="handleDeleteProduct('${p.id}', '${p.title}')" style="width:100%; padding:6px; background:#fee2e2; color:#ef4444; border:none; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">🗑️ Efase</button>
             </div>
         `).join('');
     }
