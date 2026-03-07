@@ -4,13 +4,20 @@ title: Detay Pwodwi - Marketplace
 ---
 
 <div id="product-detail-view" class="container" style="padding: 40px 20px; min-height: 80vh;">
-    <!-- Loading State -->
+    <!-- 1. LOADING STATE -->
     <div id="loading" style="text-align: center; padding: 100px 0;">
         <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
         <p style="margin-top: 20px; color: #666; font-weight: 600;">Chajman detay pwodwi...</p>
     </div>
 
-    <!-- Content State -->
+    <!-- 2. ERROR MESSAGE (Kache pa defo) -->
+    <div id="error-box" style="display: none; text-align: center; padding: 100px 20px;">
+        <h2 style="color: #ff4747;">Oops! Pwodwi sa a pa disponib.</h2>
+        <p id="error-msg" style="color: #666; margin-bottom: 20px;"></p>
+        <a href="/" style="padding: 12px 25px; background: #0f172a; color: white; border-radius: 10px; text-decoration: none; font-weight: 700;">Retounen nan Akèy</a>
+    </div>
+
+    <!-- 3. CONTENT STATE (Kache pa defo) -->
     <div id="content" style="display: none;">
         <div class="product-detail-flex" style="display: flex; gap: 50px; flex-wrap: wrap;">
             <!-- GAUCHE: IMAGE -->
@@ -29,7 +36,7 @@ title: Detay Pwodwi - Marketplace
                     <span id="pPrice">0</span> <small style="font-size: 16px; color: #64748b;">HTG</small>
                 </div>
 
-                <!-- DESKRIPSYON PWODWI A -->
+                <!-- DESKRIPSYON -->
                 <div style="margin-bottom: 30px; border-top: 1px solid #eee; padding-top: 20px;">
                     <h3 style="font-size: 16px; color: #0f172a; margin-bottom: 10px; font-weight: 800;">Deskripsyon :</h3>
                     <p id="pDesc" style="color: #475569; line-height: 1.6; font-size: 15px; white-space: pre-wrap;"></p>
@@ -37,22 +44,21 @@ title: Detay Pwodwi - Marketplace
 
                 <!-- INFO MACHANN -->
                 <div style="background: #f8fafc; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
-                    <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">👤 Enfòmasyon Machann</h3>
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                        <div style="width: 45px; height: 45px; background: #ff4747; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;" id="sellerInitial">M</div>
+                    <h3 style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">👤 Enfòmasyon Machann</h3>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 45px; height: 45px; background: #0f172a; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;" id="sellerInitial">?</div>
                         <div>
-                            <div id="sellerName" style="font-weight: 800; color: #0f172a; font-size: 16px;">Machann</div>
+                            <div id="sellerName" style="font-weight: 800; color: #0f172a; font-size: 16px;">Chajman machann...</div>
                             <div id="sellerAddress" style="font-size: 13px; color: #ff4747; font-weight: 700; display: flex; align-items: center; gap: 5px;">
-                                📍 <span id="sellerLoc">Zòn non-defini</span>
+                                📍 <span id="sellerLoc">Lieu...</span>
                             </div>
                         </div>
                     </div>
-                    <div id="sellerSocials" style="display: flex; gap: 10px; margin-top: 15px;"></div>
                 </div>
 
                 <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer;">🛒 Panye</button>
-                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer;">⚡ Achte</button>
+                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">🛒 Panye</button>
+                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">⚡ Achte</button>
                 </div>
             </div>
         </div>
@@ -65,34 +71,70 @@ title: Detay Pwodwi - Marketplace
 
     async function loadDetails() {
         const id = new URLSearchParams(window.location.search).get('id');
-        if (!id) return;
+        if (!id) {
+            showError("ID Pwodwi a manke.");
+            return;
+        }
 
         try {
-            const { data: prod, error } = await supV.from('user_products').select('*, profiles(*)').eq('id', id).single();
-            if (error) throw error;
+            // 1. Rale Pwodwi a an premye
+            const { data: prod, error: prodErr } = await supV
+                .from('user_products')
+                .select('*')
+                .eq('id', id)
+                .single();
 
+            if (prodErr || !prod) throw new Error("Nou pa jwenn pwodwi sa a.");
+
+            // Afiche done pwodwi yo
             document.getElementById('pTitle').innerText = prod.title;
             document.getElementById('pPrice').innerText = prod.price;
             document.getElementById('pImg').src = prod.image_url;
             document.getElementById('pCat').innerText = prod.category || "Marketplace";
-            document.getElementById('pDesc').innerText = prod.description || "Pa gen deskripsyon pou pwodwi sa a.";
+            document.getElementById('pDesc').innerText = prod.description || "Pa gen deskripsyon detaye.";
 
-            const seller = prod.profiles;
-            if (seller) {
-                document.getElementById('sellerName').innerText = seller.full_name || "Machann";
-                document.getElementById('sellerInitial').innerText = (seller.full_name || "M").charAt(0).toUpperCase();
-                document.getElementById('sellerLoc').innerText = seller.address || "Zòn non-defini";
-                const socialWrap = document.getElementById('sellerSocials');
-                if (seller.facebook_url) socialWrap.innerHTML += `<a href="${seller.facebook_url}" target="_blank" style="text-decoration:none; font-size:20px;">🔵</a>`;
-                if (seller.instagram_url) socialWrap.innerHTML += `<a href="${seller.instagram_url}" target="_blank" style="text-decoration:none; font-size:20px;">📸</a>`;
+            // 2. Rale Machann nan separeman pou evite bloke
+            if (prod.seller_id) {
+                const { data: seller } = await supV
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', prod.seller_id)
+                    .single();
+
+                if (seller) {
+                    document.getElementById('sellerName').innerText = seller.full_name || "Machann";
+                    document.getElementById('sellerInitial').innerText = (seller.full_name || "M").charAt(0).toUpperCase();
+                    document.getElementById('sellerLoc').innerText = seller.address || "Zòn non-defini";
+                }
             }
 
+            // Bouton
             document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url);
-            document.getElementById('buyBtn').onclick = () => { orderProduct(prod.title, prod.price, prod.id, prod.image_url); openOrderModal(); };
+            document.getElementById('buyBtn').onclick = () => {
+                orderProduct(prod.title, prod.price, prod.id, prod.image_url);
+                if (typeof openOrderModal === 'function') openOrderModal();
+            };
 
+            // Switch view
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';
-        } catch (e) { console.error(e); }
+
+        } catch (err) {
+            console.error(err);
+            showError(err.message);
+        }
     }
+
+    function showError(msg) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error-box').style.display = 'block';
+        document.getElementById('error-msg').innerText = msg;
+    }
+
     document.addEventListener('DOMContentLoaded', loadDetails);
 </script>
+
+<style>
+@keyframes spin { 100% { transform: rotate(360deg); } }
+button:hover { transform: translateY(-3px); opacity: 0.9; }
+</style>
