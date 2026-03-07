@@ -4,61 +4,18 @@ title: Espas Kontwòl Mwen - Boutique Piyay
 ---
 
 <style>
-    /* DESIGN RESPONSIVE DASHBOARD */
-    .dashboard-container {
-        padding: 20px 15px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 25px;
-    }
-
-    /* LÈ EKRAN AN PITIT (MOBIL) */
+    .dashboard-container { padding: 20px 15px; max-width: 1200px; margin: 0 auto; }
+    .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; }
     @media (max-width: 992px) {
-        .main-grid {
-            grid-template-columns: 1fr;
-        }
-        .header-top {
-            flex-direction: column;
-            text-align: center;
-        }
-        .header-actions {
-            width: 100%;
-            justify-content: center;
-            margin-top: 15px;
-        }
+        .main-grid { grid-template-columns: 1fr; }
+        .header-top { flex-direction: column; text-align: center; }
+        .header-actions { width: 100%; justify-content: center; margin-top: 15px; }
     }
-
-    .card-style {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        padding: 25px;
-        margin-bottom: 25px;
-    }
-
-    .stat-box {
-        text-align: center;
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 15px;
-        border-bottom: 4px solid #ff4747;
-    }
-
-    .btn-action {
-        padding: 12px 20px;
-        border-radius: 12px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: 0.3s;
-        display: inline-block;
-        border: none;
-        cursor: pointer;
-    }
+    .card-style { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; }
+    .stat-box { text-align: center; padding: 20px; background: #f8fafc; border-radius: 15px; border-bottom: 4px solid #ff4747; }
+    .btn-action { padding: 12px 20px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: 0.3s; display: inline-block; border: none; cursor: pointer; }
+    .input-dash { width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc; font-size: 14px; margin-bottom: 15px; }
+    .label-dash { display: block; font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; }
 </style>
 
 <div class="dashboard-container">
@@ -66,7 +23,7 @@ title: Espas Kontwòl Mwen - Boutique Piyay
     <div class="card-style header-top" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
             <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; font-size: 24px;">🏠 Espas Kontwòl</h1>
-            <p id="userWelcome" style="color: #64748b; margin-top: 5px; font-size: 14px;">Byenvini nan boutik ou a.</p>
+            <p id="userWelcome" style="color: #64748b; margin-top: 5px; font-size: 14px;">Chaje enfòmasyon ou yo...</p>
         </div>
         <div class="header-actions" style="display: flex; gap: 10px;">
             <a href="/vendre.html" class="btn-action" style="background: #ff4747; color: white;">➕ Vann</a>
@@ -78,7 +35,7 @@ title: Espas Kontwòl Mwen - Boutique Piyay
     <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 20px; margin-bottom: 25px; display: flex; align-items: flex-start; gap: 15px;">
         <div style="font-size: 28px;">🛡️</div>
         <div>
-            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #92400e;">KONSÈY SEKIRITE</h3>
+            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #92400e;">KONSÈY SEKIRITE ENPÒTAN</h3>
             <p style="margin: 5px 0 0; font-size: 13px; color: #b45309; line-height: 1.5;">
                 Asire w kliyan an peye <strong>50% nan kòb la</strong> avan ou deplase pou livre yon pwodwi.
             </p>
@@ -88,7 +45,6 @@ title: Espas Kontwòl Mwen - Boutique Piyay
     <div class="main-grid">
         <!-- KOLÒN GOCH -->
         <div class="content-left">
-            <!-- STATS -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                 <div class="stat-box">
                     <div style="font-size: 28px; font-weight: 900;" id="prodCount">0</div>
@@ -113,29 +69,32 @@ title: Espas Kontwòl Mwen - Boutique Piyay
                 </div>
             </div>
 
-            <!-- LIS PWODWI -->
+            <!-- PWODWI GRID -->
             <div class="card-style">
                 <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px; border-bottom: 2px solid #f8fafc; padding-bottom: 10px;">🛒 Pwodwi Mwen yo</h2>
-                <div id="myProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
-                    <!-- JS Chajman -->
-                </div>
+                <div id="myProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;"></div>
             </div>
         </div>
 
-        <!-- KOLÒN ADWAT (SIDEBAR) -->
+        <!-- KOLÒN ADWAT (Side) -->
         <div class="content-right">
             <div class="card-style">
-                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">👤 Pwofil & Adrès</h2>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">WHATSAPP</label>
-                    <input type="tel" id="waNumber" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc;">
-                </div>
-                <div style="margin-bottom: 25px;">
-                    <label style="display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">📍 ZÒN / ADRÈS</label>
-                    <input type="text" id="userAddress" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 10px; background: #f8fafc;">
-                </div>
-                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Sove Chanjman</button>
-                <div id="saveStatus" style="margin-top: 10px; font-size: 12px; text-align: center; display: none;"></div>
+                <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">👤 Pwofil & Sosyal</h2>
+
+                <label class="label-dash">WhatsApp (509...)</label>
+                <input type="tel" id="waNumber" class="input-dash">
+
+                <label class="label-dash">📍 Zòn / Adrès</label>
+                <input type="text" id="userAddress" class="input-dash">
+
+                <label class="label-dash">🔗 Link Facebook</label>
+                <input type="url" id="fbUrl" placeholder="https://facebook.com/..." class="input-dash">
+
+                <label class="label-dash">📸 Link Instagram</label>
+                <input type="url" id="igUrl" placeholder="https://instagram.com/..." class="input-dash">
+
+                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">Sove Tout Chanjman</button>
+                <div id="saveStatus" style="margin-top: 10px; font-size: 12px; text-align: center; display: none; font-weight: 700;"></div>
             </div>
         </div>
     </div>
@@ -156,6 +115,8 @@ title: Espas Kontwòl Mwen - Boutique Piyay
             document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || 'Machann'}!`;
             document.getElementById('waNumber').value = profile.whatsapp || "";
             document.getElementById('userAddress').value = profile.address || "";
+            document.getElementById('fbUrl').value = profile.facebook_url || "";
+            document.getElementById('igUrl').value = profile.instagram_url || "";
             document.getElementById('myRefCode').innerText = profile.referral_code || "P-" + user.id.substring(0,6).toUpperCase();
 
             const exp = document.getElementById('expiryLabel');
@@ -169,13 +130,17 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         const btn = document.getElementById('saveBtn');
         const status = document.getElementById('saveStatus');
         btn.disabled = true; btn.innerText = "⏳ Sere...";
+
         const { error } = await supD.from('profiles').update({
             whatsapp: document.getElementById('waNumber').value.trim(),
-            address: document.getElementById('userAddress').value.trim()
+            address: document.getElementById('userAddress').value.trim(),
+            facebook_url: document.getElementById('fbUrl').value.trim(),
+            instagram_url: document.getElementById('igUrl').value.trim()
         }).eq('id', currentUser.id);
-        btn.disabled = false; btn.innerText = "Sove Chanjman";
+
+        btn.disabled = false; btn.innerText = "Sove Tout Chanjman";
         status.style.display = "block";
-        status.innerText = error ? "❌ Erè" : "✅ Sove!";
+        status.innerText = error ? "❌ Erè" : "✅ Done sove!";
         status.style.color = error ? "red" : "green";
         setTimeout(() => status.style.display = "none", 3000);
     }
