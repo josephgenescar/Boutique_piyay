@@ -3,57 +3,37 @@ layout: default
 title: Detay Pwodwi - Marketplace
 ---
 
-<div id="product-detail-view" class="container" style="padding: 40px 20px; min-height: 80vh;">
-    <!-- 1. LOADING STATE -->
+<div id="product-view" class="container" style="padding: 40px 20px; min-height: 80vh;">
+    <!-- LOADING -->
     <div id="loading" style="text-align: center; padding: 100px 0;">
         <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
-        <p style="margin-top: 20px; color: #666; font-weight: 600;">Chajman detay pwodwi...</p>
+        <p>Chajman detay pwodwi...</p>
     </div>
 
-    <!-- 2. CONTENT STATE -->
+    <!-- CONTENT -->
     <div id="content" style="display: none;">
-        <div class="product-detail-flex" style="display: flex; gap: 50px; flex-wrap: wrap;">
-            <!-- GAUCHE: IMAGE -->
-            <div style="flex: 1; min-width: 320px;">
-                <div style="width: 100%; aspect-ratio: 1/1; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.08); background: #fff;">
-                    <img id="pImg" src="" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
+        <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px;">
+                <img id="pImg" src="" style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             </div>
+            <div style="flex: 1.2; min-width: 300px;">
+                <h1 id="pTitle" style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 900;"></h1>
+                <div style="margin-bottom: 20px;">
+                    <span id="pPrice" style="font-size: 32px; font-weight: 800; color: #ff4747;"></span>
+                    <span id="pOldPrice" style="text-decoration: line-through; color: #aaa; margin-left: 10px; display: none;"></span>
+                    <span style="font-weight: 800;"> HTG</span>
+                </div>
+                <div id="pDesc" style="line-height: 1.6; color: #444; margin-bottom: 30px; white-space: pre-wrap;"></div>
 
-            <!-- DROITE: INFO -->
-            <div style="flex: 1.2; min-width: 320px;">
-                <div id="pCat" style="display: inline-block; background: #fff0f0; color: #ff4747; padding: 6px 15px; border-radius: 50px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px;">Kategori</div>
-                <h1 id="pTitle" style="font-size: 2.2rem; margin: 0 0 15px; color: #0f172a; font-weight: 900; line-height: 1.2;"></h1>
-
-                <div style="margin-bottom: 25px; display: flex; align-items: baseline; gap: 15px;">
-                    <span id="pPrice" style="font-size: 36px; font-weight: 900; color: #ff4747;">0</span>
-                    <span id="pOldPrice" style="font-size: 20px; color: #94a3b8; text-decoration: line-through; display: none;">0</span>
-                    <span style="font-size: 18px; color: #64748b; font-weight: 600;">HTG</span>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 30px;">
+                    <div id="sellerName" style="font-weight: 800; font-size: 18px;"></div>
+                    <div id="sellerLoc" style="color: #ff4747; font-weight: 700; margin-top: 5px;">📍 </div>
+                    <div id="sellerSocials" style="display: flex; gap: 10px; margin-top: 15px;"></div>
                 </div>
 
-                <!-- DESKRIPSYON -->
-                <div style="margin-bottom: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                    <h3 style="font-size: 16px; color: #0f172a; margin-bottom: 10px; font-weight: 800;">Deskripsyon :</h3>
-                    <p id="pDesc" style="color: #475569; line-height: 1.6; font-size: 15px; white-space: pre-wrap;"></p>
-                </div>
-
-                <!-- INFO MACHANN -->
-                <div style="background: #f8fafc; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
-                    <h3 style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">👤 Enfòmasyon Machann</h3>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 45px; height: 45px; background: #0f172a; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;" id="sellerInitial">M</div>
-                        <div>
-                            <div id="sellerName" style="font-weight: 800; color: #0f172a; font-size: 16px;">Machann</div>
-                            <div id="sellerAddress" style="font-size: 13px; color: #ff4747; font-weight: 700; display: flex; align-items: center; gap: 5px;">
-                                📍 <span id="sellerLoc">Lieu...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">🛒 Panye</button>
-                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">⚡ Achte</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">🛒 Panye</button>
+                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">⚡ Achte</button>
                 </div>
             </div>
         </div>
@@ -64,33 +44,30 @@ title: Detay Pwodwi - Marketplace
 <script>
     const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    async function loadDetails() {
+    async function loadData() {
         const id = new URLSearchParams(window.location.search).get('id');
         if (!id) return;
 
         try {
             const { data: prod, error } = await supV.from('user_products').select('*, profiles(*)').eq('id', id).single();
-            if (error) throw error;
+            if (error || !prod) throw error;
 
             document.getElementById('pTitle').innerText = prod.title;
             document.getElementById('pPrice').innerText = prod.price;
+            document.getElementById('pImg').src = prod.image_url;
+            document.getElementById('pDesc').innerText = prod.description || "";
 
-            // Afiche Ansyen Pri si li la
             if (prod.old_price) {
-                const oldEl = document.getElementById('pOldPrice');
-                oldEl.innerText = prod.old_price;
-                oldEl.style.display = 'inline';
+                document.getElementById('pOldPrice').innerText = prod.old_price;
+                document.getElementById('pOldPrice').style.display = 'inline';
             }
 
-            document.getElementById('pImg').src = prod.image_url;
-            document.getElementById('pCat').innerText = prod.category || "Marketplace";
-            document.getElementById('pDesc').innerText = prod.description || "Pa gen deskripsyon detaye.";
-
-            const seller = prod.profiles;
-            if (seller) {
-                document.getElementById('sellerName').innerText = seller.full_name || "Machann";
-                document.getElementById('sellerInitial').innerText = (seller.full_name || "M").charAt(0).toUpperCase();
-                document.getElementById('sellerLoc').innerText = seller.address || "Zòn non-defini";
+            if (prod.profiles) {
+                document.getElementById('sellerName').innerText = prod.profiles.full_name;
+                document.getElementById('sellerLoc').innerText += prod.profiles.address || "Zòn non-defini";
+                const soc = document.getElementById('sellerSocials');
+                if (prod.profiles.facebook_url) soc.innerHTML += `<a href="${prod.profiles.facebook_url}" target="_blank">🔵 Facebook</a>`;
+                if (prod.profiles.instagram_url) soc.innerHTML += `<a href="${prod.profiles.instagram_url}" target="_blank">📸 Instagram</a>`;
             }
 
             document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url);
@@ -98,7 +75,10 @@ title: Detay Pwodwi - Marketplace
 
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            document.getElementById('loading').innerHTML = `<h2 style="color:red;">Erè nan chaje pwodwi a</h2><p>${e.message}</p>`;
+        }
     }
-    document.addEventListener('DOMContentLoaded', loadDetails);
+    document.addEventListener('DOMContentLoaded', loadData);
 </script>
+<style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>
