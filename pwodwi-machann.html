@@ -29,33 +29,30 @@ title: Detay Pwodwi - Marketplace
                     <span id="pPrice">0</span> <small style="font-size: 16px; color: #64748b;">HTG</small>
                 </div>
 
-                <!-- INFO MACHANN & ADRESSE -->
+                <!-- DESKRIPSYON PWODWI A -->
+                <div style="margin-bottom: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <h3 style="font-size: 16px; color: #0f172a; margin-bottom: 10px; font-weight: 800;">Deskripsyon :</h3>
+                    <p id="pDesc" style="color: #475569; line-height: 1.6; font-size: 15px; white-space: pre-wrap;"></p>
+                </div>
+
+                <!-- INFO MACHANN -->
                 <div style="background: #f8fafc; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
                     <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">👤 Enfòmasyon Machann</h3>
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
                         <div style="width: 45px; height: 45px; background: #ff4747; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;" id="sellerInitial">M</div>
                         <div>
-                            <div id="sellerName" style="font-weight: 800; color: #0f172a; font-size: 16px;">Machann Boutique</div>
+                            <div id="sellerName" style="font-weight: 800; color: #0f172a; font-size: 16px;">Machann</div>
                             <div id="sellerAddress" style="font-size: 13px; color: #ff4747; font-weight: 700; display: flex; align-items: center; gap: 5px;">
                                 📍 <span id="sellerLoc">Zòn non-defini</span>
                             </div>
                         </div>
                     </div>
-
-                    <!-- REZO SOSYAL -->
-                    <div id="sellerSocials" style="display: flex; gap: 10px; margin-top: 15px;">
-                        <!-- JS ap ajoute icons yo si yo la -->
-                    </div>
+                    <div id="sellerSocials" style="display: flex; gap: 10px; margin-top: 15px;"></div>
                 </div>
 
-                <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
-                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;">🛒 Panye</button>
-                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">⚡ Achte</button>
-                </div>
-
-                <div style="display: flex; gap: 15px; color: #64748b; font-size: 12px; font-weight: 600;">
-                    <span>🛡️ Peman Sekirize</span>
-                    <span>🚚 Livrezon Rapid</span>
+                <div class="actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer;">🛒 Panye</button>
+                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer;">⚡ Achte</button>
                 </div>
             </div>
         </div>
@@ -78,15 +75,13 @@ title: Detay Pwodwi - Marketplace
             document.getElementById('pPrice').innerText = prod.price;
             document.getElementById('pImg').src = prod.image_url;
             document.getElementById('pCat').innerText = prod.category || "Marketplace";
+            document.getElementById('pDesc').innerText = prod.description || "Pa gen deskripsyon pou pwodwi sa a.";
 
-            // Info Machann
             const seller = prod.profiles;
             if (seller) {
                 document.getElementById('sellerName').innerText = seller.full_name || "Machann";
                 document.getElementById('sellerInitial').innerText = (seller.full_name || "M").charAt(0).toUpperCase();
                 document.getElementById('sellerLoc').innerText = seller.address || "Zòn non-defini";
-
-                // Icons Sosyal
                 const socialWrap = document.getElementById('sellerSocials');
                 if (seller.facebook_url) socialWrap.innerHTML += `<a href="${seller.facebook_url}" target="_blank" style="text-decoration:none; font-size:20px;">🔵</a>`;
                 if (seller.instagram_url) socialWrap.innerHTML += `<a href="${seller.instagram_url}" target="_blank" style="text-decoration:none; font-size:20px;">📸</a>`;
@@ -99,11 +94,5 @@ title: Detay Pwodwi - Marketplace
             document.getElementById('content').style.display = 'block';
         } catch (e) { console.error(e); }
     }
-
     document.addEventListener('DOMContentLoaded', loadDetails);
 </script>
-
-<style>
-@keyframes spin { 100% { transform: rotate(360deg); } }
-button:hover { transform: translateY(-3px); opacity: 0.9; }
-</style>
