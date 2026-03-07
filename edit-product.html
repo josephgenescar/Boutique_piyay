@@ -1,0 +1,91 @@
+---
+layout: default
+title: Modifye Pwodwi - Boutique Piyay
+---
+
+<div class="container" style="max-width: 700px; padding: 40px 20px;">
+    <div id="loading" style="text-align: center; padding: 50px;">⏳ Chaje enfòmasyon...</div>
+
+    <div id="editCard" class="seller-card" style="display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px;">✏️ Modifye Pwodwi</h1>
+
+        <form id="editForm">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">NON PWODWI A</label>
+                <input type="text" id="editTitle" required style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">PRI (HTG)</label>
+                    <input type="number" id="editPrice" required style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">CHWAZI KATEGORI</label>
+                    <select id="editCat" required style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+                        <option value="electronique">Électronique</option>
+                        <option value="habillement">Mode & Habillement</option>
+                        <option value="maison">Maison & Bureau</option>
+                        <option value="beaute">Beauté & Cosmétiques</option>
+                        <option value="epicerie">Épicerie & Supermarché</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">DESKRIPSYON</label>
+                <textarea id="editDesc" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 100px; font-family: inherit;"></textarea>
+            </div>
+
+            <button type="submit" id="saveBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
+                💾 Sove Chanjman yo
+            </button>
+        </form>
+        <div id="msg" style="margin-top: 20px; text-align: center; font-weight: 700; display: none;"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const supE = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    let prodId = new URLSearchParams(window.location.search).get('id');
+
+    async function loadProd() {
+        const { data: { user } } = await supE.auth.getUser();
+        if (!user) { window.location.href = "/login.html"; return; }
+
+        const { data: p, error } = await supE.from('user_products').select('*').eq('id', prodId).single();
+        if (error || p.seller_id !== user.id) { alert("Ou pa gen dwa modifye pwodwi sa a."); window.location.href = "/dashboard.html"; return; }
+
+        document.getElementById('editTitle').value = p.title;
+        document.getElementById('editPrice').value = p.price;
+        document.getElementById('editCat').value = p.category;
+        document.getElementById('editDesc').value = p.description || "";
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('editCard').style.display = 'block';
+    }
+
+    document.getElementById('editForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true; btn.innerText = "⏳ Enregistre...";
+
+        const { error } = await supE.from('user_products').update({
+            title: document.getElementById('editTitle').value,
+            price: parseFloat(document.getElementById('editPrice').value),
+            category: document.getElementById('editCat').value,
+            description: document.getElementById('editDesc').value
+        }).eq('id', prodId);
+
+        if (error) { alert("Erè: " + error.message); btn.disabled = false; btn.innerText = "💾 Sove Chanjman yo"; }
+        else {
+            const msg = document.getElementById('msg');
+            msg.innerText = "✅ Pwodwi a modifye ak siksè!";
+            msg.style.display = 'block'; msg.style.color = 'green';
+            setTimeout(() => window.location.href = "/dashboard.html", 2000);
+        }
+    };
+
+    loadProd();
+</script>

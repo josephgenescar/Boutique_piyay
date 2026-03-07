@@ -1,0 +1,54 @@
+---
+layout: default
+title: Kontakte Nou - Boutique Piyay
+---
+
+<div class="container" style="max-width: 600px; padding: 60px 20px;">
+    <div style="background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;">
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; color: #0f172a; margin-bottom: 10px;">📩 Kontakte Nou</h1>
+        <p style="color: #64748b; margin-bottom: 30px;">Ou gen yon keksyon oswa yon pwoblèm? Ekri nou epi n ap reponn ou rapid.</p>
+
+        <form id="contactForm">
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="display:block; font-size: 13px; font-weight: 700; margin-bottom: 8px;">NON KONPLÈ</label>
+                <input type="text" id="cName" required style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+            </div>
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="display:block; font-size: 13px; font-weight: 700; margin-bottom: 8px;">EMAIL</label>
+                <input type="email" id="cEmail" required style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+            </div>
+            <div style="text-align: left; margin-bottom: 25px;">
+                <label style="display:block; font-size: 13px; font-weight: 700; margin-bottom: 8px;">MESAJ OU</label>
+                <textarea id="cMessage" required style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 120px; font-family: inherit;"></textarea>
+            </div>
+            <button type="submit" id="sendBtn" style="width: 100%; padding: 16px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">📤 Voye Mesaj la</button>
+        </form>
+        <div id="status" style="margin-top: 20px; font-weight: 700; display: none;"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const supC = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+
+    document.getElementById('contactForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('status');
+        btn.disabled = true; btn.innerText = "⏳ Envoi...";
+
+        const { error } = await supC.from('feedback').insert([{
+            name: document.getElementById('cName').value,
+            email: document.getElementById('cEmail').value,
+            message: document.getElementById('cMessage').value
+        }]);
+
+        if (error) { status.innerText = "❌ Erè: " + error.message; status.style.color = "red"; btn.disabled = false; }
+        else {
+            status.innerText = "✅ Mesaj ou voye ak siksè! N ap reponn ou byento.";
+            status.style.color = "green";
+            document.getElementById('contactForm').reset();
+        }
+        status.style.display = "block";
+    };
+</script>
