@@ -37,6 +37,12 @@ title: Vann yon Pwodwi - Boutique Piyay
                 </div>
             </div>
 
+            <!-- DESKRIPSYON -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">DESKRIPSYON PWODWI A *</label>
+                <textarea id="prodDesc" required placeholder="Bay plis detay sou sa w ap vann nan (Koulè, kalite, elatriye)..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 100px; font-family: inherit;"></textarea>
+            </div>
+
             <div id="flashOption" style="background: #fff5f5; padding: 20px; border-radius: 15px; border: 1px dashed #ff4747; margin-bottom: 25px;">
                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 800; color: #ff4747;">
                     <input type="checkbox" id="isFlash" style="width: 20px; height: 20px;"> ⚡ Mete nan Vante Flash (7 jou)
@@ -52,7 +58,7 @@ title: Vann yon Pwodwi - Boutique Piyay
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn" style="width: 100%; padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(255, 71, 71, 0.2);">
+            <button type="submit" id="submitBtn" style="width: 100%; padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(255, 71, 71, 0.3);">
                 🚀 Pibliye Pwodwi a
             </button>
         </form>
@@ -67,7 +73,6 @@ title: Vann yon Pwodwi - Boutique Piyay
     </div>
 </div>
 
-<!-- SÈVI AK SUPABASE SÈLMAN - RETIRE IMAGEKIT -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <script>
@@ -114,31 +119,25 @@ title: Vann yon Pwodwi - Boutique Piyay
         status.style.display = 'block';
         status.style.background = "#f1f5f9";
         status.style.color = "#475569";
-        status.innerText = "Chajman foto nan Supabase Storage...";
+        status.innerText = "Chajman done yo...";
 
         try {
-            // 1. UPLOAD FOTO
             const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const fileName = `${Date.now()}.${fileExt}`;
             const filePath = `${user.id}/${fileName}`;
 
-            const { data: uploadData, error: uploadError } = await supV.storage
-                .from('products')
-                .upload(filePath, file);
-
+            const { data: uploadData, error: uploadError } = await supV.storage.from('products').upload(filePath, file);
             if (uploadError) throw uploadError;
 
-            // 2. JWENN URL PUBLIC LA
             const { data: { publicUrl } } = supV.storage.from('products').getPublicUrl(filePath);
 
-            // 3. ANREJISTRE PWODWI A NAN DATABASE
-            status.innerText = "Sere enfòmasyon pwodwi a...";
             const expiryDate = isFlash ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null;
 
             const { error: dbError } = await supV.from('user_products').insert([{
                 title: document.getElementById('prodTitle').value,
                 price: parseFloat(document.getElementById('prodPrice').value),
                 category: document.getElementById('prodCat').value,
+                description: document.getElementById('prodDesc').value,
                 image_url: publicUrl,
                 seller_id: user.id,
                 is_flash_sale: isFlash,
@@ -150,8 +149,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             status.style.background = "#dcfce7";
             status.style.color = "#15803d";
-            status.innerText = "🎉 BRAVO! Pwodwi ou a pibliye ak siksè!";
-
+            status.innerText = "🎉 Pwodwi ou a pibliye ak siksè!";
             setTimeout(() => window.location.href = "/dashboard.html", 2000);
 
         } catch (err) {
