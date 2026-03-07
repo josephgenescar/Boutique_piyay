@@ -58,7 +58,7 @@ title: Espas Kontwòl Mwen - Boutique Piyay
             </div>
         </div>
 
-        <!-- KOLÒN ADWAT: PWOFIL & ADRESSE -->
+        <!-- KOLÒN ADWAT -->
         <div>
             <div style="background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: sticky; top: 100px; border: 1px solid #f1f5f9;">
                 <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; font-size: 18px;">👤 Pwofil & Adrès</h2>
@@ -139,14 +139,28 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', userId).order('created_at', { ascending: false });
         const grid = document.getElementById('myProductsGrid');
         document.getElementById('prodCount').innerText = prods ? prods.length : 0;
-        if (!prods || prods.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi.</p>'; return; }
+
+        if (!prods || prods.length === 0) {
+            grid.innerHTML = '<p style="color:#94a3b8; font-size:14px; padding:20px;">Okenn pwodwi.</p>';
+            return;
+        }
+
         grid.innerHTML = prods.map(p => `
-            <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center;">
+            <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0; text-align:center; position:relative;">
                 <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:10px;">
-                <div style="font-weight:800; font-size:13px;">${p.title}</div>
-                <div style="color:#ff4747; font-weight:900; margin-top:5px;">${p.price} HTG</div>
+                <div style="font-weight:800; font-size:13px; height:35px; overflow:hidden;">${p.title}</div>
+                <div style="color:#ff4747; font-weight:900; margin-top:5px; margin-bottom:10px;">${p.price} HTG</div>
+                <button onclick="handleDeleteProduct('${p.id}', '${p.title}')" style="width:100%; padding:8px; background:#fee2e2; color:#ef4444; border:none; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ Efase</button>
             </div>
         `).join('');
+    }
+
+    async function handleDeleteProduct(id, title) {
+        if (confirm(`Èske ou vle efase "${title}" tout bon?`)) {
+            const { error } = await supD.from('user_products').delete().eq('id', id);
+            if (error) alert("Erè: " + error.message);
+            else loadMyProducts(currentUser.id);
+        }
     }
 
     function shareReferral() {
@@ -155,6 +169,10 @@ title: Espas Kontwòl Mwen - Boutique Piyay
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    async function handleLogout() { await supD.auth.signOut(); window.location.href = "/"; }
+    async function handleLogout() {
+        await supD.auth.signOut();
+        window.location.href = "/";
+    }
+
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
