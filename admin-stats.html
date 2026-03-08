@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Sant Kontwòl Marketplace - Boutique Piyay
+title: Sant Kontwòl Admin - Boutique Piyay
 ---
 
 <div id="admin-login-section" class="container" style="padding: 80px 20px; text-align: center;">
@@ -11,63 +11,106 @@ title: Sant Kontwòl Marketplace - Boutique Piyay
         <input type="email" id="adminEmail" placeholder="admin@email.com" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; margin-bottom: 15px;">
         <input type="password" id="adminPass" placeholder="••••••••" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; margin-bottom: 25px;">
         <button onclick="handleAdminLogin()" id="loginBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">ANTRE NAN SANT KONTWÒL</button>
-        <div id="loginError" style="color: #ff4747; font-size: 13px; margin-top: 15px; display: none;"></div>
+        <div id="loginError" style="color: #ff4747; font-size: 13px; margin-top: 15px; display: none; padding: 10px; background: #fee2e2; border-radius: 8px;"></div>
     </div>
 </div>
 
 <div id="admin-dashboard" class="container" style="display: none; padding: 40px 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; color: #ff4747;">🛡️ Sant Kontwòl Marketplace</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; color: #ff4747;">🛡️ Sant Kontwòl Admin</h1>
         <button onclick="handleAdminLogout()" style="padding: 10px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Logout</button>
     </div>
 
     <!-- STATS -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
-        <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #ff4747;">
-            <div style="font-size: 28px; font-weight: 900;" id="totalSellers">0</div>
-            <div style="font-size: 11px; font-weight: 700; color: #888;">MACHANN</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="stat-card" style="border-bottom-color: #ff4747;">
+            <div class="stat-num" id="totalSellers">0</div>
+            <div class="stat-label">MACHANN</div>
         </div>
-        <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #3b82f6;">
-            <div style="font-size: 28px; font-weight: 900;" id="totalOrders">0</div>
-            <div style="font-size: 11px; font-weight: 700; color: #888;">KÒMAND TOTAL</div>
+        <div class="stat-card" style="border-bottom-color: #3b82f6;">
+            <div class="stat-num" id="totalProducts">0</div>
+            <div class="stat-label">PWODWI LIVE</div>
         </div>
-        <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #25d366;">
-            <div style="font-size: 28px; font-weight: 900;" id="totalFeedback">0</div>
-            <div style="font-size: 11px; font-weight: 700; color: #888;">MESAJ / FEEDBACK</div>
+        <div class="stat-card" style="border-bottom-color: #25d366;">
+            <div class="stat-num" id="totalFeedback">0</div>
+            <div class="stat-label">FEEDBACK</div>
         </div>
     </div>
 
     <!-- TABS MENU -->
-    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+    <div class="tabs-container">
         <button onclick="showTab('tab-sellers')" class="tab-btn active">👥 Machann</button>
-        <button onclick="showTab('tab-orders')" class="tab-btn">📦 Kòmand</button>
-        <button onclick="showTab('tab-feedback')" class="tab-btn">💬 Feedback</button>
+        <button onclick="showTab('tab-comms')" class="tab-btn">💬 Kominikasyon</button>
+        <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
+        <button onclick="showTab('tab-orders')" class="tab-btn">💰 Kòmand</button>
     </div>
 
     <!-- TAB: MACHANN -->
     <div id="tab-sellers" class="tab-content">
-        <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
-                <thead><tr style="text-align: left; border-bottom: 2px solid #f1f5f9;"><th style="padding: 15px;">Machann</th><th style="padding: 15px;">Abonman</th><th style="padding: 15px;">Status</th><th style="padding: 15px;">Aksyon</th></tr></thead>
+        <div class="table-card">
+            <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid #f1f5f9;">
+                        <th style="padding: 15px;">Machann</th>
+                        <th style="padding: 15px;">Abonman (Dat Fini)</th>
+                        <th style="padding: 15px;">Status</th>
+                        <th style="padding: 15px;">Aksyon</th>
+                    </tr>
+                </thead>
                 <tbody id="sellersTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB: KOMINIKASYON (Mizajou & Mesaj Machann) -->
+    <div id="tab-comms" class="tab-content" style="display: none;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+            <!-- MESAJ GLOBAL -->
+            <div class="table-card">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">📣 Mizajou Global <small style="font-size: 11px; color: #888;">(Pou tout moun)</small></h3>
+                <textarea id="globalMsgInput" class="admin-textarea" placeholder="Eg: Mizajou sit la ap fèt aswè a..."></textarea>
+                <button onclick="sendGlobalMessage()" class="btn-primary">VOYE POU TOUT MOUN</button>
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                <h4>📜 Istorik Mizajou</h4>
+                <div id="announcementsList" style="display: grid; gap: 10px; max-height: 300px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- MESAJ INDIVIDUEL -->
+            <div class="table-card">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">✉️ Mesaj Machann <small style="font-size: 11px; color: #888;">(Pou yon sèl moun)</small></h3>
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 12px;">CHWAZI MACHANN NAN:</label>
+                <select id="sellerSelect" class="admin-input" style="margin-bottom: 15px;"></select>
+                <textarea id="sellerMsgInput" class="admin-textarea" placeholder="Ekri mesaj pèsonèl ou a la..."></textarea>
+                <button onclick="sendSellerMessageDirect()" class="btn-blue">VOYE MESAJ BA LI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: TOUT PWODWI -->
+    <div id="tab-all-products" class="tab-content" style="display: none;">
+        <div class="table-card">
+            <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid #f1f5f9;">
+                        <th style="padding: 15px;">Foto</th>
+                        <th style="padding: 15px;">Pwodwi</th>
+                        <th style="padding: 15px;">Machann</th>
+                        <th style="padding: 15px;">Pri</th>
+                        <th style="padding: 15px;">Aksyon</th>
+                    </tr>
+                </thead>
+                <tbody id="allProductsTable"></tbody>
             </table>
         </div>
     </div>
 
     <!-- TAB: KÒMAND -->
     <div id="tab-orders" class="tab-content" style="display: none;">
-        <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto;">
+        <div class="table-card">
             <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
                 <thead><tr style="text-align: left; border-bottom: 2px solid #f1f5f9;"><th style="padding: 15px;">Dat</th><th style="padding: 15px;">Pwodwi</th><th style="padding: 15px;">Kliyan</th><th style="padding: 15px;">Total</th></tr></thead>
                 <tbody id="ordersTable"></tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- TAB: FEEDBACK -->
-    <div id="tab-feedback" class="tab-content" style="display: none;">
-        <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-            <div id="feedbackList" style="display: grid; gap: 15px;"></div>
         </div>
     </div>
 </div>
@@ -99,58 +142,103 @@ title: Sant Kontwòl Marketplace - Boutique Piyay
     }
 
     async function loadAdminData() {
-        const { data: sellers } = await supA.from('profiles').select('*').order('created_at', { ascending: false });
+        const { data: sellers } = await supA.from('profiles').select('*').neq('role', 'admin').order('created_at', { ascending: false });
+        const { data: prods } = await supA.from('user_products').select('*, profiles(full_name)').order('created_at', { ascending: false });
+        const { data: globalMsgs } = await supA.from('admin_announcements').select('*').order('created_at', { ascending: false });
         const { data: orders } = await supA.from('orders').select('*').order('created_at', { ascending: false });
-        const { data: feedback } = await supA.from('feedback').select('*').order('created_at', { ascending: false });
+        const { data: fb } = await supA.from('feedback').select('*');
 
         document.getElementById('totalSellers').innerText = sellers ? sellers.length : 0;
-        document.getElementById('totalOrders').innerText = orders ? orders.length : 0;
-        document.getElementById('totalFeedback').innerText = feedback ? feedback.length : 0;
+        document.getElementById('totalProducts').innerText = prods ? prods.length : 0;
+        document.getElementById('totalFeedback').innerText = fb ? fb.length : 0;
 
-        // Render Sellers
+        // Lis machann nan Dropdown (pou mesaj endividyèl)
+        const select = document.getElementById('sellerSelect');
+        select.innerHTML = '<option value="">-- Chwazi yon machann --</option>' +
+            (sellers || []).map(s => `<option value="${s.id}">${s.full_name}</option>`).join('');
+
+        // Machann Table
         document.getElementById('sellersTable').innerHTML = (sellers || []).map(s => `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 15px;"><strong>${s.full_name}</strong><br><small>${s.email}</small></td>
-                <td style="padding: 15px;">${s.subscription_ends_at ? new Date(s.subscription_ends_at).toLocaleDateString() : 'Non-aktif'}</td>
-                <td style="padding: 15px;"><span style="padding:5px 10px; border-radius:50px; font-size:10px; font-weight:800; background:${s.is_active_seller ? '#dcfce7' : '#fee2e2'}; color:${s.is_active_seller ? '#15803d' : '#ef4444'};">${s.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
-                <td style="padding: 15px;"><button onclick="toggleSeller('${s.id}', ${s.is_active_seller})" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; cursor:pointer;">Aktive/Bloke</button></td>
+                <td style="padding: 15px;"><strong>${s.full_name}</strong><br><small>${s.email || ''}</small></td>
+                <td style="padding: 15px;">
+                    <input type="date" value="${s.subscription_ends_at || ''}" onchange="updateSubDirect('${s.id}', this.value)" style="padding:5px; border-radius:5px; border:1px solid #ddd; font-size:12px;">
+                </td>
+                <td style="padding: 15px;"><span class="status-badge ${s.is_active_seller ? 'aktif' : 'bloke'}">${s.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
+                <td style="padding: 15px;">
+                    <button onclick="toggleSeller('${s.id}', ${s.is_active_seller})" class="btn-action ${s.is_active_seller ? 'red' : 'green'}">${s.is_active_seller ? 'Bloke' : 'Aktive'}</button>
+                </td>
             </tr>
         `).join('');
 
-        // Render Orders
-        document.getElementById('ordersTable').innerHTML = (orders || []).map(o => `
+        // Tout Pwodwi
+        document.getElementById('allProductsTable').innerHTML = (prods || []).map(p => `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 15px;">${new Date(o.created_at).toLocaleDateString()}</td>
-                <td style="padding: 15px;">${o.product_title}</td>
-                <td style="padding: 15px;">${o.customer_name}</td>
-                <td style="padding: 15px; font-weight:800; color:#ff4747;">${o.total_price} HTG</td>
+                <td style="padding: 15px;"><img src="${p.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;"></td>
+                <td style="padding: 15px;"><strong>${p.title}</strong></td>
+                <td style="padding: 15px;">${p.profiles ? p.profiles.full_name : '---'}</td>
+                <td style="padding: 15px;">${p.price} HTG</td>
+                <td style="padding: 15px;"><button onclick="deleteProduct('${p.id}')" class="btn-action red">Efase</button></td>
             </tr>
         `).join('');
 
-        // Render Feedback
-        document.getElementById('feedbackList').innerHTML = (feedback || []).map(f => `
-            <div style="padding:15px; background:#f9f9f9; border-radius:12px; border-left:4px solid #ff4747;">
-                <div style="font-weight:800;">${f.name} (${f.email})</div>
-                <div style="font-size:14px; color:#444; margin-top:5px;">${f.message}</div>
-                <div style="font-size:10px; color:#aaa; margin-top:10px;">${new Date(f.created_at).toLocaleString()}</div>
+        // Istorik Mizajou Global
+        document.getElementById('announcementsList').innerHTML = (globalMsgs || []).map(m => `
+            <div style="padding:10px; background:#f8fafc; border-radius:8px; border-left:3px solid #0f172a; position:relative; font-size:13px;">
+                <div>${m.message}</div>
+                <div style="font-size:10px; color:#999; margin-top:5px;">${new Date(m.created_at).toLocaleString()}</div>
+                <button onclick="deleteGlobalMsg('${m.id}')" style="position:absolute; right:10px; top:10px; border:none; background:none; cursor:pointer; color:#ff4747; font-size:12px;">🗑️</button>
             </div>
-        `).join('') || '<p>Okenn mesaj poko rive.</p>';
+        `).join('') || '<p style="font-size:12px; color:#888;">Okenn mesaj.</p>';
+
+        // Orders Table
+        document.getElementById('ordersTable').innerHTML = (orders || []).map(o => `
+            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding:15px;">${new Date(o.created_at).toLocaleDateString()}</td><td style="padding:15px;">${o.product_title}</td><td style="padding:15px;">${o.customer_name}</td><td style="padding:15px; font-weight:800;">${o.total_price} HTG</td></tr>
+        `).join('');
     }
 
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById(tabId).style.display = 'block';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+    async function toggleSeller(id, status) { if(confirm("Vle chanje status machann nan?")) { await supA.from('profiles').update({ is_active_seller: !status }).eq('id', id); loadAdminData(); } }
+    async function updateSubDirect(id, date) { await supA.from('profiles').update({ subscription_ends_at: date, is_active_seller: true }).eq('id', id); loadAdminData(); }
+    async function deleteProduct(id) { if(confirm("Efase pwodwi sa a nèt?")) { await supA.from('user_products').delete().eq('id', id); loadAdminData(); } }
+    async function deleteGlobalMsg(id) { if(confirm("Wete mizajou sa a?")) { await supA.from('admin_announcements').delete().eq('id', id); loadAdminData(); } }
+
+    async function sendGlobalMessage() {
+        const msg = document.getElementById('globalMsgInput').value;
+        if (!msg) return;
+        await supA.from('admin_announcements').insert([{ message: msg }]);
+        alert("Mizajou voye!"); document.getElementById('globalMsgInput').value = ""; loadAdminData();
     }
 
-    async function toggleSeller(id, status) { await supA.from('profiles').update({ is_active_seller: !status }).eq('id', id); loadAdminData(); }
+    async function sendSellerMessageDirect() {
+        const id = document.getElementById('sellerSelect').value;
+        const msg = document.getElementById('sellerMsgInput').value;
+        if (!id || !msg) { alert("Chwazi yon machann epi ekri yon mesaj!"); return; }
+        await supA.from('profiles').update({ admin_message: msg }).eq('id', id);
+        alert("Mesaj voye ak siksè!"); document.getElementById('sellerMsgInput').value = "";
+    }
+
+    function showTab(tabId) { document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none'); document.getElementById(tabId).style.display = 'block'; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); }
     async function handleAdminLogout() { await supA.auth.signOut(); location.reload(); }
     checkAccess();
 </script>
 
 <style>
-    .tab-btn { padding: 10px 20px; border: none; border-radius: 8px; background: #eee; cursor: pointer; font-weight: 700; transition: 0.3s; }
+    .stat-card { background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .stat-num { font-size: 28px; font-weight: 900; }
+    .stat-label { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-top: 5px; }
+    .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+    .tab-btn { padding: 12px 25px; border: none; border-radius: 12px; background: #fff; cursor: pointer; font-weight: 700; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05); white-space: nowrap; }
     .tab-btn.active { background: #ff4747; color: white; }
-    th { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 11px; }
+    .table-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .status-badge { padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 800; }
+    .status-badge.aktif { background: #dcfce7; color: #15803d; }
+    .status-badge.bloke { background: #fee2e2; color: #ef4444; }
+    .btn-action { padding: 8px 15px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 11px; }
+    .btn-action.red { background: #fee2e2; color: #ef4444; }
+    .btn-action.green { background: #dcfce7; color: #15803d; }
+    .admin-textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 15px; font-family: inherit; font-size: 14px; background: #fafafa; }
+    .admin-input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; font-family: inherit; background: #fafafa; }
+    .btn-primary { width: 100%; padding: 12px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+    .btn-blue { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+    th { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 15px; }
 </style>

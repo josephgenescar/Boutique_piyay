@@ -61,11 +61,12 @@ title: Vann yon Pwodwi - Boutique Piyay
             </div>
 
             <div class="form-group" style="margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">FOTO PWODWI A *</label>
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">FOTO PWODWI A * <small style="color: #ff4747;">(Max: 2MB)</small></label>
                 <input type="file" id="prodImage" accept="image/*" required style="width: 100%; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc;">
                 <div id="preview" style="margin-top: 20px; display: none; text-align: center;">
                     <img id="imgPreview" src="" style="width: 180px; height: 180px; object-fit: cover; border-radius: 15px; border: 3px solid #ff4747;">
                 </div>
+                <div id="fileError" style="color: #ff4747; font-size: 12px; margin-top: 8px; font-weight: 700; display: none;"></div>
             </div>
 
             <button type="submit" id="submitBtn" style="width: 100%; padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">🚀 Pibliye Pwodwi a</button>
@@ -84,8 +85,8 @@ title: Vann yon Pwodwi - Boutique Piyay
 <script>
     const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    // METE PUBLIC KEY IMAGEKIT OU A LA (Asire w li pa gen espas nan fen a)
     const IMAGEKIT_PUBLIC_KEY = "public_uNu7y8VCvauuJEXPsd04krw5FEg=";
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB an bytes
 
     function toggleFlash() {
         const isFlash = document.getElementById('isFlash').checked;
@@ -118,7 +119,23 @@ title: Vann yon Pwodwi - Boutique Piyay
 
     document.getElementById('prodImage').onchange = function() {
         const [file] = this.files;
-        if (file) { document.getElementById('imgPreview').src = URL.createObjectURL(file); document.getElementById('preview').style.display = 'block'; }
+        const errDiv = document.getElementById('fileError');
+        errDiv.style.display = "none";
+
+        if (file) {
+            // 1. Tcheke Size (2MB)
+            if (file.size > MAX_FILE_SIZE) {
+                errDiv.innerText = "❌ Foto sa a twò lou! (Limit: 2MB). Tanpri chwazi yon lòt oswa redui gwosè l.";
+                errDiv.style.display = "block";
+                this.value = ""; // Vide input la
+                document.getElementById('preview').style.display = 'none';
+                return;
+            }
+
+            // 2. Montre Preview
+            document.getElementById('imgPreview').src = URL.createObjectURL(file);
+            document.getElementById('preview').style.display = 'block';
+        }
     };
 
     document.getElementById('uploadForm').onsubmit = async function(e) {
@@ -129,12 +146,13 @@ title: Vann yon Pwodwi - Boutique Piyay
         const file = document.getElementById('prodImage').files[0];
         const isFlash = document.getElementById('isFlash').checked;
 
+        if (!file) { alert("Chwazi yon foto!"); return; }
+
         btn.disabled = true; btn.innerText = "⏳ PIBLIKASYON...";
         status.style.display = 'block'; status.style.color = "#475569"; status.innerText = "Sekirize koneksyon...";
 
         try {
             // 1. MANDE SIGNATURE POU IMAGEKIT
-            // Nou voye fileName la pou asire sekirite a match
             const fileName = `prod_${Date.now()}`;
             const authResponse = await fetch(`/.netlify/functions/auth?fileName=${fileName}`);
             const authData = await authResponse.json();
@@ -159,7 +177,6 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             if (!ikResponse.ok) {
                 const errData = await ikResponse.json();
-                console.error("ImageKit Error Details:", errData);
                 throw new Error(errData.message || "Erè nan ImageKit");
             }
 
@@ -183,7 +200,6 @@ title: Vann yon Pwodwi - Boutique Piyay
             status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye sou ImageKit!";
             setTimeout(() => window.location.href = "/dashboard.html", 2000);
         } catch (err) {
-            console.error("Full Error:", err);
             status.style.color = "#ff4747"; status.innerText = "❌ " + err.message;
             btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
         }
