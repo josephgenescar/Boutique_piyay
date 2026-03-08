@@ -21,7 +21,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div class="form-group">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">PRI RABÈ (Pri w ap vann lan) *</label>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">PRI RABÈ (HTG) *</label>
                     <input type="number" id="prodPrice" required placeholder="Eg: 500" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;" oninput="calculateDiscount()">
                 </div>
                 <div class="form-group">
@@ -42,7 +42,6 @@ title: Vann yon Pwodwi - Boutique Piyay
                 <textarea id="prodDesc" required placeholder="Bay detay sou pwodwi a..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 80px; font-family: inherit;"></textarea>
             </div>
 
-            <!-- OPSYON VANTE FLASH AK ANSYEN PRI -->
             <div id="flashOption" style="background: #fff5f5; padding: 25px; border-radius: 20px; border: 2px dashed #ff4747; margin-bottom: 25px;">
                 <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 800; color: #ff4747; font-size: 16px;">
                     <input type="checkbox" id="isFlash" style="width: 22px; height: 22px;" onchange="toggleFlash()"> ⚡ Aktive Vante Flash
@@ -51,14 +50,13 @@ title: Vann yon Pwodwi - Boutique Piyay
                 <div id="flashDetails" style="display: none; margin-top: 20px; border-top: 1px solid #ffcbcb; padding-top: 15px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: end;">
                         <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #ff4747; font-size: 12px;">ANSYEN PRI (Pri avan rabè a) *</label>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #ff4747; font-size: 12px;">ANSYEN PRI *</label>
                             <input type="number" id="oldPrice" placeholder="Eg: 750" style="width: 100%; padding: 12px; border: 1px solid #ffcbcb; border-radius: 10px; background: white;" oninput="calculateDiscount()">
                         </div>
                         <div id="discountResult" style="padding: 12px; background: #ff4747; color: white; border-radius: 10px; text-align: center; font-weight: 800; font-size: 14px;">
                             Rabè: 0%
                         </div>
                     </div>
-                    <p style="font-size: 11px; color: #7f1d1d; margin-top: 8px; font-weight: 600;">⚠️ Pri rabè a dwe pi piti pase ansyen pri a pou sistèm nan ka pibliye l.</p>
                 </div>
             </div>
 
@@ -78,7 +76,6 @@ title: Vann yon Pwodwi - Boutique Piyay
     <div id="paymentRequired" style="display: none; text-align: center; padding: 80px 20px; background: white; border-radius: 30px;">
         <div style="font-size: 80px; margin-bottom: 20px;">🛡️</div>
         <h1 style="font-weight: 800;">Aktivasyon Nesesè</h1>
-        <p style="color: #666; margin-bottom: 25px;">Ou dwe aktive kont machann ou pou kòmanse vann.</p>
         <a href="/peye.html" style="display: inline-block; padding: 18px 40px; background: #ff4747; color: white; border-radius: 15px; text-decoration: none; font-weight: 800;">🚀 Aktive Kounye a</a>
     </div>
 </div>
@@ -87,32 +84,22 @@ title: Vann yon Pwodwi - Boutique Piyay
 <script>
     const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
+    // METE PUBLIC KEY IMAGEKIT OU A LA
+    const IMAGEKIT_PUBLIC_KEY = "public_uNu7y8VCvauuJEXPsd04krw5FEg=";
+
     function toggleFlash() {
         const isFlash = document.getElementById('isFlash').checked;
-        const flashDetails = document.getElementById('flashDetails');
-        const oldPriceInput = document.getElementById('oldPrice');
-
-        flashDetails.style.display = isFlash ? 'block' : 'none';
-        if (isFlash) oldPriceInput.setAttribute('required', true);
-        else {
-            oldPriceInput.removeAttribute('required');
-            oldPriceInput.value = "";
-            document.getElementById('discountResult').innerText = "Rabè: 0%";
-        }
+        document.getElementById('flashDetails').style.display = isFlash ? 'block' : 'none';
     }
 
     function calculateDiscount() {
         const price = parseFloat(document.getElementById('prodPrice').value) || 0;
         const oldPrice = parseFloat(document.getElementById('oldPrice').value) || 0;
         const resultDiv = document.getElementById('discountResult');
-
         if (price > 0 && oldPrice > price) {
             const discount = Math.round(((oldPrice - price) / oldPrice) * 100);
             resultDiv.innerText = `Rabè: -${discount}%`;
-            resultDiv.style.background = "#00C853"; // Green
-        } else if (oldPrice > 0 && oldPrice <= price) {
-            resultDiv.innerText = "Pri erè!";
-            resultDiv.style.background = "#ff4747"; // Red
+            resultDiv.style.background = "#00C853";
         } else {
             resultDiv.innerText = "Rabè: 0%";
             resultDiv.style.background = "#ff4747";
@@ -142,30 +129,44 @@ title: Vann yon Pwodwi - Boutique Piyay
         const file = document.getElementById('prodImage').files[0];
         const isFlash = document.getElementById('isFlash').checked;
 
-        const price = parseFloat(document.getElementById('prodPrice').value);
-        const oldPrice = isFlash ? parseFloat(document.getElementById('oldPrice').value) : null;
-
-        if (isFlash && (!oldPrice || oldPrice <= price)) {
-            alert("Ansyen pri a dwe pi wo pase pri rabè a!");
-            return;
-        }
-
         btn.disabled = true; btn.innerText = "⏳ PIBLIKASYON...";
-        status.style.display = 'block'; status.style.color = "#475569"; status.innerText = "Chajman foto nan nwaj la...";
+        status.style.display = 'block'; status.style.color = "#475569"; status.innerText = "Sekirize koneksyon...";
 
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
-            const filePath = `${user.id}/${fileName}`;
-            const { error: uploadError } = await supV.storage.from('products').upload(filePath, file);
-            if (uploadError) throw uploadError;
+            // 1. MANDE SIGNATURE POU IMAGEKIT
+            const authResponse = await fetch("/.netlify/functions/auth");
+            const authData = await authResponse.json();
 
-            const { data: { publicUrl } } = supV.storage.from('products').getPublicUrl(filePath);
+            status.innerText = "Chajman foto sou ImageKit...";
 
+            // 2. VOYE FOTO A SOU IMAGEKIT
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("fileName", `prod_${Date.now()}`);
+            formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
+            formData.append("signature", authData.signature);
+            formData.append("expire", authData.expire);
+            formData.append("token", authData.token);
+            formData.append("folder", "/products");
+
+            const ikResponse = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!ikResponse.ok) {
+                const errData = await ikResponse.json();
+                throw new Error(errData.message || "Erè nan ImageKit");
+            }
+
+            const ikData = await ikResponse.json();
+            const publicUrl = ikData.url;
+
+            // 3. SOVE NAN DATABASE SUPABASE
             const { error: dbError } = await supV.from('user_products').insert([{
                 title: document.getElementById('prodTitle').value,
-                price: price,
-                old_price: oldPrice,
+                price: parseFloat(document.getElementById('prodPrice').value),
+                old_price: isFlash ? parseFloat(document.getElementById('oldPrice').value) : null,
                 category: document.getElementById('prodCat').value,
                 description: document.getElementById('prodDesc').value,
                 image_url: publicUrl,
@@ -175,10 +176,10 @@ title: Vann yon Pwodwi - Boutique Piyay
             }]);
 
             if (dbError) throw dbError;
-            status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye ak siksè!";
+            status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye sou ImageKit!";
             setTimeout(() => window.location.href = "/dashboard.html", 2000);
         } catch (err) {
-            status.style.color = "#ff4747"; status.innerText = "❌ Erè: " + err.message;
+            status.style.color = "#ff4747"; status.innerText = "❌ " + err.message;
             btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
         }
     };

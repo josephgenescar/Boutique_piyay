@@ -28,7 +28,7 @@ function updateCartUI() {
 }
 
 function orderProduct(title, price, id, image) {
-    const existingItem = cartItems.find(item => item.id === id || item.title === title);
+    const existingItem = cartItems.find(item => item.id === id);
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
@@ -42,7 +42,17 @@ function orderProduct(title, price, id, image) {
     }
     saveCart();
     updateCartUI();
-    alert("✅ " + title + " ajoute nan panye a!");
+
+    // Ti animasyon konfimasyon
+    const btn = event?.target;
+    if(btn && btn.tagName === 'BUTTON') {
+        const oldText = btn.innerHTML;
+        btn.innerHTML = "✅ Ajoute!";
+        btn.style.background = "#00C853";
+        setTimeout(() => { btn.innerHTML = oldText; btn.style.background = ""; }, 2000);
+    } else {
+        alert("✅ " + title + " ajoute nan panye a!");
+    }
 }
 
 function removeFromCart(index) {
@@ -63,7 +73,14 @@ function openOrderModal() {
 
 function closeOrderModal() {
     const modal = document.getElementById('order-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.style.display = 'none';
+        // Remete form nan nòmal si se te yon mesaj siksè
+        const content = document.querySelector('.modal-content');
+        if(content && content.classList.contains('order-success-view')) {
+            setTimeout(() => window.location.reload(), 500);
+        }
+    }
 }
 
 function renderCart() {
@@ -71,88 +88,144 @@ function renderCart() {
     if (!summary) return;
 
     if (cartItems.length === 0) {
-        summary.innerHTML = '<p style="text-align:center; padding:20px;">Panye w la vid 🛍️</p>';
+        summary.innerHTML = '<div style="text-align:center; padding:40px;"><span style="font-size:50px;">🛍️</span><p style="margin-top:15px; font-weight:700; color:#64748b;">Panye w la vid</p></div>';
         return;
     }
 
-    let html = '<div style="max-height: 300px; overflow-y: auto;">';
+    let html = '<div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">';
     let total = 0;
 
     cartItems.forEach((item, index) => {
         const subtotal = item.price * item.quantity;
         total += subtotal;
         html += `
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
-                <img src="${item.image}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:12px; border:1px solid #f1f5f9;">
+                <img src="${item.image}" style="width:45px; height:45px; object-fit:cover; border-radius:8px;">
                 <div style="flex:1;">
-                    <h4 style="margin:0; font-size:14px;">${item.title}</h4>
-                    <p style="margin:0; color:#ff4747; font-weight:bold;">${item.price} HTG x ${item.quantity}</p>
+                    <h4 style="margin:0; font-size:13px; font-weight:800;">${item.title}</h4>
+                    <p style="margin:0; color:#ff4747; font-weight:800; font-size:12px;">${item.price} HTG <small style="color:#64748b;">x${item.quantity}</small></p>
                 </div>
-                <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff4747; cursor:pointer; font-size:18px;">🗑️</button>
+                <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px; padding:5px;">🗑️</button>
             </div>
         `;
     });
 
-    html += `</div><div style="margin-top:15px; text-align:right; font-weight:800; font-size:18px;">TOTAL: ${total} HTG</div>`;
+    html += `</div><div style="margin-top:15px; padding-top:15px; border-top:2px dashed #eee; text-align:right; font-weight:900; font-size:20px; color:#0f172a;">TOTAL: <span style="color:#ff4747;">${total} HTG</span></div>`;
     summary.innerHTML = html;
 }
 
-// --- SOUMÈT KÒMAND (MARKETPLACE LOGIC) ---
+// --- SOUMÈT KÒMAND ---
 async function submitOrder() {
-    const name = document.getElementById('customer-name').value;
-    const phone = document.getElementById('customer-phone').value;
+    const name = document.getElementById('customer-name').value.trim();
+    const phone = document.getElementById('customer-phone').value.trim();
     const payment = document.getElementById('payment-method').value;
 
     if (!name || !phone) return alert("Tanpri ranpli non w ak telefòn ou.");
     if (cartItems.length === 0) return alert("Panye w la vid!");
 
-    // Nou gwoupe pwodwi yo pa machann
-    alert("N ap prepare kòmand ou yo... Sa ka pran yon ti segonn.");
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = "⏳ N ap prepare kòmand lan...";
 
-    for (const item of cartItems) {
-        let whatsappTo = "50948868964"; // Nimewo Admin pa defo
-        let sellerId = null;
+    try {
+        const merchantOrders = {};
 
-        // Si se yon pwodwi ki soti nan Marketplace (UUID long)
-        if (item.id && item.id.length > 20) {
-            try {
-                const { data: prod } = await supabaseMain.from('user_products').select('seller_id').eq('id', item.id).single();
-                if (prod && prod.seller_id) {
+        for (const item of cartItems) {
+            let whatsappTo = "50948868964"; // Admin pa defo
+            let sellerName = "Boutique Piyay (Admin)";
+            let sellerId = null;
+
+            // Si se pwodwi Marketplace (UUID)
+            if (item.id && item.id.length > 20) {
+                const { data: prod } = await supabaseMain.from('user_products').select('seller_id, profiles(full_name, whatsapp)').eq('id', item.id).single();
+                if (prod && prod.profiles) {
                     sellerId = prod.seller_id;
-                    const { data: prof } = await supabaseMain.from('profiles').select('whatsapp').eq('id', sellerId).single();
-                    if (prof && prof.whatsapp) whatsappTo = prof.whatsapp;
+                    sellerName = prod.profiles.full_name;
+                    if (prod.profiles.whatsapp) whatsappTo = prod.profiles.whatsapp;
                 }
-            } catch (err) { console.error("Error fetching seller:", err); }
+            }
+
+            if (!merchantOrders[whatsappTo]) {
+                merchantOrders[whatsappTo] = { name: sellerName, items: [] };
+            }
+            merchantOrders[whatsappTo].items.push(item);
+
+            // Sove nan Database orders
+            if (supabaseMain) {
+                await supabaseMain.from('orders').insert([{
+                    seller_id: sellerId,
+                    customer_name: name,
+                    customer_phone: phone,
+                    product_title: item.title,
+                    total_price: item.price * item.quantity,
+                    payment_method: payment
+                }]);
+            }
         }
 
-        // Voye nan Database si nou gen sellerId
-        if (sellerId && supabaseMain) {
-            await supabaseMain.from('orders').insert([{
-                seller_id: sellerId,
-                customer_name: name,
-                customer_phone: phone,
-                product_title: item.title,
-                total_price: item.price * item.quantity,
-                payment_method: payment
-            }]);
-        }
+        // MONTRÈ PAJ SIKSÈ OLYE POPUP
+        showSuccessView(name, merchantOrders, payment);
 
-        // Prepare mesaj WhatsApp la
+        // Vide panye a
+        cartItems = [];
+        saveCart();
+        updateCartUI();
+
+    } catch (err) {
+        console.error(err);
+        alert("Gen yon ti pwoblèm. Eseye ankò.");
+        btn.disabled = false;
+        btn.innerHTML = "Confirmer via WhatsApp ✅";
+    }
+}
+
+function showSuccessView(customerName, orders, payment) {
+    const modalBody = document.querySelector('.modal-body'); // Nou sipoze gen class sa nan order-modal.html
+    const modalContent = document.querySelector('.modal-content');
+    if(!modalBody) return alert("Kòmand anrejistre! ✅");
+
+    modalContent.classList.add('order-success-view');
+
+    let html = `
+        <div style="text-align:center; padding:20px;">
+            <div style="font-size:60px; margin-bottom:15px;">🎉</div>
+            <h2 style="font-weight:900; color:#0f172a; margin-bottom:5px;">Mèsi, ${customerName}!</h2>
+            <p style="color:#64748b; font-size:14px; margin-bottom:25px;">Kòmand ou anrejistre. Kounye a, klike sou bouton anba yo pou voye detay yo bay machann yo sou WhatsApp :</p>
+
+            <div style="display:grid; gap:15px; text-align:left;">
+    `;
+
+    for (const [phone, data] of Object.entries(orders)) {
         let msg = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n`;
-        msg += `👤 *Client :* ${name}\n`;
-        msg += `📱 *Tél :* ${phone}\n`;
-        msg += `💳 *Paiement :* ${payment}\n`;
-        msg += `\n*📦 ARTICLE :*\n- ${item.quantity}x ${item.title} (${item.price * item.quantity} HTG)\n`;
-        msg += `\n*💰 TOTAL À PAYER : ${item.price * item.quantity} HTG*`;
+        msg += `👤 *Client :* ${customerName}\n`;
+        msg += `💳 *Paiement :* ${payment}\n\n`;
+        msg += `*📦 ARTICLES :*\n`;
+        let total = 0;
+        data.items.forEach(it => {
+            msg += `- ${it.quantity}x ${it.title} (${it.price * it.quantity} HTG)\n`;
+            total += it.price * it.quantity;
+        });
+        msg += `\n*💰 TOTAL : ${total} HTG*`;
 
-        window.open(`https://wa.me/${whatsappTo.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+        const waLink = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
+
+        html += `
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:15px; border-radius:15px;">
+                <p style="margin:0 0 10px 0; font-size:13px; font-weight:700; color:#166534;">Machann : ${data.name}</p>
+                <a href="${waLink}" target="_blank" style="display:block; text-align:center; background:#25D366; color:white; text-decoration:none; padding:12px; border-radius:10px; font-weight:800; font-size:14px;">
+                    💬 Voye bay ${data.name}
+                </a>
+            </div>
+        `;
     }
 
-    cartItems = [];
-    saveCart();
-    updateCartUI();
-    closeOrderModal();
-    alert("Kòmand ou yo voye bay machann yo! ✅");
+    html += `
+            </div>
+            <button onclick="closeOrderModal()" style="margin-top:30px; background:none; border:none; color:#64748b; font-weight:700; cursor:pointer; text-decoration:underline;">Fèmen fenèt la</button>
+        </div>
+    `;
+
+    modalBody.innerHTML = html;
 }
 
 // --- LÒT FONKSYON (SEARCH, TIMER, ETC.) ---
@@ -212,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// EXPOSE POU HTML KA RELE YO
+// EXPOSE
 window.orderProduct = orderProduct;
 window.openOrderModal = openOrderModal;
 window.closeOrderModal = closeOrderModal;
