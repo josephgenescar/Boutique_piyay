@@ -84,7 +84,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 <script>
     const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    // METE PUBLIC KEY IMAGEKIT OU A LA
+    // METE PUBLIC KEY IMAGEKIT OU A LA (Asire w li pa gen espas nan fen a)
     const IMAGEKIT_PUBLIC_KEY = "public_uNu7y8VCvauuJEXPsd04krw5FEg=";
 
     function toggleFlash() {
@@ -134,7 +134,9 @@ title: Vann yon Pwodwi - Boutique Piyay
 
         try {
             // 1. MANDE SIGNATURE POU IMAGEKIT
-            const authResponse = await fetch("/.netlify/functions/auth");
+            // Nou voye fileName la pou asire sekirite a match
+            const fileName = `prod_${Date.now()}`;
+            const authResponse = await fetch(`/.netlify/functions/auth?fileName=${fileName}`);
             const authData = await authResponse.json();
 
             status.innerText = "Chajman foto sou ImageKit...";
@@ -142,11 +144,12 @@ title: Vann yon Pwodwi - Boutique Piyay
             // 2. VOYE FOTO A SOU IMAGEKIT
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("fileName", `prod_${Date.now()}`);
+            formData.append("fileName", fileName);
             formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
             formData.append("signature", authData.signature);
             formData.append("expire", authData.expire);
             formData.append("token", authData.token);
+            formData.append("useUniqueFileName", "true");
             formData.append("folder", "/products");
 
             const ikResponse = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
@@ -156,6 +159,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             if (!ikResponse.ok) {
                 const errData = await ikResponse.json();
+                console.error("ImageKit Error Details:", errData);
                 throw new Error(errData.message || "Erè nan ImageKit");
             }
 
@@ -179,6 +183,7 @@ title: Vann yon Pwodwi - Boutique Piyay
             status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye sou ImageKit!";
             setTimeout(() => window.location.href = "/dashboard.html", 2000);
         } catch (err) {
+            console.error("Full Error:", err);
             status.style.color = "#ff4747"; status.innerText = "❌ " + err.message;
             btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
         }
