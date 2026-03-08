@@ -43,15 +43,12 @@ function orderProduct(title, price, id, image) {
     saveCart();
     updateCartUI();
 
-    // Ti animasyon konfimasyon
     const btn = event?.target;
     if(btn && btn.tagName === 'BUTTON') {
         const oldText = btn.innerHTML;
         btn.innerHTML = "✅ Ajoute!";
         btn.style.background = "#00C853";
         setTimeout(() => { btn.innerHTML = oldText; btn.style.background = ""; }, 2000);
-    } else {
-        alert("✅ " + title + " ajoute nan panye a!");
     }
 }
 
@@ -65,17 +62,13 @@ function removeFromCart(index) {
 // --- MODAL ETAJ ---
 function openOrderModal() {
     const modal = document.getElementById('order-modal');
-    if (modal) {
-        modal.style.display = 'flex';
-        renderCart();
-    }
+    if (modal) { modal.style.display = 'flex'; renderCart(); }
 }
 
 function closeOrderModal() {
     const modal = document.getElementById('order-modal');
     if (modal) {
         modal.style.display = 'none';
-        // Remete form nan nòmal si se te yon mesaj siksè
         const content = document.querySelector('.modal-content');
         if(content && content.classList.contains('order-success-view')) {
             setTimeout(() => window.location.reload(), 500);
@@ -86,15 +79,12 @@ function closeOrderModal() {
 function renderCart() {
     const summary = document.getElementById('order-summary');
     if (!summary) return;
-
     if (cartItems.length === 0) {
         summary.innerHTML = '<div style="text-align:center; padding:40px;"><span style="font-size:50px;">🛍️</span><p style="margin-top:15px; font-weight:700; color:#64748b;">Panye w la vid</p></div>';
         return;
     }
-
     let html = '<div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">';
     let total = 0;
-
     cartItems.forEach((item, index) => {
         const subtotal = item.price * item.quantity;
         total += subtotal;
@@ -106,36 +96,25 @@ function renderCart() {
                     <p style="margin:0; color:#ff4747; font-weight:800; font-size:12px;">${item.price} HTG <small style="color:#64748b;">x${item.quantity}</small></p>
                 </div>
                 <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px; padding:5px;">🗑️</button>
-            </div>
-        `;
+            </div>`;
     });
-
     html += `</div><div style="margin-top:15px; padding-top:15px; border-top:2px dashed #eee; text-align:right; font-weight:900; font-size:20px; color:#0f172a;">TOTAL: <span style="color:#ff4747;">${total} HTG</span></div>`;
     summary.innerHTML = html;
 }
 
-// --- SOUMÈT KÒMAND ---
 async function submitOrder() {
     const name = document.getElementById('customer-name').value.trim();
     const phone = document.getElementById('customer-phone').value.trim();
     const payment = document.getElementById('payment-method').value;
-
     if (!name || !phone) return alert("Tanpri ranpli non w ak telefòn ou.");
-    if (cartItems.length === 0) return alert("Panye w la vid!");
-
     const btn = event.target;
-    btn.disabled = true;
-    btn.innerHTML = "⏳ N ap prepare kòmand lan...";
-
+    btn.disabled = true; btn.innerHTML = "⏳ N ap prepare kòmand lan...";
     try {
         const merchantOrders = {};
-
         for (const item of cartItems) {
-            let whatsappTo = "50948868964"; // Admin pa defo
-            let sellerName = "Boutique Piyay (Admin)";
+            let whatsappTo = "50948868964";
+            let sellerName = "Admin";
             let sellerId = null;
-
-            // Si se pwodwi Marketplace (UUID)
             if (item.id && item.id.length > 20) {
                 const { data: prod } = await supabaseMain.from('user_products').select('seller_id, profiles(full_name, whatsapp)').eq('id', item.id).single();
                 if (prod && prod.profiles) {
@@ -144,118 +123,56 @@ async function submitOrder() {
                     if (prod.profiles.whatsapp) whatsappTo = prod.profiles.whatsapp;
                 }
             }
-
-            if (!merchantOrders[whatsappTo]) {
-                merchantOrders[whatsappTo] = { name: sellerName, items: [] };
-            }
+            if (!merchantOrders[whatsappTo]) merchantOrders[whatsappTo] = { name: sellerName, items: [] };
             merchantOrders[whatsappTo].items.push(item);
-
-            // Sove nan Database orders
-            if (supabaseMain) {
-                await supabaseMain.from('orders').insert([{
-                    seller_id: sellerId,
-                    customer_name: name,
-                    customer_phone: phone,
-                    product_title: item.title,
-                    total_price: item.price * item.quantity,
-                    payment_method: payment
-                }]);
-            }
+            await supabaseMain.from('orders').insert([{ seller_id: sellerId, customer_name: name, customer_phone: phone, product_title: item.title, total_price: item.price * item.quantity, payment_method: payment }]);
         }
-
-        // MONTRÈ PAJ SIKSÈ OLYE POPUP
         showSuccessView(name, merchantOrders, payment);
-
-        // Vide panye a
-        cartItems = [];
-        saveCart();
-        updateCartUI();
-
-    } catch (err) {
-        console.error(err);
-        alert("Gen yon ti pwoblèm. Eseye ankò.");
-        btn.disabled = false;
-        btn.innerHTML = "Confirmer via WhatsApp ✅";
-    }
+        cartItems = []; saveCart(); updateCartUI();
+    } catch (err) { console.error(err); btn.disabled = false; }
 }
 
 function showSuccessView(customerName, orders, payment) {
-    const modalBody = document.querySelector('.modal-body'); // Nou sipoze gen class sa nan order-modal.html
+    const modalBody = document.querySelector('.modal-body');
     const modalContent = document.querySelector('.modal-content');
-    if(!modalBody) return alert("Kòmand anrejistre! ✅");
-
+    if(!modalBody) return;
     modalContent.classList.add('order-success-view');
-
-    let html = `
-        <div style="text-align:center; padding:20px;">
-            <div style="font-size:60px; margin-bottom:15px;">🎉</div>
-            <h2 style="font-weight:900; color:#0f172a; margin-bottom:5px;">Mèsi, ${customerName}!</h2>
-            <p style="color:#64748b; font-size:14px; margin-bottom:25px;">Kòmand ou anrejistre. Kounye a, klike sou bouton anba yo pou voye detay yo bay machann yo sou WhatsApp :</p>
-
-            <div style="display:grid; gap:15px; text-align:left;">
-    `;
-
+    let html = `<div style="text-align:center; padding:20px;"><div style="font-size:60px; margin-bottom:15px;">🎉</div><h2 style="font-weight:900;">Mèsi, ${customerName}!</h2><p>Kòmand ou anrejistre. Voye l bay machann yo kounye a :</p><div style="display:grid; gap:15px; text-align:left;">`;
     for (const [phone, data] of Object.entries(orders)) {
-        let msg = `*🛒 NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n`;
-        msg += `👤 *Client :* ${customerName}\n`;
-        msg += `💳 *Paiement :* ${payment}\n\n`;
-        msg += `*📦 ARTICLES :*\n`;
-        let total = 0;
-        data.items.forEach(it => {
-            msg += `- ${it.quantity}x ${it.title} (${it.price * it.quantity} HTG)\n`;
-            total += it.price * it.quantity;
-        });
-        msg += `\n*💰 TOTAL : ${total} HTG*`;
-
+        let msg = `*🛒 NOUVELLE COMMANDE*\n👤 *Client :* ${customerName}\n* artículo :*\n`;
+        data.items.forEach(it => { msg += `- ${it.quantity}x ${it.title}\n`; });
         const waLink = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
-
-        html += `
-            <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:15px; border-radius:15px;">
-                <p style="margin:0 0 10px 0; font-size:13px; font-weight:700; color:#166534;">Machann : ${data.name}</p>
-                <a href="${waLink}" target="_blank" style="display:block; text-align:center; background:#25D366; color:white; text-decoration:none; padding:12px; border-radius:10px; font-weight:800; font-size:14px;">
-                    💬 Voye bay ${data.name}
-                </a>
-            </div>
-        `;
+        html += `<div style="background:#f0fdf4; padding:15px; border-radius:15px;"><p style="font-weight:700;">Machann : ${data.name}</p><a href="${waLink}" target="_blank" style="display:block; text-align:center; background:#25D366; color:white; padding:12px; border-radius:10px; text-decoration:none; font-weight:800;">💬 Voye bay ${data.name}</a></div>`;
     }
-
-    html += `
-            </div>
-            <button onclick="closeOrderModal()" style="margin-top:30px; background:none; border:none; color:#64748b; font-weight:700; cursor:pointer; text-decoration:underline;">Fèmen fenèt la</button>
-        </div>
-    `;
-
+    html += `</div><button onclick="closeOrderModal()" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Fèmen</button></div>`;
     modalBody.innerHTML = html;
 }
 
-// --- LÒT FONKSYON (SEARCH, TIMER, ETC.) ---
+// --- SEARCH FIX ---
 async function liveSearch() {
-    let input = document.getElementById('search-input');
+    let input = document.getElementById('search-input'); // Tcheke ID sa nan header la!
     let drop = document.getElementById('search-results');
     if (!input || !drop) return;
     let val = input.value.toLowerCase().trim();
     if (val.length < 2) { drop.style.display = 'none'; return; }
     try {
-        const response = await fetch('/search.json');
-        const staticProducts = await response.json();
-        let results = staticProducts.filter(p => p.title.toLowerCase().includes(val)).map(p => ({ ...p, source: 'static' }));
+        let results = [];
+        // 1. Chèche nan Marketplace (Supabase)
         if (supabaseMain) {
-            const { data: userProds } = await supabaseMain.from('user_products').select('*').ilike('title', `%${val}%`);
+            const { data: userProds } = await supabaseMain.from('user_products').select('*').ilike('title', `%${val}%`).limit(10);
             if (userProds) {
-                const mapped = userProds.map(p => ({ title: p.title, price: p.price, image: p.image_url, url: `/pwodwi-machann.html?id=${p.id}`, source: 'marketplace' }));
-                results = [...results, ...mapped];
+                results = userProds.map(p => ({ title: p.title, price: p.price, image: p.image_url, url: `/pwodwi-machann.html?id=${p.id}` }));
             }
         }
-        if (results.length === 0) drop.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Aucun résultat trouvé</div>';
-        else drop.innerHTML = results.slice(0, 10).map(r => `
+        if (results.length === 0) drop.innerHTML = '<div style="padding:15px; text-align:center; color:#888;">Pa jwenn anyen.</div>';
+        else drop.innerHTML = results.map(r => `
             <a href="${r.url}" class="search-item" style="display:flex; align-items:center; padding:10px; text-decoration:none; color:#333; border-bottom:1px solid #eee;">
                 <img src="${r.image}" style="width:40px; height:40px; object-fit:cover; margin-right:10px; border-radius:5px;">
                 <div style="flex:1;">
-                    <strong style="font-size:14px;">${r.title}</strong><br>
-                    <span style="color:#ff4747; font-size:12px;">${r.price} HTG</span>
+                    <strong style="font-size:13px;">${r.title}</strong><br>
+                    <span style="color:#ff4747; font-size:11px;">${r.price} HTG</span>
                 </div>
-            </a>
-        `).join('');
+            </a>`).join('');
         drop.style.display = 'block';
     } catch(e) { console.error(e); }
 }
@@ -266,9 +183,7 @@ function startFlashTimers() {
     const sEl = document.getElementById('seconds');
     let time = 3600 * 2.5;
     setInterval(() => {
-        let h = Math.floor(time / 3600);
-        let m = Math.floor((time % 3600) / 60);
-        let s = time % 60;
+        let h = Math.floor(time / 3600); let m = Math.floor((time % 3600) / 60); let s = time % 60;
         if (hEl) hEl.innerText = h < 10 ? '0'+h : h;
         if (mEl) mEl.innerText = m < 10 ? '0'+m : m;
         if (sEl) sEl.innerText = s < 10 ? '0'+s : s;
@@ -277,15 +192,13 @@ function startFlashTimers() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateCartUI();
-    startFlashTimers();
+    updateCartUI(); startFlashTimers();
     document.addEventListener('click', (e) => {
-        const searchResults = document.getElementById('search-results');
-        if (searchResults && !e.target.closest('.search-wrap')) searchResults.style.display = 'none';
+        const results = document.getElementById('search-results');
+        if (results && !e.target.closest('.search-wrap')) results.style.display = 'none';
     });
 });
 
-// EXPOSE
 window.orderProduct = orderProduct;
 window.openOrderModal = openOrderModal;
 window.closeOrderModal = closeOrderModal;

@@ -29,37 +29,31 @@ layout: default
   .main-img-box { width: 100%; aspect-ratio: 1; border-radius: var(--radius); overflow: hidden; background: white; border: 1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; }
   .main-img-box img { width: 100%; height: 100%; object-fit: contain; }
 
-  .share-float { position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px; }
-  .btn-share-mini { width: 35px; height: 35px; border-radius: 50%; background: white; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.3s; }
-  .btn-share-mini:hover { transform: scale(1.1); background: var(--primary); color: white; }
-
   /* INFO */
   .p-cat { background: #fff0f0; color: var(--primary); padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
   .p-title { font-size: 2rem; font-weight: 900; color: var(--dark); margin: 15px 0; line-height: 1.2; }
+
+  /* NEW: ZONE BADGE */
+  .seller-zone-badge { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; color: #475569; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; margin-bottom: 15px; }
+
   .p-price-box { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
   .p-current-price { font-size: 32px; font-weight: 900; color: var(--primary); }
-  .p-old-price { font-size: 18px; color: #aaa; text-decoration: line-through; }
 
   /* ACTIONS */
-  .qty-box { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding: 15px; background: #f8fafc; border-radius: 12px; width: fit-content; }
-  .qty-btn { width: 35px; height: 35px; border-radius: 8px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 800; }
-  #prod-qty { width: 40px; text-align: center; border: none; background: transparent; font-weight: 800; font-size: 16px; }
-
   .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
   .btn-p { padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
   .btn-black { background: var(--dark); color: white; }
   .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(255,71,71,0.2); }
-  .btn-p:hover { transform: translateY(-3px); opacity: 0.9; }
 
-  /* REZO SOSYO / SELLER */
-  .seller-info-card { margin-top: 30px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fdfdfd; }
-  .social-links { display: flex; gap: 12px; margin-top: 15px; }
-  .social-item { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #444; font-size: 13px; font-weight: 700; padding: 8px 15px; background: white; border: 1px solid #eee; border-radius: 10px; transition: 0.3s; }
-  .social-item:hover { border-color: var(--primary); color: var(--primary); }
+  /* SELLER CARD */
+  .seller-info-card { margin-top: 30px; padding: 25px; border: 1px solid #eee; border-radius: 20px; background: #f8fafc; }
+  .seller-name-title { font-size: 16px; font-weight: 800; color: var(--dark); margin-bottom: 5px; }
+  .seller-location { font-size: 13px; color: #64748b; margin-bottom: 15px; display: flex; align-items: center; gap: 5px; }
 
-  /* DESCRIPTION */
-  .p-desc-section { margin-top: 50px; border-top: 1px solid #eee; padding-top: 30px; }
-  .p-desc-content { line-height: 1.8; color: #475569; font-size: 16px; }
+  .social-links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .social-item { text-decoration: none; color: white; font-size: 12px; font-weight: 700; padding: 10px 15px; border-radius: 10px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+  .btn-wa { background: #25D366; }
+  .btn-fb { background: #1877F2; }
 
   @media (max-width: 768px) { .product-left { position: static; } .btn-grid { grid-template-columns: 1fr; } }
 </style>
@@ -70,47 +64,21 @@ layout: default
   </div>
 
   <div class="product-flex">
-    <!-- GAUCHE: FOTO -->
     <div class="product-left">
       <div class="main-img-box">
         <img id="main-img" src="{{ page.image }}" alt="{{ page.title }}">
-
-        <div class="share-float">
-          <button class="btn-share-mini" onclick="shareProduct()" title="Pataje">🔗</button>
-          <button class="btn-share-mini" onclick="window.open('https://wa.me/?text='+encodeURIComponent(window.location.href))" title="WhatsApp">💬</button>
-        </div>
       </div>
-
-      {% if page.images %}
-      <div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto; padding-bottom: 5px;">
-        <div class="thumb-mini" onclick="document.getElementById('main-img').src='{{ page.image }}'" style="width:70px; height:70px; border-radius:10px; border:2px solid var(--primary); cursor:pointer; overflow:hidden; flex-shrink:0;">
-          <img src="{{ page.image }}" style="width:100%; height:100%; object-fit:cover;">
-        </div>
-        {% for img in page.images %}
-        <div class="thumb-mini" onclick="document.getElementById('main-img').src='{{ img.img }}'" style="width:70px; height:70px; border-radius:10px; border:1px solid #eee; cursor:pointer; overflow:hidden; flex-shrink:0;">
-          <img src="{{ img.img }}" style="width:100%; height:100%; object-fit:cover;">
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
     </div>
 
-    <!-- DROITE: INFO -->
     <div class="product-right">
       <span class="p-cat">{{ page.category }}</span>
       <h1 class="p-title">{{ page.title }}</h1>
 
+      <!-- DISPLAY ZONE DYNAMIK -->
+      <div id="zoneLoader" class="seller-zone-badge">📍 Zòn: Chaje...</div>
+
       <div class="p-price-box">
         <span class="p-current-price">{{ page.price }} HTG</span>
-        {% if page.old_price %}
-        <span class="p-old-price">{{ page.old_price }} HTG</span>
-        {% endif %}
-      </div>
-
-      <div class="qty-box">
-        <button class="qty-btn" onclick="updateQty(-1)">-</button>
-        <input type="number" id="prod-qty" value="1" readonly>
-        <button class="qty-btn" onclick="updateQty(1)">+</button>
       </div>
 
       <div class="btn-grid">
@@ -118,38 +86,49 @@ layout: default
         <button class="btn-p btn-primary" onclick="buyDirect()">⚡ Achte Kounye a</button>
       </div>
 
-      <!-- REZO SOSYO / KONTAK (REMETE) -->
+      <!-- ENFÒMASYON MACHANN LAN -->
       <div class="seller-info-card">
-        <p style="margin:0; font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Kontakte nou / Pataje</p>
-        <div class="social-links">
-          <a href="https://wa.me/50948868964" target="_blank" class="social-item">💬 WhatsApp</a>
-          <a href="https://facebook.com/boutiquepiyay" target="_blank" class="social-item">🔵 Facebook</a>
-          <a href="https://instagram.com/boutiquepiyay" target="_blank" class="social-item">📸 Instagram</a>
-        </div>
-      </div>
+        <div id="sellerName" class="seller-name-title">Boutique Piyay</div>
+        <div id="sellerAddr" class="seller-location">📍 Zòn Livrezon: Chaje...</div>
 
-      <div style="margin-top: 25px; display: flex; gap: 15px; font-size: 12px; color: #64748b; font-weight: 600;">
-        <span>✅ Stock Disponib</span>
-        <span>🚚 Livrezon Rapid</span>
+        <div class="social-links">
+          <a id="waLink" href="#" target="_blank" class="social-item btn-wa">💬 WhatsApp</a>
+          <a id="fbLink" href="#" target="_blank" class="social-item btn-fb" style="display:none;">🔵 Facebook</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- DESCRIPTION -->
   <div class="p-desc-section">
     <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 20px;">Detay sou pwodwi a</h2>
-    <div class="p-desc-content">
-      {{ content }}
-    </div>
+    <div class="p-desc-content">{{ content }}</div>
   </div>
 </div>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-  function updateQty(val) {
-    let q = document.getElementById('prod-qty');
-    let cur = parseInt(q.value) + val;
-    if (cur < 1) cur = 1;
-    q.value = cur;
+  const supP = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+
+  async function loadSellerInfo() {
+    const sellerId = "{{ page.seller_id }}"; // Nou bezwen ID sa nan front-matter a
+    if (!sellerId || sellerId === "") return;
+
+    const { data: profile, error } = await supP.from('profiles').select('*').eq('id', sellerId).single();
+
+    if (profile) {
+      const zone = profile.address || "Ayiti";
+      document.getElementById('zoneLoader').innerText = "📍 Zòn: " + zone;
+      document.getElementById('sellerName').innerText = "Vandè: " + (profile.full_name || "Machann");
+      document.getElementById('sellerAddr').innerText = "📍 Zòn Livrezon: " + zone;
+
+      if (profile.whatsapp) {
+        document.getElementById('waLink').href = "https://wa.me/" + profile.whatsapp.replace(/\+/g, '');
+      }
+      if (profile.facebook_url) {
+        document.getElementById('fbLink').href = profile.facebook_url;
+        document.getElementById('fbLink').style.display = 'flex';
+      }
+    }
   }
 
   function buyDirect() {
@@ -157,12 +136,5 @@ layout: default
     openOrderModal();
   }
 
-  function shareProduct() {
-    if (navigator.share) {
-      navigator.share({ title: '{{ page.title }}', url: window.location.href });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Lyen pwodwi a kopye! ✅");
-    }
-  }
+  document.addEventListener('DOMContentLoaded', loadSellerInfo);
 </script>
