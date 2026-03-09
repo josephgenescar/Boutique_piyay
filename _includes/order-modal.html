@@ -10,70 +10,65 @@
             <!-- Kontni ap parèt via JS -->
         </div>
 
-        <div class="modal-footer" style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 15px;">
+        <div class="modal-footer" id="order-form-container" style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 15px;">
             <div class="order-form">
-                <input type="text" id="customer-name" placeholder="Votre nom complet" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                <input type="tel" id="customer-phone" placeholder="Numéro WhatsApp" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <p style="font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">Detay pou Livrezon</p>
 
+                <input type="text" id="customer-name" placeholder="Non konplè w *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <input type="tel" id="customer-phone" placeholder="Nimewo WhatsApp ou *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+
+                <!-- LIS ZÒN KONPLÈ -->
+                <select id="delivery-zone" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
+                    <option value="">-- Chwazi Zòn Livrezon --</option>
+                    <option value="Pétion-Ville">Pétion-Ville</option>
+                    <option value="Delmas">Delmas</option>
+                    <option value="Port-au-Prince">Port-au-Prince</option>
+                    <option value="Carrefour">Carrefour</option>
+                    <option value="Tabarre">Tabarre</option>
+                    <option value="Kenscoff">Kenscoff</option>
+                    <option value="Cap-Haïtien">Cap-Haïtien</option>
+                    <option value="Gonaïves">Gonaïves</option>
+                    <option value="Saint-Marc">Saint-Marc</option>
+                    <option value="Jacmel">Jacmel</option>
+                    <option value="Cayes">Cayes</option>
+                    <option value="Lòt Zòn">Lòt Zòn (Ekri l anba)</option>
+                </select>
+
+                <input type="text" id="other-zone" placeholder="Presize zòn ou an la..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
+
+                <!-- METÒD PEMAN KÒRÈK -->
                 <select id="payment-method" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px;">
-                    <option value="MonCash">MonCash</option>
-                    <option value="NatCash">NatCash</option>
-                    <option value="Cash à la livraison">Cash à la livraison</option>
+                    <option value="MonCash">Peye par MonCash</option>
+                    <option value="NatCash">Peye par NatCash</option>
+                    <option value="50% avant / 50% après livraison">50% avant / 50% après livraison</option>
+                    <option value="Cash à la livraison">Cash à la livraison (Total)</option>
                 </select>
 
                 <button class="btn-confirm-order" onclick="submitOrder()" style="width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;">
-                    Confirmer via WhatsApp ✅
+                    Konfime Kòmand la ✅
                 </button>
             </div>
         </div>
     </div>
 </div>
 
+<script>
+    document.getElementById('delivery-zone')?.addEventListener('change', function() {
+        const otherInput = document.getElementById('other-zone');
+        if (this.value === 'Lòt Zòn') { otherInput.style.display = 'block'; }
+        else { otherInput.style.display = 'none'; }
+    });
+</script>
+
 <style>
-/* CSS POU MODAL PANIER */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 10000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.modal-content { background: white; width: 95%; max-width: 550px; border-radius: 25px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-close { background: #f3f4f6; border: none; font-size: 20px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-.modal-content {
-    background: white;
-    width: 95%;
-    max-width: 500px;
-    border-radius: 20px;
-    padding: 25px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modal-close {
-    background: #f3f4f6;
-    border: none;
-    font-size: 20px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+/* EXCEL STYLE TABLE */
+.receipt-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 15px 0; border: 1px solid #ddd; }
+.receipt-table th, .receipt-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+.receipt-table th { background-color: #f8fafc; font-weight: 800; color: #0f172a; }
+.total-row td { background-color: #0f172a !important; color: white !important; font-weight: 900; font-size: 14px; }
 </style>
