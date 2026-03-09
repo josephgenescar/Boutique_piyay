@@ -61,7 +61,6 @@ title: Kreye yon Kont - Boutique Piyay
                 <input type="email" id="email" placeholder="Eg: jean@gmail.com" required>
             </div>
 
-            <!-- CHWAZI ZÒN LAN KOUNYE A -->
             <div class="input-group">
                 <label>Zòn kote w ye a (Zòn Livrezon) *</label>
                 <input type="text" id="address" placeholder="Eg: Pétion-Ville, Delmas, Cap-Haïtien..." required>
@@ -73,8 +72,8 @@ title: Kreye yon Kont - Boutique Piyay
             </div>
 
             <div class="ref-box" id="refStatusBox">
-                <label style="display: block; font-size: 11px; font-weight: 800; color: #166534; margin-bottom: 5px;">🎁 KÒD REFERANS</label>
-                <input type="text" id="refBy" placeholder="Kite l vid si w pa genyen l" style="width: 100%; padding: 10px; border: 1px solid #bdf0d2; border-radius: 8px; font-family: monospace; background: white; font-weight: 700;">
+                <label style="display: block; font-size: 11px; font-weight: 800; color: #166534; margin-bottom: 5px;">🎁 KÒD REFERANS *</label>
+                <input type="text" id="refBy" placeholder="Antre kòd moun ki envite w la" required style="width: 100%; padding: 10px; border: 1px solid #bdf0d2; border-radius: 8px; font-family: monospace; background: white; font-weight: 700;">
                 <p id="refText" style="font-size: 10px; color: #15803d; margin-top: 5px; display: none;">✅ Lyen sa a ap ba ou 1 mwa gratis!</p>
             </div>
 
@@ -112,6 +111,14 @@ title: Kreye yon Kont - Boutique Piyay
         const address = document.getElementById('address').value.trim();
         const whatsapp = document.getElementById('whatsapp').value.trim();
 
+        // VALIDASYON KÒD REFERANS OBLIGATWA
+        if (!refCode) {
+            msg.innerText = "❌ Ou dwe mete yon kòd referans pou w ka enskri.";
+            msg.style.color = "red"; msg.style.display = "block";
+            btn.disabled = false; btn.innerText = "KREYE KONT MWEN";
+            return;
+        }
+
         const { error } = await supS.auth.signUp({
             email: document.getElementById('email').value,
             password: document.getElementById('password').value,
@@ -120,7 +127,7 @@ title: Kreye yon Kont - Boutique Piyay
                     full_name: document.getElementById('fullName').value,
                     address: address,
                     whatsapp: whatsapp,
-                    referred_by_code: refCode === "" ? null : refCode
+                    referred_by_code: refCode
                 }
             }
         });
