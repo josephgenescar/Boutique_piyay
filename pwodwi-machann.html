@@ -57,6 +57,9 @@ title: Detay Pwodwi - Marketplace
             document.getElementById('pImg').src = prod.image_url;
             document.getElementById('pDesc').innerText = prod.description || "";
 
+            const sellerPhone = prod.profiles ? prod.profiles.whatsapp : '';
+            const sellerId = prod.seller_id;
+
             if (prod.old_price) {
                 document.getElementById('pOldPrice').innerText = prod.old_price;
                 document.getElementById('pOldPrice').style.display = 'inline';
@@ -70,8 +73,11 @@ title: Detay Pwodwi - Marketplace
                 if (prod.profiles.instagram_url) soc.innerHTML += `<a href="${prod.profiles.instagram_url}" target="_blank">📸 Instagram</a>`;
             }
 
-            document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url);
-            document.getElementById('buyBtn').onclick = () => { orderProduct(prod.title, prod.price, prod.id, prod.image_url); openOrderModal(); };
+            document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url, sellerId, sellerPhone);
+            document.getElementById('buyBtn').onclick = () => {
+                orderProduct(prod.title, prod.price, prod.id, prod.image_url, sellerId, sellerPhone);
+                openCart();
+            };
 
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';

@@ -148,6 +148,7 @@ title: Akèy - Boutique Piyay
         const priceNum = parseFloat(p.price) || 0;
         const oldPriceNum = parseFloat(p.old_price) || 0;
         const hasDiscount = oldPriceNum > 0 && oldPriceNum > priceNum;
+        const sellerPhone = p.profiles ? p.profiles.whatsapp : '';
 
         let discountBadge = '';
         let oldPriceHTML = '';
@@ -184,7 +185,7 @@ title: Akèy - Boutique Piyay
                         ${oldPriceHTML}
                     </div>
                     ${socialHTML}
-                    <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${priceNum}', '${p.id}', '${p.image_url}')" style="width:100%; background:#f1f5f9; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; margin-top:10px;">🛒 Ajoute</button>
+                    <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${priceNum}', '${p.id}', '${p.image_url}', '${p.seller_id}', '${sellerPhone}')" style="width:100%; background:#f1f5f9; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; margin-top:10px;">🛒 Ajoute</button>
                 </div>
             </div>`;
     }
@@ -206,6 +207,7 @@ title: Akèy - Boutique Piyay
                     const discountPercent = hasDiscount ? Math.round(((oldPriceNum - priceNum) / oldPriceNum) * 100) : 0;
                     const oldP = hasDiscount ? `<div style="font-size:10px; color:#94a3b8; text-decoration:line-through;">${oldPriceNum} HTG</div>` : '';
                     const discBadge = hasDiscount ? `<div class="badge-discount" style="top:5px; right:5px; font-size:8px; padding:2px 5px;">-${discountPercent}%</div>` : '';
+                    const sPhone = p.profiles ? p.profiles.whatsapp : '';
 
                     slider.innerHTML += `
                         <div class="flash-card-mini">
@@ -219,7 +221,7 @@ title: Akèy - Boutique Piyay
                                 <div style="display:flex; align-items:baseline; gap:8px;">
                                     <div class="mini-price">${priceNum} HTG</div>${oldP}
                                 </div>
-                                <button class="btn-mini-add" onclick="orderProduct('${p.title}', '${priceNum}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
+                                <button class="btn-mini-add" onclick="orderProduct('${p.title}', '${priceNum}', '${p.id}', '${p.image_url}', '${p.seller_id}', '${sPhone}')">🛒 Ajoute</button>
                             </div>
                         </div>`;
                 });

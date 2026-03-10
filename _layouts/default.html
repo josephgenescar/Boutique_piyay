@@ -25,6 +25,9 @@
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
     <style>
       #welcome-social-bar {
         position: fixed; bottom: 20px; left: 20px; background: white; padding: 12px 20px;
@@ -38,9 +41,18 @@
       .wsb-desc { display: block; font-size: 11px; color: #666; }
       .wsb-close { background: none; border: none; color: #ccc; cursor: pointer; font-size: 18px; padding: 0; }
       @media (max-width: 480px) { #welcome-social-bar { left: 10px; right: 10px; bottom: 70px; max-width: calc(100% - 20px); } }
+
+      /* Toast notifications */
+      #toast {
+        position: fixed; top: 20px; right: 20px; background: #333; color: white;
+        padding: 12px 24px; border-radius: 10px; z-index: 10000; display: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: 600;
+      }
+      @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
   </head>
   <body style="background-color: #f4f4f4; margin: 0; padding: 0;">
+    <div id="toast"></div>
     <div style="width: 100%; background-color: white; min-height: 100vh; display: flex; flex-direction: column;">
 
       <!-- Header -->
@@ -71,6 +83,7 @@
 
     <!-- Script prensipal -->
     <script src="{{ "/main.js" | relative_url }}"></script>
+    <script src="{{ "/assets/js/cart.js" | relative_url }}"></script>
 
     <script>
       window.addEventListener('load', () => {
