@@ -1,143 +1,81 @@
----
-layout: default
-title: Kreye yon Kont - Boutique Piyay
----
-
-<style>
-.auth-page-wrapper {
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at top right, rgba(255, 71, 71, 0.05), transparent),
-                radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.05), transparent);
-}
-
-.auth-card-premium {
-    background: white;
-    width: 100%;
-    max-width: 450px;
-    padding: 40px;
-    border-radius: 30px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-}
-
-.input-group { margin-bottom: 15px; text-align: left; }
-.input-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 5px; }
-.input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-size: 14px; transition: 0.3s; }
-.input-group input:focus { outline: none; border-color: #ff4747; background: white; box-shadow: 0 0 0 4px rgba(255, 71, 71, 0.1); }
-
-.btn-submit-premium {
-    width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px;
-}
-.btn-submit-premium:hover { background: #ff4747; transform: translateY(-2px); }
-
-.ref-box { background: #f0fdf4; padding: 15px; border-radius: 12px; border: 1px dashed #22c55e; margin-bottom: 20px; }
-</style>
-
-<div class="auth-page-wrapper">
-    <div class="auth-card-premium">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <span style="font-size: 40px;">👋</span>
-            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-top: 10px;">Byenvini!</h1>
-            <p style="color: #64748b; font-size: 13px;">Kreye kont ou pou w kòmanse vann sou Boutique Piyay.</p>
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kreye Kont - Boutique Piyay</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .auth-container { max-width: 400px; margin: 60px auto; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .auth-input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; font-family: inherit; }
+        .btn-submit { width: 100%; padding: 14px; background: #0f172a; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+        .terms-box { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #64748b; margin-bottom: 20px; cursor: pointer; }
+        .terms-box input { margin-top: 3px; }
+    </style>
+</head>
+<body style="background: #f8fafc;">
+    <div class="auth-container">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <a href="/"><img src="/assets/images/logo.png" style="width: 50px;"></a>
+            <h2 style="margin: 10px 0 5px 0;">Byenveni! 🚀</h2>
+            <p style="font-size: 13px; color: #64748b;">Kreye kont ou pou w ka vann oswa achte.</p>
         </div>
 
-        <form id="signupForm">
-            <div class="input-group">
-                <label>Non Konplè / Non Boutik *</label>
-                <input type="text" id="fullName" placeholder="Eg: Jean Boutique" required>
-            </div>
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <input type="text" id="fullName" class="auth-input" placeholder="Non konplè" required>
+            <input type="email" id="email" class="auth-input" placeholder="Email ou" required>
+            <input type="password" id="password" class="auth-input" placeholder="Modpas (min 6 karaktè)" required>
 
-            <div class="input-group">
-                <label>Nimewo WhatsApp *</label>
-                <input type="tel" id="whatsapp" placeholder="Eg: 50948868964" required>
-            </div>
+            <label class="terms-box">
+                <input type="checkbox" id="acceptTerms" onchange="toggleBtn()">
+                <span>Mwen aksepte **<a href="/regleman.html" target="_blank" style="color:#ff4747; text-decoration:none; font-weight:700;">Regleman ak Prensip</a>** platform nan.</span>
+            </label>
 
-            <div class="input-group">
-                <label>Email *</label>
-                <input type="email" id="email" placeholder="Eg: jean@gmail.com" required>
-            </div>
-
-            <div class="input-group">
-                <label>Zòn kote w ye a (Zòn Livrezon) *</label>
-                <input type="text" id="address" placeholder="Eg: Pétion-Ville, Delmas, Cap-Haïtien..." required>
-            </div>
-
-            <div class="input-group">
-                <label>Modpas *</label>
-                <input type="password" id="password" placeholder="••••••••" required minlength="6">
-            </div>
-
-            <div class="ref-box" id="refStatusBox">
-                <label style="display: block; font-size: 11px; font-weight: 800; color: #166534; margin-bottom: 5px;">🎁 KÒD REFERANS *</label>
-                <input type="text" id="refBy" placeholder="Antre kòd moun ki envite w la" required style="width: 100%; padding: 10px; border: 1px solid #bdf0d2; border-radius: 8px; font-family: monospace; background: white; font-weight: 700;">
-                <p id="refText" style="font-size: 10px; color: #15803d; margin-top: 5px; display: none;">✅ Lyen sa a ap ba ou 1 mwa gratis!</p>
-            </div>
-
-            <button type="submit" id="signupBtn" class="btn-submit-premium">KREYE KONT MWEN</button>
+            <button type="submit" id="btnSignup" class="btn-submit" disabled>KREYE KONT MWEN</button>
         </form>
 
-        <p style="margin-top: 20px; font-size: 13px; color: #64748b; text-align: center;">
-            Ou gen kont deja? <a href="/login.html" style="color: #ff4747; font-weight: 800; text-decoration: none;">Konekte isit la</a>
+        <p style="text-align: center; font-size: 13px; margin-top: 20px;">
+            Ou gen kont deja? <a href="/login.html" style="color: #ff4747; font-weight: 700; text-decoration: none;">Konekte</a>
         </p>
-        <div id="msg" style="margin-top: 15px; font-weight: 700; text-align: center; display: none;"></div>
     </div>
-</div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-    const supS = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    <script>
+        const supS = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    window.onload = () => {
-        const params = new URLSearchParams(window.location.search);
-        const refCode = params.get('ref');
-        if (refCode) {
-            document.getElementById('refBy').value = refCode;
-            document.getElementById('refText').style.display = 'block';
-            document.getElementById('refBy').readOnly = true;
-        }
-    };
-
-    document.getElementById('signupForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('signupBtn');
-        const msg = document.getElementById('msg');
-        btn.disabled = true; btn.innerText = "⏳ Preparasyon...";
-
-        const refCode = document.getElementById('refBy').value.trim();
-        const address = document.getElementById('address').value.trim();
-        const whatsapp = document.getElementById('whatsapp').value.trim();
-
-        // VALIDASYON KÒD REFERANS OBLIGATWA
-        if (!refCode) {
-            msg.innerText = "❌ Ou dwe mete yon kòd referans pou w ka enskri.";
-            msg.style.color = "red"; msg.style.display = "block";
-            btn.disabled = false; btn.innerText = "KREYE KONT MWEN";
-            return;
+        function toggleBtn() {
+            document.getElementById('btnSignup').disabled = !document.getElementById('acceptTerms').checked;
         }
 
-        const { error } = await supS.auth.signUp({
-            email: document.getElementById('email').value,
-            password: document.getElementById('password').value,
-            options: {
-                data: {
-                    full_name: document.getElementById('fullName').value,
-                    address: address,
-                    whatsapp: whatsapp,
-                    referred_by_code: refCode
+        async function handleSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            const name = document.getElementById('fullName').value.trim();
+            const btn = document.getElementById('btnSignup');
+
+            btn.disabled = true; btn.innerHTML = "⏳ Operasyon an kou...";
+
+            try {
+                const { data: { user }, error: authErr } = await supS.auth.signUp({ email, password: pass });
+                if (authErr) throw authErr;
+
+                if (user) {
+                    const { error: profErr } = await supS.from('profiles').insert([{ id: user.id, full_name: name, email: email, role: 'seller', is_active_seller: true }]);
+                    if (profErr) throw profErr;
+
+                    // Kreye Wallet otomatikman
+                    const { error: wallErr } = await supS.from('wallets').insert([{ user_id: user.id }]);
+
+                    alert("Kont ou kreye ak siksè! Tcheke email ou pou konfime.");
+                    window.location.href = "/login.html";
                 }
+            } catch (err) {
+                alert("Erè: " + err.message);
+                btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN";
             }
-        });
-
-        if (error) {
-            msg.innerText = "❌ Erè: " + error.message; msg.style.color = "red"; msg.style.display = "block";
-            btn.disabled = false; btn.innerText = "KREYE KONT MWEN";
-        } else {
-            msg.innerText = "✅ Siksè! Tcheke imèl ou pou konfime."; msg.style.color = "green"; msg.style.display = "block";
-            setTimeout(() => { window.location.href = "/login.html"; }, 3000);
         }
-    };
-</script>
+    </script>
+</body>
+</html>

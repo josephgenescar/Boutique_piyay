@@ -1,172 +1,198 @@
----
-layout: default
-title: Espas Kontwòl Mwen - Boutique Piyay
----
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Machann - Boutique Piyay</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .db-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; overflow-x: auto; }
+        .db-tab { padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: #64748b; white-space: nowrap; }
+        .db-tab.active { background: #0f172a; color: white; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card-mini { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #eee; }
+        .stat-val { display: block; font-size: 24px; font-weight: 900; color: #0f172a; }
+        .stat-lbl { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 800; margin-top: 5px; }
+        .wallet-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 25px; border-radius: 20px; position: relative; overflow: hidden; }
+        .balance-val { font-size: 32px; font-weight: 900; margin: 10px 0; display: block; }
+        .btn-withdraw { background: #ff4747; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
+        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .profile-form input, .profile-form textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; font-family: inherit; }
+        .btn-save { background: #00C853; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+    </style>
+</head>
+<body style="background: #f8fafc;">
+    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="font-size: 22px;">🛠️ Dashboard Machann</h1>
+            <button onclick="supabaseD.auth.signOut().then(() => location.href='/')" style="background:none; border:none; color:#ef4444; font-size:12px; cursor:pointer;">Soti 🚪</button>
+        </header>
 
-<style>
-    .dashboard-container { padding: 20px 15px; max-width: 1200px; margin: 0 auto; }
-    .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; }
-    @media (max-width: 992px) { .main-grid { grid-template-columns: 1fr; } .header-top { flex-direction: column; text-align: center; } }
-    .card-style { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; }
-    .stat-box { text-align: center; padding: 20px; background: #f8fafc; border-radius: 15px; border-bottom: 4px solid #ff4747; }
-    .btn-action { padding: 10px 12px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 11px; transition: 0.3s; text-decoration: none; display: inline-block; text-align: center; }
+        <nav class="db-nav">
+            <div class="db-tab active" onclick="switchTab('stat')">Statistik</div>
+            <div class="db-tab" onclick="switchTab('prod')">Pwodwi m yo</div>
+            <div class="db-tab" onclick="switchTab('wallet')">Finansye 💰</div>
+            <div class="db-tab" onclick="switchTab('profile')">Profil 👤</div>
+            <div class="db-tab" onclick="location.href='/vendre.html'">+ Ajoute Pwodwi</div>
+        </nav>
 
-    .important-notice { background: #fff5f5; border-left: 5px solid #ff4747; padding: 15px; border-radius: 10px; margin-bottom: 25px; }
-    .referral-box { background: #f0fdf4; border: 2px dashed #22c55e; padding: 20px; border-radius: 15px; margin-top: 20px; }
-
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none !important; align-items: center; justify-content: center; z-index: 9999; padding: 20px; backdrop-filter: blur(8px); }
-    .modal-overlay.active { display: flex !important; }
-    .flash-modal { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 420px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); }
-    .modal-input { width: 100%; padding: 16px; border: 2px solid #f1f5f9; border-radius: 15px; margin-bottom: 15px; font-weight: 800; font-size: 18px; outline: none; }
-    .percent-box { text-align: center; background: #00C853; color: white; padding: 12px; border-radius: 12px; font-weight: 900; margin-bottom: 20px; }
-
-    .profile-input-group { margin-bottom: 15px; }
-    .profile-input-group label { display: block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; }
-    .profile-input-group input { width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; font-weight: 600; outline: none; }
-</style>
-
-<div class="dashboard-container">
-    <div class="card-style header-top" style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; font-size: 24px;">🏠 Espas Kontwòl</h1>
-            <p id="userWelcome" style="color: #64748b; margin-top: 5px; font-size: 14px;">Chaje...</p>
+        <!-- TAB: STATISTIK -->
+        <div id="tab-stat" class="tab-content">
+            <div class="stat-grid">
+                <div class="stat-card-mini" style="border-bottom-color: #3b82f6;"><span id="stat-total-orders" class="stat-val">0</span><span class="stat-lbl">Kòmand Total</span></div>
+                <div class="stat-card-mini" style="border-bottom-color: #22c55e;"><span id="stat-total-sales" class="stat-val">0 HTG</span><span class="stat-lbl">Vant Total</span></div>
+                <div class="stat-card-mini" style="border-bottom-color: #ff4747;"><span id="stat-live-prods" class="stat-val">0</span><span class="stat-lbl">Pwodwi Live</span></div>
+            </div>
+            <h3 style="margin-bottom: 15px;">Dènye Kòmand yo</h3>
+            <div id="latest-orders-list" style="background: white; border-radius: 15px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <div style="text-align:center; padding:20px; color:#94a3b8;">Okenn kòmand poko fèt.</div>
+            </div>
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <a href="/vendre.html" class="btn-action" style="background: #ff4747; color: white;">➕ Vann Pwodwi</a>
-            <button onclick="handleLogout()" class="btn-action" style="background: #f3f4f6; color: #333;">🚪 Soti</button>
-        </div>
-    </div>
 
-    <div class="important-notice">
-        <h4 style="margin: 0; color: #ff4747; font-weight: 800;">⚠️ RÈG LIVREZAON</h4>
-        <p style="margin: 8px 0 0 0; font-size: 13px; color: #666;">Pou sekirite biznis ou, mande kliyan an yon depo **50%** anvan ou deplase pou al livre.</p>
-    </div>
+        <!-- TAB: PWODWI -->
+        <div id="tab-prod" class="tab-content" style="display:none;"><div id="user-products-list" class="product-grid-modern"></div></div>
 
-    <div class="main-grid">
-        <div class="content-left">
-            <div id="adminMessageDisplay" style="display: none; background: #e0f2fe; border-left: 5px solid #0ea5e9; padding: 15px; border-radius: 10px; margin-bottom: 25px;">
-                <h4 style="margin: 0; color: #0369a1;">✉️ Mesaj Admin</h4>
-                <p id="adminMsgText" style="margin: 5px 0 0 0;"></p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
-                <div class="stat-box"><div style="font-size: 28px;" id="prodCount">0</div><div style="font-size: 11px;">PWODWI</div></div>
-                <div class="stat-box" style="border-color: #25d366;"><div style="font-size: 13px; margin-top: 8px;" id="expiryLabel">...</div><div style="font-size: 11px;">ABONMAN</div></div>
-            </div>
-
-            <div class="card-style">
-                <h2 style="font-size: 18px;">🛒 Pwodwi Mwen yo</h2>
-                <div id="myProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;"></div>
-            </div>
-
-            <div class="referral-box">
-                <h3>🎁 Pataje & Genyen 2 Mwa Gratis!</h3>
-                <p>Voye lyen sa a bay yon zanmi. Depi li aktive kont li, w ap jwenn **2 mwa gratis** anplis!</p>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="copyRef()" style="flex:1; padding: 12px; background: #fff; color:#166534; border: 1px solid #22c55e; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px;">KOPYE LYEN</button>
-                    <button onclick="shareOnWhatsApp()" style="flex:2; padding: 12px; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px;">💬 Pataje sou WhatsApp</button>
+        <!-- TAB: WALLET -->
+        <div id="tab-wallet" class="tab-content" style="display:none;">
+            <div class="wallet-card">
+                <span style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Balans Disponib (92% pa w)</span>
+                <span id="wallet-balance" class="balance-val">0.00 HTG</span>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8;">
+                    <span>Total Ganyen: <b id="total-earned">0</b></span>
+                    <span>Total Retire: <b id="total-withdrawn">0</b></span>
                 </div>
+                <button class="btn-withdraw" onclick="requestWithdrawal()">Retire Lajan</button>
             </div>
+            <div id="transactions-list" style="background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top:20px;"></div>
         </div>
 
-        <div class="content-right">
-            <div class="card-style">
-                <h2 style="font-size: 18px;">👤 Pwofil Mwen</h2>
-                <div class="profile-input-group"><label>WhatsApp</label><input type="tel" id="waNumber"></div>
-                <div class="profile-input-group"><label>Zòn / Adrès</label><input type="text" id="userAddress"></div>
-                 <!-- REMETE URL YO -->
-                <div class="profile-input-group"><label>Facebook URL</label><input type="url" id="fbUrl"></div>
-                <div class="profile-input-group"><label>Instagram URL</label><input type="url" id="igUrl"></div>
-                <button onclick="saveProfile()" id="saveBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px;">Sove Chanjman</button>
-                <div id="saveStatus" style="margin-top: 15px; text-align: center; font-weight: 700; font-size: 13px;"></div>
+        <!-- TAB: PROFIL -->
+        <div id="tab-profile" class="tab-content" style="display:none;">
+            <div class="profile-form" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3>Enfòmasyon Pwofil</h3>
+                <label style="font-size:12px; font-weight:700; color:#64748b;">NON KONPLÈ</label>
+                <input type="text" id="prof-name" placeholder="Non ou">
+
+                <label style="font-size:12px; font-weight:700; color:#64748b;">EMAIL (Pa ka chanje)</label>
+                <input type="text" id="prof-email" disabled style="background:#f1f5f9;">
+
+                <label style="font-size:12px; font-weight:700; color:#64748b;">WHATSAPP (Pou kòmand)</label>
+                <input type="text" id="prof-whatsapp" placeholder="Eg: +50944443333">
+
+                <label style="font-size:12px; font-weight:700; color:#64748b;">ADRÈS BOUTIK / ZÒN</label>
+                <textarea id="prof-address" placeholder="Eg: Delmas 33, Pòtoprens"></textarea>
+
+                <button class="btn-save" onclick="saveProfile()">Sove Chanjman ✅</button>
             </div>
         </div>
     </div>
-</div>
 
-<!-- REMETE MODAL FLASH SALE A -->
-<div id="flashModal" class="modal-overlay">
-    <div class="flash-modal">
-        <h2 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px; color: #ff4747; text-align: center;">⚡ Vante Flash</h2>
-        <input type="hidden" id="modalProdId">
-        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">ANSYEN PRI</label>
-        <input type="number" id="modalOldPrice" class="modal-input" oninput="liveCalc()">
-        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 5px;">NOUVO PRI</label>
-        <input type="number" id="modalNewPrice" class="modal-input" oninput="liveCalc()">
-        <div id="modalPercent" class="percent-box">Rabè: 0%</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <button onclick="closeFlashModal()" style="padding: 16px; background: #f1f5f9; border: none; border-radius: 15px; font-weight: 700;">Anile</button>
-            <button onclick="saveFlashSettings()" id="modalSaveBtn" style="padding: 16px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800;">Sove</button>
-        </div>
-    </div>
-</div>
+    <script>
+        const SUP_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+        const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+        const supabaseD = supabase.createClient(SUP_URL, SUP_KEY);
+        let currentUser = null;
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-    const supD = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
-    let currentUser = null;
-
-    async function initDashboard() {
-        const { data: { user } } = await supD.auth.getUser();
-        if (!user) { window.location.href = "/login.html"; return; }
-        currentUser = user;
-
-        const { data: profile } = await supD.from('profiles').select('*').eq('id', user.id).single();
-        if (profile) {
-            document.getElementById('userWelcome').innerText = `Byenvini, ${profile.full_name || 'Machann'}!`;
-            document.getElementById('waNumber').value = profile.whatsapp || "";
-            document.getElementById('userAddress').value = profile.address || "";
-            document.getElementById('fbUrl').value = profile.facebook_url || "";
-            document.getElementById('igUrl').value = profile.instagram_url || "";
-            if (profile.admin_message) { document.getElementById('adminMessageDisplay').style.display = 'block'; document.getElementById('adminMsgText').innerText = profile.admin_message; }
-
-            const exp = document.getElementById('expiryLabel');
-            if (profile.subscription_ends_at) {
-                const end = new Date(profile.subscription_ends_at);
-                exp.innerText = (end > new Date()) ? `FINI: ${end.toLocaleDateString()}` : "EKSPIRÉ ❌";
-                exp.style.color = (end > new Date()) ? "#25d366" : "#ff4747";
-            } else if (profile.is_active_seller) { exp.innerText = "GRATIS AKTIF ✅"; exp.style.color = "#25d366"; }
+        async function initDashboard() {
+            const { data: { user } } = await supabaseD.auth.getUser();
+            if (!user) return window.location.href = "/login.html";
+            currentUser = user;
+            loadStats(); loadUserProducts(); loadWallet(); loadProfile();
         }
-        loadMyProducts(user.id);
-    }
 
-    function getReferralLink() { return `https://boutique-piyay.netlify.app/signup.html?ref=${currentUser.id}`; }
-    function copyRef() { navigator.clipboard.writeText(getReferralLink()); alert("Lyen kopye!"); }
-    function shareOnWhatsApp() {
-        const sellerName = document.getElementById('userWelcome').innerText.replace('Byenvini, ','').replace('!','');
-        const link = getReferralLink();
-        const message = `*Vin Vann sou Boutique Piyay!* 🚀\n\nBonjou! Mwen se ${sellerName} e mwen envite w.\n\n*Avantaj ou yo:*\n✅ 1 MWA GRATIS\n✅ Pa gen komisyon\n✅ Pwòp paj pa w\n\nSèvi ak lyen pèsonèl mwen an:\n${link}\n\nAnn fè lajan ansanm! 💰`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-    }
+        async function loadProfile() {
+            const { data: prof } = await supabaseD.from('profiles').select('*').eq('id', currentUser.id).single();
+            if (prof) {
+                document.getElementById('prof-name').value = prof.full_name || '';
+                document.getElementById('prof-email').value = prof.email || '';
+                document.getElementById('prof-whatsapp').value = prof.whatsapp || '';
+                document.getElementById('prof-address').value = prof.address || '';
+            }
+        }
 
-    async function loadMyProducts(userId) {
-        const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', userId);
-        document.getElementById('prodCount').innerText = prods ? prods.length : 0;
-        document.getElementById('myProductsGrid').innerHTML = (prods && prods.length > 0) ? prods.map(p => `
-            <div style="text-align:center; background:#f8fafc; padding:10px; border-radius:15px; border:1px solid #eee;">
-                <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; margin-bottom:8px;">
-                <div style="font-weight:700; font-size:12px; height:30px; overflow:hidden;">${p.title}</div>
-                <div style="color:#ff4747; font-weight:900; margin-bottom:8px;">${p.price} HTG</div>
-                <div style="display:flex; flex-direction:column; gap:5px;">
-                    <button onclick="openFlashModal('${p.id}', ${p.is_flash_sale}, ${p.price}, ${p.old_price})" class="btn-action btn-flash">${p.is_flash_sale ? '⚡ Retire Flash' : '⚡ Mete Flash'}</button>
-                    <a href="/edit-product.html?id=${p.id}" class="btn-action" style="background:#f1f5f9;">✏️ Modifye</a>
-                </div>
-            </div>
-        `).join('') : '<p style="font-size:12px; color:#888;">Ou poko gen pwodwi.</p>';
-    }
+        async function saveProfile() {
+            const name = document.getElementById('prof-name').value.trim();
+            const wa = document.getElementById('prof-whatsapp').value.trim();
+            const addr = document.getElementById('prof-address').value.trim();
 
-    function openFlashModal(id, status, price, oldPrice) { if (status) { if(confirm("Retire nan Flash?")) toggleFlashOff(id); return; } document.getElementById('modalProdId').value = id; document.getElementById('modalOldPrice').value = oldPrice || price; document.getElementById('modalNewPrice').value = ""; document.getElementById('flashModal').classList.add('active'); liveCalc(); }
-    function closeFlashModal() { document.getElementById('flashModal').classList.remove('active'); }
-    function liveCalc() { const op = parseFloat(document.getElementById('modalOldPrice').value) || 0; const np = parseFloat(document.getElementById('modalNewPrice').value) || 0; const res = document.getElementById('modalPercent'); if (op > np && np > 0) { const perc = Math.round(((op - np) / op) * 100); res.innerText = `Rabè: -${perc}%`; res.style.background = "#00C853"; } else { res.innerText = "Pri nouvo a dwe pi piti"; res.style.background = "#ff4747"; } }
-    async function saveFlashSettings() { const id = document.getElementById('modalProdId').value; const op = parseFloat(document.getElementById('modalOldPrice').value); const np = parseFloat(document.getElementById('modalNewPrice').value); if (!op || !np || np >= op) return alert("Pri yo pa kòrèk."); await supD.from('user_products').update({ is_flash_sale: true, old_price: op, price: np }).eq('id', id); closeFlashModal(); loadMyProducts(currentUser.id); }
-    async function toggleFlashOff(id) { await supD.from('user_products').update({ is_flash_sale: false, old_price: null }).eq('id', id); loadMyProducts(currentUser.id); }
+            const { error } = await supabaseD.from('profiles').update({ full_name: name, whatsapp: wa, address: addr }).eq('id', currentUser.id);
+            if (error) alert("Erè: " + error.message); else alert("Pwofil mete ajou! 🎉");
+        }
 
-    async function saveProfile() {
-        const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerText = "⏳ SOVE...";
-        await supD.from('profiles').update({ whatsapp: document.getElementById('waNumber').value, address: document.getElementById('userAddress').value, facebook_url: document.getElementById('fbUrl').value, instagram_url: document.getElementById('igUrl').value }).eq('id', currentUser.id);
-        btn.disabled = false; btn.innerText = "Sove Chanjman"; alert("Sove!");
-    }
+        async function loadStats() {
+            const { data: orders } = await supabaseD.from('orders').select('*').eq('seller_id', currentUser.id);
+            if (orders) {
+                document.getElementById('stat-total-orders').innerText = orders.length;
+                const total = orders.reduce((acc, o) => acc + (o.total_price || 0), 0);
+                document.getElementById('stat-total-sales').innerText = `${total} HTG`;
+                if (orders.length > 0) {
+                    document.getElementById('latest-orders-list').innerHTML = orders.slice(0, 5).map(o => `
+                        <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; font-size:13px;">
+                            <div><b>${o.product_title}</b><br><small>${o.customer_name}</small></div>
+                            <div style="text-align:right;"><b>${o.total_price} HTG</b><br><small>${new Date(o.created_at).toLocaleDateString()}</small></div>
+                        </div>
+                    `).join('');
+                }
+            }
+            const { count } = await supabaseD.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', currentUser.id);
+            document.getElementById('stat-live-prods').innerText = count || 0;
+        }
 
-    async function handleLogout() { await supD.auth.signOut(); window.location.href = "/"; }
-    document.addEventListener('DOMContentLoaded', initDashboard);
-</script>
+        async function loadUserProducts() {
+            const { data: prods } = await supabaseD.from('user_products').select('*').eq('seller_id', currentUser.id);
+            const grid = document.getElementById('user-products-list');
+            if (prods && prods.length > 0) {
+                grid.innerHTML = prods.map(p => `
+                    <div class="product-card">
+                        <img src="${p.image_url}" style="width:100%; height:120px; object-fit:cover; border-radius:10px;">
+                        <h4 style="font-size:12px; margin:10px 0 5px 0;">${p.title}</h4>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#ff4747; font-weight:800; font-size:13px;">${p.price} HTG</span>
+                            <button onclick="location.href='/edit-product.html?id=${p.id}'" style="border:none; background:#f1f5f9; padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;">Edite</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function loadWallet() {
+            try {
+                const res = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
+                const wallet = await res.json();
+                if (wallet && !wallet.error) {
+                    document.getElementById('wallet-balance').innerText = `${wallet.balance} HTG`;
+                    document.getElementById('total-earned').innerText = `${wallet.total_earned} HTG`;
+                    document.getElementById('total-withdrawn').innerText = `${wallet.total_withdrawn} HTG`;
+                }
+                const txRes = await fetch(`/.netlify/functions/wallet/transactions?userId=${currentUser.id}`);
+                const txs = await txRes.json();
+                if (txs.length > 0) {
+                    document.getElementById('transactions-list').innerHTML = txs.map(t => `
+                        <div class="transaction-item">
+                            <div><div style="font-weight:700;">${t.type === 'earning' ? 'Vant' : 'Retrè'}</div><small style="color:#94a3b8;">${new Date(t.created_at).toLocaleDateString()}</small></div>
+                            <div style="color:${t.type === 'earning' ? '#22c55e' : '#ef4444'}; font-weight:800;">${t.type === 'earning' ? '+' : '-'}${t.amount} HTG</div>
+                        </div>
+                    `).join('');
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function requestWithdrawal() {
+            const amount = prompt("Konbe ou vle retire? (Minimòm 500 HTG)");
+            if (!amount || isNaN(amount)) return;
+            const res = await fetch('/.netlify/functions/wallet/withdraw?userId=' + currentUser.id, { method: 'POST', body: JSON.stringify({ amount: parseFloat(amount) }) });
+            const data = await res.json(); alert(data.message || data.error); if (!data.error) loadWallet();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tab).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        initDashboard();
+    </script>
+</body>
+</html>

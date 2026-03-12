@@ -66,7 +66,7 @@
     100% { background-position: 0% 50%; }
 }
 
-.nav-scroll { display:flex; gap:18px; padding:12px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.nav-scroll { display:flex; gap:18px; padding:12px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; align-items: center; }
 .nav-lnk { text-decoration: none; color: #475569; font-size: 13px; font-weight: 700; transition: 0.3s; }
 .nav-lnk:hover { color: #ff4747; transform: translateY(-2px); }
 
@@ -89,6 +89,7 @@
     <div class="container">
       <span>🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
       <div class="top-bar-links">
+        <a href="/regleman.html" style="color:#ff4747;">📜 Regleman Sit la</a>
         <a href="https://wa.me/50948868964" target="_blank">💬 WhatsApp</a>
       </div>
     </div>
@@ -129,7 +130,8 @@
   <nav class="site-nav">
     <div class="nav-scroll">
       <a href="/" class="nav-lnk">Tout Pwodwi</a>
-      <a href="/vendre.html" class="nav-lnk" style="color:#ff4747; font-weight:900;">🚀 Vann pa w</a>
+      <a href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900;">🚀 Vann pa w</a>
+      <a href="/affiliate.html" class="nav-lnk" style="color:#10b981; font-weight:900;">💸 Afilyasyon</a>
       {% for cat in site.categories %}
       <a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>
       {% endfor %}

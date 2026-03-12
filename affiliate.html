@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Dashboard - Boutique Piyay</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .aff-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .stat-box { background: #f8fafc; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; }
+        .stat-val { display: block; font-size: 20px; font-weight: 800; color: #0f172a; }
+        .stat-lbl { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ref-link-box { background: #f1f5f9; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .copy-btn { background: #0f172a; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; }
+    </style>
+</head>
+<body style="background: #f1f5f9;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1 style="font-size: 22px; margin: 0;">🚀 Affilié Center</h1>
+            <a href="/" style="text-decoration: none; font-size: 13px; color: #64748b;">Mache 🏠</a>
+        </header>
+
+        <div id="aff-content">
+            <div style="text-align: center; padding: 50px;">⏳ Chaje done...</div>
+        </div>
+    </div>
+
+    <script>
+        const SUP_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+        const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+        const supabaseA = supabase.createClient(SUP_URL, SUP_KEY);
+
+        async function initAffiliate() {
+            const { data: { user } } = await supabaseA.auth.getUser();
+            if (!user) return window.location.href = "/login.html";
+
+            const { data: aff, error } = await supabaseA.from('affiliates').select('*').eq('user_id', user.id).single();
+
+            if (error || !aff) {
+                document.getElementById('aff-content').innerHTML = `
+                    <div class="aff-card" style="text-align:center;">
+                        <h3>Vle vin yon Affilié?</h3>
+                        <p style="font-size:14px; color:#64748b;">Fè 5% komisyon sou chak vant ou refere!</p>
+                        <button onclick="registerAffiliate('${user.id}')" style="background:#0f172a; color:white; border:none; padding:15px 30px; border-radius:12px; font-weight:800; cursor:pointer;">Mwen enterese! 💸</button>
+                    </div>`;
+                return;
+            }
+
+            renderDashboard(aff);
+        }
+
+        async function registerAffiliate(userId) {
+            const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const { error } = await supabaseA.from('affiliates').insert([{ user_id: userId, referral_code: code }]);
+            if (error) alert(error.message); else location.reload();
+        }
+
+        function renderDashboard(aff) {
+            const refLink = `https://boutique-piyay.netlify.app/?ref=${aff.referral_code}`;
+            document.getElementById('aff-content').innerHTML = `
+                <div class="aff-card">
+                    <div class="stat-lbl">Kòd Referans ou</div>
+                    <div style="font-size:24px; font-weight:900; color:#ff4747; margin:5px 0;">${aff.referral_code}</div>
+                    <div class="stat-lbl" style="margin-top:15px;">Lyen Boutik ou</div>
+                    <div class="ref-link-box">
+                        <span id="ref-url" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${refLink}</span>
+                        <button class="copy-btn" onclick="copyRef('${refLink}')">Kopye</button>
+                    </div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <span class="stat-val">${aff.total_earned} HTG</span>
+                        <span class="stat-lbl">Komisyon Total</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val">${aff.total_referrals}</span>
+                        <span class="stat-lbl">Vant Refere</span>
+                    </div>
+                </div>
+
+                <div class="aff-card" style="margin-top:20px;">
+                    <h3>Kijan sa fonksyone?</h3>
+                    <ul style="font-size:13px; color:#64748b; line-height:1.6; padding-left:20px;">
+                        <li>Pataje lyen an bay zanmi w oswa sou rezo sosyal yo.</li>
+                        <li>Lè yon moun achte ak lyen w lan, sistèm lan detekte l otomatikman.</li>
+                        <li>Ou resevwa 5% nan montan vant lan kòm komisyon.</li>
+                        <li>Ou ka mande retrè lè w rive nan 500 HTG.</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function copyRef(text) {
+            navigator.clipboard.writeText(text);
+            alert("Lyen kopye!");
+        }
+
+        initAffiliate();
+    </script>
+</body>
+</html>

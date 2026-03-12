@@ -12,16 +12,17 @@ title: Akèy - Boutique Piyay
   </section>
 </div>
 
-<!-- 2. CATÉGORIES -->
-<section id="categories-section" class="container section-margin">
-  <div class="section-header-modern">
-    <h2 class="sora">Chwazi pa Kategori</h2>
-    <div style="width: 50px; height: 3px; background: #ff4747; margin-top: 5px;"></div>
+<!-- 2. CATÉGORIES (BUBBLES) -->
+<section id="categories-section" class="container" style="margin-top: 30px;">
+  <div class="section-header-modern" style="margin-bottom: 20px;">
+    <h2 class="sora" style="font-size: 18px; margin: 0;">Chwazi pa Kategori</h2>
+    <div style="width: 40px; height: 3px; background: #ff4747; margin-top: 5px;"></div>
   </div>
-  <div class="category-bubbles-modern">
+
+  <div class="category-scroll-wrapper">
     {% for cat in site.categories %}
-    <a href="{{ cat.url }}" class="cat-bubble-modern">
-      <div class="bubble-img-modern">
+    <a href="{{ cat.url }}" class="cat-item-bubble">
+      <div class="bubble-img">
         <img src="{{ cat.image }}" onerror="this.src='https://ui-avatars.com/api/?name={{ cat.title }}&background=ff4747&color=fff'">
       </div>
       <span>{{ cat.display_name | default: cat.title }}</span>
@@ -35,7 +36,7 @@ title: Akèy - Boutique Piyay
     <div class="flash-header-modern">
         <div class="flash-title">
             <span class="flash-icon-box">⚡</span>
-            <h2>Vante Flash</h2>
+            <h2 style="font-size: 18px; margin: 0;">Vante Flash</h2>
         </div>
         <div id="countdown" class="timer-modern">
             <div class="t-segment"><span id="hours">02</span><small>h</small></div>
@@ -48,49 +49,24 @@ title: Akèy - Boutique Piyay
 
     <div class="flash-slider-container">
         <div id="flash-slider-inner" class="flash-slider-inner">
-            <!-- Pwodwi Static Admin -->
-            {% for product in site.products %}
-                {% if product.flash_sale %}
-                <div class="flash-card-mini">
-                    <div class="mini-img-wrap">
-                        <div class="discount-tag">RABÈ</div>
-                        <a href="{{ product.url }}"><img src="{{ product.image }}"></a>
-                    </div>
-                    <div class="mini-info">
-                        <h3>{{ product.title }}</h3>
-                        <div style="display:flex; align-items:baseline; gap:8px;">
-                            <div class="mini-price">{{ product.price }} HTG</div>
-                            {% if product.old_price %}<div style="font-size:10px; color:#94a3b8; text-decoration:line-through;">{{ product.old_price }} HTG</div>{% endif %}
-                        </div>
-                        <button class="btn-mini-add" onclick="orderProduct('{{ product.title }}', '{{ product.price }}', '{{ product.id }}', '{{ product.image }}')">🛒 Ajoute</button>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
+            <!-- Pwodwi yo ap chaje via JS -->
         </div>
     </div>
 </section>
 
-<!-- 4. MARKETPLACE SECTION (Simplified Header) -->
+<!-- 4. MARKETPLACE SECTION -->
 <section id="user-market" class="container section-margin">
   <div class="marketplace-card-container">
     <div class="section-header-modern">
-        <h2 class="sora">Marketplace 🚀</h2>
-        <div style="width: 50px; height: 3px; background: #ff4747; margin-top: 5px;"></div>
+        <h2 class="sora" style="font-size: 18px; margin: 0;">Marketplace 🚀</h2>
+        <div style="width: 40px; height: 3px; background: #ff4747; margin-top: 5px;"></div>
     </div>
 
-    <!-- FILTRE TAB -->
-    <div class="market-nav-tabs" style="display: flex; gap: 10px; margin: 20px 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
+    <div class="market-nav-tabs">
         <button id="tab-sellers" class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Machann yo</button>
         <button id="tab-products" class="market-tab" onclick="switchMarketTab('products')">🛍️ Tout Pwodwi</button>
     </div>
 
-    <!-- RECHERCHE MINI -->
-    <div class="search-mini-wrap" style="margin-bottom: 25px;">
-        <input type="text" id="market-search-input" placeholder="Chèche yon machann oswa pwodwi..." oninput="filterMarketContent()" style="width: 100%; padding: 10px 20px; border-radius: 50px; border: 2px solid #f1f5f9; outline: none; font-size: 14px;">
-    </div>
-
-    <!-- CONTENT AREA -->
     <div id="sellers-view">
         <div id="sellers-grid-home" class="sellers-grid-modern">
             <div class="loading-msg">⏳ Chaje machann yo...</div>
@@ -106,67 +82,42 @@ title: Akèy - Boutique Piyay
 </section>
 
 <style>
-:root { --primary: #ff4747; --dark: #0f172a; --radius: 20px; --shadow: 0 10px 25px rgba(0,0,0,0.05); }
-.section-margin { margin-top: 40px; margin-bottom: 40px; }
-.main-hero-custom { position: relative; width: 100%; max-width: 1300px; height: 350px; overflow: hidden; margin: 0 auto; border-radius: 30px; }
-.hero-bg-layer { position: absolute; inset: 0; z-index: 1; }
+/* CSS KATEGORI */
+.category-scroll-wrapper { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.category-scroll-wrapper::-webkit-scrollbar { display: none; }
+.cat-item-bubble { display: flex; flex-direction: column; align-items: center; min-width: 80px; text-decoration: none; }
+.bubble-img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #ff4747; overflow: hidden; background: #f8fafc; margin-bottom: 8px; }
+.bubble-img img { width: 100%; height: 100%; object-fit: cover; }
+.cat-item-bubble span { font-size: 11px; font-weight: 700; color: #334155; text-align: center; }
 
-/* KATEGORI */
-.category-bubbles-modern { display: flex !important; gap: 20px; overflow-x: auto; padding: 20px 0; scrollbar-width: none; justify-content: flex-start; }
-.category-bubbles-modern::-webkit-scrollbar { display: none; }
-.cat-bubble-modern { text-align: center; min-width: 90px; text-decoration: none !important; color: var(--dark); display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-.cat-bubble-modern span { font-size: 12px; font-weight: 700; margin-top: 10px; color: #333; }
-.bubble-img-modern { width: 80px !important; height: 80px !important; border-radius: 50% !important; border: 3px solid #ff4747 !important; overflow: hidden !important; background: white !important; display: flex !important; align-items: center !important; justify-content: center !important; box-shadow: 0 4px 15px rgba(255, 71, 71, 0.2); }
-.bubble-img-modern img { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 50% !important; }
+/* CSS TIMER */
+.flash-header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.timer-modern { display: flex !important; align-items: center !important; gap: 5px !important; }
+.t-segment { background: #0f172a; color: white; padding: 5px 8px; border-radius: 8px; display: flex; align-items: center; gap: 2px; }
+.t-segment span { font-size: 16px; font-weight: 800; }
+.t-segment small { font-size: 10px; opacity: 0.8; }
+.t-divider { font-weight: 900; color: #0f172a; }
 
-/* FLASH SALE TIMER */
-.flash-header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-.timer-modern { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; }
-.t-segment { background: #222; color: white; padding: 6px 10px; border-radius: 10px; display: flex !important; flex-direction: column !important; align-items: center !important; min-width: 45px; }
-.t-segment span { font-size: 18px; font-weight: 900; line-height: 1; }
-.t-segment small { font-size: 9px; text-transform: uppercase; opacity: 0.7; margin-top: 2px; }
-.t-divider { font-weight: 900; font-size: 20px; color: #222; }
-
-/* SLIDER */
-.flash-slider-container { width: 100%; overflow: hidden; }
-.flash-slider-inner { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-.flash-slider-inner::-webkit-scrollbar { display: none; }
-.flash-card-mini { min-width: 170px; max-width: 170px; background: white; border-radius: 15px; padding: 10px; box-shadow: var(--shadow); position: relative; border: 1px solid #f0f0f0; flex-shrink: 0; }
-.mini-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; position: relative; }
-.mini-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.mini-info h3 { font-size: 13px; margin: 10px 0 5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-price { color: var(--primary); font-weight: 800; font-size: 15px; }
-.btn-mini-add { width: 100%; background: #f4f4f4; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; margin-top: 10px; }
-.discount-tag { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 5px; z-index: 5; }
-
-/* TABS */
-.market-tab { background: none; border: none; padding: 10px 20px; font-weight: 800; color: #94a3b8; cursor: pointer; transition: 0.3s; font-size: 15px; }
-.market-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-
-/* SELLERS GRID */
-.sellers-grid-modern { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-.seller-card-home { background: white; border-radius: 25px; padding: 25px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; transition: 0.3s; display: flex; flex-direction: column; }
-.seller-card-home:hover { transform: translateY(-5px); border-color: var(--primary); }
+/* CSS SELLERS (RESTORED ORIGINAL DESIGN) */
+.sellers-grid-modern { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.seller-card-home { background: white; border-radius: 25px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; transition: 0.3s; display: flex; flex-direction: column; }
 .seller-header-home { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-.seller-logo-home { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; border: 3px solid #fff5f5; flex-shrink: 0; overflow: hidden; }
+.seller-logo-home { width: 60px; height: 60px; border-radius: 50%; background: #ff4747; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; border: 3px solid #fff5f5; flex-shrink: 0; overflow: hidden; }
 .seller-logo-home img { width: 100%; height: 100%; object-fit: cover; }
-.seller-info-home h4 { margin: 0; font-family: 'Sora', sans-serif; font-size: 17px; }
+.seller-info-home h4 { margin: 0; font-family: 'Sora', sans-serif; font-size: 17px; color: #0f172a; }
 .seller-info-home p { margin: 3px 0 0; font-size: 12px; color: #64748b; }
 .seller-previews-home { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px; }
 .preview-img-home { aspect-ratio: 1; border-radius: 10px; background: #f8fafc; overflow: hidden; border: 1px solid #f1f5f9; }
 .preview-img-home img { width: 100%; height: 100%; object-fit: cover; }
 
-/* PRODUCT GRID */
-.product-grid-modern { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-.product-card-modern { background: white; border-radius: 20px; padding: 15px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; transition: 0.3s; display: flex; flex-direction: column; position: relative; }
-.card-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 15px; overflow: hidden; margin-bottom: 12px; position: relative; }
-.card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-.product-card-modern:hover img { transform: scale(1.1); }
-.card-info h3 { font-size: 16px; margin: 0 0 8px; font-weight: 700; }
-.price-modern { font-size: 18px; font-weight: 900; color: var(--primary); margin-top: auto; }
-.badge-discount { position: absolute; top: 10px; right: 10px; background: #00C853; color: white; font-size: 11px; font-weight: 900; padding: 5px 10px; border-radius: 8px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+/* FLASH SLIDER & PRODUCTS */
+.flash-slider-inner { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; scroll-behavior: smooth; }
+.flash-card-mini { min-width: 155px; max-width: 155px; background: white; border-radius: 15px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex-shrink: 0; border: 1px solid #f1f5f9; }
+.product-grid-modern { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
-@media (max-width: 768px) { .main-hero-custom { height: 220px; border-radius: 0; } .product-grid-modern { grid-template-columns: repeat(2, 1fr); gap: 12px; } .sellers-grid-modern { grid-template-columns: 1fr; } }
+@media (min-width: 769px) {
+    .product-grid-modern { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
 </style>
 
 <script>
@@ -174,49 +125,22 @@ title: Akèy - Boutique Piyay
     let allSellers = [];
     let allProducts = [];
 
-    function switchMarketTab(tab) {
-        document.getElementById('tab-sellers').classList.toggle('active', tab === 'sellers');
-        document.getElementById('tab-products').classList.toggle('active', tab === 'products');
-        document.getElementById('sellers-view').style.display = tab === 'sellers' ? 'block' : 'none';
-        document.getElementById('products-view').style.display = tab === 'products' ? 'block' : 'none';
-    }
-
-    function createProductHTML(p) {
-        const priceNum = parseFloat(p.price) || 0;
-        const oldPriceNum = parseFloat(p.old_price) || 0;
-        const hasDiscount = oldPriceNum > 0 && oldPriceNum > priceNum;
-        let discountBadge = '';
-        let oldPriceHTML = '';
-
-        if (hasDiscount) {
-            const discountPercent = Math.round(((oldPriceNum - priceNum) / oldPriceNum) * 100);
-            discountBadge = `<div class="badge-discount">-${discountPercent}%</div>`;
-            oldPriceHTML = `<span style="font-size:12px; color:#94a3b8; text-decoration:line-through; font-weight:400; margin-left:8px;">${oldPriceNum} HTG</span>`;
-        }
-
-        return `
-            <div class="product-card-modern">
-                <div class="card-img-wrap">
-                    ${p.is_flash_sale ? '<div class="discount-tag">FLASH ⚡</div>' : ''}
-                    ${discountBadge}
-                    <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
-                </div>
-                <div class="card-info">
-                    <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
-                    <div class="price-modern">
-                        <span>${priceNum} HTG</span>
-                        ${oldPriceHTML}
-                    </div>
-                    <button class="btn-add-modern" onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${priceNum}', '${p.id}', '${p.image_url}')" style="width:100%; background:#f1f5f9; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; margin-top:10px;">🛒 Ajoute</button>
-                </div>
-            </div>`;
+    async function loadAllData() {
+        if (!supabaseHome) return;
+        try {
+            const { data: prods } = await supabaseHome.from('user_products').select('*, profiles(*)').order('created_at', { ascending: false });
+            allProducts = prods || [];
+            const { data: sellers } = await supabaseHome.from('profiles').select('*').eq('is_active_seller', true);
+            allSellers = sellers || [];
+            renderSellers(allSellers);
+            renderProducts(allProducts);
+            renderFlashSlider(allProducts.filter(p => p.is_flash_sale));
+        } catch (e) { console.error(e); }
     }
 
     function renderSellers(list) {
         const grid = document.getElementById('sellers-grid-home');
         if (!grid) return;
-        if (list.length === 0) { grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Pa gen machann jwenn.</p>'; return; }
-
         grid.innerHTML = list.map(s => {
             const sProds = allProducts.filter(p => p.seller_id === s.id).slice(0, 4);
             let previews = sProds.map(p => `<div class="preview-img-home"><img src="${p.image_url}"></div>`).join('');
@@ -235,7 +159,7 @@ title: Akèy - Boutique Piyay
                         </div>
                     </div>
                     <div class="seller-previews-home">${previews}</div>
-                    <a href="/boutik-machann.html?id=${s.id}" style="display:block; text-align:center; background:#0f172a; color:white; padding:10px; border-radius:12px; margin-top:20px; text-decoration:none; font-weight:700; font-size:13px;">Vizite Boutik →</a>
+                    <a href="/boutik-machann.html?id=${s.id}" style="display:block; text-align:center; background:#0f172a; color:white; padding:12px; border-radius:12px; margin-top:20px; text-decoration:none; font-weight:700; font-size:13px;">Vizite Boutik →</a>
                 </div>`;
         }).join('');
     }
@@ -243,63 +167,40 @@ title: Akèy - Boutique Piyay
     function renderProducts(list) {
         const grid = document.getElementById('supabase-products-grid');
         if (!grid) return;
-        grid.innerHTML = list.map(p => createProductHTML(p)).join('');
+        grid.innerHTML = list.map(p => `
+            <div style="background:white; padding:10px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border:1px solid #f1f5f9;">
+                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px;"></a>
+                <h3 style="font-size:13px; margin:8px 0; height:32px; overflow:hidden;">${p.title}</h3>
+                <div style="color:#ff4747; font-weight:900; font-size:15px;">${p.price} HTG</div>
+                <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#f1f5f9; border:none; padding:8px; border-radius:10px; margin-top:8px; font-weight:700; cursor:pointer; font-size:11px;">🛒 Ajoute</button>
+            </div>
+        `).join('');
     }
 
-    async function loadAllData() {
-        if (!supabaseHome) return;
-        try {
-            const { data: prods, error: pErr } = await supabaseHome.from('user_products').select('*, profiles(*)').order('created_at', { ascending: false });
-            if (pErr) throw pErr;
-            allProducts = prods || [];
-
-            const { data: sellers, error: sErr } = await supabaseHome.from('profiles').select('*').eq('is_active_seller', true);
-            if (sErr) console.error(sErr);
-            allSellers = sellers || [];
-
-            renderSellers(allSellers);
-            renderProducts(allProducts);
-
-            const slider = document.getElementById('flash-slider-inner');
-            allProducts.filter(p => p.is_flash_sale).forEach(p => {
-                const priceNum = parseFloat(p.price) || 0;
-                const oldPriceNum = parseFloat(p.old_price) || 0;
-                const hasDiscount = oldPriceNum > 0 && oldPriceNum > priceNum;
-                const discountPercent = hasDiscount ? Math.round(((oldPriceNum - priceNum) / oldPriceNum) * 100) : 0;
-                const oldP = hasDiscount ? `<div style="font-size:10px; color:#94a3b8; text-decoration:line-through;">${oldPriceNum} HTG</div>` : '';
-                const discBadge = hasDiscount ? `<div class="badge-discount" style="top:5px; right:5px; font-size:8px; padding:2px 5px;">-${discountPercent}%</div>` : '';
-
-                slider.innerHTML += `
-                    <div class="flash-card-mini">
-                        <div class="mini-img-wrap">
-                            <div class="discount-tag" style="font-size:7px; padding:2px 5px;">FLASH ⚡</div>
-                            ${discBadge}
-                            <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
-                        </div>
-                        <div class="mini-info">
-                            <h3>${p.title}</h3>
-                            <div style="display:flex; align-items:baseline; gap:8px;">
-                                <div class="mini-price">${priceNum} HTG</div>${oldP}
-                            </div>
-                            <button class="btn-mini-add" onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${priceNum}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
-                        </div>
-                    </div>`;
-            });
-
-        } catch (e) {
-            console.error(e);
-            const msg = '<p style="text-align:center; padding:20px; color:red; grid-column:1/-1;">Erè nan chajman done yo.</p>';
-            if(document.getElementById('supabase-products-grid')) document.getElementById('supabase-products-grid').innerHTML = msg;
-            if(document.getElementById('sellers-grid-home')) document.getElementById('sellers-grid-home').innerHTML = msg;
-        }
+    function renderFlashSlider(flashProds) {
+        const slider = document.getElementById('flash-slider-inner');
+        if (!slider || flashProds.length === 0) return;
+        slider.innerHTML = flashProds.map(p => `
+            <div class="flash-card-mini">
+                <div style="position:relative; aspect-ratio:1; overflow:hidden; border-radius:10px;">
+                    <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; height:100%; object-fit:cover;"></a>
+                </div>
+                <h3 style="font-size:12px; margin:8px 0 4px; font-weight:700; height:30px; overflow:hidden;">${p.title}</h3>
+                <div style="color:#ff4747; font-weight:900; font-size:14px;">${p.price} HTG</div>
+                <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#0f172a; color:white; border:none; padding:8px; border-radius:8px; margin-top:8px; font-size:10px; font-weight:700; cursor:pointer;">Ajoute 🛒</button>
+            </div>
+        `).join('');
+        setInterval(() => {
+            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) slider.scrollTo({ left: 0, behavior: 'smooth' });
+            else slider.scrollBy({ left: 160, behavior: 'smooth' });
+        }, 4000);
     }
 
-    function filterMarketContent() {
-        const q = document.getElementById('market-search-input').value.toLowerCase();
-        const filteredSellers = allSellers.filter(s => (s.full_name || "").toLowerCase().includes(q));
-        const filteredProducts = allProducts.filter(p => p.title.toLowerCase().includes(q));
-        renderSellers(filteredSellers);
-        renderProducts(filteredProducts);
+    function switchMarketTab(tab) {
+        document.getElementById('tab-sellers').classList.toggle('active', tab === 'sellers');
+        document.getElementById('tab-products').classList.toggle('active', tab === 'products');
+        document.getElementById('sellers-view').style.display = tab === 'sellers' ? 'block' : 'none';
+        document.getElementById('products-view').style.display = tab === 'products' ? 'block' : 'none';
     }
 
     document.addEventListener('DOMContentLoaded', loadAllData);

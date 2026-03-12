@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <title>Konfigirasyon 2FA Admin - Boutique Piyay</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body style="background: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
+    <div style="max-width: 450px; width: 100%; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;">
+        <h1 style="font-size: 22px; margin-bottom: 10px;">🛡️ Sekirize Kont Admin</h1>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 30px;">Swiv etap sa yo pou aktive otantifikasyon 2 etap (2FA).</p>
+
+        <div id="step-1">
+            <button onclick="startEnrollment()" id="enrollBtn" style="width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">KOMANSE KONFIGIRASYON</button>
+        </div>
+
+        <div id="step-2" style="display: none;">
+            <p style="font-size: 13px; margin-bottom: 15px;">1. Eskane kòd QR sa a ak <b>Google Authenticator</b> oswa yon lòt aplikasyon 2FA.</p>
+            <div id="qr-container" style="background: #eee; width: 200px; height: 200px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                <img id="qr-code" src="" style="width: 100%; height: auto;">
+            </div>
+            <p style="font-size: 13px; margin-bottom: 10px;">2. Tape kòd 6 chif la pou verifye :</p>
+            <input type="text" id="mfaCode" placeholder="000000" maxlength="6" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 15px;">
+            <button onclick="verifyMFA()" id="verifyBtn" style="width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">KONFIME AK AKTIVE</button>
+        </div>
+
+        <div id="step-3" style="display: none;">
+            <div style="font-size: 50px; color: #22c55e; margin-bottom: 15px;">✅</div>
+            <h3 style="margin-bottom: 10px;">2FA Aktive!</h3>
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 25px;">Kounye a, kont admin ou a doublement sekirize.</p>
+            <a href="/admin-stats.html" style="display: block; padding: 15px; background: #0f172a; color: white; text-decoration: none; border-radius: 12px; font-weight: 800;">ALE NAN DASHBOARD</a>
+        </div>
+    </div>
+
+    <script>
+        const sup = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+        let factorId = "";
+
+        async function startEnrollment() {
+            const { data: { user } } = await sup.auth.getUser();
+            if (!user) { alert("Ou dwe konekte anvan!"); window.location.href="/admin-stats.html"; return; }
+
+            const { data, error } = await sup.auth.mfa.enroll({ factorType: 'totp' });
+            if (error) { alert(error.message); return; }
+
+            factorId = data.id;
+            document.getElementById('qr-code').src = data.totp.qr_code;
+            document.getElementById('step-1').style.display = "none";
+            document.getElementById('step-2').style.display = "block";
+        }
+
+        async function verifyMFA() {
+            const code = document.getElementById('mfaCode').value;
+            const { data, error } = await sup.auth.mfa.challenge({ factorId });
+            if (error) { alert(error.message); return; }
+
+            const { error: verifyError } = await sup.auth.mfa.verify({
+                factorId,
+                challengeId: data.id,
+                code
+            });
+
+            if (verifyError) { alert("Kòd la pa bon, eseye ankò."); return; }
+
+            document.getElementById('step-2').style.display = "none";
+            document.getElementById('step-3').style.display = "block";
+        }
+    </script>
+</body>
+</html>
