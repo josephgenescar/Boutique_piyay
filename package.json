@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "imagekit": "^2.0.0",
-    "postgres": "^3.4.3"
+    "postgres": "^3.4.3",
+    "web-push": "^3.6.6"
   }
 }
