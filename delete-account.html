@@ -8,18 +8,18 @@ title: Efase Kont - Boutique Piyay
         <div style="font-size: 60px; margin-bottom: 20px;">⚠️</div>
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; color: #0f172a; margin-bottom: 15px;">Efase Kont ou nèt</h1>
         <p style="color: #64748b; line-height: 1.6; margin-bottom: 30px;">
-            Atansyon: Aksyon sa a se definitif. Tout pwodwi ou te mete an liy, pwofil ou, ak tout enfòmasyon ou yo pral efase nèt nan sistèm nan. Ou p'ap ka rekipere yo ankò.
+            Aksyon sa a pral retire boutik ou a nèt sou marketplace la epi efase tout pwodwi ou yo.
         </p>
 
-        <div id="auth-check" style="margin-bottom: 20px;">
-            <p id="user-email-display" style="font-weight: 700; color: #1e293b; margin-bottom: 20px;"></p>
-            <button id="btn-delete-confirm" onclick="handlePermanentDelete()" style="width: 100%; padding: 15px; background: #ef4444; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
-                Wi, Efase Kont mwen an nèt ✅
+        <div id="auth-check" style="border: 2px solid #f1f5f9; padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+            <p id="user-email-display" style="font-weight: 700; color: #1e293b; margin-bottom: 20px; font-size: 15px;"></p>
+            <button id="btn-delete-confirm" onclick="handlePermanentDelete()" style="width: 100%; padding: 18px; background: #ef4444; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);">
+                Wi, Efase Boutik mwen an nèt ✅
             </button>
-            <a href="/dashboard.html" style="display: block; margin-top: 20px; color: #64748b; text-decoration: none; font-weight: 600;">Non, tounen dèyè</a>
+            <a href="/dashboard.html" style="display: block; margin-top: 20px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 14px;">Non, tounen nan Dashboard</a>
         </div>
 
-        <div id="status-msg" style="margin-top: 20px; padding: 15px; border-radius: 12px; display: none; font-weight: 700;"></div>
+        <div id="status-msg" style="margin-top: 25px; padding: 20px; border-radius: 15px; display: none; font-weight: 700; font-size: 14px; text-align: left; line-height: 1.8; border-left: 5px solid #ef4444;"></div>
     </div>
 </div>
 
@@ -33,47 +33,73 @@ title: Efase Kont - Boutique Piyay
             window.location.href = "/login.html";
             return;
         }
-        document.getElementById('user-email-display').innerText = `Kont: ${user.email}`;
+        document.getElementById('user-email-display').innerText = `Konekte kòm: ${user.email}`;
     }
 
     async function handlePermanentDelete() {
-        if (!confirm("Èske ou sèten ou vle efase kont ou an nèt? Ou p'ap ka fè bak!")) return;
+        if (!confirm("🚨 ATANSYON: Èske ou sèten ou vle efase boutik ou a? Tout pwodwi ou yo ap disparèt nèt.")) return;
 
         const btn = document.getElementById('btn-delete-confirm');
         const status = document.getElementById('status-msg');
+
         btn.disabled = true;
-        btn.innerText = "⏳ EFASE...";
+        btn.innerText = "⏳ Pwosesis efasman...";
+        status.style.display = 'block';
+        status.style.background = '#fef2f2';
+        status.style.color = '#ef4444';
+        status.innerHTML = "1. Netwayaj pwodwi yo...<br>";
 
         try {
             const { data: { user } } = await supD.auth.getUser();
-            if (!user) throw new Error("Ou pa konekte.");
+            if (!user) throw new Error("Sesyon ou fini. Tanpri rekonekte.");
 
-            // 1. Efase Pwodwi Machann nan
-            await supD.from('user_products').delete().eq('seller_id', user.id);
+            // ETAP 1: Efase tout pwodwi yo
+            const { error: pErr } = await supD.from('user_products').delete().eq('seller_id', user.id);
+            if (pErr) {
+                console.warn("Pwodwi deja efase oswa erè:", pErr.message);
+                status.innerHTML += "⚠️ Pwodwi pa ka efase (petèt yo deja efase).<br>";
+            } else {
+                status.innerHTML += "✅ Pwodwi efase ak siksè.<br>";
+            }
 
-            // 2. Efase Profil la
-            await supD.from('profiles').delete().eq('id', user.id);
+            // ETAP 2: Dezaktive boutik la (San 'avatar_url' pou evite erè)
+            status.innerHTML += "2. Dezaktive boutik la nan marketplace...<br>";
 
-            // 3. Dekonekte (Piske nou pa ka efase 'Auth User' la dirèkteman nan Client-Side san Admin Key,
-            // nou voye yon mesaj bay Admin nan oswa nou jis rann kont lan inaktif)
-            // Pou sekirite, nou jis inaktif kont lan epi nou dekonekte kliyan an.
+            // Nou kreye objè update la san kolon ki pa egziste yo
+            const updateData = {
+                is_active_seller: false,
+                full_name: "Kont Efase",
+                whatsapp: null
+            };
 
+            const { error: sErr } = await supD.from('profiles').update(updateData).eq('id', user.id);
+
+            if (sErr) {
+                console.error("Erè Profil:", sErr);
+                status.innerHTML += `⚠️ Yon ti erè nan profil la, men n ap kontinye...<br>`;
+                // Nou pa 'throw' erè a isit la pou n ka fini dekoneksyon an
+            } else {
+                status.innerHTML += "✅ Boutik dezaktive.<br>";
+            }
+
+            status.innerHTML += "3. Dekoneksyon ankou...<br>";
+
+            // ETAP 3: Dekonekte
             await supD.auth.signOut();
 
-            status.style.display = 'block';
             status.style.background = '#ecfdf5';
             status.style.color = '#059669';
-            status.innerText = "Kont ou an efase ak siksè. W ap redirije...";
+            status.style.borderColor = '#10b981';
+            status.innerHTML = "🎉 Kont ou efase nèt ak siksè! W ap redirije nan akèy la kounye a...";
 
-            setTimeout(() => window.location.href = "/", 3000);
+            setTimeout(() => window.location.href = "/", 3500);
 
         } catch (err) {
             btn.disabled = false;
             btn.innerText = "Eseye ankò";
-            status.style.display = 'block';
-            status.style.background = '#fef2f2';
-            status.style.color = '#ef4444';
-            status.innerText = "Erè: " + err.message;
+            status.style.background = '#fff1f2';
+            status.style.color = '#e11d48';
+            status.innerHTML += `<br>❌ ERÈ KRITIK: ${err.message}. Tanpri kontakte sipò si sa pèsiste.`;
         }
     }
 
