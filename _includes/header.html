@@ -168,7 +168,8 @@
 <script>
     async function updateHeaderAuth() {
         if (typeof supabase !== 'undefined') {
-            const sup = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+            const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+            window._supabaseClient = sup;
             const { data: { user } } = await sup.auth.getUser();
             if (user) {
                 const authLinks = document.getElementById('authLinks');
@@ -318,7 +319,8 @@
 
   // Démarrage
   async function init() {
-    supClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    supClient = window._supabaseClient || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    window._supabaseClient = supClient;
     const { data: { user } } = await supClient.auth.getUser();
     if (!user) return;
     window._currentUserId = user.id;
