@@ -124,6 +124,12 @@
             const { data: prof } = await supabaseD.from('profiles').select('*').eq('id', user.id).single();
             userProfile = prof;
 
+            // SI SE AFILYE, REDIRIJE L SOU PAJ AFILYE A DIRÈKTEMAN
+            if (prof.role === 'affiliate') {
+                window.location.href = "/affiliate.html";
+                return;
+            }
+
             setupUI();
             loadStats();
             loadOrders();
@@ -144,8 +150,6 @@
             } else if (userProfile.role === 'delivery') {
                 title.innerText = "🛵 Dashboard Livrezon";
                 document.getElementById('delivery-only-fields').style.display = 'block';
-            } else {
-                title.innerText = "🔗 Dashboard Afilye";
             }
 
             tabs += `<div class="db-tab" onclick="switchTab('profile')">Pwofil</div>`;
@@ -178,8 +182,6 @@
                 query = query.eq('seller_id', currentUser.id);
             } else if (userProfile.role === 'delivery') {
                 query = query.eq('delivery_person_id', currentUser.id);
-            } else {
-                query = query.eq('affiliate_id', currentUser.id);
             }
 
             const { data: orders, error } = await query.order('created_at', { ascending: false });
@@ -226,9 +228,9 @@
             const list = document.getElementById('delivery-people-list');
             list.innerHTML = 'Chaje lis livrè yo...';
 
-            const { data: people } = await supabaseD.from('profiles').select('*').eq('role', 'delivery');
+            const { data: people } = await supabaseD.from('profiles').select('*').eq('role', 'delivery').eq('is_verified', true);
             if (!people || people.length === 0) {
-                list.innerHTML = 'Okenn livrè pa disponib pou kounya.';
+                list.innerHTML = 'Okenn livrè verifye pa disponib pou kounya.';
                 return;
             }
 

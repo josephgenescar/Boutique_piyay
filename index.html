@@ -3,12 +3,10 @@ layout: default
 title: Akèy - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER -->
-<div class="hero-wrapper-container">
-  <section id="hero-marketplace" class="main-hero-custom">
-    <div class="hero-bg-layer">
-      {% include boutique-piyay-banner.html %}
-    </div>
+<!-- 1. HERO BANNER (RESTORED) -->
+<div class="hero-wrapper-container" style="margin-bottom: 40px;">
+  <section id="hero-marketplace" class="main-hero-custom" style="position: relative; width: 100%; max-width: 1200px; margin: 0 auto; border-radius: 25px; overflow: hidden; background: #f8fafc; height: 350px;">
+    {% include boutique-piyay-banner.html %}
   </section>
 </div>
 
@@ -93,7 +91,7 @@ title: Akèy - Boutique Piyay
 
 /* CSS TIMER */
 .timer-modern { display: flex !important; align-items: center !important; gap: 10px !important; }
-.t-segment { background: #0f172a; color: white; padding: 10px 15px; border-radius: 12px; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.t-segment { background: #0f172a; color: white; padding: 10px 15px; border-radius: 12px; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .t-segment span { font-size: 20px; font-weight: 900; }
 .t-segment small { font-size: 12px; opacity: 0.8; font-weight: 700; }
 .t-divider { font-weight: 900; color: #0f172a; font-size: 22px; }
@@ -119,8 +117,11 @@ title: Akèy - Boutique Piyay
 .market-tab { padding: 15px 30px; font-weight: 800; cursor: pointer; border: none; background: none; font-size: 17px; color: #94a3b8; transition: 0.3s; border-radius: 15px 15px 0 0; }
 .market-tab.active { color: #ff4747; border-bottom: 4px solid #ff4747; background: #fff5f5; }
 
-@media (min-width: 769px) { .product-grid-modern { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; } }
-@media (max-width: 768px) { .sellers-grid-modern { grid-template-columns: 1fr; } .market-tab { padding: 12px 20px; font-size: 15px; } }
+@media (max-width: 768px) {
+    .main-hero-custom { height: 220px !important; border-radius: 15px !important; margin: 0 10px !important; }
+    .sellers-grid-modern { grid-template-columns: 1fr; }
+    .market-tab { padding: 12px 20px; font-size: 15px; }
+}
 </style>
 
 <script>
@@ -195,7 +196,7 @@ title: Akèy - Boutique Piyay
                 <div style="position:relative; aspect-ratio:1; overflow:hidden; border-radius:15px;"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; height:100%; object-fit:cover;"></a></div>
                 <h3 style="font-size:14px; margin:12px 0 5px; font-weight:700; height:35px; overflow:hidden;">${p.title}</h3>
                 <div style="color:#ff4747; font-weight:900; font-size:16px;">${p.price} HTG</div>
-                <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#0f172a; color:white; border:none; padding:12px; border-radius:12px; margin-top:12px; font-size:12px; font-weight:700; cursor:pointer;">Ajoute 🛒</button>
+                <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#0f172a; color:white; border:none; padding:12px; border-radius:10px; margin-top:12px; font-size:12px; font-weight:700; cursor:pointer;">Ajoute 🛒</button>
             </div>
         `).join('');
         setInterval(() => {
