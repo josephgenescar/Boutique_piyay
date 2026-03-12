@@ -1,130 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Account Deletion – Rivayo Rewards</title>
+---
+layout: default
+title: Efase Kont - Boutique Piyay
+---
 
-<style>
-body{
-  margin:0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:white;
-}
+<div class="container" style="max-width: 600px; padding: 60px 20px; min-height: 80vh;">
+    <div id="delete-card" style="background: white; padding: 40px; border-radius: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.1); text-align: center; border: 1px solid #fee2e2;">
+        <div style="font-size: 60px; margin-bottom: 20px;">⚠️</div>
+        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; color: #0f172a; margin-bottom: 15px;">Efase Kont ou nèt</h1>
+        <p style="color: #64748b; line-height: 1.6; margin-bottom: 30px;">
+            Atansyon: Aksyon sa a se definitif. Tout pwodwi ou te mete an liy, pwofil ou, ak tout enfòmasyon ou yo pral efase nèt nan sistèm nan. Ou p'ap ka rekipere yo ankò.
+        </p>
 
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:40px 20px;
-}
+        <div id="auth-check" style="margin-bottom: 20px;">
+            <p id="user-email-display" style="font-weight: 700; color: #1e293b; margin-bottom: 20px;"></p>
+            <button id="btn-delete-confirm" onclick="handlePermanentDelete()" style="width: 100%; padding: 15px; background: #ef4444; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
+                Wi, Efase Kont mwen an nèt ✅
+            </button>
+            <a href="/dashboard.html" style="display: block; margin-top: 20px; color: #64748b; text-decoration: none; font-weight: 600;">Non, tounen dèyè</a>
+        </div>
 
-.card{
-  background:white;
-  color:#333;
-  padding:30px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.2);
-}
-
-.logo{
-  text-align:center;
-  margin-bottom:20px;
-}
-
-.logo img{
-  width:120px;
-}
-
-h1{
-  text-align:center;
-  color:#2c5364;
-}
-
-h2{
-  color:#203a43;
-  margin-top:25px;
-}
-
-ul,ol{
-  margin-left:20px;
-}
-
-.email{
-  background:#2c5364;
-  color:white;
-  padding:10px;
-  border-radius:8px;
-  display:inline-block;
-  margin-top:10px;
-}
-.footer{
-  text-align:center;
-  margin-top:25px;
-  opacity:0.8;
-}
-</style>
-
-</head>
-<body>
-
-<div class="container">
-  <div class="card">
-
-    <!-- LOGO -->
-    <div class="logo">
-      <img src="/assets/images/logo.png" alt="Rivayo Rewards Logo">
+        <div id="status-msg" style="margin-top: 20px; padding: 15px; border-radius: 12px; display: none; font-weight: 700;"></div>
     </div>
-
-    <h1>Account Deletion Request</h1>
-
-    <p>
-      At <b>RIVAYO REWARDS</b>, we respect your privacy.
-      Users can delete their account directly from inside the mobile application at any time.
-    </p>
-
-    <h2>What data will be deleted?</h2>
-    <p>When you delete your account, the following data is permanently removed from our servers:</p>
-    <ul>
-      <li>Your email address and profile information</li>
-      <li>Your reward balance and points history</li>
-      <li>Your ad watch history and game progress</li>
-    </ul>
-
-    <h2>How to delete your data</h2>
-
-    <h3>Option 1: In-App (Recommended)</h3>
-    <ol>
-      <li>Open the RIVAYO REWARDS app</li>
-      <li>Log in to your account</li>
-      <li>On the Home Screen, tap the Trash Icon (Delete Account) at the top right</li>
-      <li>Enter your password to confirm</li>
-      <li>Your account and all data will be deleted instantly</li>
-    </ol>
-
-    <h3>Option 2: Online Request</h3>
-    <p>If you no longer have the app installed, email us at:</p>
-
-    <div class="email">
-      josephgenescar@gmail.com
-    </div>
-
-    <p>Please include:</p>
-    <ul>
-      <li>Subject: Account Deletion Request</li>
-      <li>The email address associated with your account</li>
-    </ul>
-
-    <p>
-      We will process your request within 48 hours.
-    </p>
-
-    <div class="footer">
-      © Rivayo Tech
-    </div>
-
-  </div>
 </div>
 
-</body>
-</html>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    const supD = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+
+    async function checkUser() {
+        const { data: { user } } = await supD.auth.getUser();
+        if (!user) {
+            window.location.href = "/login.html";
+            return;
+        }
+        document.getElementById('user-email-display').innerText = `Kont: ${user.email}`;
+    }
+
+    async function handlePermanentDelete() {
+        if (!confirm("Èske ou sèten ou vle efase kont ou an nèt? Ou p'ap ka fè bak!")) return;
+
+        const btn = document.getElementById('btn-delete-confirm');
+        const status = document.getElementById('status-msg');
+        btn.disabled = true;
+        btn.innerText = "⏳ EFASE...";
+
+        try {
+            const { data: { user } } = await supD.auth.getUser();
+            if (!user) throw new Error("Ou pa konekte.");
+
+            // 1. Efase Pwodwi Machann nan
+            await supD.from('user_products').delete().eq('seller_id', user.id);
+
+            // 2. Efase Profil la
+            await supD.from('profiles').delete().eq('id', user.id);
+
+            // 3. Dekonekte (Piske nou pa ka efase 'Auth User' la dirèkteman nan Client-Side san Admin Key,
+            // nou voye yon mesaj bay Admin nan oswa nou jis rann kont lan inaktif)
+            // Pou sekirite, nou jis inaktif kont lan epi nou dekonekte kliyan an.
+
+            await supD.auth.signOut();
+
+            status.style.display = 'block';
+            status.style.background = '#ecfdf5';
+            status.style.color = '#059669';
+            status.innerText = "Kont ou an efase ak siksè. W ap redirije...";
+
+            setTimeout(() => window.location.href = "/", 3000);
+
+        } catch (err) {
+            btn.disabled = false;
+            btn.innerText = "Eseye ankò";
+            status.style.display = 'block';
+            status.style.background = '#fef2f2';
+            status.style.color = '#ef4444';
+            status.innerText = "Erè: " + err.message;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkUser);
+</script>

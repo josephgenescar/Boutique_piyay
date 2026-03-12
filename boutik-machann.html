@@ -3,22 +3,121 @@ layout: default
 title: Boutik Machann - Boutique Piyay
 ---
 
-<div id="seller-shop-view" class="container" style="padding: 40px 20px; min-height: 80vh;">
-    <!-- HEADER BOUTIK -->
-    <div id="seller-header" style="background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; margin-bottom: 50px; display: none; border: 1px solid #f1f5f9;">
-        <div style="width: 100px; height: 100px; background: #ff4747; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 900; margin: 0 auto 20px;" id="sellerInitial">M</div>
-        <h1 id="sellerName" style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; font-size: 28px;">Non Boutik la</h1>
-        <div id="sellerLoc" style="color: #ff4747; font-weight: 700; margin-top: 10px;">📍 Adrès...</div>
-        <div id="sellerSocials" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;"></div>
+<style>
+    .seller-hero-premium {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 60px 20px;
+        border-radius: 0 0 50px 50px;
+        color: white;
+        text-align: center;
+        margin-bottom: 50px;
+        position: relative;
+        overflow: hidden;
+    }
+    .seller-hero-premium::after {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(255, 71, 71, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .seller-profile-img {
+        width: 120px; height: 120px;
+        border-radius: 50%;
+        background: var(--primary);
+        border: 5px solid rgba(255,255,255,0.1);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 50px; font-weight: 800;
+        margin: 0 auto 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        overflow: hidden;
+    }
+    .seller-profile-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .seller-meta-info {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        background: rgba(255,255,255,0.05);
+        padding: 8px 16px;
+        border-radius: 100px;
+        backdrop-filter: blur(10px);
+    }
+    .meta-item b { color: var(--primary); }
+
+    .shop-filter-bar {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .search-in-shop {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+    .search-in-shop input {
+        width: 100%;
+        padding: 12px 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        outline: none;
+        font-size: 14px;
+    }
+    .search-in-shop input:focus { border-color: var(--primary); }
+</style>
+
+<div id="seller-shop-view" style="min-height: 80vh; background: #f8fafc;">
+    <!-- HERO SECTION -->
+    <div class="seller-hero-premium">
+        <div class="container">
+            <div id="sellerInitialWrap" class="seller-profile-img">M</div>
+            <h1 id="sellerName" style="font-family: 'Sora', sans-serif; font-weight: 800; font-size: 32px; margin: 0;">Non Boutik la</h1>
+            <p id="sellerBio" style="opacity: 0.7; max-width: 600px; margin: 15px auto 0;">Byenvini nan boutik ofisyèl nou an sou Boutique Piyay. Nou ofri pi bon kalite pwodwi yo.</p>
+
+            <div class="seller-meta-info">
+                <div class="meta-item">📍 <span id="sellerLoc">Lokalizasyon...</span></div>
+                <div class="meta-item">📦 <b id="prodCount">0</b> Pwodwi</div>
+                <div class="meta-item">⭐ <b>4.8</b> Rating</div>
+            </div>
+
+            <div id="sellerSocials" style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;"></div>
+        </div>
     </div>
 
-    <!-- LIS PWODWI -->
-    <div class="section-header-modern">
-        <h2 class="sora">Tout pwodwi machann sa a</h2>
-    </div>
+    <div class="container">
+        <!-- FILTER BAR -->
+        <div class="shop-filter-bar">
+            <div class="search-in-shop">
+                <input type="text" id="shopSearch" placeholder="Chèche nan boutik sa a..." oninput="filterSellerProducts()">
+            </div>
+            <div style="font-weight: 700; color: #64748b;">
+                Tout Pwodwi
+            </div>
+        </div>
 
-    <div id="seller-products-grid" class="product-grid-modern">
-        <div style="text-align: center; padding: 50px; grid-column: 1/-1;">⏳ Chaje pwodwi yo...</div>
+        <!-- PRODUCTS GRID -->
+        <div id="seller-products-grid" class="product-grid-modern">
+            <div style="text-align: center; padding: 50px; grid-column: 1/-1;">
+                <div style="font-size: 40px; animation: spin 1s linear infinite;">⏳</div>
+                <p>Chaje pwodwi machann nan...</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -26,6 +125,7 @@ title: Boutik Machann - Boutique Piyay
 <script>
     const supS = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
     const sellerId = new URLSearchParams(window.location.search).get('id');
+    let allSellerProducts = [];
 
     async function loadSellerShop() {
         if (!sellerId) return window.location.href = "/";
@@ -36,40 +136,78 @@ title: Boutik Machann - Boutique Piyay
             if (sErr || !seller) throw new Error("Machann sa a pa egziste.");
 
             document.getElementById('sellerName').innerText = seller.full_name || "Machann";
-            document.getElementById('sellerInitial').innerText = (seller.full_name || "M").charAt(0).toUpperCase();
-            document.getElementById('sellerLoc').innerText = `📍 ${seller.address || 'Zòn non-defini'}`;
+            const initial = (seller.full_name || "M").charAt(0).toUpperCase();
+
+            if (seller.avatar_url) {
+                document.getElementById('sellerInitialWrap').innerHTML = `<img src="${seller.avatar_url}">`;
+            } else {
+                document.getElementById('sellerInitialWrap').innerText = initial;
+            }
+
+            document.getElementById('sellerLoc').innerText = seller.address || 'Ayiti';
+            if (seller.bio) document.getElementById('sellerBio').innerText = seller.bio;
 
             const soc = document.getElementById('sellerSocials');
-            if (seller.facebook_url) soc.innerHTML += `<a href="${seller.facebook_url}" target="_blank" style="font-size:24px; text-decoration:none;">🔵</a>`;
-            if (seller.instagram_url) soc.innerHTML += `<a href="${seller.instagram_url}" target="_blank" style="font-size:24px; text-decoration:none;">📸</a>`;
-            if (seller.whatsapp) soc.innerHTML += `<a href="https://wa.me/${seller.whatsapp}" target="_blank" style="font-size:24px; text-decoration:none;">🟢</a>`;
+            const iconStyle = "width:40px; height:40px; background:rgba(255,255,255,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:0.3s;";
 
-            document.getElementById('seller-header').style.display = 'block';
+            if (seller.facebook_url) soc.innerHTML += `<a href="${seller.facebook_url}" target="_blank" style="${iconStyle}">🔵</a>`;
+            if (seller.instagram_url) soc.innerHTML += `<a href="${seller.instagram_url}" target="_blank" style="${iconStyle}">📸</a>`;
+            if (seller.whatsapp) soc.innerHTML += `<a href="https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="${iconStyle}">🟢</a>`;
 
             // 2. Rale tout pwodwi machann nan
             const { data: products, error: pErr } = await supS.from('user_products').select('*').eq('seller_id', sellerId).order('created_at', { ascending: false });
+            if (pErr) throw pErr;
 
-            const grid = document.getElementById('seller-products-grid');
-            if (!products || products.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Machann sa a pa gen okenn pwodwi an liy pou kounye a.</p>';
-                return;
-            }
-
-            grid.innerHTML = products.map(p => `
-                <div class="product-card-modern">
-                    <div class="card-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a></div>
-                    <div class="card-info">
-                        <h3>${p.title}</h3>
-                        <div class="price-modern">${p.price} HTG</div>
-                        <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
-                    </div>
-                </div>
-            `).join('');
+            allSellerProducts = products || [];
+            document.getElementById('prodCount').innerText = allSellerProducts.length;
+            renderProducts(allSellerProducts);
 
         } catch (e) {
             console.error(e);
-            alert(e.message);
+            document.getElementById('seller-products-grid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px;">❌ Erè: ${e.message}</div>`;
         }
+    }
+
+    function renderProducts(list) {
+        const grid = document.getElementById('seller-products-grid');
+        if (list.length === 0) {
+            grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; padding:40px; color:#64748b;">Pa gen okenn pwodwi jwenn.</div>';
+            return;
+        }
+
+        grid.innerHTML = list.map(p => {
+            const priceNum = parseFloat(p.price) || 0;
+            const oldPriceNum = parseFloat(p.old_price) || 0;
+            const hasDiscount = oldPriceNum > 0 && oldPriceNum > priceNum;
+            const discountPercent = hasDiscount ? Math.round(((oldPriceNum - priceNum) / oldPriceNum) * 100) : 0;
+
+            let badges = '';
+            if (p.is_flash_sale) badges += `<div class="badge-discount" style="background:#ff4747; right:auto; left:10px;">FLASH ⚡</div>`;
+            if (hasDiscount) badges += `<div class="badge-discount">-${discountPercent}%</div>`;
+
+            return `
+                <div class="product-card-modern">
+                    <div class="card-img-wrap">
+                        ${badges}
+                        <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
+                    </div>
+                    <div class="card-info">
+                        <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
+                        <div class="price-modern">
+                            <span>${priceNum} HTG</span>
+                            ${hasDiscount ? `<span class="old-price-modern">${oldPriceNum} HTG</span>` : ''}
+                        </div>
+                        <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${priceNum}', '${p.id}', '${p.image_url}')">🛒 Ajoute</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterSellerProducts() {
+        const query = document.getElementById('shopSearch').value.toLowerCase();
+        const filtered = allSellerProducts.filter(p => p.title.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query)));
+        renderProducts(filtered);
     }
 
     document.addEventListener('DOMContentLoaded', loadSellerShop);
