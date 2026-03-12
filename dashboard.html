@@ -20,6 +20,7 @@
         .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
         .profile-form input, .profile-form textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; font-family: inherit; }
         .btn-save { background: #00C853; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .affiliate-promo { background: #fff1f1; border: 2px dashed #ff4747; padding: 20px; border-radius: 15px; margin-top: 25px; text-align: center; }
     </style>
 </head>
 <body style="background: #f8fafc;">
@@ -71,7 +72,7 @@
         <div id="tab-profile" class="tab-content" style="display:none;">
             <div class="profile-form" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
                 <h3>Enfòmasyon Pwofil</h3>
-                <label style="font-size:12px; font-weight:700; color:#64748b;">NON KONPLÈ</label>
+                <label style="font-size:12px; font-weight:700; color:#64748b;">NON BOUTIK / KONPLÈ</label>
                 <input type="text" id="prof-name" placeholder="Non ou">
 
                 <label style="font-size:12px; font-weight:700; color:#64748b;">EMAIL (Pa ka chanje)</label>
@@ -84,6 +85,16 @@
                 <textarea id="prof-address" placeholder="Eg: Delmas 33, Pòtoprens"></textarea>
 
                 <button class="btn-save" onclick="saveProfile()">Sove Chanjman ✅</button>
+
+                <div id="affiliate-promo-box" class="affiliate-promo" style="display: none;">
+                    <h4 style="margin: 0 0 10px 0; color: #ff4747;">🚀 Ganyen 5% Komisyon anplis!</h4>
+                    <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Vin yon afilye pou w ka touche kòb lè w pataje lyen lòt pwodwi.</p>
+                    <button onclick="activateAffiliate()" style="background: #0f172a; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer;">AKTIVE KONT AFILYE MWEN 🔗</button>
+                </div>
+                <div id="already-affiliate" class="affiliate-promo" style="display: none; background: #f0fdf4; border-color: #22c55e;">
+                    <p style="font-size: 13px; color: #15803d; font-weight: 700;">✅ Ou se yon Afilye tou!</p>
+                    <a href="/affiliate.html" style="color: #15803d; font-size: 12px;">Ale nan Dashboard Afilye →</a>
+                </div>
             </div>
         </div>
     </div>
@@ -99,6 +110,22 @@
             if (!user) return window.location.href = "/login.html";
             currentUser = user;
             loadStats(); loadUserProducts(); loadWallet(); loadProfile();
+            checkAffiliateStatus();
+        }
+
+        async function checkAffiliateStatus() {
+            const { data } = await supabaseD.from('affiliates').select('*').eq('user_id', currentUser.id).single();
+            if (data) {
+                document.getElementById('already-affiliate').style.display = 'block';
+            } else {
+                document.getElementById('affiliate-promo-box').style.display = 'block';
+            }
+        }
+
+        async function activateAffiliate() {
+            const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const { error } = await supabaseD.from('affiliates').insert([{ user_id: currentUser.id, referral_code: code }]);
+            if (error) alert(error.message); else { alert("Kont Afilye ou aktive! 🎉"); location.reload(); }
         }
 
         async function loadProfile() {
@@ -115,9 +142,8 @@
             const name = document.getElementById('prof-name').value.trim();
             const wa = document.getElementById('prof-whatsapp').value.trim();
             const addr = document.getElementById('prof-address').value.trim();
-
             const { error } = await supabaseD.from('profiles').update({ full_name: name, whatsapp: wa, address: addr }).eq('id', currentUser.id);
-            if (error) alert("Erè: " + error.message); else alert("Pwofil mete ajou! 🎉");
+            if (error) alert(error.message); else alert("Pwofil mete ajou! 🎉");
         }
 
         async function loadStats() {
@@ -131,8 +157,7 @@
                         <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; font-size:13px;">
                             <div><b>${o.product_title}</b><br><small>${o.customer_name}</small></div>
                             <div style="text-align:right;"><b>${o.total_price} HTG</b><br><small>${new Date(o.created_at).toLocaleDateString()}</small></div>
-                        </div>
-                    `).join('');
+                        </div>`).join('');
                 }
             }
             const { count } = await supabaseD.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', currentUser.id);
@@ -151,35 +176,31 @@
                             <span style="color:#ff4747; font-weight:800; font-size:13px;">${p.price} HTG</span>
                             <button onclick="location.href='/edit-product.html?id=${p.id}'" style="border:none; background:#f1f5f9; padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;">Edite</button>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             }
         }
 
         async function loadWallet() {
-            try {
-                const res = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
-                const wallet = await res.json();
-                if (wallet && !wallet.error) {
-                    document.getElementById('wallet-balance').innerText = `${wallet.balance} HTG`;
-                    document.getElementById('total-earned').innerText = `${wallet.total_earned} HTG`;
-                    document.getElementById('total-withdrawn').innerText = `${wallet.total_withdrawn} HTG`;
-                }
-                const txRes = await fetch(`/.netlify/functions/wallet/transactions?userId=${currentUser.id}`);
-                const txs = await txRes.json();
-                if (txs.length > 0) {
-                    document.getElementById('transactions-list').innerHTML = txs.map(t => `
-                        <div class="transaction-item">
-                            <div><div style="font-weight:700;">${t.type === 'earning' ? 'Vant' : 'Retrè'}</div><small style="color:#94a3b8;">${new Date(t.created_at).toLocaleDateString()}</small></div>
-                            <div style="color:${t.type === 'earning' ? '#22c55e' : '#ef4444'}; font-weight:800;">${t.type === 'earning' ? '+' : '-'}${t.amount} HTG</div>
-                        </div>
-                    `).join('');
-                }
-            } catch(e) { console.error(e); }
+            const res = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
+            const wallet = await res.json();
+            if (wallet && !wallet.error) {
+                document.getElementById('wallet-balance').innerText = `${wallet.balance} HTG`;
+                document.getElementById('total-earned').innerText = `${wallet.total_earned} HTG`;
+                document.getElementById('total-withdrawn').innerText = `${wallet.total_withdrawn} HTG`;
+            }
+            const txRes = await fetch(`/.netlify/functions/wallet/transactions?userId=${currentUser.id}`);
+            const txs = await txRes.json();
+            if (txs.length > 0) {
+                document.getElementById('transactions-list').innerHTML = txs.map(t => `
+                    <div class="transaction-item">
+                        <div><div style="font-weight:700;">${t.type === 'earning' ? 'Vant' : 'Retrè'}</div><small style="color:#94a3b8;">${new Date(t.created_at).toLocaleDateString()}</small></div>
+                        <div style="color:${t.type === 'earning' ? '#22c55e' : '#ef4444'}; font-weight:800;">${t.type === 'earning' ? '+' : '-'}${t.amount} HTG</div>
+                    </div>`).join('');
+            }
         }
 
         async function requestWithdrawal() {
-            const amount = prompt("Konbe ou vle retire? (Minimòm 500 HTG)");
+            const amount = prompt("Konbe ou vle retire?");
             if (!amount || isNaN(amount)) return;
             const res = await fetch('/.netlify/functions/wallet/withdraw?userId=' + currentUser.id, { method: 'POST', body: JSON.stringify({ amount: parseFloat(amount) }) });
             const data = await res.json(); alert(data.message || data.error); if (!data.error) loadWallet();
@@ -188,7 +209,8 @@
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tab).style.display = 'block';
+            const target = document.getElementById('tab-' + tab);
+            if (target) target.style.display = 'block';
             event.target.classList.add('active');
         }
 

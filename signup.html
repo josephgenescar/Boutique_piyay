@@ -7,42 +7,80 @@
     <link rel="stylesheet" href="/style.css">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        .auth-container { max-width: 400px; margin: 60px auto; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .auth-input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; font-family: inherit; }
-        .btn-submit { width: 100%; padding: 14px; background: #0f172a; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
-        .terms-box { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #64748b; margin-bottom: 20px; cursor: pointer; }
-        .terms-box input { margin-top: 3px; }
+        .auth-container { max-width: 450px; margin: 40px auto; padding: 30px; background: white; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+        .auth-input { width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; margin-bottom: 15px; font-family: inherit; background: #f8fafc; font-size: 14px; outline: none; transition: 0.3s; }
+        .auth-input:focus { border-color: #ff4747; background: white; }
+        .btn-submit { width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .role-option { padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .role-option.active { border-color: #ff4747; background: #fff5f5; color: #ff4747; }
+        label { display: block; font-size: 11px; font-weight: 800; color: #475569; margin-bottom: 5px; text-transform: uppercase; padding-left: 5px; }
+        .terms-box { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #64748b; margin: 20px 0; cursor: pointer; line-height: 1.4; }
+        .terms-box input { margin-top: 2px; }
     </style>
 </head>
 <body style="background: #f8fafc;">
     <div class="auth-container">
-        <div style="text-align: center; margin-bottom: 25px;">
-            <a href="/"><img src="/assets/images/logo.png" style="width: 50px;"></a>
-            <h2 style="margin: 10px 0 5px 0;">Byenveni! 🚀</h2>
-            <p style="font-size: 13px; color: #64748b;">Kreye kont ou pou w ka vann oswa achte.</p>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="/"><img src="/assets/images/logo.png" style="width: 60px;"></a>
+            <h2 style="margin: 10px 0 5px 0; font-weight: 900;">Byenveni! 🚀</h2>
+            <p style="font-size: 13px; color: #64748b;">Kijan ou vle kòmanse?</p>
+        </div>
+
+        <div class="role-selector">
+            <div id="opt-seller" class="role-option active" onclick="setRole('seller')">🏪 Machann</div>
+            <div id="opt-affiliate" class="role-option" onclick="setRole('affiliate')">🔗 Afilye</div>
         </div>
 
         <form id="signupForm" onsubmit="handleSignup(event)">
-            <input type="text" id="fullName" class="auth-input" placeholder="Non konplè" required>
-            <input type="email" id="email" class="auth-input" placeholder="Email ou" required>
-            <input type="password" id="password" class="auth-input" placeholder="Modpas (min 6 karaktè)" required>
+            <div id="seller-fields">
+                <label>Non Boutik ou *</label>
+                <input type="text" id="shopName" class="auth-input" placeholder="Eg: Store Lakay">
+                <label>Adrès Boutik la *</label>
+                <input type="text" id="address" class="auth-input" placeholder="Eg: Delmas 33">
+            </div>
 
+            <label>Non konplè ou *</label>
+            <input type="text" id="fullName" class="auth-input" placeholder="Non ak Siyati" required>
+
+            <label>Email *</label>
+            <input type="email" id="email" class="auth-input" placeholder="email@egzanp.com" required>
+
+            <label>WhatsApp *</label>
+            <input type="tel" id="whatsapp" class="auth-input" placeholder="Eg: 50944443333" required>
+
+            <label>Modpas *</label>
+            <input type="password" id="password" class="auth-input" placeholder="Minimòm 6 karaktè" required>
+
+            <!-- ✅ REMETE CHECKBOX REGLEMAN YO -->
             <label class="terms-box">
                 <input type="checkbox" id="acceptTerms" onchange="toggleBtn()">
-                <span>Mwen aksepte **<a href="/regleman.html" target="_blank" style="color:#ff4747; text-decoration:none; font-weight:700;">Regleman ak Prensip</a>** platform nan.</span>
+                <span>Mwen aksepte **<a href="/regleman.html" target="_blank" style="color:#ff4747; text-decoration:none; font-weight:700;">Regleman ak Prensip</a>** platform nan. Mwen sètifye tout enfòmasyon sa yo se verite.</span>
             </label>
 
             <button type="submit" id="btnSignup" class="btn-submit" disabled>KREYE KONT MWEN</button>
         </form>
 
-        <p style="text-align: center; font-size: 13px; margin-top: 20px;">
-            Ou gen kont deja? <a href="/login.html" style="color: #ff4747; font-weight: 700; text-decoration: none;">Konekte</a>
+        <p style="text-align: center; font-size: 13px; margin-top: 25px; color: #64748b;">
+            Ou gen kont deja? <a href="/login.html" style="color: #ff4747; font-weight: 800; text-decoration: none;">Konekte isit la</a>
         </p>
     </div>
 
     <script>
         const supS = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+        let currentRole = 'seller';
+
+        function setRole(role) {
+            currentRole = role;
+            document.getElementById('opt-seller').classList.toggle('active', role === 'seller');
+            document.getElementById('opt-affiliate').classList.toggle('active', role === 'affiliate');
+            document.getElementById('seller-fields').style.display = role === 'seller' ? 'block' : 'none';
+
+            // Si se afilye, nou pa bezwen shopName ak address kòm obligatwa
+            document.getElementById('shopName').required = (role === 'seller');
+            document.getElementById('address').required = (role === 'seller');
+        }
 
         function toggleBtn() {
             document.getElementById('btnSignup').disabled = !document.getElementById('acceptTerms').checked;
@@ -50,32 +88,46 @@
 
         async function handleSignup(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnSignup');
+            btn.disabled = true; btn.innerHTML = "⏳ Operasyon an kou...";
+
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
-            const name = document.getElementById('fullName').value.trim();
-            const btn = document.getElementById('btnSignup');
-
-            btn.disabled = true; btn.innerHTML = "⏳ Operasyon an kou...";
+            const fullName = document.getElementById('fullName').value.trim();
+            const wa = document.getElementById('whatsapp').value.trim();
 
             try {
                 const { data: { user }, error: authErr } = await supS.auth.signUp({ email, password: pass });
                 if (authErr) throw authErr;
 
                 if (user) {
-                    const { error: profErr } = await supS.from('profiles').insert([{ id: user.id, full_name: name, email: email, role: 'seller', is_active_seller: true }]);
-                    if (profErr) throw profErr;
+                    const profileData = {
+                        id: user.id,
+                        full_name: currentRole === 'seller' ? document.getElementById('shopName').value : fullName,
+                        owner_name: fullName,
+                        email: email,
+                        whatsapp: wa,
+                        address: currentRole === 'seller' ? document.getElementById('address').value : '',
+                        role: currentRole,
+                        is_active_seller: currentRole === 'seller'
+                    };
 
-                    // Kreye Wallet otomatikman
-                    const { error: wallErr } = await supS.from('wallets').insert([{ user_id: user.id }]);
+                    await supS.from('profiles').insert([profileData]);
+                    await supS.from('wallets').insert([{ user_id: user.id }]);
 
-                    alert("Kont ou kreye ak siksè! Tcheke email ou pou konfime.");
+                    if (currentRole === 'affiliate') {
+                        const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+                        await supS.from('affiliates').insert([{ user_id: user.id, referral_code: code }]);
+                    }
+
+                    alert("Felisitasyon! Kont ou kreye. Tcheke email ou pou konfime.");
                     window.location.href = "/login.html";
                 }
-            } catch (err) {
-                alert("Erè: " + err.message);
-                btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN";
-            }
+            } catch (err) { alert(err.message); btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN"; }
         }
+
+        // Inisyalize kòm seller pa defo
+        setRole('seller');
     </script>
 </body>
 </html>
