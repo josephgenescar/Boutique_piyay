@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // ─── PRE-RELI PWOFIL KLIYAN ──────────────────────
 async function prefillCustomerData() {
   if (typeof supabase === 'undefined') return;
-  const sup = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+  const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+  window._supabaseClient = sup;
   try {
     const { data: { user } } = await sup.auth.getUser();
     if (user) {
@@ -129,7 +130,7 @@ function generateReceiptContent(data) {
       th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
       th { background: #f8fafc; font-weight: 800; text-transform: uppercase; font-size: 12px; }
       .total-box { background: #0f172a; color: white; padding: 20px; border-radius: 12px; text-align: right; font-size: 20px; font-weight: 900; }
-      .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+      .receipt-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
       .sponsor { font-weight: 800; color: #0f172a; margin-top: 5px; }
       @media print { .no-print { display: none; } }
     </style></head><body>
@@ -151,7 +152,7 @@ function generateReceiptContent(data) {
         </div>
         <table><thead><tr><th>Pwodwi</th><th>Kte</th><th>Total</th></tr></thead><tbody>${itemsHtml}</tbody></table>
         <div class="total-box">TOTAL JENERAL: ${grandTotal} HTG</div>
-        <div class="footer">
+        <div class="receipt-footer">
           <p>Mèsi deske ou te achte sou Boutique Piyay! Prezanté fich sa bay livrè a.</p>
           <div class="sponsor">🚀 Sponsorisé par Rvayo-tech entreprise</div>
         </div>
@@ -172,7 +173,7 @@ function downloadReceipt() {
 }
 
 // ─── SOU-MET KOMAND LAN ───────────────────────────
-function submitOrder() {
+async function submitOrder() {
   const name = document.getElementById('customer-name').value.trim();
   const phone = document.getElementById('customer-phone').value.trim();
   const zone = document.getElementById('delivery-zone').value;
@@ -191,6 +192,32 @@ function submitOrder() {
     if (!sellerGroups[item.sellerPhone]) sellerGroups[item.sellerPhone] = [];
     sellerGroups[item.sellerPhone].push(item);
   });
+
+  // ── Sove kòmand nan Supabase ──────────────────────
+  try {
+    const sup = window._supabaseClient || supabase.createClient(
+      "https://lsyjnhqjssirtgrdfgcu.supabase.co",
+      "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13"
+    );
+    window._supabaseClient = sup;
+
+    for (const item of currentCart) {
+      await sup.from('orders').insert({
+        seller_id: item.sellerId || null,
+        customer_name: name,
+        customer_phone: phone,
+        customer_address: zone,
+        product_title: item.title,
+        total_price: item.price * item.qty,
+        status: 'pending',
+        delivery_zone: zone,
+        platform_fee: Math.round(item.price * item.qty * 0.03),
+        seller_amount: Math.round(item.price * item.qty * 0.92),
+      });
+    }
+  } catch(err) {
+    console.error('Erè Supabase:', err);
+  }
 
   Object.keys(sellerGroups).forEach((sPhone, index) => {
     const items = sellerGroups[sPhone];
