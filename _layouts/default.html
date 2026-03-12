@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: "fr-FR" }}">
+<html lang="{{ site.lang | default: 'fr-FR' }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,18 +7,18 @@
     <!-- ✅ NOUVO: META TAGS POU WHATSAPP (LOGO AK TEKS) -->
     <meta property="og:title" content="Boutique Piyay 🚀 - Vin Vann ak Achte Pi Fasil">
     <meta property="og:description" content="Pi bon Marketplace an Ayiti! Kreye boutik ou gratis, jwenn kliyan rapid, epi jwi pi bon pri sou mache a.">
-    <meta property="og:image" content="{{ "/assets/images/logo.png" | absolute_url }}">
+    <meta property="og:image" content="{{ '/assets/images/logo.png' | absolute_url }}">
     <meta property="og:url" content="{{ site.url }}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/png" href="{{ "/assets/images/logo.png" | relative_url }}">
-    <link rel="apple-touch-icon" href="{{ "/assets/images/logo.png" | relative_url }}">
+    <link rel="icon" type="image/png" href="{{ '/assets/images/logo.png' | relative_url }}">
+    <link rel="apple-touch-icon" href="{{ '/assets/images/logo.png' | relative_url }}">
 
     {% seo %}
 
-    <link rel="stylesheet" href="{{ "/style.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
 
     {% feed_meta %}
 
@@ -48,7 +48,6 @@
         padding: 12px 24px; border-radius: 10px; z-index: 10000; display: none;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: 600;
       }
-      @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
   </head>
   <body style="background-color: #f4f4f4; margin: 0; padding: 0;">
@@ -82,8 +81,8 @@
     </div>
 
     <!-- Script prensipal -->
-    <script src="{{ "/main.js" | relative_url }}"></script>
-    <script src="{{ "/assets/js/cart.js" | relative_url }}"></script>
+    <script src="{{ '/main.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/cart.js' | relative_url }}"></script>
 
     <script>
       window.addEventListener('load', () => {

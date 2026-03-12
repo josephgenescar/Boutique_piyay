@@ -142,7 +142,8 @@ async function submitOrder() {
                 total_price: item.price * item.quantity,
                 payment_method: payment,
                 delivery_zone: zone,
-                affiliate_id: currentAffiliateId
+                affiliate_id: currentAffiliateId,
+                status: 'pending'
             }]);
         }
         showReceiptView(orderId, name, phone, zone, payment, merchantOrders, grandTotal);
@@ -183,8 +184,89 @@ function showReceiptView(orderId, name, phone, zone, payment, orders, grandTotal
         <button onclick="location.reload()" style="background:none; border:none; color:#64748b; cursor:pointer; font-size:12px; text-decoration:underline; width:100%; margin-top:15px;">Fè yon lòt kòmand</button>`;
 }
 
+// --- SEARCH ENGINE FIX ---
+let staticSearchData = [];
+async function initSearch() {
+    try {
+        const resp = await fetch('/search.json');
+        staticSearchData = await resp.json();
+    } catch (e) { console.error("Static search load error", e); }
+}
+
+window.liveSearch = async function() {
+    const input = document.getElementById('search-input');
+    const resultsDiv = document.getElementById('search-results');
+    if (!input || !resultsDiv) return;
+
+    const query = input.value.toLowerCase().trim();
+    if (query.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+
+    // 1. Chèche nan Static Data (Fichye yo)
+    let matches = staticSearchData.filter(p =>
+        p.title.toLowerCase().includes(query) ||
+        (p.category && p.category.toLowerCase().includes(query))
+    );
+
+    // 2. Chèche nan Supabase (Pwodwi Machann yo)
+    if (supabaseMain) {
+        const { data: dbMatches } = await supabaseMain
+            .from('user_products')
+            .select('id, title, price, image_url, category')
+            .ilike('title', `%${query}%`)
+            .limit(5);
+
+        if (dbMatches) {
+            dbMatches.forEach(dm => {
+                // Evite kopi si pwodwi a ta nan de kote yo
+                if (!matches.find(m => m.id === dm.id)) {
+                    matches.push({
+                        title: dm.title,
+                        url: `/pwodwi-machann.html?id=${dm.id}`,
+                        price: dm.price,
+                        image: dm.image_url,
+                        category: dm.category
+                    });
+                }
+            });
+        }
+    }
+
+    matches = matches.slice(0, 8); // Limite rezilta yo
+
+    if (matches.length === 0) {
+        resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#666; font-size:13px;">Okenn pwodwi yo pa jwenn 🧐</div>';
+    } else {
+        resultsDiv.innerHTML = matches.map(p => `
+            <a href="${p.url}" style="display:flex; align-items:center; gap:12px; padding:10px; text-decoration:none; border-bottom:1px solid #f8fafc;">
+                <img src="${p.image}" style="width:45px; height:45px; object-fit:cover; border-radius:8px;">
+                <div style="flex:1;">
+                    <div style="font-weight:700; color:#0f172a; font-size:13px; line-height:1.2;">${p.title}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <span style="color:#ff4747; font-weight:900; font-size:12px;">${p.price} HTG</span>
+                        <span style="font-size:10px; color:#94a3b8; background:#f1f5f9; padding:2px 6px; border-radius:4px;">${p.category || 'Piyay'}</span>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+    }
+    resultsDiv.style.display = 'block';
+};
+
+// Fermer les résultats si on clique ailleurs
+document.addEventListener('click', (e) => {
+    const res = document.getElementById('search-results');
+    const input = document.getElementById('search-input');
+    if (res && !res.contains(e.target) && e.target !== input) {
+        res.style.display = 'none';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
+    initSearch();
     if(!window.html2canvas) {
         const script = document.createElement('script');
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";

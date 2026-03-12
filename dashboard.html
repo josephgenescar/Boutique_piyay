@@ -3,98 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Machann - Boutique Piyay</title>
+    <title>Dashboard - Boutique Piyay</title>
     <link rel="stylesheet" href="/style.css">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        .db-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; overflow-x: auto; }
-        .db-tab { padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: #64748b; white-space: nowrap; }
-        .db-tab.active { background: #0f172a; color: white; }
+        :root { --primary: #ff4747; --dark: #0f172a; --gray: #64748b; --light: #f8fafc; }
+        body { background: var(--light); font-family: 'Sora', sans-serif; }
+        .db-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+        .db-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
+        .db-nav::-webkit-scrollbar { display: none; }
+        .db-tab { padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--gray); white-space: nowrap; transition: 0.3s; }
+        .db-tab.active { background: var(--dark); color: white; }
+
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .stat-card-mini { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #eee; }
-        .stat-val { display: block; font-size: 24px; font-weight: 900; color: #0f172a; }
-        .stat-lbl { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 800; margin-top: 5px; }
-        .wallet-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 25px; border-radius: 20px; position: relative; overflow: hidden; }
-        .balance-val { font-size: 32px; font-weight: 900; margin: 10px 0; display: block; }
-        .btn-withdraw { background: #ff4747; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
-        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .stat-val { display: block; font-size: 22px; font-weight: 900; color: var(--dark); }
+        .stat-lbl { font-size: 10px; color: var(--gray); text-transform: uppercase; font-weight: 800; margin-top: 5px; }
+
+        .order-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid #eee; }
+        .order-card.pending { border-left-color: #f59e0b; }
+        .order-card.assigned { border-left-color: #3b82f6; }
+        .order-card.delivered { border-left-color: #10b981; }
+
+        .btn-action { padding: 8px 15px; border-radius: 8px; border: none; font-weight: 800; font-size: 11px; cursor: pointer; transition: 0.3s; }
+        .btn-assign { background: #3b82f6; color: white; }
+        .btn-done { background: #10b981; color: white; }
+
+        .delivery-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+
+        .delivery-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px; cursor: pointer; }
+        .delivery-item:hover { border-color: var(--primary); background: #fff5f5; }
+
         .profile-form input, .profile-form textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; font-family: inherit; }
-        .btn-save { background: #00C853; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .affiliate-promo { background: #fff1f1; border: 2px dashed #ff4747; padding: 20px; border-radius: 15px; margin-top: 25px; text-align: center; }
+        .btn-save { background: #00C853; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; }
     </style>
 </head>
-<body style="background: #f8fafc;">
-    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="font-size: 22px;">🛠️ Dashboard Machann</h1>
-            <button onclick="supabaseD.auth.signOut().then(() => location.href='/')" style="background:none; border:none; color:#ef4444; font-size:12px; cursor:pointer;">Soti 🚪</button>
+<body>
+    <div class="db-container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="/assets/images/logo.png" style="width:40px;">
+                <h1 style="font-size: 20px; font-weight:900;" id="db-title">Dashboard</h1>
+            </div>
+            <button onclick="supabaseD.auth.signOut().then(() => location.href='/')" style="background:none; border:none; color:#ef4444; font-size:12px; font-weight:800; cursor:pointer;">DEKONEKTE 🚪</button>
         </header>
 
-        <nav class="db-nav">
-            <div class="db-tab active" onclick="switchTab('stat')">Statistik</div>
-            <div class="db-tab" onclick="switchTab('prod')">Pwodwi m yo</div>
-            <div class="db-tab" onclick="switchTab('wallet')">Finansye 💰</div>
-            <div class="db-tab" onclick="switchTab('profile')">Profil 👤</div>
-            <div class="db-tab" onclick="location.href='/vendre.html'">+ Ajoute Pwodwi</div>
+        <nav class="db-nav" id="main-nav">
+            <!-- Dynamically filled -->
         </nav>
 
-        <!-- TAB: STATISTIK -->
-        <div id="tab-stat" class="tab-content">
-            <div class="stat-grid">
-                <div class="stat-card-mini" style="border-bottom-color: #3b82f6;"><span id="stat-total-orders" class="stat-val">0</span><span class="stat-lbl">Kòmand Total</span></div>
-                <div class="stat-card-mini" style="border-bottom-color: #22c55e;"><span id="stat-total-sales" class="stat-val">0 HTG</span><span class="stat-lbl">Vant Total</span></div>
-                <div class="stat-card-mini" style="border-bottom-color: #ff4747;"><span id="stat-live-prods" class="stat-val">0</span><span class="stat-lbl">Pwodwi Live</span></div>
+        <!-- CONTENT AREA -->
+        <div id="db-content">
+            <!-- TAB: STATS -->
+            <div id="tab-stat" class="tab-content">
+                <div class="stat-grid" id="stat-grid">
+                    <!-- Stats cards -->
+                </div>
+                <h3 style="margin: 30px 0 15px 0; font-size: 16px;">📋 Kòmand yo</h3>
+                <div id="orders-list">
+                    <div style="text-align:center; padding:40px; color:#94a3b8;">Chaje kòmand yo...</div>
+                </div>
             </div>
-            <h3 style="margin-bottom: 15px;">Dènye Kòmand yo</h3>
-            <div id="latest-orders-list" style="background: white; border-radius: 15px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <div style="text-align:center; padding:20px; color:#94a3b8;">Okenn kòmand poko fèt.</div>
+
+            <!-- TAB: PRODUCTS (Machann sèlman) -->
+            <div id="tab-prod" class="tab-content" style="display:none;">
+                <div id="user-products-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;"></div>
+            </div>
+
+            <!-- TAB: PROFILE -->
+            <div id="tab-profile" class="tab-content" style="display:none;">
+                <div class="profile-form" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <h3>Pwofil mwen</h3>
+                    <label style="font-size:11px; font-weight:800; color:var(--gray);">NON KONPLÈ / BOUTIK</label>
+                    <input type="text" id="prof-name">
+
+                    <label style="font-size:11px; font-weight:800; color:var(--gray);">WHATSAPP</label>
+                    <input type="text" id="prof-whatsapp">
+
+                    <div id="delivery-only-fields" style="display:none;">
+                        <label style="font-size:11px; font-weight:800; color:var(--gray);">ZÒN LIVREZON</label>
+                        <input type="text" id="prof-zone">
+                        <label style="font-size:11px; font-weight:800; color:var(--gray);">VEYIKIL</label>
+                        <input type="text" id="prof-vehicle">
+                    </div>
+
+                    <button class="btn-save" onclick="saveProfile()">Mete ajou ✅</button>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- TAB: PWODWI -->
-        <div id="tab-prod" class="tab-content" style="display:none;"><div id="user-products-list" class="product-grid-modern"></div></div>
-
-        <!-- TAB: WALLET -->
-        <div id="tab-wallet" class="tab-content" style="display:none;">
-            <div class="wallet-card">
-                <span style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Balans Disponib (92% pa w)</span>
-                <span id="wallet-balance" class="balance-val">0.00 HTG</span>
-                <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8;">
-                    <span>Total Ganyen: <b id="total-earned">0</b></span>
-                    <span>Total Retire: <b id="total-withdrawn">0</b></span>
-                </div>
-                <button class="btn-withdraw" onclick="requestWithdrawal()">Retire Lajan</button>
+    <!-- MODAL ASSIGNATION LIVREZON -->
+    <div id="delivery-modal" class="delivery-modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3 style="margin:0;">Chwazi yon Livrè</h3>
+                <button onclick="closeDeliveryModal()" style="border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
             </div>
-            <div id="transactions-list" style="background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top:20px;"></div>
-        </div>
-
-        <!-- TAB: PROFIL -->
-        <div id="tab-profile" class="tab-content" style="display:none;">
-            <div class="profile-form" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <h3>Enfòmasyon Pwofil</h3>
-                <label style="font-size:12px; font-weight:700; color:#64748b;">NON BOUTIK / KONPLÈ</label>
-                <input type="text" id="prof-name" placeholder="Non ou">
-
-                <label style="font-size:12px; font-weight:700; color:#64748b;">EMAIL (Pa ka chanje)</label>
-                <input type="text" id="prof-email" disabled style="background:#f1f5f9;">
-
-                <label style="font-size:12px; font-weight:700; color:#64748b;">WHATSAPP (Pou kòmand)</label>
-                <input type="text" id="prof-whatsapp" placeholder="Eg: +50944443333">
-
-                <label style="font-size:12px; font-weight:700; color:#64748b;">ADRÈS BOUTIK / ZÒN</label>
-                <textarea id="prof-address" placeholder="Eg: Delmas 33, Pòtoprens"></textarea>
-
-                <button class="btn-save" onclick="saveProfile()">Sove Chanjman ✅</button>
-
-                <div id="affiliate-promo-box" class="affiliate-promo" style="display: none;">
-                    <h4 style="margin: 0 0 10px 0; color: #ff4747;">🚀 Ganyen 5% Komisyon anplis!</h4>
-                    <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Vin yon afilye pou w ka touche kòb lè w pataje lyen lòt pwodwi.</p>
-                    <button onclick="activateAffiliate()" style="background: #0f172a; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer;">AKTIVE KONT AFILYE MWEN 🔗</button>
-                </div>
-                <div id="already-affiliate" class="affiliate-promo" style="display: none; background: #f0fdf4; border-color: #22c55e;">
-                    <p style="font-size: 13px; color: #15803d; font-weight: 700;">✅ Ou se yon Afilye tou!</p>
-                    <a href="/affiliate.html" style="color: #15803d; font-size: 12px;">Ale nan Dashboard Afilye →</a>
-                </div>
+            <div id="delivery-people-list">
+                <!-- List of delivery people -->
             </div>
         </div>
     </div>
@@ -104,117 +113,203 @@
         const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
         const supabaseD = supabase.createClient(SUP_URL, SUP_KEY);
         let currentUser = null;
+        let userProfile = null;
+        let selectedOrderId = null;
 
-        async function initDashboard() {
+        async function init() {
             const { data: { user } } = await supabaseD.auth.getUser();
             if (!user) return window.location.href = "/login.html";
             currentUser = user;
-            loadStats(); loadUserProducts(); loadWallet(); loadProfile();
-            checkAffiliateStatus();
+
+            const { data: prof } = await supabaseD.from('profiles').select('*').eq('id', user.id).single();
+            userProfile = prof;
+
+            setupUI();
+            loadStats();
+            loadOrders();
+            if (prof.role === 'seller') loadProducts();
+            loadProfileData();
         }
 
-        async function checkAffiliateStatus() {
-            const { data } = await supabaseD.from('affiliates').select('*').eq('user_id', currentUser.id).single();
-            if (data) {
-                document.getElementById('already-affiliate').style.display = 'block';
+        function setupUI() {
+            const nav = document.getElementById('main-nav');
+            const title = document.getElementById('db-title');
+
+            let tabs = `<div class="db-tab active" onclick="switchTab('stat')">Kòmand yo</div>`;
+
+            if (userProfile.role === 'seller') {
+                title.innerText = "🏪 Dashboard Machann";
+                tabs += `<div class="db-tab" onclick="switchTab('prod')">Pwodwi m yo</div>`;
+                tabs += `<div class="db-tab" onclick="location.href='/vendre.html'">+ Ajoute</div>`;
+            } else if (userProfile.role === 'delivery') {
+                title.innerText = "🛵 Dashboard Livrezon";
+                document.getElementById('delivery-only-fields').style.display = 'block';
             } else {
-                document.getElementById('affiliate-promo-box').style.display = 'block';
+                title.innerText = "🔗 Dashboard Afilye";
+            }
+
+            tabs += `<div class="db-tab" onclick="switchTab('profile')">Pwofil</div>`;
+            nav.innerHTML = tabs;
+        }
+
+        async function loadStats() {
+            const grid = document.getElementById('stat-grid');
+            if (userProfile.role === 'seller') {
+                const { data: orders } = await supabaseD.from('orders').select('total_price').eq('seller_id', currentUser.id);
+                const totalSales = orders ? orders.reduce((sum, o) => sum + (o.total_price || 0), 0) : 0;
+                grid.innerHTML = `
+                    <div class="stat-card-mini" style="border-bottom-color: #3b82f6;"><span class="stat-val">${orders?.length || 0}</span><span class="stat-lbl">Kòmand</span></div>
+                    <div class="stat-card-mini" style="border-bottom-color: #10b981;"><span class="stat-val">${totalSales} HTG</span><span class="stat-lbl">Vant</span></div>
+                `;
+            } else if (userProfile.role === 'delivery') {
+                const { data: assigned } = await supabaseD.from('orders').select('*').eq('delivery_person_id', currentUser.id);
+                const done = assigned ? assigned.filter(o => o.status === 'delivered').length : 0;
+                grid.innerHTML = `
+                    <div class="stat-card-mini" style="border-bottom-color: #f59e0b;"><span class="stat-val">${assigned?.length || 0}</span><span class="stat-lbl">Livrezon</span></div>
+                    <div class="stat-card-mini" style="border-bottom-color: #10b981;"><span class="stat-val">${done}</span><span class="stat-lbl">Fini</span></div>
+                `;
             }
         }
 
-        async function activateAffiliate() {
-            const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            const { error } = await supabaseD.from('affiliates').insert([{ user_id: currentUser.id, referral_code: code }]);
-            if (error) alert(error.message); else { alert("Kont Afilye ou aktive! 🎉"); location.reload(); }
+        async function loadOrders() {
+            let query = supabaseD.from('orders').select('*, profiles!orders_delivery_person_id_fkey(full_name, whatsapp)');
+
+            if (userProfile.role === 'seller') {
+                query = query.eq('seller_id', currentUser.id);
+            } else if (userProfile.role === 'delivery') {
+                query = query.eq('delivery_person_id', currentUser.id);
+            } else {
+                query = query.eq('affiliate_id', currentUser.id);
+            }
+
+            const { data: orders, error } = await query.order('created_at', { ascending: false });
+            const list = document.getElementById('orders-list');
+
+            if (!orders || orders.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;">Okenn kòmand poko disponib.</div>`;
+                return;
+            }
+
+            list.innerHTML = orders.map(o => {
+                const statusLabel = o.status === 'pending' ? 'Wa tann' : (o.status === 'assigned' ? 'Nan wout' : 'Livre');
+                const deliveryInfo = o.profiles ? `<div style="font-size:11px; color:#3b82f6; margin-top:5px;">🛵 Livrè: ${o.profiles.full_name}</div>` : '';
+
+                let actionBtn = '';
+                if (userProfile.role === 'seller' && o.status === 'pending') {
+                    actionBtn = `<button class="btn-action btn-assign" onclick="openDeliveryModal('${o.id}')">Assigner Livrè</button>`;
+                } else if (userProfile.role === 'delivery' && o.status === 'assigned') {
+                    actionBtn = `<button class="btn-action btn-done" onclick="markAsDelivered('${o.id}')">Moke kòm Livre ✅</button>`;
+                }
+
+                return `
+                    <div class="order-card ${o.status}">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <strong style="font-size:14px;">${o.product_title}</strong>
+                                <div style="font-size:12px; color:var(--gray); margin-top:3px;">👤 ${o.customer_name} | 📍 ${o.delivery_zone}</div>
+                                <div style="font-size:12px; font-weight:800; color:var(--primary); margin-top:5px;">${o.total_price} HTG</div>
+                                ${deliveryInfo}
+                            </div>
+                            <div style="text-align:right;">
+                                <span style="font-size:10px; font-weight:800; text-transform:uppercase; padding:4px 8px; border-radius:5px; background:#f1f5f9;">${statusLabel}</span>
+                                <div style="margin-top:10px;">${actionBtn}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        async function loadProfile() {
-            const { data: prof } = await supabaseD.from('profiles').select('*').eq('id', currentUser.id).single();
-            if (prof) {
-                document.getElementById('prof-name').value = prof.full_name || '';
-                document.getElementById('prof-email').value = prof.email || '';
-                document.getElementById('prof-whatsapp').value = prof.whatsapp || '';
-                document.getElementById('prof-address').value = prof.address || '';
+        async function openDeliveryModal(orderId) {
+            selectedOrderId = orderId;
+            document.getElementById('delivery-modal').style.display = 'flex';
+            const list = document.getElementById('delivery-people-list');
+            list.innerHTML = 'Chaje lis livrè yo...';
+
+            const { data: people } = await supabaseD.from('profiles').select('*').eq('role', 'delivery');
+            if (!people || people.length === 0) {
+                list.innerHTML = 'Okenn livrè pa disponib pou kounya.';
+                return;
+            }
+
+            list.innerHTML = people.map(p => `
+                <div class="delivery-item" onclick="assignDelivery('${p.id}')">
+                    <div style="font-size:20px;">🛵</div>
+                    <div>
+                        <div style="font-weight:700; font-size:13px;">${p.full_name}</div>
+                        <div style="font-size:11px; color:var(--gray);">${p.delivery_zone || 'Tout kote'} | ${p.vehicle || 'Moto'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function closeDeliveryModal() { document.getElementById('delivery-modal').style.display = 'none'; }
+
+        async function assignDelivery(deliveryId) {
+            const { error } = await supabaseD.from('orders').update({
+                delivery_person_id: deliveryId,
+                status: 'assigned'
+            }).eq('id', selectedOrderId);
+
+            if (error) alert(error.message);
+            else {
+                alert("Livrè a siksè assigné! 🎉");
+                closeDeliveryModal();
+                loadOrders();
+            }
+        }
+
+        async function markAsDelivered(orderId) {
+            if (!confirm("Èske kòmand sa livre tout bon?")) return;
+            const { error } = await supabaseD.from('orders').update({ status: 'delivered' }).eq('id', orderId);
+            if (error) alert(error.message);
+            else loadOrders();
+        }
+
+        async function loadProducts() {
+            const { data: prods } = await supabaseD.from('user_products').select('*').eq('seller_id', currentUser.id);
+            const grid = document.getElementById('user-products-list');
+            if (prods) {
+                grid.innerHTML = prods.map(p => `
+                    <div style="background:white; padding:10px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                        <img src="${p.image_url}" style="width:100%; height:100px; object-fit:cover; border-radius:8px;">
+                        <div style="font-size:11px; font-weight:700; margin-top:8px; height:30px; overflow:hidden;">${p.title}</div>
+                        <button onclick="location.href='/edit-product.html?id=${p.id}'" style="width:100%; margin-top:5px; padding:5px; border-radius:5px; border:1px solid #eee; background:none; font-size:10px; cursor:pointer;">Edite</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadProfileData() {
+            document.getElementById('prof-name').value = userProfile.full_name || '';
+            document.getElementById('prof-whatsapp').value = userProfile.whatsapp || '';
+            if (userProfile.role === 'delivery') {
+                document.getElementById('prof-zone').value = userProfile.delivery_zone || '';
+                document.getElementById('prof-vehicle').value = userProfile.vehicle || '';
             }
         }
 
         async function saveProfile() {
-            const name = document.getElementById('prof-name').value.trim();
-            const wa = document.getElementById('prof-whatsapp').value.trim();
-            const addr = document.getElementById('prof-address').value.trim();
-            const { error } = await supabaseD.from('profiles').update({ full_name: name, whatsapp: wa, address: addr }).eq('id', currentUser.id);
-            if (error) alert(error.message); else alert("Pwofil mete ajou! 🎉");
-        }
-
-        async function loadStats() {
-            const { data: orders } = await supabaseD.from('orders').select('*').eq('seller_id', currentUser.id);
-            if (orders) {
-                document.getElementById('stat-total-orders').innerText = orders.length;
-                const total = orders.reduce((acc, o) => acc + (o.total_price || 0), 0);
-                document.getElementById('stat-total-sales').innerText = `${total} HTG`;
-                if (orders.length > 0) {
-                    document.getElementById('latest-orders-list').innerHTML = orders.slice(0, 5).map(o => `
-                        <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; font-size:13px;">
-                            <div><b>${o.product_title}</b><br><small>${o.customer_name}</small></div>
-                            <div style="text-align:right;"><b>${o.total_price} HTG</b><br><small>${new Date(o.created_at).toLocaleDateString()}</small></div>
-                        </div>`).join('');
-                }
+            const updates = {
+                full_name: document.getElementById('prof-name').value,
+                whatsapp: document.getElementById('prof-whatsapp').value
+            };
+            if (userProfile.role === 'delivery') {
+                updates.delivery_zone = document.getElementById('prof-zone').value;
+                updates.vehicle = document.getElementById('prof-vehicle').value;
             }
-            const { count } = await supabaseD.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', currentUser.id);
-            document.getElementById('stat-live-prods').innerText = count || 0;
-        }
-
-        async function loadUserProducts() {
-            const { data: prods } = await supabaseD.from('user_products').select('*').eq('seller_id', currentUser.id);
-            const grid = document.getElementById('user-products-list');
-            if (prods && prods.length > 0) {
-                grid.innerHTML = prods.map(p => `
-                    <div class="product-card">
-                        <img src="${p.image_url}" style="width:100%; height:120px; object-fit:cover; border-radius:10px;">
-                        <h4 style="font-size:12px; margin:10px 0 5px 0;">${p.title}</h4>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="color:#ff4747; font-weight:800; font-size:13px;">${p.price} HTG</span>
-                            <button onclick="location.href='/edit-product.html?id=${p.id}'" style="border:none; background:#f1f5f9; padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;">Edite</button>
-                        </div>
-                    </div>`).join('');
-            }
-        }
-
-        async function loadWallet() {
-            const res = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
-            const wallet = await res.json();
-            if (wallet && !wallet.error) {
-                document.getElementById('wallet-balance').innerText = `${wallet.balance} HTG`;
-                document.getElementById('total-earned').innerText = `${wallet.total_earned} HTG`;
-                document.getElementById('total-withdrawn').innerText = `${wallet.total_withdrawn} HTG`;
-            }
-            const txRes = await fetch(`/.netlify/functions/wallet/transactions?userId=${currentUser.id}`);
-            const txs = await txRes.json();
-            if (txs.length > 0) {
-                document.getElementById('transactions-list').innerHTML = txs.map(t => `
-                    <div class="transaction-item">
-                        <div><div style="font-weight:700;">${t.type === 'earning' ? 'Vant' : 'Retrè'}</div><small style="color:#94a3b8;">${new Date(t.created_at).toLocaleDateString()}</small></div>
-                        <div style="color:${t.type === 'earning' ? '#22c55e' : '#ef4444'}; font-weight:800;">${t.type === 'earning' ? '+' : '-'}${t.amount} HTG</div>
-                    </div>`).join('');
-            }
-        }
-
-        async function requestWithdrawal() {
-            const amount = prompt("Konbe ou vle retire?");
-            if (!amount || isNaN(amount)) return;
-            const res = await fetch('/.netlify/functions/wallet/withdraw?userId=' + currentUser.id, { method: 'POST', body: JSON.stringify({ amount: parseFloat(amount) }) });
-            const data = await res.json(); alert(data.message || data.error); if (!data.error) loadWallet();
+            const { error } = await supabaseD.from('profiles').update(updates).eq('id', currentUser.id);
+            if (error) alert(error.message); else alert("Pwofil sove! ✅");
         }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
-            const target = document.getElementById('tab-' + tab);
-            if (target) target.style.display = 'block';
+            document.getElementById('tab-' + tab).style.display = 'block';
             event.target.classList.add('active');
         }
 
-        initDashboard();
+        init();
     </script>
 </body>
 </html>

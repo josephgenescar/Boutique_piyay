@@ -24,13 +24,10 @@ title: Sant Kontwòl Admin - Boutique Piyay
             <button onclick="verifyMFAAndEnter()" id="verifyMfaBtn" style="width: 100%; padding: 16px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">VERIFYE KÒD LA</button>
             <button onclick="location.reload()" style="background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer; font-size:12px;">Anile</button>
         </div>
-
-        <div id="loginError" style="color: #ff4747; font-size: 13px; margin-top: 15px; display: none; padding: 10px; background: #fee2e2; border-radius: 8px;"></div>
     </div>
 </div>
 
 <div id="admin-dashboard" class="container" style="display: none; padding: 40px 20px;">
-    <!-- Dashboard la rete menm jan ... -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; color: #ff4747;">🛡️ Sant Kontwòl Admin</h1>
         <button onclick="handleAdminLogout()" style="padding: 10px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Logout</button>
@@ -39,148 +36,150 @@ title: Sant Kontwòl Admin - Boutique Piyay
     <!-- STATS -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
         <div class="stat-card" style="border-bottom-color: #ff4747;"><div class="stat-num" id="totalSellers">0</div><div class="stat-label">MACHANN</div></div>
-        <div class="stat-card" style="border-bottom-color: #3b82f6;"><div class="stat-num" id="totalProducts">0</div><div class="stat-label">PWODWI LIVE</div></div>
+        <div class="stat-card" style="border-bottom-color: #3b82f6;"><div class="stat-num" id="totalDelivery">0</div><div class="stat-label">LIVRÈ</div></div>
         <div class="stat-card" style="border-bottom-color: #22c55e;"><div class="stat-num" id="totalRevenue">0 HTG</div><div class="stat-label">REVNI PLATFÒM</div></div>
-        <div class="stat-card" style="border-bottom-color: #f59e0b;"><div class="stat-num" id="pendingWithdrawalsCount">0</div><div class="stat-label">RETRÈ ATANT</div></div>
+        <div class="stat-card" style="border-bottom-color: #f59e0b;"><div class="stat-num" id="pendingVerifyCount">0</div><div class="stat-label">POKO VERIFYE</div></div>
     </div>
 
     <div class="tabs-container">
-        <button onclick="showTab('tab-sellers')" class="tab-btn active">👥 Machann</button>
-        <button onclick="showTab('tab-finance')" class="tab-btn">💰 Finans & Retrè</button>
-        <button onclick="showTab('tab-affiliates')" class="tab-btn">🔗 Affiliés</button>
-        <button onclick="showTab('tab-comms')" class="tab-btn">💬 Kominikasyon</button>
-        <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Pwodwi</button>
+        <button onclick="showTab('tab-verify')" class="tab-btn active">🛡️ Verifikasyon</button>
+        <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Machann</button>
+        <button onclick="showTab('tab-delivery')" class="tab-btn">🛵 Livrè</button>
+        <button onclick="showTab('tab-finance')" class="tab-btn">💰 Finans</button>
+        <button onclick="showTab('tab-orders')" class="tab-btn">📦 Tout Kòmand</button>
     </div>
 
-    <div id="tab-sellers" class="tab-content">
-        <div class="table-card"><table style="width: 100%; border-collapse: collapse;"><tbody id="sellersTable"></tbody></table></div>
+    <!-- TAB: VERIFIKASYON (Nouvo) -->
+    <div id="tab-verify" class="tab-content">
+        <div class="table-card">
+            <h3>🛡️ Livrè ki poko verifye</h3>
+            <div id="verify-list" style="display: grid; gap: 20px; margin-top: 15px;">
+                <!-- List content -->
+            </div>
+        </div>
     </div>
+
+    <!-- TAB: SELLERS -->
+    <div id="tab-sellers" class="tab-content" style="display: none;">
+        <div class="table-card"><table style="width: 100%; border-collapse: collapse;">
+            <thead><tr><th style="text-align:left;">Machann</th><th style="text-align:right;">Aksyon</th></tr></thead>
+            <tbody id="sellersTable"></tbody>
+        </table></div>
+    </div>
+
+    <!-- TAB: DELIVERY -->
+    <div id="tab-delivery" class="tab-content" style="display: none;">
+        <div class="table-card"><table style="width: 100%; border-collapse: collapse;">
+            <thead><tr><th style="text-align:left;">Livrè</th><th style="text-align:left;">Zòn</th><th style="text-align:right;">Aksyon</th></tr></thead>
+            <tbody id="deliveryTable"></tbody>
+        </table></div>
+    </div>
+
+    <!-- TAB: FINANCE -->
     <div id="tab-finance" class="tab-content" style="display: none;">
         <div class="table-card"><h3>💸 Demann Retrè</h3><table style="width: 100%; border-collapse: collapse;"><tbody id="withdrawalsTable"></tbody></table></div>
     </div>
-    <div id="tab-affiliates" class="tab-content" style="display: none;">
-        <div class="table-card"><table style="width: 100%; border-collapse: collapse;"><tbody id="affiliatesTable"></tbody></table></div>
+
+    <!-- TAB: ALL ORDERS -->
+    <div id="tab-orders" class="tab-content" style="display: none;">
+        <div class="table-card"><table style="width: 100%; border-collapse: collapse;">
+            <thead><tr><th style="text-align:left;">Pwodwi</th><th style="text-align:left;">Kliyan</th><th style="text-align:left;">Estati</th><th style="text-align:right;">Total</th></tr></thead>
+            <tbody id="allOrdersTable"></tbody>
+        </table></div>
     </div>
-    <div id="tab-comms" class="tab-content" style="display: none;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;"><div class="table-card"><h3>📣 Mizajou Global</h3><textarea id="globalMsgInput" class="admin-textarea"></textarea><button onclick="sendGlobalMessage()" class="btn-primary">VOYE</button></div></div>
-    </div>
-    <div id="tab-all-products" class="tab-content" style="display: none;">
-        <div class="table-card"><table style="width: 100%; border-collapse: collapse;"><tbody id="allProductsTable"></tbody></table></div>
-    </div>
+</div>
+
+<!-- MODAL PHOTO VIEW -->
+<div id="photo-modal" onclick="this.style.display='none'" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center; padding:20px;">
+    <img id="modal-img" style="max-width:100%; max-height:100%; border-radius:10px;">
 </div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
     const supA = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    async function handleAdminLogin() {
-        const email = document.getElementById('adminEmail').value;
-        const password = document.getElementById('adminPass').value;
-        const btn = document.getElementById('loginBtn');
-        btn.disabled = true; btn.innerText = "⏳...";
-
-        const { data, error } = await supA.auth.signInWithPassword({ email, password });
-
-        if (error) {
-            alert("Erè: " + error.message);
-            btn.disabled = false; btn.innerText = "KONEKTE";
-            return;
-        }
-
-        // TCHEKE SI ITILIZATÈ A GEN 2FA AKTIVE
-        const { data: factors } = await supA.auth.mfa.listFactors();
-        const totpFactor = factors?.all.find(f => f.factor_type === 'totp' && f.status === 'verified');
-
-        if (totpFactor) {
-            // SI GEN 2FA, MONRE ETAP VERIFIKASYON AN
-            document.getElementById('auth-step-1').style.display = "none";
-            document.getElementById('auth-step-2').style.display = "block";
-        } else {
-            // SI PA GEN 2FA (PWAL REDIRIJE POU KONFIGIRE)
-            checkAccess();
-        }
-    }
-
-    async function verifyMFAAndEnter() {
-        const code = document.getElementById('mfaCode').value;
-        const { data: factors } = await supA.auth.mfa.listFactors();
-        const factorId = factors?.all.find(f => f.factor_type === 'totp')?.id;
-
-        const { data: challenge, error: challErr } = await supA.auth.mfa.challenge({ factorId });
-        if (challErr) { alert(challErr.message); return; }
-
-        const { error: verifyErr } = await supA.auth.mfa.verify({
-            factorId,
-            challengeId: challenge.id,
-            code
-        });
-
-        if (verifyErr) {
-            alert("Move kòd! Eseye ankò.");
-        } else {
-            checkAccess();
-        }
-    }
-
     async function checkAccess() {
         const { data: { user } } = await supA.auth.getUser();
         if (user) {
-            // VERIFIKASYON SEKIRITE: ESKE SE ADMIN?
             const { data: profile } = await supA.from('profiles').select('role').eq('id', user.id).single();
-
             if (profile && profile.role === 'admin') {
-                // VERIFIKASYON SEKIRITE FINALE: ESKE 2FA VERIFYE NAN SESYON SA A?
-                const { data: mfaData } = await supA.auth.mfa.getAuthenticatorAssuranceLevel();
-
-                if (mfaData.currentLevel === 'aal2' || !profile.role === 'admin') {
-                    document.getElementById('admin-login-section').style.display = "none";
-                    document.getElementById('admin-dashboard').style.display = "block";
-                    loadAdminData();
-                } else {
-                    // Si li pa pase 2FA aal2, montre fòm 2FA a
-                    document.getElementById('auth-step-1').style.display = "none";
-                    document.getElementById('auth-step-2').style.display = "block";
-                }
+                document.getElementById('admin-login-section').style.display = "none";
+                document.getElementById('admin-dashboard').style.display = "block";
+                loadAdminData();
             } else {
-                alert("Ou pa gen aksè Admin.");
-                await supA.auth.signOut();
-                location.reload();
+                alert("Aksè Refize!"); await supA.auth.signOut(); location.reload();
             }
         }
     }
 
-    // ... Rès fonksyon loadAdminData, approveWithdrawal, elatriye rete menm jan ...
     async function loadAdminData() {
-        const { data: sellers } = await supA.from('profiles').select('*').neq('role', 'admin').order('created_at', { ascending: false });
-        const { data: prods } = await supA.from('user_products').select('*, profiles(full_name)').order('created_at', { ascending: false });
-        const { data: orders } = await supA.from('orders').select('platform_fee');
-        const { data: withdraws } = await supA.from('transactions').select('*, wallets(profiles(full_name))').eq('type', 'withdrawal').eq('status', 'pending');
-        const { data: affs } = await supA.from('affiliates').select('*, profiles(full_name)').order('total_earned', { ascending: false });
+        // Stats
+        const { data: sellers } = await supA.from('profiles').select('*').eq('role', 'seller');
+        const { data: deliverers } = await supA.from('profiles').select('*').eq('role', 'delivery');
+        const { data: pendingVerify } = await supA.from('profiles').select('*').eq('role', 'delivery').eq('is_verified', false);
+        const { data: orders } = await supA.from('orders').select('*');
 
-        document.getElementById('totalSellers').innerText = sellers ? sellers.length : 0;
-        document.getElementById('totalProducts').innerText = prods ? prods.length : 0;
-        const rev = (orders || []).reduce((acc, o) => acc + (o.platform_fee || 0), 0);
-        document.getElementById('totalRevenue').innerText = `${rev.toFixed(2)} HTG`;
-        document.getElementById('pendingWithdrawalsCount').innerText = withdraws ? withdraws.length : 0;
+        document.getElementById('totalSellers').innerText = sellers?.length || 0;
+        document.getElementById('totalDelivery').innerText = deliverers?.length || 0;
+        document.getElementById('pendingVerifyCount').innerText = pendingVerify?.length || 0;
 
-        document.getElementById('sellersTable').innerHTML = (sellers || []).map(s => `<tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 15px;"><strong>${s.full_name}</strong></td><td style="padding: 15px;"><button onclick="toggleSeller('${s.id}', ${s.is_active_seller})" class="btn-action ${s.is_active_seller ? 'red' : 'green'}">${s.is_active_seller ? 'Bloke' : 'Aktive'}</button></td></tr>`).join('');
+        // Verify Tab
+        document.getElementById('verify-list').innerHTML = (pendingVerify || []).map(d => `
+            <div style="background:#f8fafc; padding:20px; border-radius:15px; border:1px solid #eee; display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+                <div style="flex:1; min-width:200px;">
+                    <strong style="font-size:16px;">${d.full_name}</strong>
+                    <div style="font-size:12px; color:#64748b; margin-top:5px;">📧 ${d.email} | 📱 ${d.whatsapp}</div>
+                    <div style="font-size:12px; color:#64748b;">📍 ${d.delivery_zone} | 🛵 ${d.vehicle}</div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div onclick="showPhoto('${d.id_card_url}')" style="cursor:pointer; text-align:center;"><div style="width:60px; height:60px; background:#eee; border-radius:8px; overflow:hidden;"><img src="${supA.storage.from('verification').getPublicUrl(d.id_card_url).data.publicUrl}" style="width:100%; height:100%; object-fit:cover;"></div><small style="font-size:10px;">Pyès</small></div>
+                    <div onclick="showPhoto('${d.selfie_url}')" style="cursor:pointer; text-align:center;"><div style="width:60px; height:60px; background:#eee; border-radius:8px; overflow:hidden;"><img src="${supA.storage.from('verification').getPublicUrl(d.selfie_url).data.publicUrl}" style="width:100%; height:100%; object-fit:cover;"></div><small style="font-size:10px;">Selfie</small></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="approveDelivery('${d.id}')" style="background:#22c55e; color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:800; cursor:pointer;">APWOUVE ✅</button>
+                    <button onclick="rejectDelivery('${d.id}')" style="background:#ef4444; color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:800; cursor:pointer;">REJETE ❌</button>
+                </div>
+            </div>
+        `).join('') || '<div style="text-align:center; padding:20px; color:#94a3b8;">Pa gen livrè nan tann.</div>';
 
-        document.getElementById('withdrawalsTable').innerHTML = (withdraws || []).map(w => `<tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 15px;">${w.wallets?.profiles?.full_name}</td><td style="padding: 15px; font-weight:800;">${w.amount} HTG</td><td style="padding: 15px;"><button onclick="approveWithdrawal('${w.id}')" class="btn-action green">Apwouve</button></td></tr>`).join('') || '<tr><td colspan="3" style="text-align:center; padding:20px;">Okenn retrè.</td></tr>';
+        // Sellers & Delivery Tables
+        document.getElementById('sellersTable').innerHTML = (sellers || []).map(s => `<tr><td style="padding:15px;"><strong>${s.full_name}</strong><br><small>${s.whatsapp}</small></td><td style="padding:15px; text-align:right;"><button class="btn-action red">Bloke</button></td></tr>`).join('');
+        document.getElementById('deliveryTable').innerHTML = (deliverers || []).map(d => `<tr><td style="padding:15px;"><strong>${d.full_name}</strong><br><small>${d.whatsapp}</small></td><td style="padding:15px;">${d.delivery_zone}</td><td style="padding:15px; text-align:right;"><button class="btn-action ${d.is_verified ? 'green' : 'red'}">${d.is_verified ? 'Verifye' : 'Non-verifye'}</button></td></tr>`).join('');
 
-        document.getElementById('affiliatesTable').innerHTML = (affs || []).map(a => `<tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 15px;"><strong>${a.profiles?.full_name}</strong></td><td style="padding: 15px;"><code>${a.referral_code}</code></td><td style="padding: 15px; color:#22c55e;">${a.total_earned} HTG</td></tr>`).join('');
+        // Orders Table
+        document.getElementById('allOrdersTable').innerHTML = (orders || []).map(o => `<tr><td style="padding:15px; font-size:12px;">${o.product_title}</td><td style="padding:15px; font-size:12px;">${o.customer_name}</td><td style="padding:15px;"><span style="font-size:10px; padding:3px 8px; border-radius:5px; background:#eee;">${o.status}</span></td><td style="padding:15px; text-align:right; font-weight:800;">${o.total_price} HTG</td></tr>`).join('');
     }
 
-    async function approveWithdrawal(id) {
-        if (confirm("Konfime peman?")) {
-            const { error } = await supA.from('transactions').update({ status: 'completed' }).eq('id', id);
-            if (!error) loadAdminData();
+    async function approveDelivery(id) {
+        if (confirm("Èske w verifye foto sa yo tout bon?")) {
+            const { error } = await supA.from('profiles').update({ is_verified: true }).eq('id', id);
+            if (!error) { alert("Livrè a verifye! 🎉"); loadAdminData(); }
         }
     }
 
-    function showTab(tabId) { document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none'); document.getElementById(tabId).style.display = 'block'; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); event.currentTarget.classList.add('active'); }
+    function showPhoto(path) {
+        if (!path) return;
+        const url = supA.storage.from('verification').getPublicUrl(path).data.publicUrl;
+        document.getElementById('modal-img').src = url;
+        document.getElementById('photo-modal').style.display = 'flex';
+    }
+
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById(tabId).style.display = 'block';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    async function handleAdminLogin() {
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPass').value;
+        const { data, error } = await supA.auth.signInWithPassword({ email, password });
+        if (error) alert(error.message); else checkAccess();
+    }
+
     async function handleAdminLogout() { await supA.auth.signOut(); location.reload(); }
 
-    // Tcheke sesyon an lè paj la louvri
     checkAccess();
 </script>
 
@@ -188,11 +187,11 @@ title: Sant Kontwòl Admin - Boutique Piyay
     .stat-card { background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     .stat-num { font-size: 20px; font-weight: 900; }
     .stat-label { font-size: 9px; font-weight: 700; color: #888; margin-top: 5px; }
-    .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; }
-    .tab-btn { padding: 10px 20px; border: none; border-radius: 10px; background: #fff; cursor: pointer; font-weight: 700; font-size: 12px; white-space: nowrap; }
+    .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; scrollbar-width: none; }
+    .tab-btn { padding: 10px 20px; border: none; border-radius: 10px; background: #fff; cursor: pointer; font-weight: 700; font-size: 12px; white-space: nowrap; transition: 0.3s; }
     .tab-btn.active { background: #ff4747; color: white; }
-    .table-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; }
-    .btn-action { padding: 8px 12px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 11px; }
+    .table-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .btn-action { padding: 6px 12px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 10px; }
     .btn-action.red { background: #fee2e2; color: #ef4444; }
     .btn-action.green { background: #dcfce7; color: #15803d; }
     th { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 15px; }
