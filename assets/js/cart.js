@@ -1,5 +1,5 @@
 // ================================================
-// BOUTIQUE PIYAY — cart.js (V3.4 - Fich Pwofesyonèl & Multi-Download)
+// BOUTIQUE PIYAY — cart.js (V4.0 - Konektem Ready)
 // ================================================
 
 const CART_KEY = 'bp_cart';
@@ -22,7 +22,7 @@ async function prefillCustomerData() {
     const { data: { user } } = await sup.auth.getUser();
     if (user) {
       if(document.getElementById('customer-name')) document.getElementById('customer-name').value = user.user_metadata.full_name || '';
-      if(document.getElementById('customer-phone')) document.getElementById('customer-phone').value = user.user_metadata.whatsapp || '';
+      if(document.getElementById('customer-phone')) document.getElementById('customer-phone').value = user.user_metadata.phone || user.user_metadata.whatsapp || '';
     }
   } catch(e) {}
 }
@@ -110,7 +110,14 @@ function refreshBadge() {
   b.textContent = count; b.style.display = count > 0 ? 'flex' : 'none';
 }
 
-// ─── JENERE FICH KOMAND PWOFESYONÈL ────────────────
+function downloadReceipt() {
+  const data = JSON.parse(localStorage.getItem('last_order_full_data'));
+  if(!data) return;
+  const win = window.open('', '_blank');
+  win.document.write(generateReceiptContent(data));
+  win.document.close();
+}
+
 function generateReceiptContent(data) {
   let itemsHtml = "";
   let grandTotal = 0;
@@ -141,42 +148,22 @@ function generateReceiptContent(data) {
           <p style="margin:5px 0 0; font-weight:700;">FICH KOMAND OFISYÈL</p>
         </div>
         <div class="info-grid">
-          <div>
-            <p><strong>KLIYAN:</strong><br>${data.name}</p>
-            <p><strong>WHATSAPP:</strong><br>${data.phone}</p>
-          </div>
-          <div style="text-align:right;">
-            <p><strong>NIM KÒMAND:</strong><br>#${data.orderId}</p>
-            <p><strong>DAT:</strong><br>${new Date().toLocaleDateString('fr-FR')}</p>
-          </div>
+          <div><p><strong>KLIYAN:</strong><br>${data.name}</p><p><strong>TEL:</strong><br>${data.phone}</p></div>
+          <div style="text-align:right;"><p><strong>NIM KÒMAND:</strong><br>#${data.orderId}</p><p><strong>DAT:</strong><br>${new Date().toLocaleDateString('fr-FR')}</p></div>
         </div>
         <table><thead><tr><th>Pwodwi</th><th>Kte</th><th>Total</th></tr></thead><tbody>${itemsHtml}</tbody></table>
         <div class="total-box">TOTAL JENERAL: ${grandTotal} HTG</div>
-        <div class="receipt-footer">
-          <p>Mèsi deske ou te achte sou Boutique Piyay! Prezanté fich sa bay livrè a.</p>
-          <div class="sponsor">🚀 Sponsorisé par Rvayo-tech entreprise</div>
-        </div>
+        <div class="receipt-footer"><p>Mèsi deske ou te achte sou Boutique Piyay!</p><div class="sponsor">🚀 Sponsorisé par Rvayo-tech entreprise</div></div>
       </div>
-      <div style="text-align:center; margin-top:20px;" class="no-print">
-        <button onclick="window.print()" style="padding:15px 30px; background:#ff4747; color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer;">Enprime oswa Sove fich la</button>
-      </div>
-    </body></html>
-  `;
-}
-
-function downloadReceipt() {
-  const data = JSON.parse(localStorage.getItem('last_order_full_data'));
-  if(!data) return;
-  const win = window.open('', '_blank');
-  win.document.write(generateReceiptContent(data));
-  win.document.close();
+      <div style="text-align:center; margin-top:20px;" class="no-print"><button onclick="window.print()" style="padding:15px 30px; background:#ff4747; color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer;">Enprime oswa Sove fich la</button></div>
+    </body></html>`;
 }
 
 // ─── SOU-MET KOMAND LAN ───────────────────────────
 async function submitOrder() {
-  const name = document.getElementById('customer-name').value.trim();
-  const phone = document.getElementById('customer-phone').value.trim();
-  const zone = document.getElementById('delivery-zone').value;
+  const name    = document.getElementById('customer-name').value.trim();
+  const phone   = document.getElementById('customer-phone').value.trim();
+  const zone    = document.getElementById('delivery-zone').value;
   const payment = document.getElementById('payment-method').value;
 
   if (!name || !phone || !zone) { toast('⚠️ Ranpli tout chan yo!'); return; }
@@ -186,14 +173,7 @@ async function submitOrder() {
   const orderData = { name, phone, zone, payment, cart: currentCart, orderId };
   localStorage.setItem('last_order_full_data', JSON.stringify(orderData));
 
-  // Prepare mesaj pou machann yo
-  const sellerGroups = {};
-  currentCart.forEach(item => {
-    if (!sellerGroups[item.sellerPhone]) sellerGroups[item.sellerPhone] = [];
-    sellerGroups[item.sellerPhone].push(item);
-  });
-
-  // ── Sove kòmand nan Supabase ──────────────────────
+  // ── Supabase — Sove kòmand + Notifikasyon ──────────
   try {
     const sup = window._supabaseClient || supabase.createClient(
       "https://lsyjnhqjssirtgrdfgcu.supabase.co",
@@ -201,52 +181,105 @@ async function submitOrder() {
     );
     window._supabaseClient = sup;
 
+    // Jwenn user konekte a (si li gen kont)
+    const { data: { user } } = await sup.auth.getUser();
+
     for (const item of currentCart) {
-      await sup.from('orders').insert({
-        seller_id: item.sellerId || null,
-        customer_name: name,
-        customer_phone: phone,
+      const totalItem = item.price * item.qty;
+
+      // ✅ INSERT kòmand nan Supabase — avèk source 'boutique_piyay'
+      const { data: newOrder } = await sup.from('orders').insert({
+        seller_id:       item.sellerId !== 'admin' ? item.sellerId : null,
+        user_id:         user?.id || null,
+        customer_name:   name,
+        customer_phone:  phone,
         customer_address: zone,
-        product_title: item.title,
-        total_price: item.price * item.qty,
-        status: 'pending',
-        delivery_zone: zone,
-        platform_fee: Math.round(item.price * item.qty * 0.03),
-        seller_amount: Math.round(item.price * item.qty * 0.92),
+        product_title:   item.title,
+        total_price:     totalItem,
+        status:          'pending',
+        delivery_zone:   zone,
+        platform_fee:    Math.round(totalItem * 0.03),
+        seller_amount:   Math.round(totalItem * 0.92),
+        source:          'boutique_piyay',   // ← NOUVO — mak kòmand BP
+      }).select().single();
+
+      // ✅ Notifikasyon pou machann nan
+      if (item.sellerId && item.sellerId !== 'admin') {
+        await sup.from('notifications').insert({
+          user_id: item.sellerId,
+          type:    'new_order',
+          title:   '🛍️ Nouvelle commande!',
+          body:    `Vous avez une nouvelle commande pour: ${item.title} — ${totalItem} HTG`,
+          read:    false
+        });
+      }
+    }
+
+    // ✅ Notifikasyon pou kliyan ki konekte
+    if (user) {
+      await sup.from('notifications').insert({
+        user_id: user.id,
+        type:    'order_sent',
+        title:   '✅ Commande envoyée!',
+        body:    `Votre commande #${orderId} a été reçue. Suivez-la sur Konektem.`,
+        read:    false
       });
     }
+
   } catch(err) {
-    console.error('Erè Supabase:', err);
+    console.error('Supabase error:', err);
   }
 
-  Object.keys(sellerGroups).forEach((sPhone, index) => {
-    const items = sellerGroups[sPhone];
-    let msg = `🛍️ *NOUVELLE COMMANDE - BOUTIQUE PIYAY*\n\n`;
-    msg += `👤 *Client:* ${name}\n📱 *Tel:* ${phone}\n📍 *Zone:* ${zone}\n\n`;
-    msg += `📦 *PRODUITS À LIVRER:*\n`;
-    items.forEach(it => msg += `• ${it.title} (x${it.qty})\n`);
-    msg += `\n🔗 *VOIR LA FICHE:* ${window.location.origin}/receipt?id=${orderId}`; // Lyen pou machann nan
-
-    setTimeout(() => window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank'), index * 1000);
-  });
-
-  // Montre siksè
+  // ── Montre siksè + bouton Konektem ─────────────────
   document.getElementById('order-form-container').style.display = 'none';
   const sBox = document.createElement('div');
   sBox.id = "success-box";
   sBox.innerHTML = `
     <div style="text-align:center;padding:30px;">
-      <div style="font-size:60px;margin-bottom:20px;">✅</div>
-      <h2 style="font-weight:900;color:#0f172a;">Kòmand anrejistre!</h2>
-      <p style="color:#64748b;margin-bottom:25px;">Klike anba pou w telechaje fich ou an kounye a.</p>
-      <button onclick="downloadReceipt()" style="width:100%;padding:18px;background:#ff4747;color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;margin-bottom:10px;">📥 Telechaje Fich Komand la</button>
-      <p style="font-size:11px;color:#94a3b8;margin-top:20px;">Sponsorisé par <b>Rvayo-tech entreprise</b></p>
-    </div>
-  `;
+      <div style="font-size:60px;margin-bottom:16px;">✅</div>
+      <h2 style="font-weight:900;color:#0f172a;margin-bottom:8px;">Commande enregistrée!</h2>
+      <p style="color:#64748b;margin-bottom:20px;">Suivez votre commande en temps réel sur Konektem.</p>
+
+      <!-- ✅ BOUTON KONEKTEM — remplace WhatsApp -->
+      <a href="https://konektem.netlify.app/orders" target="_blank" style="display:block;width:100%;text-decoration:none;margin-bottom:10px;">
+        <button style="width:100%;padding:18px;background:linear-gradient(135deg,#00209F,#CE1126);color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;font-size:16px;">
+          📱 Suivre sur Konektem →
+        </button>
+      </a>
+
+      <button onclick="downloadReceipt()" style="width:100%;padding:14px;background:#f1f5f9;color:#0f172a;border:none;border-radius:15px;font-weight:700;cursor:pointer;margin-bottom:8px;">
+        📥 Télécharger la fiche
+      </button>
+
+      <!-- Toujou disponib si kliyan vle WhatsApp -->
+      <button onclick="contactWhatsApp()" style="width:100%;padding:12px;background:none;color:#25D366;border:2px solid #25D366;border-radius:15px;font-weight:700;cursor:pointer;font-size:13px;">
+        💬 Contacter via WhatsApp
+      </button>
+    </div>`;
+
   document.getElementById('order-summary').innerHTML = "";
   document.getElementById('order-summary').appendChild(sBox);
+  localStorage.removeItem(CART_KEY);
+  refreshBadge();
+}
 
-  localStorage.removeItem(CART_KEY); refreshBadge();
+// WhatsApp — opsyonèl kounye a (pa obligatwa)
+function contactWhatsApp() {
+  const data = JSON.parse(localStorage.getItem('last_order_full_data'));
+  if (!data) return;
+  const currentCart = data.cart || [];
+  const sellerGroups = {};
+  currentCart.forEach(item => {
+    if (!sellerGroups[item.sellerPhone]) sellerGroups[item.sellerPhone] = [];
+    sellerGroups[item.sellerPhone].push(item);
+  });
+  Object.keys(sellerGroups).forEach((sPhone, index) => {
+    const items = sellerGroups[sPhone];
+    let msg = `🛍️ *COMMANDE - BOUTIQUE PIYAY*\n\n👤 *Client:* ${data.name}\n📱 *Tel:* ${data.phone}\n📍 *Zone:* ${data.zone}\n\n📦 *PRODUITS:*\n`;
+    items.forEach(it => msg += `• ${it.title} (x${it.qty}) — ${it.price * it.qty} HTG\n`);
+    msg += `\n📲 *Gérez cette commande sur Konektem*`;
+    setTimeout(() => window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank'), index * 1000);
+  });
 }
 
 function toast(msg) {
@@ -256,10 +289,11 @@ function toast(msg) {
   setTimeout(() => { t.style.display='none'; }, 3000);
 }
 
-window.orderProduct = orderProduct;
-window.openCart = openCart;
+window.orderProduct    = orderProduct;
+window.openCart        = openCart;
 window.closeOrderModal = closeOrderModal;
-window.submitOrder = submitOrder;
-window.chgQty = chgQty;
-window.removeItem = removeItem;
+window.submitOrder     = submitOrder;
+window.contactWhatsApp = contactWhatsApp;
+window.chgQty          = chgQty;
+window.removeItem      = removeItem;
 window.downloadReceipt = downloadReceipt;
