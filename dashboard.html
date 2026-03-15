@@ -29,11 +29,10 @@
         .balance-val { font-size: 36px; font-weight: 900; margin: 10px 0; display: block; }
         .btn-withdraw { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; font-size: 15px; }
 
-        /* SHARE SECTION */
+        /* SHARE BOX */
         .share-box { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .share-url { font-family: monospace; font-size: 11px; color: var(--dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .btn-copy { background: var(--dark); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
-
         .social-share-btns { display: flex; gap: 10px; margin-top: 15px; }
         .btn-soc { flex: 1; padding: 10px; border-radius: 10px; border: none; color: white; font-weight: 800; font-size: 12px; cursor: pointer; text-align: center; text-decoration: none; }
         .bg-fb { background: #1877F2; }
@@ -42,8 +41,12 @@
 
         /* PROFILE FORM */
         .profile-form label { display: block; font-size: 11px; font-weight: 800; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; margin-top: 15px; }
-        .profile-form input, .profile-form textarea { width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; font-family: inherit; font-size: 14px; outline: none; margin-bottom: 5px; }
+        .profile-form input { width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; font-family: inherit; font-size: 14px; outline: none; margin-bottom: 5px; }
         .btn-save { background: #00C853; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 20px; }
+
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .btn-done { background: #22c55e; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 11px; }
+        .status-badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 5px; background: #f1f5f9; color: var(--gray); }
     </style>
 </head>
 <body>
@@ -71,7 +74,7 @@
                 <div class="stat-card" style="border-bottom-color: #10b981;"><span id="stat-sales" class="stat-val">0 HTG</span><span class="stat-lbl">Vant</span></div>
                 <div class="stat-card" style="border-bottom-color: var(--primary);"><span id="stat-prods" class="stat-val">0</span><span class="stat-lbl">Live</span></div>
             </div>
-            <h3 style="margin-bottom: 15px; font-size: 16px;">Dènye Kòmand yo</h3>
+            <h3 style="margin-bottom: 15px; font-size: 16px;">Kòmand yo</h3>
             <div id="orders-list" class="white-card" style="padding: 5px;"></div>
         </div>
 
@@ -83,11 +86,11 @@
         <!-- TAB: WALLET -->
         <div id="tab-wallet" class="tab-content" style="display:none;">
             <div class="wallet-card">
-                <span style="font-size: 12px; text-transform: uppercase; opacity: 0.8; font-weight: 800;">Balans (92% pa w)</span>
+                <span style="font-size: 12px; text-transform: uppercase; opacity: 0.8; font-weight: 800;">Balans Disponib (92% pa w)</span>
                 <span id="wall-balance" class="balance-val">0.00 HTG</span>
                 <button class="btn-withdraw" onclick="requestWithdrawal()">Retire Lajan 💸</button>
             </div>
-            <h3 style="margin: 30px 0 15px 0; font-size: 16px;">Tranzaksyon</h3>
+            <h3 style="margin: 30px 0 15px 0; font-size: 16px;">Istwa Tranzaksyon</h3>
             <div id="tx-list" class="white-card" style="padding: 5px;"></div>
         </div>
 
@@ -95,10 +98,7 @@
         <div id="tab-profile" class="tab-content" style="display:none;">
             <div class="white-card">
                 <h3 style="margin:0 0 10px 0; color:var(--primary);">🔗 Lyen Boutik ou</h3>
-                <div class="share-box">
-                    <span id="shop-url-display" class="share-url">Chaje...</span>
-                    <button class="btn-copy" onclick="copyShopUrl()">KOPYE</button>
-                </div>
+                <div class="share-box"><span id="shop-url-display" class="share-url">Chaje...</span><button class="btn-copy" onclick="copyShopUrl()">KOPYE</button></div>
                 <div class="social-share-btns">
                     <a id="share-wa" target="_blank" class="btn-soc bg-wa">WhatsApp</a>
                     <a id="share-fb" target="_blank" class="btn-soc bg-fb">Facebook</a>
@@ -108,22 +108,15 @@
 
             <div class="profile-form white-card">
                 <h3>Edite Boutik ou</h3>
-                <label>Non Boutik</label>
-                <input type="text" id="prof-name">
-                <label>WhatsApp (Kote kòmand ap tonbe)</label>
-                <input type="text" id="prof-whatsapp">
-                <label>Adrès / Lokalizasyon</label>
-                <input type="text" id="prof-address">
+                <label>Non Boutik</label><input type="text" id="prof-name">
+                <label>WhatsApp (Kòmand)</label><input type="text" id="prof-whatsapp">
+                <label>Adrès</label><input type="text" id="prof-address">
 
-                <h4 style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">Rezo Sosyal (Lyen yo)</h4>
-                <label>Facebook URL</label>
-                <input type="text" id="prof-fb">
-                <label>Instagram URL</label>
-                <input type="text" id="prof-ig">
-                <label>TikTok URL</label>
-                <input type="text" id="prof-tk">
-                <label>YouTube URL</label>
-                <input type="text" id="prof-yt">
+                <h4 style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">Rezo Sosyal (Lyen)</h4>
+                <label>Facebook URL</label><input type="text" id="prof-fb" placeholder="https://facebook.com/...">
+                <label>Instagram URL</label><input type="text" id="prof-ig" placeholder="https://instagram.com/...">
+                <label>TikTok URL</label><input type="text" id="prof-tk" placeholder="https://tiktok.com/@...">
+                <label>YouTube URL</label><input type="text" id="prof-yt" placeholder="https://youtube.com/@...">
 
                 <button class="btn-save" onclick="saveProfile()">Sove Chanjman ✅</button>
             </div>
@@ -131,7 +124,8 @@
     </div>
 
     <script>
-        const supD = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+        const supD = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+        window._supabaseClient = supD;
         let currentUser = null;
 
         async function init() {
@@ -141,36 +135,34 @@
 
             const shopUrl = `${window.location.origin}/boutik-machann.html?id=${user.id}`;
             document.getElementById('shop-url-display').innerText = shopUrl;
-            document.getElementById('share-wa').href = `https://wa.me/?text=${encodeURIComponent("Vizite boutik mwen sou Boutique Piyay: " + shopUrl)}`;
+            document.getElementById('share-wa').href = `https://wa.me/?text=${encodeURIComponent("Vizite boutik mwen: " + shopUrl)}`;
             document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shopUrl)}`;
-            document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(shopUrl)}&text=${encodeURIComponent("Vizite boutik mwen!")}`;
+            document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(shopUrl)}`;
 
             loadAll();
         }
 
         async function loadAll() {
-            const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id);
+            const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
             if (orders) {
                 document.getElementById('stat-orders').innerText = orders.length;
-                document.getElementById('stat-sales').innerText = orders.reduce((s, o) => s + (o.total_price || 0), 0) + " HTG";
-                if (orders.length > 0) {
-                    document.getElementById('orders-list').innerHTML = orders.slice(0, 5).map(o => `
-                        <div class="item-row">
-                            <div style="font-size:13px;"><b>${o.product_title}</b><br><small>${o.customer_name}</small></div>
-                            <div style="text-align:right;font-size:13px;"><b>${o.total_price} HTG</b></div>
-                        </div>`).join('');
-                }
+                document.getElementById('stat-sales').innerText = orders.filter(o => o.status === 'delivered').reduce((s, o) => s + (o.total_price || 0), 0) + " HTG";
+                document.getElementById('orders-list').innerHTML = orders.map(o => {
+                    const btn = o.status === 'delivered' ? `<span class="status-badge">LIVRE ✓</span>` : `<button class="btn-done" onclick="markAsDelivered('${o.id}')">Moke Livre ✅</button>`;
+                    return `<div class="item-row"><div><b>${o.product_title}</b><br><small>${o.customer_name}</small></div><div style="text-align:right;"><b>${o.total_price} HTG</b><br>${btn}</div></div>`;
+                }).join('') || '<p style="text-align:center;padding:20px;color:var(--gray);">Pa gen kòmand.</p>';
             }
 
             const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
             if (prods) {
                 document.getElementById('stat-prods').innerText = prods.length;
-                document.getElementById('prods-grid').innerHTML = prods.map(p => `
-                    <div class="white-card" style="padding:10px; margin-bottom:0; text-align:center;">
-                        <img src="${p.image_url}" style="width:100%; height:110px; object-fit:cover; border-radius:12px;">
-                        <div style="font-size:12px; font-weight:700; margin-top:8px; height:30px; overflow:hidden;">${p.title}</div>
-                        <button onclick="location.href='/edit-product.html?id=${p.id}'" style="width:100%; margin-top:10px; padding:6px; border-radius:8px; border:1px solid #eee; background:none; font-size:11px; font-weight:700; cursor:pointer;">Edite</button>
-                    </div>`).join('');
+                document.getElementById('prods-grid').innerHTML = prods.map(p => `<div class="white-card" style="padding:10px;margin-bottom:0;text-align:center;"><img src="${p.image_url}" style="width:100%;height:110px;object-fit:cover;border-radius:12px;"><div style="font-size:12px;font-weight:700;margin-top:8px;height:30px;overflow:hidden;">${p.title}</div><button onclick="location.href='/edit-product.html?id=${p.id}'" style="width:100%;margin-top:10px;padding:6px;border-radius:8px;border:1px solid #eee;background:none;font-size:11px;font-weight:700;cursor:pointer;">Edite</button></div>`).join('');
+            }
+
+            const wallRes = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
+            if (wallRes.ok) {
+                const wallet = await wallRes.json();
+                document.getElementById('wall-balance').innerText = wallet.balance + " HTG";
             }
 
             const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
@@ -185,6 +177,15 @@
             }
         }
 
+        async function markAsDelivered(orderId) {
+            if (!confirm("Èske ou livre pwodwi sa a tout bon?")) return;
+            const { error } = await supD.from('orders').update({ status: 'delivered' }).eq('id', orderId);
+            if (!error) {
+                await fetch('/.netlify/functions/wallet/distribute', { method: 'POST', body: JSON.stringify({ orderId }) });
+                alert("Kòmand livre! 🎉"); loadAll();
+            }
+        }
+
         async function saveProfile() {
             const { error } = await supD.from('profiles').update({
                 full_name: document.getElementById('prof-name').value,
@@ -195,21 +196,11 @@
                 tiktok_url: document.getElementById('prof-tk').value,
                 youtube_url: document.getElementById('prof-yt').value
             }).eq('id', currentUser.id);
-            if (error) alert(error.message); else alert("Chanjman sove! 🎉");
+            if (!error) alert("Sove! 🎉");
         }
 
-        function copyShopUrl() {
-            navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText);
-            alert("Lyen boutik kopye!");
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-            document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tab).style.display = 'block';
-            event.target.classList.add('active');
-        }
-
+        function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText); alert("Kopye!"); }
+        function switchTab(tab) { document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none'); document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-' + tab).style.display = 'block'; event.target.classList.add('active'); }
         init();
     </script>
 </body>

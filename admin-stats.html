@@ -7,192 +7,174 @@ title: Sant Kontwòl Admin - Boutique Piyay
     <div id="login-form-container" style="max-width: 400px; margin: 0 auto; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee;">
         <div style="font-size: 50px; margin-bottom: 20px;">🛡️</div>
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; font-size: 22px; color: #0f172a; margin-bottom: 10px;">Aksè Administratè</h1>
-
-        <!-- ETAP 1: EMAIL & PASS -->
         <div id="auth-step-1">
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 30px;">Konekte ak kont pèsonèl ou.</p>
             <input type="email" id="adminEmail" placeholder="admin@email.com" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; margin-bottom: 15px;">
             <input type="password" id="adminPass" placeholder="••••••••" style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; margin-bottom: 25px;">
             <button onclick="handleAdminLogin()" id="loginBtn" style="width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">KONEKTE</button>
         </div>
-
-        <!-- ETAP 2: VERIFIKASYON 2FA -->
         <div id="auth-step-2" style="display: none;">
-            <p style="color: #ff4747; font-weight: 800; font-size: 14px; margin-bottom: 20px;">🔒 OTANTIFIKASYON 2 ETAP</p>
-            <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">Tape kòd 6 chif ki nan aplikasyon w lan pou w ka antre.</p>
-            <input type="text" id="mfaCode" placeholder="000000" maxlength="6" style="width: 100%; padding: 14px; border: 2px solid #0f172a; border-radius: 12px; text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 5px; margin-bottom: 20px;">
-            <button onclick="verifyMFAAndEnter()" id="verifyMfaBtn" style="width: 100%; padding: 16px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">VERIFYE KÒD LA</button>
-            <button onclick="location.reload()" style="background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer; font-size:12px;">Anile</button>
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">Tape kòd 6 chif Google Authenticator la.</p>
+            <input type="text" id="mfaCode" placeholder="000000" maxlength="6" style="width: 100%; padding: 14px; border: 2px solid #0f172a; border-radius: 12px; text-align: center; font-size: 24px; font-weight: 900; margin-bottom: 20px;">
+            <button onclick="verifyMFAAndEnter()" id="verifyMfaBtn" style="width: 100%; padding: 16px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">VERIFYE KÒD</button>
         </div>
     </div>
 </div>
 
 <div id="admin-dashboard" class="container" style="display: none; padding: 40px 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin: 0; color: #ff4747;">🛡️ Sant Kontwòl Admin</h1>
-        <button onclick="handleAdminLogout()" style="padding: 10px 20px; background: #f3f4f6; color: #333; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">🚪 Logout</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #0f172a; padding: 20px; border-radius: 20px; color: white;">
+        <h1 style="font-weight: 900; font-size: 20px; margin: 0;">🛡️ SANT KONTWÒL TOTAL</h1>
+        <button onclick="handleAdminLogout()" style="padding: 10px 20px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;">Soti 🚪</button>
     </div>
 
-    <!-- STATS -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
-        <div class="stat-card" style="border-bottom-color: #ff4747;"><div class="stat-num" id="totalSellers">0</div><div class="stat-label">MACHANN</div></div>
-        <div class="stat-card" style="border-bottom-color: #3b82f6;"><div class="stat-num" id="totalDelivery">0</div><div class="stat-label">LIVRÈ</div></div>
-        <div class="stat-card" style="border-bottom-color: #22c55e;"><div class="stat-num" id="totalRevenue">0 HTG</div><div class="stat-label">REVNI PLATFÒM</div></div>
-        <div class="stat-card" style="border-bottom-color: #f59e0b;"><div class="stat-num" id="pendingVerifyCount">0</div><div class="stat-label">POKO VERIFYE</div></div>
+    <!-- STATS RAPID -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 35px;">
+        <div class="stat-card" style="border-bottom-color: #3b82f6;"><div class="stat-num" id="totalSellers">0</div><div class="stat-label">Machann Total</div></div>
+        <div class="stat-card" style="border-bottom-color: #f59e0b;"><div class="stat-num" id="pendingProdsCount">0</div><div class="stat-label">Pwodwi an atant</div></div>
+        <div class="stat-card" style="border-bottom-color: #22c55e;"><div class="stat-num" id="totalRevenue">0 HTG</div><div class="stat-label">Revni Platfòm</div></div>
+        <div class="stat-card" style="border-bottom-color: #ff4747;"><div class="stat-num" id="totalLiabilities">0 HTG</div><div class="stat-label">Dèt Machann</div></div>
     </div>
 
+    <!-- NAVIGATION -->
     <div class="tabs-container">
-        <button onclick="showTab('tab-verify')" class="tab-btn active">🛡️ Verifikasyon</button>
-        <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Machann</button>
-        <button onclick="showTab('tab-delivery')" class="tab-btn">🛵 Livrè</button>
-        <button onclick="showTab('tab-finance')" class="tab-btn">💰 Finans</button>
-        <button onclick="showTab('tab-orders')" class="tab-btn">📦 Tout Kòmand</button>
+        <button onclick="showTab('tab-orders')" class="tab-btn active">🛍️ Tout Kòmand</button>
+        <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Machann & Afilye</button>
+        <button onclick="showTab('tab-pending-prods')" class="tab-btn">⏳ Apwouve Pwodwi</button>
+        <button onclick="showTab('tab-finance')" class="tab-btn">🏦 Tranzaksyon & Retrè</button>
     </div>
 
-    <!-- TAB: VERIFIKASYON (Nouvo) -->
-    <div id="tab-verify" class="tab-content">
+    <!-- TAB: TOUT KÒMAND -->
+    <div id="tab-orders" class="tab-content">
         <div class="table-card">
-            <h3>🛡️ Livrè ki poko verifye</h3>
-            <div id="verify-list" style="display: grid; gap: 20px; margin-top: 15px;">
-                <!-- List content -->
-            </div>
+            <h3>Lis tout kòmand yo</h3>
+            <div id="allOrdersList" style="margin-top: 15px;"></div>
         </div>
     </div>
 
-    <!-- TAB: SELLERS -->
+    <!-- TAB: MACHANN & AFILYE -->
     <div id="tab-sellers" class="tab-content" style="display: none;">
-        <div class="table-card"><table style="width: 100%; border-collapse: collapse;">
-            <thead><tr><th style="text-align:left;">Machann</th><th style="text-align:right;">Aksyon</th></tr></thead>
-            <tbody id="sellersTable"></tbody>
-        </table></div>
+        <div class="table-card"><table style="width: 100%; border-collapse: collapse;"><tbody id="sellersTable"></tbody></table></div>
     </div>
 
-    <!-- TAB: DELIVERY -->
-    <div id="tab-delivery" class="tab-content" style="display: none;">
-        <div class="table-card"><table style="width: 100%; border-collapse: collapse;">
-            <thead><tr><th style="text-align:left;">Livrè</th><th style="text-align:left;">Zòn</th><th style="text-align:right;">Aksyon</th></tr></thead>
-            <tbody id="deliveryTable"></tbody>
-        </table></div>
+    <!-- TAB: APWOUVE PWODWI -->
+    <div id="tab-pending-prods" class="tab-content" style="display: none;">
+        <div class="table-card"><h3>Verifye nouvo pwodwi</h3><div id="pendingProdsList" style="display: grid; gap: 15px; margin-top: 15px;"></div></div>
     </div>
 
-    <!-- TAB: FINANCE -->
+    <!-- TAB: FINANCE & TRANZAKSYON -->
     <div id="tab-finance" class="tab-content" style="display: none;">
-        <div class="table-card"><h3>💸 Demann Retrè</h3><table style="width: 100%; border-collapse: collapse;"><tbody id="withdrawalsTable"></tbody></table></div>
+        <div class="table-card"><h3>Demann Retrè & Istwa</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;"><tbody id="withdrawalsTable"></tbody></table>
+        <h3>Dènye Tranzaksyon sou sit la</h3><div id="globalTransactions" style="margin-top: 15px;"></div></div>
     </div>
-
-    <!-- TAB: ALL ORDERS -->
-    <div id="tab-orders" class="tab-content" style="display: none;">
-        <div class="table-card"><table style="width: 100%; border-collapse: collapse;">
-            <thead><tr><th style="text-align:left;">Pwodwi</th><th style="text-align:left;">Kliyan</th><th style="text-align:left;">Estati</th><th style="text-align:right;">Total</th></tr></thead>
-            <tbody id="allOrdersTable"></tbody>
-        </table></div>
-    </div>
-</div>
-
-<!-- MODAL PHOTO VIEW -->
-<div id="photo-modal" onclick="this.style.display='none'" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center; padding:20px;">
-    <img id="modal-img" style="max-width:100%; max-height:100%; border-radius:10px;">
 </div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supA = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    const supA = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    window._supabaseClient = supA;
+
+    async function loadAdminData() {
+        // 1. Rale Done yo
+        const { data: sellers } = await supA.from('profiles').select('*').neq('role', 'admin').order('created_at', { ascending: false });
+        const { data: pendingProds } = await supA.from('user_products').select('*, profiles(full_name)').eq('is_approved', false);
+        const { data: orders } = await supA.from('orders').select('*, profiles!orders_seller_id_fkey(full_name)').order('created_at', { ascending: false });
+        const { data: withdraws } = await supA.from('transactions').select('*, wallets(profiles(full_name))').eq('type', 'withdrawal').eq('status', 'pending');
+        const { data: wallets } = await supA.from('wallets').select('balance');
+        const { data: allTxs } = await supA.from('transactions').select('*, wallets(profiles(full_name))').order('created_at', { ascending: false }).limit(20);
+
+        // 2. Mete Statistik yo
+        document.getElementById('totalSellers').innerText = sellers ? sellers.length : 0;
+        document.getElementById('pendingProdsCount').innerText = pendingProds ? pendingProds.length : 0;
+        document.getElementById('totalRevenue').innerText = (orders || []).reduce((acc, o) => acc + (o.platform_fee || 0), 0) + " HTG";
+        document.getElementById('totalLiabilities').innerText = (wallets || []).reduce((acc, w) => acc + (parseFloat(w.balance) || 0), 0).toFixed(2) + " HTG";
+
+        // 3. Lis Kòmand (Kontwòl Total)
+        document.getElementById('allOrdersList').innerHTML = (orders || []).map(o => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #f1f5f9; font-size:13px;">
+                <div><b>${o.product_title}</b><br><small>Machann: ${o.profiles?.full_name} | Kliyan: ${o.customer_name}</small></div>
+                <div style="text-align:right;"><b>${o.total_price} HTG</b><br><span style="font-size:10px; color:#94a3b8;">${new Date(o.created_at).toLocaleDateString()}</span></div>
+            </div>`).join('') || '<p style="text-align:center;">Okenn kòmand.</p>';
+
+        // 4. Tablo Machann
+        document.getElementById('sellersTable').innerHTML = (sellers || []).map(s => `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 15px;"><b>${s.full_name}</b> (${s.role})<br><small>${s.email}</small></td>
+                <td style="padding: 15px; text-align: right;">
+                    <button onclick="toggleSeller('${s.id}', ${s.is_active_seller})" class="btn-action ${s.is_active_seller ? 'red' : 'green'}">${s.is_active_seller ? 'BLOKE' : 'DEBLOKE'}</button>
+                </td>
+            </tr>`).join('');
+
+        // 5. Pwodwi an Atant
+        document.getElementById('pendingProdsList').innerHTML = (pendingProds || []).map(p => `
+            <div style="display:flex; align-items:center; gap:15px; padding:15px; background:#f8fafc; border-radius:15px; border:1px solid #eee;">
+                <img src="${p.image_url}" style="width:50px; height:60px; object-fit:cover; border-radius:10px;">
+                <div style="flex:1;"><b>${p.title}</b><br><small>Machann: ${p.profiles?.full_name} | ${p.price} HTG</small></div>
+                <div><button onclick="approveProduct('${p.id}')" style="background:#22c55e; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:800; cursor:pointer;">APWOUVE</button></div>
+            </div>`).join('') || '<p style="text-align:center;">Okenn pwodwi.</p>';
+
+        // 6. Retrè & Tranzaksyon
+        document.getElementById('withdrawalsTable').innerHTML = (withdraws || []).map(w => `<tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 15px;">${w.wallets?.profiles?.full_name}</td><td style="padding: 15px; font-weight:800;">${w.amount} HTG</td><td style="padding: 15px; text-align:right;"><button onclick="approveWithdrawal('${w.id}')" class="btn-action green">PEYE ✅</button></td></tr>`).join('') || '<tr><td colspan="3" style="text-align:center; padding:20px;">Okenn demann.</td></tr>';
+
+        document.getElementById('globalTransactions').innerHTML = (allTxs || []).map(t => `
+            <div style="padding:10px; border-bottom:1px solid #f1f5f9; font-size:12px; display:flex; justify-content:space-between;">
+                <span>${t.wallets?.profiles?.full_name} (${t.type})</span>
+                <b style="color:${t.type === 'earning' || t.type === 'commission' ? '#22c55e' : '#ef4444'}">${t.amount} HTG</b>
+            </div>`).join('');
+    }
+
+    async function approveProduct(id) { await supA.from('user_products').update({ is_approved: true }).eq('id', id); loadAdminData(); }
+    async function toggleSeller(id, status) { if (confirm(status ? "Bloke moun sa a?" : "Debloke?")) { await supA.from('profiles').update({ is_active_seller: !status }).eq('id', id); loadAdminData(); } }
+    async function approveWithdrawal(id) { if (confirm("Konfime peman?")) { await supA.from('transactions').update({ status: 'completed' }).eq('id', id); loadAdminData(); } }
+    function showTab(tabId) { document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none'); document.getElementById(tabId).style.display = 'block'; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); event.currentTarget.classList.add('active'); }
+    async function handleAdminLogout() { await supA.auth.signOut(); location.reload(); }
+
+    async function handleAdminLogin() {
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPass').value;
+        const { error } = await supA.auth.signInWithPassword({ email, password });
+        if (error) alert(error.message); else checkAccess();
+    }
+
+    async function verifyMFAAndEnter() {
+        const code = document.getElementById('mfaCode').value;
+        try {
+            const { data: factors } = await supA.auth.mfa.listFactors();
+            const factorId = factors?.all.find(f => f.factor_type === 'totp')?.id;
+            const { data: challenge } = await supA.auth.mfa.challenge({ factorId });
+            const { error } = await supA.auth.mfa.verify({ factorId, challengeId: challenge.id, code });
+            if (error) throw error;
+            checkAccess();
+        } catch (err) { alert("Kòd enkòrèk!"); }
+    }
 
     async function checkAccess() {
         const { data: { user } } = await supA.auth.getUser();
         if (user) {
             const { data: profile } = await supA.from('profiles').select('role').eq('id', user.id).single();
-            if (profile && profile.role === 'admin') {
-                document.getElementById('admin-login-section').style.display = "none";
-                document.getElementById('admin-dashboard').style.display = "block";
-                loadAdminData();
-            } else {
-                alert("Aksè Refize!"); await supA.auth.signOut(); location.reload();
+            if (profile?.role === 'admin') {
+                const { data: mfaData } = await supA.auth.mfa.getAuthenticatorAssuranceLevel();
+                if (mfaData.currentLevel === 'aal2') {
+                    document.getElementById('admin-login-section').style.display = "none";
+                    document.getElementById('admin-dashboard').style.display = "block";
+                    loadAdminData();
+                } else {
+                    document.getElementById('auth-step-1').style.display = "none";
+                    document.getElementById('auth-step-2').style.display = "block";
+                }
             }
         }
     }
-
-    async function loadAdminData() {
-        // Stats
-        const { data: sellers } = await supA.from('profiles').select('*').eq('role', 'seller');
-        const { data: deliverers } = await supA.from('profiles').select('*').eq('role', 'delivery');
-        const { data: pendingVerify } = await supA.from('profiles').select('*').eq('role', 'delivery').eq('is_verified', false);
-        const { data: orders } = await supA.from('orders').select('*');
-
-        document.getElementById('totalSellers').innerText = sellers?.length || 0;
-        document.getElementById('totalDelivery').innerText = deliverers?.length || 0;
-        document.getElementById('pendingVerifyCount').innerText = pendingVerify?.length || 0;
-
-        // Verify Tab
-        document.getElementById('verify-list').innerHTML = (pendingVerify || []).map(d => `
-            <div style="background:#f8fafc; padding:20px; border-radius:15px; border:1px solid #eee; display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
-                <div style="flex:1; min-width:200px;">
-                    <strong style="font-size:16px;">${d.full_name}</strong>
-                    <div style="font-size:12px; color:#64748b; margin-top:5px;">📧 ${d.email} | 📱 ${d.whatsapp}</div>
-                    <div style="font-size:12px; color:#64748b;">📍 ${d.delivery_zone} | 🛵 ${d.vehicle}</div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div onclick="showPhoto('${d.id_card_url}')" style="cursor:pointer; text-align:center;"><div style="width:60px; height:60px; background:#eee; border-radius:8px; overflow:hidden;"><img src="${supA.storage.from('verification').getPublicUrl(d.id_card_url).data.publicUrl}" style="width:100%; height:100%; object-fit:cover;"></div><small style="font-size:10px;">Pyès</small></div>
-                    <div onclick="showPhoto('${d.selfie_url}')" style="cursor:pointer; text-align:center;"><div style="width:60px; height:60px; background:#eee; border-radius:8px; overflow:hidden;"><img src="${supA.storage.from('verification').getPublicUrl(d.selfie_url).data.publicUrl}" style="width:100%; height:100%; object-fit:cover;"></div><small style="font-size:10px;">Selfie</small></div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="approveDelivery('${d.id}')" style="background:#22c55e; color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:800; cursor:pointer;">APWOUVE ✅</button>
-                    <button onclick="rejectDelivery('${d.id}')" style="background:#ef4444; color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:800; cursor:pointer;">REJETE ❌</button>
-                </div>
-            </div>
-        `).join('') || '<div style="text-align:center; padding:20px; color:#94a3b8;">Pa gen livrè nan tann.</div>';
-
-        // Sellers & Delivery Tables
-        document.getElementById('sellersTable').innerHTML = (sellers || []).map(s => `<tr><td style="padding:15px;"><strong>${s.full_name}</strong><br><small>${s.whatsapp}</small></td><td style="padding:15px; text-align:right;"><button class="btn-action red">Bloke</button></td></tr>`).join('');
-        document.getElementById('deliveryTable').innerHTML = (deliverers || []).map(d => `<tr><td style="padding:15px;"><strong>${d.full_name}</strong><br><small>${d.whatsapp}</small></td><td style="padding:15px;">${d.delivery_zone}</td><td style="padding:15px; text-align:right;"><button class="btn-action ${d.is_verified ? 'green' : 'red'}">${d.is_verified ? 'Verifye' : 'Non-verifye'}</button></td></tr>`).join('');
-
-        // Orders Table
-        document.getElementById('allOrdersTable').innerHTML = (orders || []).map(o => `<tr><td style="padding:15px; font-size:12px;">${o.product_title}</td><td style="padding:15px; font-size:12px;">${o.customer_name}</td><td style="padding:15px;"><span style="font-size:10px; padding:3px 8px; border-radius:5px; background:#eee;">${o.status}</span></td><td style="padding:15px; text-align:right; font-weight:800;">${o.total_price} HTG</td></tr>`).join('');
-    }
-
-    async function approveDelivery(id) {
-        if (confirm("Èske w verifye foto sa yo tout bon?")) {
-            const { error } = await supA.from('profiles').update({ is_verified: true }).eq('id', id);
-            if (!error) { alert("Livrè a verifye! 🎉"); loadAdminData(); }
-        }
-    }
-
-    function showPhoto(path) {
-        if (!path) return;
-        const url = supA.storage.from('verification').getPublicUrl(path).data.publicUrl;
-        document.getElementById('modal-img').src = url;
-        document.getElementById('photo-modal').style.display = 'flex';
-    }
-
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById(tabId).style.display = 'block';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-    }
-
-    async function handleAdminLogin() {
-        const email = document.getElementById('adminEmail').value;
-        const password = document.getElementById('adminPass').value;
-        const { data, error } = await supA.auth.signInWithPassword({ email, password });
-        if (error) alert(error.message); else checkAccess();
-    }
-
-    async function handleAdminLogout() { await supA.auth.signOut(); location.reload(); }
-
     checkAccess();
 </script>
 
 <style>
-    .stat-card { background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .stat-num { font-size: 20px; font-weight: 900; }
-    .stat-label { font-size: 9px; font-weight: 700; color: #888; margin-top: 5px; }
-    .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; scrollbar-width: none; }
-    .tab-btn { padding: 10px 20px; border: none; border-radius: 10px; background: #fff; cursor: pointer; font-weight: 700; font-size: 12px; white-space: nowrap; transition: 0.3s; }
+    .stat-card { background: white; padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .stat-num { font-size: 22px; font-weight: 900; }
+    .stat-label { font-size: 9px; font-weight: 800; color: #888; margin-top: 5px; text-transform: uppercase; }
+    .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
+    .tab-btn { padding: 12px 20px; border: none; border-radius: 12px; background: #fff; cursor: pointer; font-weight: 800; font-size: 13px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .tab-btn.active { background: #ff4747; color: white; }
-    .table-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .btn-action { padding: 6px 12px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 10px; }
+    .table-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .btn-action { padding: 10px 15px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 11px; }
     .btn-action.red { background: #fee2e2; color: #ef4444; }
     .btn-action.green { background: #dcfce7; color: #15803d; }
-    th { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 15px; }
 </style>

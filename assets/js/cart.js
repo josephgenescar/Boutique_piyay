@@ -1,5 +1,5 @@
 // ================================================
-// BOUTIQUE PIYAY — cart.js (V4.0 - Konektem Ready)
+// BOUTIQUE PIYAY — cart.js (V4.1 - Sekirite & Kontwòl Total)
 // ================================================
 
 const CART_KEY = 'bp_cart';
@@ -181,14 +181,12 @@ async function submitOrder() {
     );
     window._supabaseClient = sup;
 
-    // Jwenn user konekte a (si li gen kont)
     const { data: { user } } = await sup.auth.getUser();
 
     for (const item of currentCart) {
       const totalItem = item.price * item.qty;
 
-      // ✅ INSERT kòmand nan Supabase — avèk source 'boutique_piyay'
-      const { data: newOrder } = await sup.from('orders').insert({
+      await sup.from('orders').insert({
         seller_id:       item.sellerId !== 'admin' ? item.sellerId : null,
         user_id:         user?.id || null,
         customer_name:   name,
@@ -200,10 +198,9 @@ async function submitOrder() {
         delivery_zone:   zone,
         platform_fee:    Math.round(totalItem * 0.03),
         seller_amount:   Math.round(totalItem * 0.92),
-        source:          'boutique_piyay',   // ← NOUVO — mak kòmand BP
-      }).select().single();
+        source:          'boutique_piyay',
+      });
 
-      // ✅ Notifikasyon pou machann nan
       if (item.sellerId && item.sellerId !== 'admin') {
         await sup.from('notifications').insert({
           user_id: item.sellerId,
@@ -215,7 +212,6 @@ async function submitOrder() {
       }
     }
 
-    // ✅ Notifikasyon pou kliyan ki konekte
     if (user) {
       await sup.from('notifications').insert({
         user_id: user.id,
@@ -230,31 +226,25 @@ async function submitOrder() {
     console.error('Supabase error:', err);
   }
 
-  // ── Montre siksè + bouton Konektem ─────────────────
+  // ── Montre siksè ─────────────────
   document.getElementById('order-form-container').style.display = 'none';
   const sBox = document.createElement('div');
   sBox.id = "success-box";
   sBox.innerHTML = `
     <div style="text-align:center;padding:30px;">
       <div style="font-size:60px;margin-bottom:16px;">✅</div>
-      <h2 style="font-weight:900;color:#0f172a;margin-bottom:8px;">Commande enregistrée!</h2>
-      <p style="color:#64748b;margin-bottom:20px;">Suivez votre commande en temps réel sur Konektem.</p>
+      <h2 style="font-weight:900;color:#0f172a;margin-bottom:8px;">Kòmand anrejistre!</h2>
+      <p style="color:#64748b;margin-bottom:20px;">Kòmand ou an gentan nan sistèm nan. Kontakte machann nan kounye a.</p>
 
-      <!-- ✅ BOUTON KONEKTEM — remplace WhatsApp -->
-      <a href="https://konektem.netlify.app/orders" target="_blank" style="display:block;width:100%;text-decoration:none;margin-bottom:10px;">
-        <button style="width:100%;padding:18px;background:linear-gradient(135deg,#00209F,#CE1126);color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;font-size:16px;">
-          📱 Suivre sur Konektem →
-        </button>
-      </a>
+      <button onclick="contactWhatsApp()" style="width:100%;padding:18px;background:#25D366;color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;font-size:16px;margin-bottom:10px;">
+        💬 Pale ak Machann nan (WhatsApp)
+      </button>
 
       <button onclick="downloadReceipt()" style="width:100%;padding:14px;background:#f1f5f9;color:#0f172a;border:none;border-radius:15px;font-weight:700;cursor:pointer;margin-bottom:8px;">
-        📥 Télécharger la fiche
+        📥 Telechaje Fich ou an
       </button>
 
-      <!-- Toujou disponib si kliyan vle WhatsApp -->
-      <button onclick="contactWhatsApp()" style="width:100%;padding:12px;background:none;color:#25D366;border:2px solid #25D366;border-radius:15px;font-weight:700;cursor:pointer;font-size:13px;">
-        💬 Contacter via WhatsApp
-      </button>
+      <p style="font-size:11px; color:#ef4444; font-weight:700; margin-top:15px;">⚠️ PA JANM PEYE DEYÒ PLATFÒM NAN SI W VLE NOU GARANTI KÒB OU.</p>
     </div>`;
 
   document.getElementById('order-summary').innerHTML = "";
@@ -263,7 +253,7 @@ async function submitOrder() {
   refreshBadge();
 }
 
-// WhatsApp — opsyonèl kounye a (pa obligatwa)
+// WhatsApp — Sekirize ak Mesaj Avètisman
 function contactWhatsApp() {
   const data = JSON.parse(localStorage.getItem('last_order_full_data'));
   if (!data) return;
@@ -275,9 +265,12 @@ function contactWhatsApp() {
   });
   Object.keys(sellerGroups).forEach((sPhone, index) => {
     const items = sellerGroups[sPhone];
-    let msg = `🛍️ *COMMANDE - BOUTIQUE PIYAY*\n\n👤 *Client:* ${data.name}\n📱 *Tel:* ${data.phone}\n📍 *Zone:* ${data.zone}\n\n📦 *PRODUITS:*\n`;
-    items.forEach(it => msg += `• ${it.title} (x${it.qty}) — ${it.price * it.qty} HTG\n`);
-    msg += `\n📲 *Gérez cette commande sur Konektem*`;
+    let msg = `🛍️ *COMMANDE BOUTIQUE PIYAY* (Anrejistre ✅)\n\n`;
+    msg += `👤 *Kliyan:* ${data.name}\n📱 *Tel:* ${data.phone}\n📍 *Zòn:* ${data.zone}\n\n`;
+    msg += `📦 *ATIK YO:*\n`;
+    items.forEach(it => msg += `• ${it.title} (x${it.qty})\n`);
+    msg += `\n⚠️ *AVÈTISMAN:* Kòmand sa a pase nan sistèm ofisyèl la. Pa peye san w pa verifye fich Boutique Piyay la.`;
+
     setTimeout(() => window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank'), index * 1000);
   });
 }
