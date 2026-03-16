@@ -224,7 +224,7 @@
                         selfie_url: selfieUrl
                     };
 
-                    const { error: dbErr } = await supS.from('profiles').insert([profileData]);
+                    const { error: dbErr } = await supS.from('profiles').upsert([profileData], { onConflict: 'id' });
                     if (dbErr) throw dbErr;
 
                     await supS.from('wallets').insert([{ user_id: authData.user.id }]);
