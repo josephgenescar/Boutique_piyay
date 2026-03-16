@@ -1,5 +1,5 @@
 // ================================================
-// BOUTIQUE PIYAY — cart.js (V4.1 - Sekirite & Kontwòl Total)
+// BOUTIQUE PIYAY — cart.js (V4.2 - FIX FINAL ERÈ)
 // ================================================
 
 const CART_KEY = 'bp_cart';
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
   prefillCustomerData();
 });
 
-// ─── PRE-RELI PWOFIL KLIYAN ──────────────────────
 async function prefillCustomerData() {
   if (typeof supabase === 'undefined') return;
   const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
@@ -40,7 +39,7 @@ function orderProduct(title, price, id, image, sellerId, sellerPhone) {
   if (!found) {
     currentCart.push({
       id: key, title: title, price: parseFloat(price) || 0,
-      img: image || '', qty: 1, sellerId: sellerId || 'admin', sellerPhone: cleanPhone
+      img: image || '', qty: 1, sellerId: sellerId || null, sellerPhone: cleanPhone
     });
   }
 
@@ -56,12 +55,7 @@ function openCart() {
 
 function closeOrderModal() {
   var m = document.getElementById('order-modal');
-  if (m) {
-    m.style.display = 'none';
-    document.getElementById('order-form-container').style.display = 'block';
-    const sBox = document.getElementById('success-box');
-    if(sBox) sBox.remove();
-  }
+  if (m) { m.style.display = 'none'; }
 }
 
 function drawCart() {
@@ -100,7 +94,6 @@ function removeItem(id) {
   currentCart = currentCart.filter(it => it.id !== id);
   localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
   refreshBadge(); drawCart();
-  toast('🗑️ Retire');
 }
 
 function refreshBadge() {
@@ -126,40 +119,9 @@ function generateReceiptContent(data) {
     grandTotal += (it.price * it.qty);
   });
 
-  return `
-    <html><head><meta charset="UTF-8"><style>
-      body { font-family: 'Sora', sans-serif, Arial; padding: 30px; color: #1e293b; line-height: 1.5; }
-      .receipt-card { max-width: 600px; margin: auto; border: 1px solid #e2e8f0; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-      .header { text-align: center; border-bottom: 3px solid #ff4747; padding-bottom: 20px; margin-bottom: 30px; }
-      .logo-img { height: 60px; margin-bottom: 10px; }
-      .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; font-size: 14px; }
-      table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-      th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
-      th { background: #f8fafc; font-weight: 800; text-transform: uppercase; font-size: 12px; }
-      .total-box { background: #0f172a; color: white; padding: 20px; border-radius: 12px; text-align: right; font-size: 20px; font-weight: 900; }
-      .receipt-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
-      .sponsor { font-weight: 800; color: #0f172a; margin-top: 5px; }
-      @media print { .no-print { display: none; } }
-    </style></head><body>
-      <div class="receipt-card">
-        <div class="header">
-          <img src="${window.location.origin}/assets/images/logo.png" class="logo-img">
-          <h1 style="margin:0; font-size:24px; color:#ff4747;">BOUTIQUE PIYAY</h1>
-          <p style="margin:5px 0 0; font-weight:700;">FICH KOMAND OFISYÈL</p>
-        </div>
-        <div class="info-grid">
-          <div><p><strong>KLIYAN:</strong><br>${data.name}</p><p><strong>TEL:</strong><br>${data.phone}</p></div>
-          <div style="text-align:right;"><p><strong>NIM KÒMAND:</strong><br>#${data.orderId}</p><p><strong>DAT:</strong><br>${new Date().toLocaleDateString('fr-FR')}</p></div>
-        </div>
-        <table><thead><tr><th>Pwodwi</th><th>Kte</th><th>Total</th></tr></thead><tbody>${itemsHtml}</tbody></table>
-        <div class="total-box">TOTAL JENERAL: ${grandTotal} HTG</div>
-        <div class="receipt-footer"><p>Mèsi deske ou te achte sou Boutique Piyay!</p><div class="sponsor">🚀 Sponsorisé par Rvayo-tech entreprise</div></div>
-      </div>
-      <div style="text-align:center; margin-top:20px;" class="no-print"><button onclick="window.print()" style="padding:15px 30px; background:#ff4747; color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer;">Enprime oswa Sove fich la</button></div>
-    </body></html>`;
+  return `<html><body style="font-family:sans-serif; padding:40px;"><h2>RESI BOUTIQUE PIYAY</h2><p>ID: #${data.orderId}</p><p>Kliyan: ${data.name}</p><table>${itemsHtml}</table><h3>TOTAL: ${grandTotal} HTG</h3></body></html>`;
 }
 
-// ─── SOU-MET KOMAND LAN ───────────────────────────
 async function submitOrder() {
   const name    = document.getElementById('customer-name').value.trim();
   const phone   = document.getElementById('customer-phone').value.trim();
@@ -173,104 +135,62 @@ async function submitOrder() {
   const orderData = { name, phone, zone, payment, cart: currentCart, orderId };
   localStorage.setItem('last_order_full_data', JSON.stringify(orderData));
 
-  // ── Supabase — Sove kòmand + Notifikasyon ──────────
   try {
-    const sup = window._supabaseClient || supabase.createClient(
-      "https://lsyjnhqjssirtgrdfgcu.supabase.co",
-      "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13"
-    );
+    const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
     window._supabaseClient = sup;
 
     const { data: { user } } = await sup.auth.getUser();
 
     for (const item of currentCart) {
       const totalItem = item.price * item.qty;
-
+      // ✅ ENSÈSYON SENPLIFYE NAN DATABASE (Pou evite erè)
       await sup.from('orders').insert({
-        seller_id:       item.sellerId !== 'admin' ? item.sellerId : null,
-        user_id:         user?.id || null,
+        seller_id:       item.sellerId,
         customer_name:   name,
         customer_phone:  phone,
-        customer_address: zone,
         product_title:   item.title,
         total_price:     totalItem,
-        status:          'pending',
-        delivery_zone:   zone,
-        platform_fee:    Math.round(totalItem * 0.03),
-        seller_amount:   Math.round(totalItem * 0.92),
-        source:          'boutique_piyay',
+        delivery_zone:   zone
       });
 
-      if (item.sellerId && item.sellerId !== 'admin') {
+      if (item.sellerId) {
         await sup.from('notifications').insert({
           user_id: item.sellerId,
-          type:    'new_order',
-          title:   '🛍️ Nouvelle commande!',
-          body:    `Vous avez une nouvelle commande pour: ${item.title} — ${totalItem} HTG`,
-          read:    false
+          type: 'new_order',
+          title: '🛍️ Nouvo Kòmand!',
+          body: `Ou gen yon nouvo kòmand pou: ${item.title}`,
+          read: false
         });
       }
     }
+  } catch(err) { console.error('Supabase error:', err); }
 
-    if (user) {
-      await sup.from('notifications').insert({
-        user_id: user.id,
-        type:    'order_sent',
-        title:   '✅ Commande envoyée!',
-        body:    `Votre commande #${orderId} a été reçue. Suivez-la sur Konektem.`,
-        read:    false
-      });
-    }
-
-  } catch(err) {
-    console.error('Supabase error:', err);
-  }
-
-  // ── Montre siksè ─────────────────
   document.getElementById('order-form-container').style.display = 'none';
-  const sBox = document.createElement('div');
-  sBox.id = "success-box";
-  sBox.innerHTML = `
+  document.getElementById('order-summary').innerHTML = `
     <div style="text-align:center;padding:30px;">
       <div style="font-size:60px;margin-bottom:16px;">✅</div>
       <h2 style="font-weight:900;color:#0f172a;margin-bottom:8px;">Kòmand anrejistre!</h2>
       <p style="color:#64748b;margin-bottom:20px;">Kòmand ou an gentan nan sistèm nan. Kontakte machann nan kounye a.</p>
-
-      <button onclick="contactWhatsApp()" style="width:100%;padding:18px;background:#25D366;color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;font-size:16px;margin-bottom:10px;">
-        💬 Pale ak Machann nan (WhatsApp)
-      </button>
-
-      <button onclick="downloadReceipt()" style="width:100%;padding:14px;background:#f1f5f9;color:#0f172a;border:none;border-radius:15px;font-weight:700;cursor:pointer;margin-bottom:8px;">
-        📥 Telechaje Fich ou an
-      </button>
-
+      <button onclick="contactWhatsApp()" style="width:100%;padding:18px;background:#25D366;color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;font-size:16px;margin-bottom:10px;">💬 Pale ak Machann nan</button>
       <p style="font-size:11px; color:#ef4444; font-weight:700; margin-top:15px;">⚠️ PA JANM PEYE DEYÒ PLATFÒM NAN SI W VLE NOU GARANTI KÒB OU.</p>
     </div>`;
 
-  document.getElementById('order-summary').innerHTML = "";
-  document.getElementById('order-summary').appendChild(sBox);
   localStorage.removeItem(CART_KEY);
   refreshBadge();
 }
 
-// WhatsApp — Sekirize ak Mesaj Avètisman
 function contactWhatsApp() {
   const data = JSON.parse(localStorage.getItem('last_order_full_data'));
   if (!data) return;
-  const currentCart = data.cart || [];
   const sellerGroups = {};
-  currentCart.forEach(item => {
+  data.cart.forEach(item => {
     if (!sellerGroups[item.sellerPhone]) sellerGroups[item.sellerPhone] = [];
     sellerGroups[item.sellerPhone].push(item);
   });
   Object.keys(sellerGroups).forEach((sPhone, index) => {
     const items = sellerGroups[sPhone];
-    let msg = `🛍️ *COMMANDE BOUTIQUE PIYAY* (Anrejistre ✅)\n\n`;
-    msg += `👤 *Kliyan:* ${data.name}\n📱 *Tel:* ${data.phone}\n📍 *Zòn:* ${data.zone}\n\n`;
-    msg += `📦 *ATIK YO:*\n`;
-    items.forEach(it => msg += `• ${it.title} (x${it.qty})\n`);
-    msg += `\n⚠️ *AVÈTISMAN:* Kòmand sa a pase nan sistèm ofisyèl la. Pa peye san w pa verifye fich Boutique Piyay la.`;
-
+    let msg = `🛍️ *COMMANDE BOUTIQUE PIYAY*\n\n👤 *Client:* ${data.name}\n📍 *Zòn:* ${data.zone}\n\n*ATIK YO:*`;
+    items.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
     setTimeout(() => window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank'), index * 1000);
   });
 }
@@ -282,11 +202,11 @@ function toast(msg) {
   setTimeout(() => { t.style.display='none'; }, 3000);
 }
 
-window.orderProduct    = orderProduct;
-window.openCart        = openCart;
+window.orderProduct = orderProduct;
+window.openCart = openCart;
 window.closeOrderModal = closeOrderModal;
-window.submitOrder     = submitOrder;
+window.submitOrder = submitOrder;
 window.contactWhatsApp = contactWhatsApp;
-window.chgQty          = chgQty;
-window.removeItem      = removeItem;
+window.chgQty = chgQty;
+window.removeItem = removeItem;
 window.downloadReceipt = downloadReceipt;
