@@ -69,7 +69,7 @@
                 <input type="text" id="vehicle" class="auth-input" placeholder="Eg: Moto Haojin">
 
                 <label style="color:#ff4747;">🛡️ Verifikasyon Idantite (Obligatwa)</label>
-                <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Voye yon foto ppyès idantite w (NIF/CIN) ak yon selfie pou nou verifye kont ou.</p>
+                <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Voye yon foto pyès idantite w (NIF/CIN) ak yon selfie pou nou verifye kont ou.</p>
 
                 <div class="file-upload-box" onclick="document.getElementById('id-card-file').click()">
                     <span id="id-label">📷 Foto Pyès Idantite (Devan)</span>
@@ -175,61 +175,72 @@
             const btn = document.getElementById('btnSignup');
             btn.disabled = true; btn.innerHTML = "⏳ Operasyon an kou...";
 
-            if (currentRole === 'delivery') {
-                const idFile = document.getElementById('id-card-file').files[0];
-                if (!idFile || !selfieBlob) {
-                    alert("Tanpri voye foto pyès ou ak selfie a pou verifikasyon.");
-                    btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN";
-                    return;
-                }
-            }
-
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
             const fullName = document.getElementById('fullName').value.trim();
             const wa = document.getElementById('whatsapp').value.trim();
 
             try {
-                const { data: { user }, error: authErr } = await supS.auth.signUp({ email, password: pass });
+                const { data: authData, error: authErr } = await supS.auth.signUp({
+                    email,
+                    password: pass,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            whatsapp: wa
+                        }
+                    }
+                });
+
                 if (authErr) throw authErr;
 
-                if (user) {
+                if (authData.user) {
                     let idUrl = '', selfieUrl = '';
 
                     if (currentRole === 'delivery') {
-                        // Upload ID Card
-                        const idExt = document.getElementById('id-card-file').files[0].name.split('.').pop();
-                        const { data: idData } = await supS.storage.from('verification').upload(`${user.id}/id_card.${idExt}`, document.getElementById('id-card-file').files[0]);
-                        if (idData) idUrl = idData.path;
-
-                        // Upload Selfie
-                        const { data: selfData } = await supS.storage.from('verification').upload(`${user.id}/selfie.jpg`, selfieBlob);
-                        if (selfData) selfieUrl = selfData.path;
+                        const idFile = document.getElementById('id-card-file').files[0];
+                        if (idFile) {
+                            const idExt = idFile.name.split('.').pop();
+                            const { data: idData } = await supS.storage.from('verification').upload(`${authData.user.id}/id_card.${idExt}`, idFile);
+                            if (idData) idUrl = idData.path;
+                        }
+                        if (selfieBlob) {
+                            const { data: selfData } = await supS.storage.from('verification').upload(`${authData.user.id}/selfie.jpg`, selfieBlob);
+                            if (selfData) selfieUrl = selfData.path;
+                        }
                     }
 
                     const profileData = {
-                        id: user.id,
+                        id: authData.user.id,
                         full_name: (currentRole === 'seller') ? document.getElementById('shopName').value : fullName,
-                        owner_name: fullName,
                         email: email,
                         whatsapp: wa,
                         address: (currentRole === 'seller') ? document.getElementById('address').value : '',
                         role: currentRole,
-                        is_active_seller: currentRole === 'seller',
+                        is_active_seller: (currentRole === 'seller'),
                         delivery_zone: (currentRole === 'delivery') ? document.getElementById('deliveryZone').value : '',
                         vehicle: (currentRole === 'delivery') ? document.getElementById('vehicle').value : '',
                         id_card_url: idUrl,
-                        selfie_url: selfieUrl,
-                        is_verified: false // Yo dwe verifye livrè a anvan li travay
+                        selfie_url: selfieUrl
                     };
 
-                    await supS.from('profiles').insert([profileData]);
-                    await supS.from('wallets').insert([{ user_id: user.id }]);
+                    const { error: dbErr } = await supS.from('profiles').insert([profileData]);
+                    if (dbErr) throw dbErr;
 
-                    alert("Kont ou kreye ak siksè! 🎉 " + (currentRole === 'delivery' ? "N ap verifye dokiman w yo epi n ap kontakte w." : "Ou ka konekte kounya."));
+                    await supS.from('wallets').insert([{ user_id: authData.user.id }]);
+
+                    if (currentRole === 'affiliate') {
+                        const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+                        await supS.from('affiliates').insert([{ user_id: authData.user.id, referral_code: code }]);
+                    }
+
+                    alert("Felisitasyon! Kont ou kreye. Verifye email ou.");
                     window.location.href = "/login.html";
                 }
-            } catch (err) { alert(err.message); btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN"; }
+            } catch (err) {
+                alert("Erè: " + err.message);
+                btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN";
+            }
         }
 
         setRole('seller');
