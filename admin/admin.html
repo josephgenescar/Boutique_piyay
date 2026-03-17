@@ -4,465 +4,270 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel - Boutique Piyay</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background: #f1f5f9; color: #1e293b; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
 
-    body {
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
+    header { background: #0f172a; color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-tabs { display: flex; gap: 10px; }
+    .nav-tabs button { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white; font-weight: 600; transition: 0.3s; }
+    .nav-tabs button.active { background: #ff4747; }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 25px; }
+    .section-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
 
-    header {
-      background: linear-gradient(135deg, #ff4747 0%, #ff8c42 100%);
-      color: white;
-      padding: 30px;
-      border-radius: 16px;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 25px rgba(255, 71, 71, 0.2);
-    }
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+    .stat-card { background: white; padding: 20px; border-radius: 15px; border-left: 5px solid #ff4747; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .stat-label { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+    .stat-value { font-size: 24px; font-weight: 800; color: #0f172a; }
 
-    header h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; font-size: 13px; }
+    td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-active { background: #dcfce7; color: #166534; }
+    .badge-blocked { background: #fee2e2; color: #991b1b; }
 
-    header p {
-      font-size: 14px;
-      opacity: 0.9;
-    }
+    /* Buttons */
+    .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
+    .btn-add { background: #10b981; color: white; }
+    .btn-edit { background: #3b82f6; color: white; margin-right: 5px; }
+    .btn-delete { background: #ef4444; color: white; }
+    .btn-toggle { background: #64748b; color: white; margin-right: 5px; }
 
-    .nav-tabs {
-      display: flex;
-      gap: 15px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .nav-tabs a,
-    .nav-tabs button {
-      display: inline-block;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: all 0.3s;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    .nav-tabs a:hover,
-    .nav-tabs button:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .nav-tabs button.logout {
-      background: rgba(220, 38, 38, 0.2);
-      border-color: rgba(220, 38, 38, 0.5);
-      color: #fde2e2;
-    }
-
-    .nav-tabs button.logout:hover {
-      background: rgba(220, 38, 38, 0.4);
-    }
-
-    .tab-content {
-      background: white;
-      border-radius: 16px;
-      padding: 40px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      margin-bottom: 40px;
-    }
-
-    .dashboard-card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(255, 71, 71, 0.1);
-      transition: all 0.3s;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    .dashboard-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(255, 71, 71, 0.15);
-      border-color: rgba(255, 71, 71, 0.3);
-    }
-
-    .card-icon {
-      font-size: 40px;
-      margin-bottom: 12px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 8px;
-    }
-
-    .card-description {
-      font-size: 13px;
-      color: #666;
-      line-height: 1.4;
-    }
-
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .stat-box {
-      background: linear-gradient(135deg, rgba(255, 71, 71, 0.1) 0%, rgba(255, 140, 66, 0.1) 100%);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 71, 71, 0.2);
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #666;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 800;
-      color: #ff4747;
-    }
-
-    .section-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #111827;
-      padding-bottom: 15px;
-      border-bottom: 3px solid rgba(255, 71, 71, 0.2);
-    }
-
-    .info-box {
-      background: #f0f9ff;
-      padding: 20px;
-      border-radius: 12px;
-      border-left: 4px solid #0ea5e9;
-      margin-bottom: 20px;
-    }
-
-    .info-box p {
-      font-size: 14px;
-      line-height: 1.6;
-      color: #0c4a6e;
-    }
-
-    .info-box code {
-      background: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Monaco', monospace;
-      font-size: 12px;
-      color: #e11d48;
-    }
-
-    .quick-actions {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
-
-    .quick-btn {
-      padding: 10px 20px;
-      background: linear-gradient(135deg, rgba(255, 71, 71, 0.1), rgba(255, 140, 66, 0.1));
-      border: 2px solid rgba(255, 71, 71, 0.3);
-      border-radius: 8px;
-      color: #ff4747;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: inherit;
-    }
-
-    .quick-btn:hover {
-      background: linear-gradient(135deg, #ff4747, #ff8c42);
-      color: white;
-      border-color: transparent;
-      transform: translateY(-2px);
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px 20px;
-      color: #666;
-      font-size: 13px;
-      margin-top: 40px;
-    }
-
-    @media (max-width: 768px) {
-      header { padding: 20px; }
-      header h1 { font-size: 24px; }
-      .tab-content { padding: 20px; }
-      .dashboard-grid { grid-template-columns: 1fr; }
-      .nav-tabs { flex-direction: column; }
-      .nav-tabs a, .nav-tabs button { width: 100%; text-align: center; }
-    }
+    /* Modal / Form */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 30px; border-radius: 15px; width: 400px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🛍️ Boutique Piyay Admin</h1>
-      <p>Pannèl Administrasyon - Gèrasyon Boutik</p>
-      
-      <div class="nav-tabs">
-        <a href="/" target="_blank">← Retounen Site</a>
-        <button onclick="switchTab('dashboard')" class="tab-button" id="tab-dashboard">📊 Dashboard</button>
-        <button onclick="switchTab('config')" class="tab-button" id="tab-config">⚙️ Konfigirasyon</button>
-        <button onclick="switchTab('products')" class="tab-button" id="tab-products">📦 Produits</button>
-        <a href="/admin/index.html#/collections/products" target="_blank">📝 CMS</a>
-        <button class="logout" onclick="logout()">🚪 Lonje</button>
-      </div>
-    </header>
 
-    <!-- DASHBOARD TAB -->
-    <div class="tab-content active" id="dashboard">
-      <h2 class="section-title">📊 Dashboard</h2>
-      
-      <!-- STATS -->
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-label">Pwodwi Total</div>
-          <div class="stat-value" id="totalProducts">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Kategori</div>
-          <div class="stat-value">3</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Rekòmande</div>
-          <div class="stat-value" id="featuredCount">0</div>
-        </div>
-      </div>
+<div class="container">
+  <header>
+    <h2 style="font-weight: 900;">Boutique Piyay Admin</h2>
+    <div class="nav-tabs">
+      <button onclick="showTab('tab-stats')" id="btn-stats" class="active">📊 Stats</button>
+      <button onclick="showTab('tab-users')" id="btn-users">👥 Itilizatè</button>
+      <button onclick="showTab('tab-products')" id="btn-products">📦 Pwodwi</button>
+    </div>
+  </header>
 
-      <h3 class="section-title" style="margin-top: 40px;">⚡ Aksyon Vit</h3>
-      <div class="quick-actions">
-        <a href="/admin/products.html" class="quick-btn">+ Ajoute Pwodwi</a>
-        <a href="/" class="quick-btn">🛒 Wè Boutik</a>
-        <a href="/admin/account.html" class="quick-btn">👤 Kompt Kliyan</a>
+  <!-- TAB STATS -->
+  <div id="tab-stats" class="tab-body">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Itilizatè</div>
+        <div class="stat-value" id="stat-total-users">0</div>
       </div>
-
-      <h3 class="section-title" style="margin-top: 40px;">📋 Seksyon Jèrans</h3>
-      <div class="dashboard-grid">
-        <a href="/admin/products.html" class="dashboard-card">
-          <div class="card-icon">📦</div>
-          <div class="card-title">Gestion Produits</div>
-          <div class="card-description">Ajoute, modifye ak retire pwodwi avèk detay</div>
-        </a>
-        <a href="/admin/account.html" class="dashboard-card">
-          <div class="card-icon">👤</div>
-          <div class="card-title">Kompt Kliyan</div>
-          <div class="card-description">Afichaj ak jèrans kompt kliyan yò</div>
-        </a>
-        <a href="/admin/index.html" target="_blank" class="dashboard-card">
-          <div class="card-icon">✍️</div>
-          <div class="card-title">Netlify CMS</div>
-          <div class="card-description">Sistèm CMS pou jere kòn ak metadonnen</div>
-        </a>
+      <div class="stat-card" style="border-left-color: #10b981;">
+        <div class="stat-label">Machann Aktif</div>
+        <div class="stat-value" id="stat-active-sellers">0</div>
+      </div>
+      <div class="stat-card" style="border-left-color: #3b82f6;">
+        <div class="stat-label">Pwodwi Live</div>
+        <div class="stat-value" id="stat-total-products">0</div>
       </div>
     </div>
 
-    <!-- CONFIG TAB -->
-    <div class="tab-content" id="config">
-      <h2 class="section-title">⚙️ Konfigirasyon</h2>
-      
-      <div class="info-box">
-        <p>🔒 <strong>Admin Session Info:</strong></p>
-        <p style="margin-top: 10px;">
-          Token: <code id="tokenDisplay">...</code><br>
-          Durè sesyon: <strong>8 zè</strong><br>
-          Stòraj: <code>admin_auth_token</code> & <code>admin_auth_time</code>
-        </p>
-      </div>
-
-      <div class="info-box">
-        <p>📍 <strong>Admin Pages:</strong></p>
-        <p style="margin-top: 10px;">
-          ✅ Login: <code>/admin/login.html</code><br>
-          ✅ Auth Required: `/admin/admin.html`, `/admin/products.html`<br>
-          ✅ Public: `/admin/account.html`, `/admin/index.html` (CMS)
-        </p>
-      </div>
-
-      <div class="info-box">
-        <p>🔐 <strong>Modpas Admin:</strong></p>
-        <p style="margin-top: 10px;">
-          Password stored in <code>/admin/login.html</code> (line ~114)<br>
-          Current: <code>boutique_piyay_2026</code>
-        </p>
-      </div>
-
-      <button onclick="clearAuth()" class="quick-btn" style="margin-top: 20px;">
-        🗑️ Efase Sesyon Stòraj
-      </button>
+    <div class="card">
+      <div class="section-title">Aktivite Resan</div>
+      <p style="color: #64748b;">Tout bagay ap mache byen nan sistèm nan.</p>
     </div>
+  </div>
 
-    <!-- PRODUCTS TAB -->
-    <div class="tab-content" id="products">
-      <h2 class="section-title">📦 Gestion Produits</h2>
-      
-      <div class="quick-actions">
-        <a href="/admin/products.html" class="quick-btn">📝 Ale nan Pwodwi Paj</a>
-        <button onclick="reloadProducts()" class="quick-btn">🔄 Recharje Pwodwi</button>
+  <!-- TAB USERS -->
+  <div id="tab-users" class="tab-body" style="display:none;">
+    <div class="card">
+      <div class="section-title">
+        Lis Itilizatè yo
+        <button class="btn btn-add" onclick="openUserModal()">+ Ajoute Nouvo</button>
       </div>
-
-      <div id="productsList" style="margin-top: 30px;">
-        <p style="text-align: center; color: #999;">Chajman pwodwi...</p>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Non / Email</th>
+              <th>Wòl</th>
+              <th>WhatsApp</th>
+              <th>Status</th>
+              <th>Aksyon</th>
+            </tr>
+          </thead>
+          <tbody id="user-table-body">
+            <!-- Rempli par JS -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <footer>
-    <p>🔒 Boutique Piyay Admin Panel v1.0 • 2026</p>
-    <p>📞 WhatsApp: +509 4886-8964</p>
-  </footer>
+  <!-- TAB PRODUCTS -->
+  <div id="tab-products" class="tab-body" style="display:none;">
+    <div class="card">
+      <div class="section-title">Kontwòl Pwodwi</div>
+      <p>Pou kounye a, ou ka wè pwodwi yo nan paj <a href="/admin/products.html">Products Detail</a>.</p>
+    </div>
+  </div>
+</div>
 
-  <script>
-    const AUTH_TOKEN_KEY = 'admin_auth_token';
-    const AUTH_TIME_KEY = 'admin_auth_time';
-    const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+<!-- MODAL AJOUTE / MODIFYE -->
+<div id="userModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle" style="margin-bottom: 20px;">Ajoute Itilizatè</h3>
+    <form id="userForm">
+      <input type="hidden" id="userId">
+      <div class="form-group">
+        <label>Non Konplè</label>
+        <input type="text" id="userName" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="userEmail" required>
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input type="text" id="userWA" placeholder="509...">
+      </div>
+      <div class="form-group">
+        <label>Wòl</label>
+        <select id="userRole">
+          <option value="seller">Machann (Seller)</option>
+          <option value="customer">Kliyan (Customer)</option>
+          <option value="delivery">Livrezon (Delivery)</option>
+          <option value="affiliate">Afilye (Affiliate)</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button type="submit" class="btn btn-add" style="flex:1;">SOVE</button>
+        <button type="button" class="btn btn-delete" style="flex:1;" onclick="closeModal()">ANILE</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    // Check authentication
-    function checkAuthentication() {
-      const token = localStorage.getItem(AUTH_TOKEN_KEY);
-      const authTime = localStorage.getItem(AUTH_TIME_KEY);
+<script>
+  const SUP_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+  const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+  const supabaseAdmin = supabase.createClient(SUP_URL, SUP_KEY);
 
-      if (!token || !authTime) {
-        window.location.href = '/admin/login.html';
-        return false;
-      }
+  // Chanje Tab
+  function showTab(id) {
+    document.querySelectorAll('.tab-body').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).style.display = 'block';
+    document.getElementById('btn-' + id.replace('tab-', '')).classList.add('active');
+    if(id === 'tab-users') fetchUsers();
+    if(id === 'tab-stats') loadStats();
+  }
 
-      const elapsed = Date.now() - parseInt(authTime);
-      if (elapsed > SESSION_DURATION) {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-        localStorage.removeItem(AUTH_TIME_KEY);
-        window.location.href = '/admin/login.html';
-        return false;
-      }
+  // Chaje Stats
+  async function loadStats() {
+    const { count: users } = await supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true });
+    const { count: activeSellers } = await supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('is_active_seller', true);
+    const { count: prods } = await supabaseAdmin.from('user_products').select('*', { count: 'exact', head: true });
 
-      return true;
+    document.getElementById('stat-total-users').innerText = users || 0;
+    document.getElementById('stat-active-sellers').innerText = activeSellers || 0;
+    document.getElementById('stat-total-products').innerText = prods || 0;
+  }
+
+  // Chaje Itilizatè
+  async function fetchUsers() {
+    const { data: users, error } = await supabaseAdmin.from('profiles').select('*').order('created_at', { ascending: false });
+    if (error) { console.error(error); return; }
+
+    const tbody = document.getElementById('user-table-body');
+    tbody.innerHTML = '';
+    users.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${u.full_name || 'Enkoni'}</strong><br><small>${u.email}</small></td>
+        <td style="text-transform: capitalize;">${u.role}</td>
+        <td>${u.whatsapp || '-'}</td>
+        <td><span class="badge ${u.is_active_seller ? 'badge-active' : 'badge-blocked'}">${u.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
+        <td>
+          <button class="btn btn-edit" onclick="editUser('${u.id}', '${u.full_name}', '${u.email}', '${u.whatsapp}', '${u.role}')">Mod</button>
+          <button class="btn btn-toggle" onclick="toggleStatus('${u.id}', ${u.is_active_seller})">${u.is_active_seller ? 'Bloke' : 'Aktive'}</button>
+          <button class="btn btn-delete" onclick="deleteUser('${u.id}')">Efase</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Modal Functions
+  function openUserModal() {
+    document.getElementById('modalTitle').innerText = "Ajoute Itilizatè";
+    document.getElementById('userId').value = "";
+    document.getElementById('userForm').reset();
+    document.getElementById('userModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('userModal').style.display = 'none';
+  }
+
+  function editUser(id, name, email, wa, role) {
+    document.getElementById('modalTitle').innerText = "Modifye Itilizatè";
+    document.getElementById('userId').value = id;
+    document.getElementById('userName').value = name;
+    document.getElementById('userEmail').value = email;
+    document.getElementById('userWA').value = wa;
+    document.getElementById('userRole').value = role;
+    document.getElementById('userModal').style.display = 'flex';
+  }
+
+  // CRUD Actions
+  document.getElementById('userForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('userId').value;
+    const data = {
+      full_name: document.getElementById('userName').value,
+      email: document.getElementById('userEmail').value,
+      whatsapp: document.getElementById('userWA').value,
+      role: document.getElementById('userRole').value,
+      is_active_seller: true // Pa defo
+    };
+
+    if (id) {
+      // Modifye
+      const { error } = await supabaseAdmin.from('profiles').update(data).eq('id', id);
+      if (error) alert(error.message);
+    } else {
+      // Ajoute (Upsert)
+      data.id = crypto.randomUUID(); // Simulation ID si c'est manuel
+      const { error } = await supabaseAdmin.from('profiles').insert([data]);
+      if (error) alert(error.message);
     }
 
-    // Tab switching
-    function switchTab(tabName) {
-      const tabs = document.querySelectorAll('.tab-content');
-      tabs.forEach(t => t.classList.remove('active'));
-      document.getElementById(tabName).classList.add('active');
+    closeModal();
+    fetchUsers();
+    loadStats();
+  };
 
-      const buttons = document.querySelectorAll('.tab-button');
-      buttons.forEach(b => b.style.background = 'rgba(255, 255, 255, 0.2)');
-      document.getElementById('tab-' + tabName).style.background = 'rgba(255, 255, 255, 0.4)';
+  async function toggleStatus(id, current) {
+    const { error } = await supabaseAdmin.from('profiles').update({ is_active_seller: !current }).eq('id', id);
+    if (error) alert(error.message);
+    else fetchUsers();
+  }
 
-      if (tabName === 'products') {
-        loadProducts();
-      }
-    }
+  async function deleteUser(id) {
+    if(!confirm("Efase itilizatè sa a nèt?")) return;
+    const { error } = await supabaseAdmin.from('profiles').delete().eq('id', id);
+    if (error) alert("Ou ka sèlman efase nan 'profiles'. Pou efase nèt nan AUTH, fòk ou itilize kle Admin Supabase la.");
+    else fetchUsers();
+  }
 
-    // Load products
-    function loadProducts() {
-      const products = JSON.parse(localStorage.getItem('bp_products') || '[]');
-      const list = document.getElementById('productsList');
+  // Initial load
+  loadStats();
+</script>
 
-      if (products.length === 0) {
-        list.innerHTML = '<p style="text-align: center; color: #999;">Okenn pwodwi ankor.</p>';
-        return;
-      }
-
-      list.innerHTML = products.map((p, i) => `
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #ff4747;">
-          <strong>${p.title}</strong> - $${p.price}
-          <br><small style="color: #666;">${p.category} | Stòk: ${p.stock}</small>
-        </div>
-      `).join('');
-    }
-
-    // Logout
-    function logout() {
-      if (confirm('Èske ou swe ou vle louje soti?')) {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-        localStorage.removeItem(AUTH_TIME_KEY);
-        window.location.href = '/';
-      }
-    }
-
-    // Clear auth
-    function clearAuth() {
-      if (confirm('Efase tout sesyon stòraj?')) {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-        localStorage.removeItem(AUTH_TIME_KEY);
-        alert('Sesyon efase. Retounen login.');
-        window.location.href = '/admin/login.html';
-      }
-    }
-
-    // Reload products
-    function reloadProducts() {
-      loadProducts();
-    }
-
-    // Display token
-    function displayToken() {
-      const token = localStorage.getItem(AUTH_TOKEN_KEY);
-      if (token) {
-        document.getElementById('tokenDisplay').textContent = token.substring(0, 20) + '...';
-      }
-    }
-
-    // Initialize
-    if (checkAuthentication()) {
-      displayToken();
-      loadProducts();
-    }
-  </script>
 </body>
 </html>

@@ -48,6 +48,12 @@
         .bg-fb { background: #1877F2; }
         .bg-wa { background: #25D366; }
         .bg-tg { background: #0088cc; }
+
+        /* NEW ACTIONS */
+        .btn-flash-action { width: 100%; margin-top: 5px; padding: 8px; border-radius: 8px; border: 1px solid #eee; background: #fff1f1; color: var(--primary); font-size: 11px; font-weight: 800; cursor: pointer; }
+        .btn-delete-prod { width: 100%; margin-top: 5px; padding: 8px; border-radius: 8px; border: 1px solid #fee2e2; background: #fff5f5; color: #ef4444; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .modal-flash { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-flash-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
@@ -117,6 +123,27 @@
                 <label>YouTube URL</label><input type="text" id="prof-yt">
                 <button class="btn-save" onclick="saveProfile()">Sove ✅</button>
             </div>
+
+            <div class="white-card" style="margin-top:20px; border: 1px solid #fee2e2;">
+                <h3 style="color:#ef4444; margin-top:0;">⚠️ Zòn Danje</h3>
+                <p style="font-size:12px; color:var(--gray); margin-bottom:15px;">Si ou efase kont ou, tout pwodwi ou yo ap disparèt nèt sou sit la epi ou p'ap ka fè bak.</p>
+                <button onclick="deleteAccount()" style="width:100%; padding:15px; background:#ef4444; color:white; border:none; border-radius:12px; font-weight:800; cursor:pointer;">🗑️ Efase Kont Mwen nèt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL Vante Flash -->
+    <div id="flashModal" class="modal-flash">
+        <div class="modal-flash-content">
+            <h2 style="font-weight:900;">⚡ Vante Flash</h2>
+            <p style="font-size:13px; color:var(--gray);">Mete pwodwi sa a nan promo rapid.</p>
+            <input type="hidden" id="flash-prod-id">
+            <div style="text-align:left; margin-top:15px;">
+                <label style="font-size:11px; font-weight:800; color:var(--gray);">PRI AKTYÈL: <span id="flash-current-price"></span> HTG</label>
+                <input type="number" id="flash-old-price" placeholder="Mete ansyen pri a (pi wo)" style="width:100%; padding:12px; border-radius:10px; border:2px solid #f1f5f9; margin-top:10px; font-family:inherit;">
+            </div>
+            <button onclick="saveFlashSale()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:800; margin-top:20px; cursor:pointer;">AKTIVE PROMO 🚀</button>
+            <button onclick="closeFlashModal()" style="margin-top:15px; border:none; background:none; color:var(--gray); cursor:pointer; font-weight:700;">Anile</button>
         </div>
     </div>
 
@@ -149,10 +176,19 @@
                 }).join('') || '<p style="text-align:center;padding:20px;color:var(--gray);">Pa gen kòmand.</p>';
             }
 
-            const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+            const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
             if (prods) {
                 document.getElementById('stat-prods').innerText = prods.length;
-                document.getElementById('prods-grid').innerHTML = prods.map(p => `<div class="white-card" style="padding:10px;margin-bottom:0;text-align:center;"><img src="${p.image_url}" style="width:100%;height:110px;object-fit:cover;border-radius:12px;"><div style="font-size:12px;font-weight:700;margin-top:8px;height:30px;overflow:hidden;">${p.title}</div><button onclick="location.href='/edit-product.html?id=${p.id}'" style="width:100%;margin-top:10px;padding:6px;border-radius:8px;border:1px solid #eee;background:none;font-size:11px;font-weight:700;cursor:pointer;">Edite</button></div>`).join('');
+                document.getElementById('prods-grid').innerHTML = prods.map(p => `
+                    <div class="white-card" style="padding:10px;margin-bottom:0;text-align:center; position:relative;">
+                        ${p.old_price ? '<span style="position:absolute; top:5px; right:5px; background:var(--primary); color:white; font-size:9px; font-weight:900; padding:3px 6px; border-radius:5px;">⚡ FLASH</span>' : ''}
+                        <img src="${p.image_url}" style="width:100%;height:110px;object-fit:cover;border-radius:12px;">
+                        <div style="font-size:12px;font-weight:700;margin-top:8px;height:30px;overflow:hidden;">${p.title}</div>
+                        <button onclick="location.href='/edit-product.html?id=${p.id}'" style="width:100%;margin-top:10px;padding:6px;border-radius:8px;border:1px solid #eee;background:none;font-size:11px;font-weight:700;cursor:pointer;">Edite</button>
+                        <button onclick="openFlashModal('${p.id}', ${p.price})" class="btn-flash-action">⚡ Flash</button>
+                        <button onclick="deleteProduct('${p.id}')" class="btn-delete-prod">🗑️ Efase</button>
+                    </div>
+                `).join('');
             }
 
             const wallRes = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
@@ -167,6 +203,51 @@
                 document.getElementById('prof-ig').value = prof.instagram_url || '';
                 document.getElementById('prof-tk').value = prof.tiktok_url || '';
                 document.getElementById('prof-yt').value = prof.youtube_url || '';
+            }
+        }
+
+        // --- FLASH SALE ACTIONS ---
+        function openFlashModal(id, price) {
+            document.getElementById('flash-prod-id').value = id;
+            document.getElementById('flash-current-price').innerText = price;
+            document.getElementById('flashModal').style.display = 'flex';
+        }
+        function closeFlashModal() { document.getElementById('flashModal').style.display = 'none'; }
+        async function saveFlashSale() {
+            const id = document.getElementById('flash-prod-id').value;
+            const oldPrice = parseFloat(document.getElementById('flash-old-price').value);
+            const currentPrice = parseFloat(document.getElementById('flash-current-price').innerText);
+
+            if (!oldPrice || oldPrice <= currentPrice) {
+                alert("Ansyen pri a dwe pi wo pase pri aktyèl la!");
+                return;
+            }
+
+            const { error } = await supD.from('user_products').update({ old_price: oldPrice, is_flash_sale: true }).eq('id', id);
+            if (!error) { alert("Vante Flash aktive! ⚡"); closeFlashModal(); loadAll(); }
+        }
+
+        // --- NEW ACTIONS ---
+        async function deleteProduct(id) {
+            if (!confirm("Èske ou sèten ou vle efase pwodwi sa a?")) return;
+            const { error } = await supD.from('user_products').delete().eq('id', id);
+            if (!error) { alert("Pwodwi efase! 🗑️"); loadAll(); }
+        }
+
+        async function deleteAccount() {
+            if (!confirm("Èske ou sèten ou vle efase kont ou nèt? Tout pwodwi ou yo ap disparèt nèt sou sit la. Aksyon sa a pa ka anile!")) return;
+            if (!confirm("REPETE KONFIMASYON: Ou vle efase kont lan tout bon vre?")) return;
+
+            try {
+                // 1. Delete all products
+                await supD.from('user_products').delete().eq('seller_id', currentUser.id);
+                // 2. Delete profile
+                await supD.from('profiles').delete().eq('id', currentUser.id);
+                // 3. Log out
+                alert("Kont ou efase avèk siksè.");
+                handleLogout();
+            } catch (err) {
+                alert("Erè: " + err.message);
             }
         }
 
