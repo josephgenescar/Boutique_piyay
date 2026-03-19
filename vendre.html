@@ -12,6 +12,11 @@ title: Vann yon Pwodwi - Boutique Piyay
     <div id="vendreCard" class="seller-card" style="display: none; background: white; padding: 35px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.08);">
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; color: #0f172a;">🚀 Pibliye yon Pwodwi</h1>
 
+        <!-- VIDEYO GID (AJISTE POU PAYSAGE) -->
+        <div style="max-width: 600px; margin: 0 auto 40px; border-radius: 20px; overflow: hidden; background: #000; position: relative; padding-top: 56.25%; box-shadow: 0 15px 45px rgba(0,0,0,0.15);">
+            <iframe src="LINK_VIDEYO_MACHANN_LAN" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+        </div>
+
         <form id="uploadForm">
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">NON PWODWI A *</label>
@@ -49,7 +54,7 @@ title: Vann yon Pwodwi - Boutique Piyay
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn" style="width: 100%; padding: 18px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">🚀 PIBLIYE PWODWI A</button>
+            <button type="submit" id="submitBtn" style="width: 100%; padding: 188px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">🚀 PIBLIYE PWODWI A</button>
         </form>
         <div id="statusMsg" style="margin-top: 25px; text-align: center; font-weight: 700; display: none; padding: 15px; border-radius: 10px;"></div>
     </div>
@@ -59,12 +64,47 @@ title: Vann yon Pwodwi - Boutique Piyay
 <script>
     const supV = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
 
-    async function checkAuthAndStatus() {
+async function optimizeImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_WIDTH = 1000;
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, 'image/jpeg', 0.7);
+            };
+        };
+    });
+}
+
+async function checkAuthAndStatus() {
+    try {
         const { data: { user } } = await supV.auth.getUser();
         if (!user) { window.location.href = "/login.html"; return; }
+
         document.getElementById('loading').style.display = 'none';
         document.getElementById('vendreCard').style.display = 'block';
+
+    } catch (e) {
+        console.error(e);
+        document.getElementById('loading').innerText = "Erè koneksyon ak sèvè a.";
     }
+}
 
     document.getElementById('prodImage').onchange = function() {
         const [file] = this.files;
@@ -74,7 +114,6 @@ title: Vann yon Pwodwi - Boutique Piyay
         }
     };
 
-    // Konvèti foto an Base64 pou evite erè Storage
     const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -82,59 +121,63 @@ title: Vann yon Pwodwi - Boutique Piyay
         reader.onerror = error => reject(error);
     });
 
-    document.getElementById('uploadForm').onsubmit = async function(e) {
-        e.preventDefault();
-        const { data: { user } } = await supV.auth.getUser();
-        const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('statusMsg');
-        const file = document.getElementById('prodImage').files[0];
+document.getElementById('uploadForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const { data: { user } } = await supV.auth.getUser();
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('statusMsg');
+    const file = document.getElementById('prodImage').files[0];
 
-        btn.disabled = true; btn.innerText = "⏳ PIBLIKASYON...";
-        status.style.display = 'block'; status.innerText = "Preparasyon foto...";
-        status.style.color = "#0f172a";
+    btn.disabled = true; btn.innerText = "⏳ VERIFIKASYON...";
+    status.style.display = 'block'; status.innerText = "Tanpri tann...";
 
-        try {
-            let imageUrl = "";
-            try {
-                // Eseye monte nan Storage dabò
-                const fileName = `prod_${Date.now()}`;
-                const { data: uploadData, error: uploadError } = await supV.storage
-                    .from('product-images')
-                    .upload(fileName, file);
+    try {
+        const { count } = await supV
+            .from('user_products')
+            .select('*', { count: 'exact', head: true })
+            .eq('seller_id', user.id);
 
-                if (!uploadError) {
-                    const { data: publicUrlData } = supV.storage.from('product-images').getPublicUrl(fileName);
-                    imageUrl = publicUrlData.publicUrl;
-                } else {
-                    // Si Storage pa konfigire, itilize Base64
-                    imageUrl = await toBase64(file);
-                }
-            } catch (err) {
-                imageUrl = await toBase64(file);
-            }
+        if (count >= 20) throw new Error("Ou rive nan limit 20 pwodwi.");
 
-            // Mete nan baz done
-            const { error: dbErr } = await supV.from('user_products').insert([{
-                title: document.getElementById('prodTitle').value,
-                price: parseFloat(document.getElementById('prodPrice').value),
-                category: document.getElementById('prodCat').value,
-                description: document.getElementById('prodDesc').value,
-                image_url: imageUrl,
-                seller_id: user.id,
-                is_approved: false,
-                created_at: new Date()
-            }]);
+        status.innerText = "⚡ Optimizasyon foto...";
+        const optimizedBlob = await optimizeImage(file);
 
-            if (dbErr) throw dbErr;
+        status.innerText = "📤 Piblikasyon an kous...";
+        const fileName = `prod_${user.id}_${Date.now()}.jpg`;
+        const { data: uploadData, error: uploadError } = await supV.storage
+            .from('product-images')
+            .upload(fileName, optimizedBlob);
 
-            status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye ak siksè!";
-            setTimeout(() => window.location.href = "/dashboard.html", 2000);
-
-        } catch (err) {
-            status.style.color = "#ff4747";
-            status.innerText = "❌ Erè: " + err.message;
-            btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
+        let imageUrl = "";
+        if (!uploadError) {
+            const { data: publicUrlData } = supV.storage.from('product-images').getPublicUrl(fileName);
+            imageUrl = publicUrlData.publicUrl;
+        } else {
+            imageUrl = await toBase64(file);
         }
-    };
-    document.addEventListener('DOMContentLoaded', checkAuthAndStatus);
+
+        const { error: dbErr } = await supV.from('user_products').insert([{
+            title: document.getElementById('prodTitle').value,
+            price: parseFloat(document.getElementById('prodPrice').value),
+            category: document.getElementById('prodCat').value,
+            description: document.getElementById('prodDesc').value,
+            image_url: imageUrl,
+            seller_id: user.id,
+            is_approved: false,
+            created_at: new Date()
+        }]);
+
+        if (dbErr) throw dbErr;
+
+        // ✅ Bay Machann nan 5 Pwen pou piblikasyon an
+        await supV.rpc('increment_points', { user_id: user.id, amount: 5 });
+
+        status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye! (+5 Pwen ⭐)";
+        setTimeout(() => window.location.href = "/dashboard.html", 2000);
+    } catch (err) {
+        status.style.color = "#ff4747"; status.innerText = "❌ Erè: " + err.message;
+        btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
+    }
+};
+document.addEventListener('DOMContentLoaded', checkAuthAndStatus);
 </script>

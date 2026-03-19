@@ -3,14 +3,32 @@ layout: default
 title: Akèy - Boutique Piyay
 ---
 
-<!-- 1. HERO BANNER -->
-<div class="hero-wrapper-container" style="margin-bottom: 60px;">
-  <section id="hero-marketplace" class="main-hero-custom" style="position: relative; width: 100%; max-width: 1200px; margin: 0 auto; border-radius: 25px; overflow: hidden; background: #f8fafc; height: 350px;">
-    {% include boutique-piyay-banner.html %}
-  </section>
-</div>
+<!-- 1. 🚀 SEKSYON PWODWI VEDÈT (ANLÈ NÈT) -->
+<section id="boosted-section" class="container" style="margin-top: 20px; margin-bottom: 40px;">
+    <div class="section-header-modern" style="margin-bottom: 20px;">
+        <h2 class="sora" style="font-size: 20px; margin: 0; font-weight: 800;">Pwodwi Vedèt 🔥</h2>
+        <div style="width: 40px; height: 3px; background: #ff4747; margin-top: 6px; border-radius: 10px;"></div>
+    </div>
+    <div id="boosted-grid" class="product-grid-modern">
+        <div class="loading-msg">⏳ Chajman pwodwi vedèt...</div>
+    </div>
+</section>
 
-<!-- 2. CATÉGORIES -->
+<!-- 2. SEKSYON GID VIDEYO (RAPÒ 16:9 POU PAYSAGE) -->
+<section id="guide-video" class="container" style="margin-bottom: 50px;">
+    <div style="max-width: 650px; margin: 0 auto;">
+        <div style="width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.1); background: #000; position: relative; padding-top: 56.25%;">
+            <iframe
+                    src="LINK_VIDEYO_OU_A"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                    allowfullscreen>
+            </iframe>
+        </div>
+        <p style="text-align: center; color: #64748b; font-size: 13px; margin-top: 15px; font-weight: 700;">📺 Kijan Boutique Piyay Mache?</p>
+    </div>
+</section>
+
+<!-- 3. CATÉGORIES -->
 <section id="categories-section" class="container" style="margin-bottom: 60px;">
   <div class="section-header-modern" style="margin-bottom: 25px;">
     <h2 class="sora" style="font-size: 20px; margin: 0; font-weight: 800;">Chwazi pa Kategori</h2>
@@ -29,7 +47,7 @@ title: Akèy - Boutique Piyay
   </div>
 </section>
 
-<!-- 3. FLASH SALE SECTION -->
+<!-- 4. FLASH SALE SECTION -->
 <section id="flash-sale" class="container" style="margin-bottom: 80px;">
     <div class="flash-header-modern" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div class="flash-title">
@@ -52,7 +70,7 @@ title: Akèy - Boutique Piyay
     </div>
 </section>
 
-<!-- 4. MARKETPLACE SECTION -->
+<!-- 5. MARKETPLACE SECTION -->
 <section id="user-market" class="container" style="margin-bottom: 100px; padding-top: 40px; border-top: 1px solid #f1f5f9;">
   <div class="marketplace-card-container">
     <div class="section-header-modern" style="margin-bottom: 35px;">
@@ -67,13 +85,19 @@ title: Akèy - Boutique Piyay
 
     <div id="sellers-view">
         <div id="sellers-grid-home" class="sellers-grid-modern" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px;">
-            <div class="loading-msg">⏳ Chaje machann yo...</div>
+            <!-- SKELETON LOADERS -->
+            <div class="skeleton-card"><div class="skeleton-img skeleton" style="height:100px; border-radius:50%; width:100px; margin:0 auto;"></div><div class="skeleton-title skeleton" style="width:60%; margin:15px auto;"></div><div class="skeleton-btn skeleton"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img skeleton" style="height:100px; border-radius:50%; width:100px; margin:0 auto;"></div><div class="skeleton-title skeleton" style="width:60%; margin:15px auto;"></div><div class="skeleton-btn skeleton"></div></div>
         </div>
     </div>
 
     <div id="products-view" style="display: none;">
         <div id="supabase-products-grid" class="product-grid-modern" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px;">
-            <div class="loading-msg">⏳ Chaje pwodwi yo...</div>
+            <!-- SKELETON LOADERS -->
+            <div class="skeleton-card"><div class="skeleton-img skeleton"></div><div class="skeleton-title skeleton"></div><div class="skeleton-price skeleton"></div><div class="skeleton-btn skeleton"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img skeleton"></div><div class="skeleton-title skeleton"></div><div class="skeleton-price skeleton"></div><div class="skeleton-btn skeleton"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img skeleton"></div><div class="skeleton-title skeleton"></div><div class="skeleton-price skeleton"></div><div class="skeleton-btn skeleton"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img skeleton"></div><div class="skeleton-title skeleton"></div><div class="skeleton-price skeleton"></div><div class="skeleton-btn skeleton"></div></div>
         </div>
     </div>
   </div>
@@ -104,7 +128,6 @@ title: Akèy - Boutique Piyay
 .market-tab.active { color: #ff4747 !important; border-bottom: 4px solid #ff4747 !important; background: #fff5f5 !important; }
 
 @media (max-width: 768px) {
-    .main-hero-custom { height: 220px !important; border-radius: 15px !important; margin: 0 10px !important; }
     .sellers-grid-modern { grid-template-columns: 1fr !important; }
     .product-grid-modern { grid-template-columns: repeat(2, 1fr) !important; gap: 15px !important; }
     .market-tab { padding: 12px 20px !important; font-size: 15px !important; }
@@ -136,11 +159,37 @@ title: Akèy - Boutique Piyay
             allProducts = prods || [];
             const { data: sellers } = await supabaseHome.from('profiles').select('*').eq('is_active_seller', true);
             allSellers = sellers || [];
+
             renderSellers(allSellers);
             renderProducts(allProducts);
             renderFlashSlider(allProducts.filter(p => p.old_price && p.old_price > p.price));
+
+            // CHAJMAN PWODWI VEDÈT (BOOSTED)
+            const boosted = allProducts.filter(p => p.is_boosted === true);
+            renderBoosted(boosted);
+
             startFlashTimers();
         } catch (e) { console.error(e); }
+    }
+
+    function renderBoosted(list) {
+        const section = document.getElementById('boosted-section');
+        const grid = document.getElementById('boosted-grid');
+        if (!grid) return;
+
+        if (list.length === 0) {
+            grid.innerHTML = '<div style="padding:80px 20px; text-align:center; color:#94a3b8; font-size:15px; border:2px dashed #cbd5e1; border-radius:25px; grid-column: 1 / -1; background: #f8fafc;">Pa gen okenn pwodwi vedèt pou kounye a. 🚀</div>';
+            return;
+        }
+
+        grid.innerHTML = list.map(p => `
+            <div style="background:white; padding:20px; border-radius:25px; box-shadow: 0 15px 35px rgba(255, 71, 71, 0.1); border:2px solid #fff1f1; display:flex; flex-direction:column; position:relative;">
+                <span style="position:absolute; top:15px; left:15px; background:#ff4747; color:white; padding:5px 12px; border-radius:10px; font-size:10px; font-weight:900; z-index:10; box-shadow:0 5px 15px rgba(255,71,71,0.3);">VEDÈT 🔥</span>
+                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px;"></a>
+                <h3 style="font-size:15px; margin:15px 0; height:40px; overflow:hidden; font-weight:700; color:#0f172a;">${p.title}</h3>
+                <div style="color:#ff4747; font-weight:900; font-size:19px; margin-top:auto;">${p.price} HTG</div>
+                <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#0f172a; color:white; border:none; padding:14px; border-radius:15px; margin-top:15px; font-weight:800; cursor:pointer; font-size:13px;">🛒 Ajoute</button>
+            </div>`).join('');
     }
 
     function renderSellers(list) {

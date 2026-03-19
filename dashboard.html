@@ -19,7 +19,7 @@
 
         /* CARDS */
         .white-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: white; padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .stat-val { display: block; font-size: 24px; font-weight: 900; color: var(--dark); }
         .stat-lbl { font-size: 10px; color: var(--gray); text-transform: uppercase; font-weight: 800; margin-top: 5px; }
@@ -49,8 +49,9 @@
         .bg-wa { background: #25D366; }
         .bg-tg { background: #0088cc; }
 
-        /* NEW ACTIONS */
+        /* ACTIONS */
         .btn-flash-action { width: 100%; margin-top: 5px; padding: 8px; border-radius: 8px; border: 1px solid #eee; background: #fff1f1; color: var(--primary); font-size: 11px; font-weight: 800; cursor: pointer; }
+        .btn-boost-action { width: 100%; margin-top: 5px; padding: 8px; border-radius: 8px; border: 1px solid #e0f2fe; background: #f0f9ff; color: #0284c7; font-size: 11px; font-weight: 800; cursor: pointer; }
         .btn-delete-prod { width: 100%; margin-top: 5px; padding: 8px; border-radius: 8px; border: 1px solid #fee2e2; background: #fff5f5; color: #ef4444; font-size: 11px; font-weight: 700; cursor: pointer; }
         .modal-flash { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
         .modal-flash-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
@@ -63,7 +64,10 @@
                 <img src="/assets/images/logo.png" style="width:45px;">
                 <h1 style="font-size: 22px; font-weight:900;">Dashboard Machann</h1>
             </div>
-            <button onclick="handleLogout()" style="background:#fee2e2; border:none; color:var(--primary); padding:8px 15px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">DEKONEKTE 🚪</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="/" style="text-decoration: none; background:#f1f5f9; color:var(--dark); padding:8px 15px; border-radius:10px; font-size:12px; font-weight:800; display: flex; align-items: center; gap: 5px; transition: 0.3s;">MACHE 🏠</a>
+                <button onclick="handleLogout()" style="background:#fee2e2; border:none; color:var(--primary); padding:8px 15px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">DEKONEKTE 🚪</button>
+            </div>
         </header>
 
         <nav class="db-nav">
@@ -80,6 +84,7 @@
                 <div class="stat-card" style="border-bottom-color: #3b82f6;"><span id="stat-orders" class="stat-val">0</span><span class="stat-lbl">Kòmand</span></div>
                 <div class="stat-card" style="border-bottom-color: #10b981;"><span id="stat-sales" class="stat-val">0 HTG</span><span class="stat-lbl">Vant</span></div>
                 <div class="stat-card" style="border-bottom-color: var(--primary);"><span id="stat-prods" class="stat-val">0</span><span class="stat-lbl">Live</span></div>
+                <div class="stat-card" style="border-bottom-color: #f59e0b;"><span id="stat-points" class="stat-val">0</span><span class="stat-lbl">⭐ Pwen m yo</span></div>
             </div>
             <h3 style="margin-bottom: 15px; font-size: 16px;">Kòmand yo</h3>
             <div id="orders-list" class="white-card" style="padding: 5px;"></div>
@@ -123,27 +128,29 @@
                 <label>YouTube URL</label><input type="text" id="prof-yt">
                 <button class="btn-save" onclick="saveProfile()">Sove ✅</button>
             </div>
-
-            <div class="white-card" style="margin-top:20px; border: 1px solid #fee2e2;">
-                <h3 style="color:#ef4444; margin-top:0;">⚠️ Zòn Danje</h3>
-                <p style="font-size:12px; color:var(--gray); margin-bottom:15px;">Si ou efase kont ou, tout pwodwi ou yo ap disparèt nèt sou sit la epi ou p'ap ka fè bak.</p>
-                <button onclick="deleteAccount()" style="width:100%; padding:15px; background:#ef4444; color:white; border:none; border-radius:12px; font-weight:800; cursor:pointer;">🗑️ Efase Kont Mwen nèt</button>
-            </div>
         </div>
     </div>
 
-    <!-- MODAL Vante Flash -->
-    <div id="flashModal" class="modal-flash">
+    <!-- MODAL BOOST -->
+    <div id="boostPayModal" class="modal-flash">
         <div class="modal-flash-content">
-            <h2 style="font-weight:900;">⚡ Vante Flash</h2>
-            <p style="font-size:13px; color:var(--gray);">Mete pwodwi sa a nan promo rapid.</p>
-            <input type="hidden" id="flash-prod-id">
-            <div style="text-align:left; margin-top:15px;">
-                <label style="font-size:11px; font-weight:800; color:var(--gray);">PRI AKTYÈL: <span id="flash-current-price"></span> HTG</label>
-                <input type="number" id="flash-old-price" placeholder="Mete ansyen pri a (pi wo)" style="width:100%; padding:12px; border-radius:10px; border:2px solid #f1f5f9; margin-top:10px; font-family:inherit;">
+            <h2 style="font-weight:900;">🚀 Boosté Pwodwi ou</h2>
+            <p style="font-size:14px; color:var(--gray); margin-bottom:20px;">Parèt nan seksyon **Vedèt 🔥** pou fè plis vant.</p>
+
+            <div style="background:#f0f9ff; padding:20px; border-radius:15px; margin-bottom:20px; text-align:left; border:1px solid #bae6fd;">
+                <p style="font-size:13px; color:#0369a1; margin:0; font-weight:800;">💰 Opsyon 1: Peye pou 24h</p>
+                <p style="font-size:11px; color:#0c4a6e; margin-top:5px;">Sèlman <b>100 HTG</b> via MonCash.</p>
+                <button onclick="payToBoost()" style="width:100%; margin-top:12px; padding:12px; background:#ef4444; color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer;">Peye ak MonCash 📲</button>
             </div>
-            <button onclick="saveFlashSale()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:800; margin-top:20px; cursor:pointer;">AKTIVE PROMO 🚀</button>
-            <button onclick="closeFlashModal()" style="margin-top:15px; border:none; background:none; color:var(--gray); cursor:pointer; font-weight:700;">Anile</button>
+
+            <div style="background:#fff7ed; padding:20px; border-radius:15px; text-align:left; border:1px solid #ffedd5;">
+                <p style="font-size:13px; color:#9a3412; margin:0; font-weight:800;">⭐ Opsyon 2: Depanse Pwen</p>
+                <p style="font-size:11px; color:#7c2d12; margin-top:5px;">Pri: <b>100 Pwen</b>. (Ou gen: <b id="boost-points-bal">0</b>)</p>
+                <button id="btn-boost-points" onclick="boostWithPoints()" style="width:100%; margin-top:12px; padding:12px; background:#ea580c; color:white; border:none; border-radius:10px; font-weight:800; cursor:pointer;">Sèvi ak Pwen 🎁</button>
+            </div>
+
+            <input type="hidden" id="boost-prod-id">
+            <button onclick="closeBoostModal()" style="margin-top:20px; border:none; background:none; color:var(--gray); cursor:pointer; font-weight:700;">Anile</button>
         </div>
     </div>
 
@@ -151,21 +158,17 @@
         const supD = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
         window._supabaseClient = supD;
         let currentUser = null;
+        let userPoints = 0;
 
         async function init() {
             const { data: { user } } = await supD.auth.getUser();
             if (!user) return window.location.href = "/login.html";
             currentUser = user;
-
-            const shopUrl = `${window.location.origin}/boutik-machann.html?id=${user.id}`;
-            if(document.getElementById('shop-url-display')) document.getElementById('shop-url-display').innerText = shopUrl;
-            if(document.getElementById('share-wa')) document.getElementById('share-wa').href = `https://wa.me/?text=${encodeURIComponent("Vizite boutik mwen: " + shopUrl)}`;
-            if(document.getElementById('share-fb')) document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shopUrl)}`;
-
             loadAll();
         }
 
         async function loadAll() {
+            // 1. KÒMAND YO
             const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
             if (orders) {
                 document.getElementById('stat-orders').innerText = orders.length;
@@ -176,108 +179,74 @@
                 }).join('') || '<p style="text-align:center;padding:20px;color:var(--gray);">Pa gen kòmand.</p>';
             }
 
+            // 2. PWODWI YO
             const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
             if (prods) {
                 document.getElementById('stat-prods').innerText = prods.length;
                 document.getElementById('prods-grid').innerHTML = prods.map(p => `
                     <div class="white-card" style="padding:10px;margin-bottom:0;text-align:center; position:relative;">
-                        ${p.old_price ? '<span style="position:absolute; top:5px; right:5px; background:var(--primary); color:white; font-size:9px; font-weight:900; padding:3px 6px; border-radius:5px;">⚡ FLASH</span>' : ''}
+                        ${p.is_boosted ? '<span style="position:absolute; top:5px; left:5px; background:#0284c7; color:white; font-size:9px; font-weight:900; padding:3px 6px; border-radius:5px;">VEDÈT</span>' : ''}
                         <img src="${p.image_url}" style="width:100%;height:110px;object-fit:cover;border-radius:12px;">
                         <div style="font-size:12px;font-weight:700;margin-top:8px;height:30px;overflow:hidden;">${p.title}</div>
-                        <button onclick="location.href='/edit-product.html?id=${p.id}'" style="width:100%;margin-top:10px;padding:6px;border-radius:8px;border:1px solid #eee;background:none;font-size:11px;font-weight:700;cursor:pointer;">Edite</button>
-                        <button onclick="openFlashModal('${p.id}', ${p.price})" class="btn-flash-action">⚡ Flash</button>
+                        <button onclick="openBoostModal('${p.id}')" class="btn-boost-action" ${p.is_boosted?'disabled':''}>${p.is_boosted?'BOOSTÉ 🚀':'Boost (Peye/Pwen)'}</button>
                         <button onclick="deleteProduct('${p.id}')" class="btn-delete-prod">🗑️ Efase</button>
                     </div>
                 `).join('');
             }
 
-            const wallRes = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
-            if (wallRes.ok) { const w = await wallRes.json(); document.getElementById('wall-balance').innerText = w.balance + " HTG"; }
-
+            // 3. PWEN & PROFIL
             const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
             if (prof) {
+                userPoints = prof.points || 0;
+                document.getElementById('stat-points').innerText = userPoints;
+                document.getElementById('boost-points-bal').innerText = userPoints;
                 document.getElementById('prof-name').value = prof.full_name || '';
-                document.getElementById('prof-whatsapp').value = prof.whatsapp || '';
-                document.getElementById('prof-address').value = prof.address || '';
-                document.getElementById('prof-fb').value = prof.facebook_url || '';
-                document.getElementById('prof-ig').value = prof.instagram_url || '';
-                document.getElementById('prof-tk').value = prof.tiktok_url || '';
-                document.getElementById('prof-yt').value = prof.youtube_url || '';
-            }
-        }
-
-        // --- FLASH SALE ACTIONS ---
-        function openFlashModal(id, price) {
-            document.getElementById('flash-prod-id').value = id;
-            document.getElementById('flash-current-price').innerText = price;
-            document.getElementById('flashModal').style.display = 'flex';
-        }
-        function closeFlashModal() { document.getElementById('flashModal').style.display = 'none'; }
-        async function saveFlashSale() {
-            const id = document.getElementById('flash-prod-id').value;
-            const oldPrice = parseFloat(document.getElementById('flash-old-price').value);
-            const currentPrice = parseFloat(document.getElementById('flash-current-price').innerText);
-
-            if (!oldPrice || oldPrice <= currentPrice) {
-                alert("Ansyen pri a dwe pi wo pase pri aktyèl la!");
-                return;
-            }
-
-            const { error } = await supD.from('user_products').update({ old_price: oldPrice, is_flash_sale: true }).eq('id', id);
-            if (!error) { alert("Vante Flash aktive! ⚡"); closeFlashModal(); loadAll(); }
-        }
-
-        // --- NEW ACTIONS ---
-        async function deleteProduct(id) {
-            if (!confirm("Èske ou sèten ou vle efase pwodwi sa a?")) return;
-            const { error } = await supD.from('user_products').delete().eq('id', id);
-            if (!error) { alert("Pwodwi efase! 🗑️"); loadAll(); }
-        }
-
-        async function deleteAccount() {
-            if (!confirm("Èske ou sèten ou vle efase kont ou nèt? Tout pwodwi ou yo ap disparèt nèt sou sit la. Aksyon sa a pa ka anile!")) return;
-            if (!confirm("REPETE KONFIMASYON: Ou vle efase kont lan tout bon vre?")) return;
-
-            try {
-                // 1. Delete all products
-                await supD.from('user_products').delete().eq('seller_id', currentUser.id);
-                // 2. Delete profile
-                await supD.from('profiles').delete().eq('id', currentUser.id);
-                // 3. Log out
-                alert("Kont ou efase avèk siksè.");
-                handleLogout();
-            } catch (err) {
-                alert("Erè: " + err.message);
+                // ... rès profil la
             }
         }
 
         async function markAsDelivered(orderId) {
-            if (!confirm("Èske ou konfime livrezon?")) return;
+            if (!confirm("Èske ou konfime livrezon kòmand sa a?")) return;
+
+            // ✅ 1. Mizajou kòmand
             const { error } = await supD.from('orders').update({ status: 'delivered' }).eq('id', orderId);
-            if (!error) { await fetch('/.netlify/functions/wallet/distribute', { method: 'POST', body: JSON.stringify({ orderId }) }); loadAll(); }
+
+            if (!error) {
+                // ✅ 2. Bay machann nan +10 Pwen pou siksè vant lan
+                await supD.rpc('increment_points', { user_id: currentUser.id, amount: 10 });
+
+                // ✅ 3. Distribye kòb la (Netlify Function)
+                await fetch('/.netlify/functions/wallet/distribute', { method: 'POST', body: JSON.stringify({ orderId }) });
+
+                alert("Bravo! Ou jwenn +10 Pwen pou vant sa a. ⭐");
+                loadAll();
+            }
         }
 
-        async function saveProfile() {
-            const { error } = await supD.from('profiles').update({
-                full_name: document.getElementById('prof-name').value,
-                whatsapp: document.getElementById('prof-whatsapp').value,
-                address: document.getElementById('prof-address').value,
-                facebook_url: document.getElementById('prof-fb').value,
-                instagram_url: document.getElementById('prof-ig').value,
-                tiktok_url: document.getElementById('prof-tk').value,
-                youtube_url: document.getElementById('prof-yt').value
-            }).eq('id', currentUser.id);
-            if (!error) alert("Sove! 🎉");
+        function openBoostModal(id) { document.getElementById('boost-prod-id').value = id; document.getElementById('boostPayModal').style.display = 'flex'; }
+        function closeBoostModal() { document.getElementById('boostPayModal').style.display = 'none'; }
+
+        async function boostWithPoints() {
+            const prodId = document.getElementById('boost-prod-id').value;
+            if (userPoints < 100) { alert("Ou bezwen 100 pwen!"); return; }
+            const { error } = await supD.rpc('boost_product', { p_user_id: currentUser.id, p_product_id: prodId });
+            if (!error) { alert("Pwodwi Boosté! 🚀"); closeBoostModal(); loadAll(); }
+        }
+
+        function payToBoost() {
+            window.open(`https://wa.me/50948868964?text=${encodeURIComponent("Mwen vle Booster pwodwi ID: " + document.getElementById('boost-prod-id').value)}`);
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Efase pwodwi sa a?")) { await supD.from('user_products').delete().eq('id', id); loadAll(); }
         }
 
         function handleLogout() { supD.auth.signOut().then(() => location.href='/'); }
         function goToVendre() { location.href='/vendre.html'; }
-        function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText); alert("Kopye!"); }
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
-            const target = document.getElementById('tab-' + tab);
-            if(target) target.style.display = 'block';
+            document.getElementById('tab-' + tab).style.display = 'block';
             event.target.classList.add('active');
         }
         init();

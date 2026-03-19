@@ -132,14 +132,27 @@ async function submitOrder() {
             }
             if (!merchantOrders[whatsappTo]) merchantOrders[whatsappTo] = { name: sellerName, items: [] };
             merchantOrders[whatsappTo].items.push(item);
-            grandTotal += (item.price * item.quantity);
+
+            const itemTotal = item.price * item.quantity;
+            grandTotal += itemTotal;
+
+            // --- KALKIL KOMISYON OTOMATIK ---
+            const systemFee = itemTotal * 0.03; // 3% pou Boutique Piyay
+            let affiliateFee = 0;
+            if (currentAffiliateId) {
+                affiliateFee = itemTotal * 0.05; // 5% pou Afilye
+            }
+            const sellerNet = itemTotal - systemFee - affiliateFee; // Res la pou Machann nan (92% oswa 97%)
 
             await supabaseMain.from('orders').insert([{
                 seller_id: sellerId,
                 customer_name: name,
                 customer_phone: phone,
                 product_title: item.title,
-                total_price: item.price * item.quantity,
+                total_price: itemTotal,
+                commission_system: systemFee,
+                commission_affiliate: affiliateFee,
+                seller_net_amount: sellerNet,
                 payment_method: payment,
                 delivery_zone: zone,
                 affiliate_id: currentAffiliateId,
