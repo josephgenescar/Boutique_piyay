@@ -3,66 +3,227 @@ layout: default
 title: Konekte - Boutique Piyay
 ---
 
-<div class="container" style="max-width: 500px; padding: 60px 20px;">
-    <div class="auth-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
-        <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px;">👋 Bonretou!</h1>
-        <p style="color: #666; margin-bottom: 30px;">Konekte sou kont ou pou w jere kont ou.</p>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-        <form id="loginForm">
-            <div style="margin-bottom: 20px; text-align: left;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
-                <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
+<style>
+    :root {
+      --primary: #ff4747;
+      --dark: #0f172a;
+      --gray: #64748b;
+      --light: #f1f5f9;
+      --green: #10b981;
+      --radius-sm: 12px;
+    }
+
+    .login-page-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70vh;
+      padding: 40px 20px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .auth-wrap {
+      width: 100%; max-width: 460px;
+      background: white; border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .auth-header {
+      background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+      padding: 36px 36px 28px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .auth-header::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: var(--primary); opacity: 0.08;
+    }
+    .auth-header img {
+      width: 54px; border-radius: 14px; margin-bottom: 16px;
+      position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .auth-header h2 {
+      font-size: 24px; font-weight: 900; color: white;
+      letter-spacing: -0.5px; margin-bottom: 6px; position: relative; margin-top: 0;
+    }
+    .auth-header p {
+      font-size: 13px; color: rgba(255,255,255,0.45);
+      font-weight: 500; position: relative; margin: 0;
+    }
+
+    .auth-body { padding: 32px 36px 36px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block; font-size: 11px; font-weight: 800; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;
+    }
+
+    .input-wrap { position: relative; }
+    .form-input {
+      width: 100%; padding: 13px 16px 13px 44px;
+      border: 2px solid #f1f5f9; border-radius: var(--radius-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px; font-weight: 500; outline: none;
+      transition: 0.2s; background: #fafbfc; color: var(--dark);
+      box-sizing: border-box;
+    }
+    .form-input:focus {
+      border-color: var(--primary); background: white;
+      box-shadow: 0 0 0 4px rgba(255,71,71,0.07);
+    }
+    .form-input::placeholder { color: #cbd5e1; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%); font-size: 16px; pointer-events: none;
+    }
+    .toggle-pass {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%); cursor: pointer;
+      font-size: 16px; color: var(--gray); user-select: none;
+    }
+    .form-input.has-toggle { padding-right: 44px; }
+
+    .forgot-link {
+      display: block; text-align: right; font-size: 12px;
+      font-weight: 700; color: var(--primary); text-decoration: none;
+      margin-top: -10px; margin-bottom: 20px;
+    }
+
+    .btn-login {
+      width: 100%; padding: 16px; background: var(--primary);
+      color: white; border: none; border-radius: var(--radius-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900; font-size: 14px; cursor: pointer;
+      transition: 0.2s; box-shadow: 0 8px 20px rgba(255,71,71,0.25);
+    }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(255,71,71,0.35);
+    }
+    .btn-login:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+
+    .signup-link {
+      text-align: center; margin-top: 20px;
+      font-size: 13px; color: var(--gray); font-weight: 500;
+    }
+    .signup-link a { color: var(--primary); font-weight: 800; text-decoration: none; }
+
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 13px 24px; border-radius: 50px;
+      font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: 0.4s; z-index: 9999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); color: white; }
+    .toast.error   { background: var(--primary); color: white; }
+
+    @media (max-width: 460px) {
+      .auth-body { padding: 24px 20px 28px; }
+      .auth-header { padding: 28px 20px 22px; }
+    }
+</style>
+
+<div class="login-page-wrap">
+    <div class="auth-wrap">
+
+        <div class="auth-header">
+            <a href="/">
+                <img src="/assets/images/logo.png"
+                     onerror="this.src='https://ui-avatars.com/api/?name=BP&background=ff4747&color=fff'">
+            </a>
+            <h2>👋 Bonretou!</h2>
+            <p>Konekte sou kont ou pou jere boutik ou</p>
+        </div>
+
+        <div class="auth-body">
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label class="form-label">Adrès Email</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">✉️</span>
+                        <input type="email" id="email" class="form-input"
+                               placeholder="ou@email.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Modpas</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" class="form-input has-toggle"
+                               placeholder="••••••••" required autocomplete="current-password">
+                        <span class="toggle-pass" onclick="togglePassword(this)">👁️</span>
+                    </div>
+                </div>
+
+                <a href="#" class="forgot-link">Modpas bliye?</a>
+
+                <button type="submit" id="loginBtn" class="btn-login">
+                    Konekte Kounye a 🚀
+                </button>
+            </form>
+
+            <div class="signup-link">
+                Ou poko gen kont? <a href="/signup.html">Kreye yon kont gratis →</a>
             </div>
-            <div style="margin-bottom: 25px; text-align: left;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Modpas</label>
-                <input type="password" id="password" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;">
-            </div>
+        </div>
 
-            <button type="submit" id="loginBtn" style="width: 100%; padding: 16px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">
-                Konekte Kounye a
-            </button>
-        </form>
-
-        <p style="margin-top: 25px; font-size: 14px; color: #666;">
-            Ou poko gen kont? <a href="/signup.html" style="color: #ff4747; font-weight: 700; text-decoration: none;">Kreye yon kont gratis</a>
-        </p>
-        <div id="msg" style="margin-top: 20px; font-weight: 600; display: none;"></div>
     </div>
 </div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<div class="toast" id="toast"></div>
+
 <script>
-    const supabaseClient = supabase.createClient("https://letyferfjpxmstohvgcj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg");
+    const supabaseClient = window.supabase.createClient(
+      "https://letyferfjpxmstohvgcj.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
+    );
+
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.className = 'toast', 3500);
+    }
+
+    function togglePassword(icon) {
+      const input = document.getElementById('password');
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      icon.textContent = isHidden ? '🙈' : '👁️';
+    }
 
     document.getElementById('loginForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('loginBtn');
-        const msg = document.getElementById('msg');
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Verifikasyon...';
 
-        btn.disabled = true;
-        btn.innerText = "⏳ Verifikasyon...";
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
 
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-        if (error) {
-            msg.innerText = "❌ Erè: " + error.message;
-            msg.style.color = "red"; msg.style.display = "block";
-            btn.disabled = false; btn.innerText = "Konekte Kounye a";
-        } else {
-            msg.innerText = "✅ Siksè! Wap redireksyon...";
-            msg.style.color = "green"; msg.style.display = "block";
-
-            // ✅ REDIREKSYON ENTELLIJAN:
-            // Si moun nan te soti nan paj afilye, voye l retounen la. Sinon, voye l sou dashboard.
-            const params = new URLSearchParams(window.location.search);
-            const redirect = params.get('redirect');
-
-            setTimeout(() => {
-                if (redirect) window.location.href = redirect;
-                else window.location.href = "/dashboard.html";
-            }, 1000);
-        }
+      if (error) {
+        showToast('❌ ' + error.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Konekte Kounye a 🚀';
+      } else {
+        showToast('✅ Siksè! Wap redireksyon...', 'success');
+        const redirect = new URLSearchParams(window.location.search).get('redirect');
+        setTimeout(() => {
+          window.location.href = redirect || '/dashboard.html';
+        }, 1200);
+      }
     };
 </script>

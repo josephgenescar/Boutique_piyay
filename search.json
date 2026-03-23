@@ -2,13 +2,21 @@
 layout: none
 ---
 [
-  {% for product in site.products %}
-    {
-      "title"    : {{ product.title | jsonify }},
-      "category" : {{ product.category | jsonify }},
-      "url"      : {{ product.url | jsonify }},
-      "price"    : {{ product.price | jsonify }},
-      "image"    : {{ product.image | jsonify }}
-    }{% unless forloop.last %},{% endunless %}
-  {% endfor %}
+{% for product in site.products %}
+{% if product.published != false %}
+{
+"title"       : {{ product.title | jsonify }},
+"category"    : {{ product.category | jsonify }},
+"url"         : {{ product.url | jsonify }},
+"price"       : {{ product.price | jsonify }},
+"old_price"   : {{ product.original_price | jsonify }},
+"image"       : {{ product.featured_image | default: product.image | jsonify }},
+"description" : {{ product.content | strip_html | truncate: 200 | jsonify }},
+"tags"        : {{ product.tags | join: "," | jsonify }},
+"featured"    : {{ product.featured | jsonify }},
+"in_stock"    : {{ product.in_stock | default: true | jsonify }},
+"date"        : {{ product.date | date: "%s" | jsonify }}
+}{% unless forloop.last %},{% endunless %}
+{% endif %}
+{% endfor %}
 ]
