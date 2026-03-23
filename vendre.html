@@ -69,16 +69,13 @@ title: Vann yon Pwodwi - Boutique Piyay
 
     async function uploadToImageKit(file) {
         try {
-            // ✅ Tcheke si n ap travay lokalman oswa sou sit la
-            const functionUrl = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-                ? "/.netlify/functions/auth"
-                : "/auth"; // Netlify redirects
+            // ✅ ITILIZE CHEMEN DIRÈK LA KI MACHE SOU NETLIFY
+            const authRes = await fetch("/.netlify/functions/auth");
 
-            const authRes = await fetch(functionUrl);
-            const contentType = authRes.headers.get("content-type");
-
-            if (!authRes.ok || !contentType || !contentType.includes("application/json")) {
-                throw new Error("Sèvis foto a pa ka konekte (Netlify Functions not reachable). Si w ap teste lokalman, sèvi ak 'netlify dev'.");
+            if (!authRes.ok) {
+                const text = await authRes.text();
+                console.error("Auth Error Response:", text);
+                throw new Error("Sèvis foto a pa ka konekte. Si w ap teste lokalman, sèvi ak 'netlify dev'.");
             }
 
             const authData = await authRes.json();
@@ -101,7 +98,7 @@ title: Vann yon Pwodwi - Boutique Piyay
             const uploadData = await uploadRes.json();
             return uploadData.url;
         } catch (err) {
-            throw new Error("Foto pa ka pibliye: " + err.message);
+            throw new Error(err.message);
         }
     }
 

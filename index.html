@@ -116,7 +116,7 @@ title: Akèy - Boutique Piyay
 .seller-info-home h4 { margin: 0; font-family: 'Sora', sans-serif; font-size: 20px; color: #0f172a; font-weight: 800; }
 .seller-info-home p { margin: 6px 0 0; font-size: 14px; color: #64748b; font-weight: 600; }
 .seller-previews-home { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 25px; border-top: 1px dashed #e2e8f0; padding-top: 25px; margin-bottom: 25px; }
-.preview-img-home { aspect-ratio: 1; border-radius: 12px; background: #f8fafc; overflow: hidden; border: 1px solid #f1f5f9; }
+.preview-img-home { aspect-ratio: 1; border-radius: 12px; background: #f8fafc; overflow: hidden; border: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: center; }
 .preview-img-home img { width: 100%; height: 100%; object-fit: cover; }
 
 .market-tab.active { color: #ff4747 !important; border-bottom: 4px solid #ff4747 !important; background: #fff5f5 !important; }
@@ -192,7 +192,7 @@ title: Akèy - Boutique Piyay
         grid.innerHTML = list.map(p => `
             <div style="background:white; padding:20px; border-radius:25px; box-shadow: 0 15px 35px rgba(255, 71, 71, 0.1); border:2px solid #fff1f1; display:flex; flex-direction:column; position:relative;">
                 <span style="position:absolute; top:15px; left:15px; background:#ff4747; color:white; padding:5px 12px; border-radius:10px; font-size:10px; font-weight:900; z-index:10; box-shadow:0 5px 15px rgba(255,71,71,0.3);">VEDÈT 🔥</span>
-                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px;"></a>
+                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px;"></a>
                 <h3 style="font-size:15px; margin:15px 0; height:40px; overflow:hidden; font-weight:700; color:#0f172a;">${p.title}</h3>
                 <div style="color:#ff4747; font-weight:900; font-size:19px; margin-top:auto;">${p.price} HTG</div>
                 <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#0f172a; color:white; border:none; padding:14px; border-radius:15px; margin-top:15px; font-weight:800; cursor:pointer; font-size:13px;">🛒 Ajoute</button>
@@ -204,12 +204,15 @@ title: Akèy - Boutique Piyay
         if (!grid) return;
         grid.innerHTML = list.map(s => {
             const sProds = allProducts.filter(p => p.seller_id === s.id).slice(0, 4);
-            let previews = sProds.map(p => `<div class="preview-img-home"><img src="${p.image_url}"></div>`).join('');
-            for(let i=sProds.length; i<4; i++) previews += `<div class="preview-img-home" style="display:flex; align-items:center; justify-content:center; color:#ddd; font-size:18px;">📦</div>`;
+            let previews = sProds.map(p => `
+                <div class="preview-img-home">
+                    <img src="${p.image_url}" onerror="this.style.display='none'; this.parentElement.innerHTML='📦';">
+                </div>`).join('');
+            for(let i=sProds.length; i<4; i++) previews += `<div class="preview-img-home" style="color:#ddd; font-size:18px;">📦</div>`;
             return `
                 <div class="seller-card-home">
                     <div class="seller-header-home">
-                        <div class="seller-logo-home">${s.avatar_url ? `<img src="${s.avatar_url}">` : (s.full_name || "M").charAt(0).toUpperCase()}</div>
+                        <div class="seller-logo-home">${s.avatar_url ? `<img src="${s.avatar_url}" onerror="this.style.display='none'; this.parentElement.innerText='${(s.full_name || "M").charAt(0).toUpperCase()}'">` : (s.full_name || "M").charAt(0).toUpperCase()}</div>
                         <div class="seller-info-home"><h4>${s.full_name || "Boutik"}</h4><p>📍 ${s.address || "Ayiti"}</p></div>
                     </div>
                     <div class="seller-previews-home">${previews}</div>
@@ -223,7 +226,7 @@ title: Akèy - Boutique Piyay
         if (!grid) return;
         grid.innerHTML = list.map(p => `
             <div style="background:white; padding:20px; border-radius:25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column;">
-                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px;"></a>
+                <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px;"></a>
                 <h3 style="font-size:15px; margin:15px 0; height:40px; overflow:hidden; font-weight:700; color:#0f172a;">${p.title}</h3>
                 <div style="color:#ff4747; font-weight:900; font-size:19px; margin-top:auto;">${p.price} HTG</div>
                 <button onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#f1f5f9; border:none; padding:14px; border-radius:15px; margin-top:15px; font-weight:800; cursor:pointer; font-size:13px;">🛒 Ajoute</button>
@@ -241,7 +244,7 @@ title: Akèy - Boutique Piyay
             return `
                 <div class="flash-card-mini">
                     <span class="flash-badge-percent">-${discount}%</span>
-                    <div style="position:relative; aspect-ratio:1; overflow:hidden; border-radius:15px;"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" style="width:100%; height:100%; object-fit:cover;"></a></div>
+                    <div style="position:relative; aspect-ratio:1; overflow:hidden; border-radius:15px;"><a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'" style="width:100%; height:100%; object-fit:cover;"></a></div>
                     <h3 style="font-size:14px; margin:12px 0 5px; font-weight:700; height:35px; overflow:hidden;">${p.title}</h3>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span style="color:#ff4747; font-weight:900; font-size:16px;">${p.price} HTG</span>

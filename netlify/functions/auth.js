@@ -1,12 +1,10 @@
 const ImageKit = require('imagekit');
 
 exports.handler = async (event, context) => {
-  // Rekipere kòd yo epi netwaye yo (trim) pou evite espas ki gate siyati a
   const publicKey = (process.env.IMAGEKIT_PUBLIC_KEY || "").trim();
   const privateKey = (process.env.IMAGEKIT_PRIVATE_KEY || "").trim();
   const urlEndpoint = (process.env.IMAGEKIT_URL_ENDPOINT || "").trim();
 
-  // Si yon kòd manke, bay yon erè klè nan logs Netlify yo
   if (!publicKey || !privateKey || !urlEndpoint) {
     return {
       statusCode: 500,
@@ -22,13 +20,18 @@ exports.handler = async (event, context) => {
 
   try {
     const authenticationParameters = imagekit.getAuthenticationParameters();
+
+    // ✅ NOU AJOUTE publicKey NAN REPONS LAN
     return {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(authenticationParameters),
+      body: JSON.stringify({
+        ...authenticationParameters,
+        publicKey: publicKey
+      }),
     };
   } catch (err) {
     return {
