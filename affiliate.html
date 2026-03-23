@@ -3,155 +3,572 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affiliate Dashboard - Boutique Piyay</title>
+    <title>Affilié Center - Boutique Piyay</title>
     <link rel="stylesheet" href="/style.css">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
-        .aff-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #f1f5f9; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .stat-val { display: block; font-size: 22px; font-weight: 900; color: #0f172a; }
-        .stat-lbl { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 800; margin-top: 5px; }
-        .ref-link-box { background: #f8fafc; padding: 12px; border-radius: 10px; font-family: monospace; font-size: 12px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; }
-        .copy-btn { background: #0f172a; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
-        .btn-withdraw { background: #ff4747; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 15px; transition: 0.3s; }
-        .btn-withdraw:disabled { background: #cbd5e1; cursor: not-allowed; }
-        .tx-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-        .prod-link-gen { background: #fff5f5; border: 2px dashed #ff4747; padding: 20px; border-radius: 12px; margin-top: 20px; }
-        .step-list { font-size: 13px; color: #475569; padding-left: 20px; margin-bottom: 15px; line-height: 1.6; }
-        .step-list li { margin-bottom: 8px; }
-        .code-highlight { background: #fee2e2; color: #ff4747; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-family: monospace; }
-        .seller-promo { background: #f0f9ff; border: 2px dashed #3b82f6; padding: 20px; border-radius: 15px; margin-top: 25px; text-align: center; }
+        :root {
+            --primary: #ff4747;
+            --primary-light: rgba(255,71,71,0.1);
+            --dark: #0f172a;
+            --dark-2: #1e293b;
+            --gray: #64748b;
+            --light: #f1f5f9;
+            --green: #10b981;
+            --blue: #3b82f6;
+            --gold: #f59e0b;
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .page-wrap { max-width: 680px; margin: 0 auto; padding: 28px 20px 80px; }
+
+        /* HEADER */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 32px;
+        }
+        .top-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .top-logo img { width: 38px; border-radius: 10px; }
+        .top-logo-text { font-size: 15px; font-weight: 900; color: var(--dark); }
+        .top-logo-sub { font-size: 10px; color: var(--gray); font-weight: 600; }
+
+        .btn-home {
+            display: flex; align-items: center; gap: 6px;
+            background: white; border: none; padding: 10px 16px; border-radius: 12px;
+            font-size: 12px; font-weight: 800; color: var(--dark); cursor: pointer;
+            text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-family: inherit; transition: 0.2s;
+        }
+        .btn-home:hover { transform: translateY(-1px); }
+
+        /* HERO BANNER */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 50%, #1a0f35 100%);
+            border-radius: 24px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute; top: -60px; right: -60px;
+            width: 220px; height: 220px; border-radius: 50%;
+            background: var(--primary); opacity: 0.08;
+        }
+        .hero-banner::after {
+            content: '💸';
+            position: absolute; right: 28px; bottom: 20px;
+            font-size: 72px; opacity: 0.07;
+        }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,71,71,0.15); border: 1px solid rgba(255,71,71,0.3);
+            color: #ff8080; font-size: 11px; font-weight: 800;
+            padding: 5px 12px; border-radius: 50px; margin-bottom: 14px;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .hero-title { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; margin-bottom: 6px; }
+        .hero-sub { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; line-height: 1.5; }
+        .hero-code-wrap { margin-top: 20px; }
+        .hero-code-label { font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .hero-code {
+            font-size: 32px; font-weight: 900; color: var(--primary);
+            letter-spacing: 3px; font-family: 'Space Mono', monospace;
+        }
+        .hero-link-box {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 12px 16px; margin-top: 14px;
+        }
+        .hero-link-text {
+            font-family: 'Space Mono', monospace; font-size: 10px;
+            color: rgba(255,255,255,0.5); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .btn-copy-hero {
+            background: var(--primary); color: white; border: none;
+            padding: 7px 14px; border-radius: 8px; font-size: 11px;
+            font-weight: 800; cursor: pointer; font-family: inherit;
+            flex-shrink: 0; transition: 0.2s;
+        }
+        .btn-copy-hero:hover { filter: brightness(1.1); }
+
+        /* SHARE BTNS */
+        .share-row { display: flex; gap: 10px; margin-top: 14px; }
+        .btn-share {
+            flex: 1; padding: 10px; border-radius: 10px; border: none;
+            color: white; font-weight: 800; font-size: 11px; cursor: pointer;
+            text-align: center; text-decoration: none; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            font-family: inherit;
+        }
+        .btn-share:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .bg-wa { background: #25D366; }
+        .bg-fb { background: #1877F2; }
+        .bg-tg { background: #0088cc; }
+
+        /* STAT GRID */
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 14px; margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white; border-radius: var(--radius); padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04); text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .stat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+        .stat-val { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: block; }
+        .stat-lbl { font-size: 10px; color: var(--gray); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; display: block; }
+        .stat-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+        .stat-bar.red { background: var(--primary); }
+        .stat-bar.green { background: var(--green); }
+        .stat-bar.gold { background: var(--gold); }
+
+        /* SECTION TITLE */
+        .section-title { font-size: 14px; font-weight: 900; color: var(--dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+        /* GENERATOR CARD */
+        .gen-card {
+            background: white; border-radius: var(--radius); padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04); margin-bottom: 20px;
+        }
+        .gen-input-wrap { display: flex; gap: 10px; margin-top: 14px; }
+        .gen-input {
+            flex: 1; padding: 14px 16px; border: 2px solid #f1f5f9;
+            border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+            outline: none; transition: 0.2s; background: #fafbfc; font-weight: 500;
+        }
+        .gen-input:focus { border-color: var(--primary); background: white; }
+        .btn-gen {
+            background: var(--primary); color: white; border: none;
+            padding: 0 22px; border-radius: var(--radius-sm); font-weight: 800;
+            font-size: 13px; cursor: pointer; font-family: inherit; transition: 0.2s;
+            box-shadow: 0 6px 16px rgba(255,71,71,0.25);
+        }
+        .btn-gen:hover { transform: translateY(-1px); }
+
+        .gen-result {
+            display: none; margin-top: 16px;
+            background: #ecfdf5; border: 1.5px solid #10b981;
+            border-radius: var(--radius-sm); padding: 14px 16px;
+            display: none; align-items: center; gap: 10px;
+        }
+        .gen-result.show { display: flex; }
+        .gen-url {
+            font-family: 'Space Mono', monospace; font-size: 10px;
+            color: #065f46; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .btn-copy-green {
+            background: var(--green); color: white; border: none;
+            padding: 7px 14px; border-radius: 8px; font-size: 11px;
+            font-weight: 800; cursor: pointer; font-family: inherit; flex-shrink: 0;
+        }
+
+        /* HOW IT WORKS */
+        .how-card {
+            background: white; border-radius: var(--radius); padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04); margin-bottom: 20px;
+        }
+        .step-list { list-style: none; margin-top: 14px; }
+        .step-item {
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-num {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: var(--primary-light); color: var(--primary);
+            font-size: 12px; font-weight: 900; display: flex;
+            align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .step-text { font-size: 13px; font-weight: 600; color: var(--dark); line-height: 1.5; }
+        .step-sub { font-size: 11px; color: var(--gray); font-weight: 500; margin-top: 2px; }
+
+        /* TRANSACTIONS */
+        .tx-card {
+            background: white; border-radius: var(--radius);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; margin-bottom: 20px;
+        }
+        .tx-header { padding: 20px 24px 0; }
+        .tx-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 24px; border-bottom: 1px solid #f8fafc;
+            transition: 0.2s;
+        }
+        .tx-item:hover { background: #fafbfc; }
+        .tx-item:last-child { border-bottom: none; }
+        .tx-left { display: flex; align-items: center; gap: 12px; }
+        .tx-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+            flex-shrink: 0;
+        }
+        .tx-icon.earn { background: rgba(16,185,129,0.1); }
+        .tx-icon.withdraw { background: rgba(255,71,71,0.1); }
+        .tx-label { font-size: 13px; font-weight: 700; }
+        .tx-date { font-size: 11px; color: var(--gray); font-weight: 500; margin-top: 2px; }
+        .tx-amount { font-size: 14px; font-weight: 900; }
+        .tx-amount.earn { color: var(--green); }
+        .tx-amount.withdraw { color: var(--primary); }
+
+        .empty-tx {
+            padding: 40px; text-align: center; color: var(--gray);
+        }
+        .empty-tx .e-icon { font-size: 36px; margin-bottom: 10px; }
+        .empty-tx .e-title { font-size: 14px; font-weight: 800; color: var(--dark); margin-bottom: 5px; }
+        .empty-tx .e-sub { font-size: 12px; }
+
+        /* WITHDRAWAL */
+        .withdraw-card {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: var(--radius); padding: 24px; margin-bottom: 20px; color: white;
+        }
+        .w-balance-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .w-balance { font-size: 38px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 4px; }
+        .w-balance span { font-size: 16px; color: rgba(255,255,255,0.4); font-weight: 600; margin-left: 4px; }
+        .w-note { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 18px; }
+
+        .btn-withdraw {
+            background: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: var(--radius-sm); font-weight: 800;
+            width: 100%; cursor: pointer; font-family: inherit; font-size: 14px;
+            transition: 0.2s; box-shadow: 0 8px 20px rgba(255,71,71,0.3);
+        }
+        .btn-withdraw:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn-withdraw:disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; box-shadow: none; color: rgba(255,255,255,0.3); }
+
+        /* SELLER PROMO */
+        .seller-promo {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 2px solid #bfdbfe;
+            border-radius: var(--radius); padding: 24px; text-align: center;
+            margin-bottom: 20px;
+        }
+        .seller-promo h4 { font-size: 16px; font-weight: 900; color: #1d4ed8; margin-bottom: 8px; }
+        .seller-promo p { font-size: 13px; color: #3b82f6; margin-bottom: 16px; line-height: 1.5; }
+        .btn-become-seller {
+            background: var(--dark); color: white; border: none;
+            padding: 12px 24px; border-radius: var(--radius-sm);
+            font-weight: 800; cursor: pointer; font-family: inherit;
+            font-size: 13px; transition: 0.2s;
+        }
+        .btn-become-seller:hover { background: #1e293b; transform: translateY(-1px); }
+
+        /* CHART */
+        .chart-card {
+            background: white; border-radius: var(--radius); padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04); margin-bottom: 20px;
+        }
+
+        /* LOADING */
+        .loading-wrap { text-align: center; padding: 80px 20px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #f1f5f9; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ONBOARDING */
+        .onboard-card {
+            background: white; border-radius: var(--radius); padding: 40px 32px;
+            text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .onboard-emoji { font-size: 56px; margin-bottom: 20px; display: block; }
+        .onboard-title { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
+        .onboard-sub { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 28px; }
+        .perks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; text-align: left; }
+        .perk { background: #f8fafc; border-radius: var(--radius-sm); padding: 14px; }
+        .perk-icon { font-size: 20px; margin-bottom: 6px; display: block; }
+        .perk-title { font-size: 12px; font-weight: 800; color: var(--dark); }
+        .perk-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+        .btn-join {
+            background: var(--primary); color: white; border: none;
+            padding: 16px 40px; border-radius: var(--radius-sm);
+            font-weight: 900; font-size: 15px; cursor: pointer;
+            font-family: inherit; transition: 0.2s; width: 100%;
+            box-shadow: 0 10px 24px rgba(255,71,71,0.3);
+        }
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(255,71,71,0.4); }
+
+        @media (max-width: 500px) {
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .stat-grid .stat-card:last-child { grid-column: 1 / -1; }
+            .perks { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
-<body style="background: #f8fafc;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h1 style="font-size: 22px; font-weight: 800;">🚀 Affilié Center</h1>
-            <a href="/" style="text-decoration: none; font-size: 13px; color: #64748b; font-weight: 700;">Mache 🏠</a>
-        </header>
-
-        <div id="aff-content">
-            <div style="text-align: center; padding: 50px;">⏳ Chaje done...</div>
-        </div>
+<body>
+<div class="page-wrap">
+    <div class="top-bar">
+        <a href="/" class="top-logo">
+            <img src="/assets/images/logo.png" onerror="this.src='https://ui-avatars.com/api/?name=BP&background=ff4747&color=fff'">
+            <div>
+                <div class="top-logo-text">Boutique Piyay</div>
+                <div class="top-logo-sub">Affilié Center</div>
+            </div>
+        </a>
+        <a href="/" class="btn-home">🏠 Mache</a>
     </div>
 
-    <script>
-        const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-        const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-        const supabaseA = supabase.createClient(SUP_URL, SUP_KEY);
-        let currentUser = null;
-        let currentAff = null;
+    <div id="aff-content">
+        <div class="loading-wrap">
+            <div class="spinner"></div>
+            <p style="font-size:13px; color:var(--gray); font-weight:600;">Chaje done ou yo...</p>
+        </div>
+    </div>
+</div>
 
-        async function initAffiliate() {
-            const { data: { user } } = await supabaseA.auth.getUser();
-            if (!user) return window.location.href = "/login.html?redirect=/affiliate.html";
-            currentUser = user;
+<script>
+    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    const supabaseA = window.supabase.createClient(SUP_URL, SUP_KEY);
+    let currentUser = null;
+    let currentAff = null;
 
-            const { data: aff } = await supabaseA.from('affiliates').select('*').eq('user_id', user.id).single();
+    async function initAffiliate() {
+        const { data: { user } } = await supabaseA.auth.getUser();
+        if (!user) return window.location.href = "/login.html?redirect=/affiliate.html";
+        currentUser = user;
 
-            if (!aff) {
-                document.getElementById('aff-content').innerHTML = `
-                    <div class="aff-card" style="text-align:center; padding:40px;">
-                        <h3>Vle vin yon Affilié?</h3>
-                        <p style="font-size:14px; color:#64748b; margin-bottom:20px;">Fè 5% komisyon sou chak vant ou refere!</p>
-                        <button onclick="registerAffiliate()" style="background:#0f172a; color:white; border:none; padding:15px 30px; border-radius:12px; font-weight:800; cursor:pointer;">Mwen enterese! 💸</button>
-                    </div>`;
-                return;
-            }
-            currentAff = aff;
-            renderDashboard(aff);
-            loadTransactions();
-            checkSellerStatus();
+        const { data: aff } = await supabaseA.from('affiliates').select('*').eq('user_id', user.id).single();
+
+        if (!aff) {
+            renderOnboarding();
+            return;
         }
+        currentAff = aff;
+        renderDashboard(aff);
+        loadTransactions();
+        checkSellerStatus();
+    }
 
-        async function checkSellerStatus() {
-            const { data: prof } = await supabaseA.from('profiles').select('is_active_seller').eq('id', currentUser.id).single();
-            if (prof && !prof.is_active_seller) {
-                document.getElementById('seller-promo-box').style.display = 'block';
-            } else if(document.getElementById('already-seller')) {
-                document.getElementById('already-seller').style.display = 'block';
-            }
-        }
+    async function checkSellerStatus() {
+        const { data: prof } = await supabaseA.from('profiles').select('is_active_seller').eq('id', currentUser.id).single();
+        const box = document.getElementById('seller-promo-box');
+        if (box && prof && !prof.is_active_seller) box.style.display = 'block';
+    }
 
-        async function activateSeller() {
-            const shopName = prompt("Ki non boutik ou a?");
-            if (!shopName) return;
-            const { error } = await supabaseA.from('profiles').update({ full_name: shopName, is_active_seller: true, role: 'seller' }).eq('id', currentUser.id);
-            if (error) alert(error.message); else { alert("Kont Machann ou aktive! 🎉"); window.location.href = "/dashboard.html"; }
-        }
+    async function activateSeller() {
+        const shopName = prompt("Ki non boutik ou a?");
+        if (!shopName) return;
+        const { error } = await supabaseA.from('profiles').update({ full_name: shopName, is_active_seller: true, role: 'seller' }).eq('id', currentUser.id);
+        if (error) alert(error.message);
+        else { alert("Kont Machann ou aktive! 🎉"); window.location.href = "/dashboard.html"; }
+    }
 
-        async function registerAffiliate() {
-            const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            const { error } = await supabaseA.from('affiliates').insert([{ user_id: currentUser.id, referral_code: code }]);
-            if (error) alert(error.message); else location.reload();
-        }
+    async function registerAffiliate() {
+        const btn = document.getElementById('btn-join');
+        if (btn) { btn.disabled = true; btn.innerText = "Kreye..."; }
+        const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const { error } = await supabaseA.from('affiliates').insert([{ user_id: currentUser.id, referral_code: code }]);
+        if (error) alert(error.message);
+        else location.reload();
+    }
 
-        function renderDashboard(aff) {
-            const refLink = `${window.location.origin}/?ref=${aff.referral_code}`;
-            document.getElementById('aff-content').innerHTML = `
-                <div class="aff-card">
-                    <div class="stat-lbl">Kòd Referans ou</div>
-                    <div style="font-size:28px; font-weight:900; color:#ff4747; margin:5px 0;">${aff.referral_code}</div>
-                    <div class="stat-lbl" style="margin-top:15px;">Lyen Pataje ou</div>
-                    <div class="ref-link-box">
-                        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:75%;">${refLink}</span>
-                        <button class="copy-btn" onclick="copyText('${refLink}')">Kopye</button>
-                    </div>
+    function renderOnboarding() {
+        document.getElementById('aff-content').innerHTML = `
+            <div class="onboard-card">
+                <span class="onboard-emoji">🚀</span>
+                <h2 class="onboard-title">Vin yon Affilié Boutique Piyay</h2>
+                <p class="onboard-sub">Pataje lyen ou, refere kliyan, epi fè <strong style="color:var(--primary);">5% komisyon</strong> sou chak vant. Gratis, fasil, san limit!</p>
+                <div class="perks">
+                    <div class="perk"><span class="perk-icon">💸</span><div class="perk-title">5% Komisyon</div><div class="perk-sub">Chak vant ou refere</div></div>
+                    <div class="perk"><span class="perk-icon">📊</span><div class="perk-title">Tableau de bord</div><div class="perk-sub">Swiv pèfòmans ou</div></div>
+                    <div class="perk"><span class="perk-icon">⚡</span><div class="perk-title">Peman Vit</div><div class="perk-sub">MonCash / NatCash</div></div>
+                    <div class="perk"><span class="perk-icon">🔗</span><div class="perk-title">Lyen Pèsonèl</div><div class="perk-sub">Kòd inik pou ou</div></div>
                 </div>
+                <button id="btn-join" class="btn-join" onclick="registerAffiliate()">Mwen enterese! 💸</button>
+            </div>`;
+    }
 
-                <div class="stat-grid">
-                    <div class="stat-box">
-                        <span id="wallet-balance" class="stat-val">0 HTG</span>
-                        <span class="stat-lbl">Balans</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-val">${aff.total_referrals || 0}</span>
-                        <span class="stat-lbl">Vant Refere</span>
-                    </div>
+    function renderDashboard(aff) {
+        const refLink = `${window.location.origin}/?ref=${aff.referral_code}`;
+        const balance = parseFloat(aff.balance || 0).toFixed(0);
+        const canWithdraw = parseFloat(balance) >= 500;
+
+        document.getElementById('aff-content').innerHTML = `
+            <!-- HERO -->
+            <div class="hero-banner">
+                <div class="hero-tag">🚀 Pwogram Afilyasyon</div>
+                <h1 class="hero-title">Bonjou, Affilié!</h1>
+                <p class="hero-sub">Pataje lyen ou epi fè komisyon chak jou 💸</p>
+                <div class="hero-code-wrap">
+                    <div class="hero-code-label">Kòd Referans</div>
+                    <div class="hero-code">${aff.referral_code}</div>
                 </div>
+                <div class="hero-link-box">
+                    <span class="hero-link-text" id="ref-link-text">${refLink}</span>
+                    <button class="btn-copy-hero" onclick="copyText('${refLink}', this)">📋 Kopye</button>
+                </div>
+                <div class="share-row">
+                    <a href="https://wa.me/?text=${encodeURIComponent('Achte sou Boutique Piyay ak kòd mwen: ' + refLink)}" target="_blank" class="btn-share bg-wa">📱 WhatsApp</a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refLink)}" target="_blank" class="btn-share bg-fb">📘 Facebook</a>
+                    <a href="https://t.me/share/url?url=${encodeURIComponent(refLink)}" target="_blank" class="btn-share bg-tg">✈️ Telegram</a>
+                </div>
+            </div>
 
-                <button id="withdraw-btn" class="btn-withdraw" onclick="requestWithdrawal()" disabled>Retire Lajan</button>
+            <!-- STATS -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">💰</span>
+                    <span class="stat-val" id="wallet-balance">${balance} <span style="font-size:12px;color:var(--gray);font-weight:600;">HTG</span></span>
+                    <span class="stat-lbl">Balans</span>
+                    <div class="stat-bar red"></div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🛍️</span>
+                    <span class="stat-val">${aff.total_referrals || 0}</span>
+                    <span class="stat-lbl">Vant Refere</span>
+                    <div class="stat-bar green"></div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📈</span>
+                    <span class="stat-val">5%</span>
+                    <span class="stat-lbl">Komisyon</span>
+                    <div class="stat-bar gold"></div>
+                </div>
+            </div>
 
-                <div class="prod-link-gen">
-                    <h4 style="margin:0 0 15px 0; font-size:16px; color:#ff4747;">🛍️ Lyen pou yon pwodwi?</h4>
-                    <div style="display:flex; gap:8px;">
-                        <input type="text" id="prod-url-input" placeholder="Kole lyen pwodwi a isit la..." style="flex:1; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:13px; outline:none;">
-                        <button onclick="generateProdLink()" style="background:#ff4747; color:white; border:none; padding:0 25px; border-radius:10px; font-weight:800; cursor:pointer;">OK</button>
-                    </div>
-                    <div id="gen-result" style="margin-top:20px; display:none;">
-                        <div class="ref-link-box" style="background:#ecfdf5; border-color:#10b981;">
-                            <span id="new-url" style="font-size:11px; overflow:hidden; color:#065f46; font-weight:700;"></span>
-                            <button class="copy-btn" onclick="copyGenerated()" style="background:#059669;">Kopye</button>
+            <!-- WITHDRAWAL -->
+            <div class="withdraw-card">
+                <div class="w-balance-label">Balans Disponib</div>
+                <div class="w-balance">${balance} <span>HTG</span></div>
+                <div class="w-note">${canWithdraw ? '✅ Ou ka retire lajan ou' : '⚠️ Minimòm 500 HTG pou w ka retire'}</div>
+                <button class="btn-withdraw" onclick="requestWithdrawal()" ${!canWithdraw ? 'disabled' : ''}>
+                    💸 Retire Lajan
+                </button>
+            </div>
+
+            <!-- LINK GENERATOR -->
+            <div class="gen-card">
+                <div class="section-title">🔗 Jenere Lyen pou yon Pwodwi</div>
+                <p style="font-size:12px; color:var(--gray); font-weight:500;">Kole lyen yon pwodwi pou ajoute kòd ou otomatikman</p>
+                <div class="gen-input-wrap">
+                    <input type="text" class="gen-input" id="prod-url-input" placeholder="https://boutique-piyay.netlify.app/pwodwi/...">
+                    <button class="btn-gen" onclick="generateProdLink()">Jenere</button>
+                </div>
+                <div class="gen-result" id="gen-result">
+                    <span class="gen-url" id="new-url"></span>
+                    <button class="btn-copy-green" onclick="copyGenerated()">Kopye</button>
+                </div>
+            </div>
+
+            <!-- HOW IT WORKS -->
+            <div class="how-card">
+                <div class="section-title">📖 Kijan li Mache?</div>
+                <ul class="step-list">
+                    <li class="step-item">
+                        <div class="step-num">1</div>
+                        <div><div class="step-text">Pataje lyen ou sou rezo sosyal</div><div class="step-sub">WhatsApp, Facebook, TikTok, Instagram...</div></div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">2</div>
+                        <div><div class="step-text">Yon moun klike sou lyen ou</div><div class="step-sub">Sistèm nan trase kòd ou otomatikman</div></div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">3</div>
+                        <div><div class="step-text">Li achte yon pwodwi</div><div class="step-sub">Kòmand li konfime sou Boutique Piyay</div></div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">4</div>
+                        <div><div class="step-text">Ou resevwa <strong style="color:var(--primary);">5% komisyon</strong></div><div class="step-sub">Lajan ajoute nan balans ou dirèkteman</div></div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- TRANSACTIONS -->
+            <div class="section-title">📜 Istwa Komisyon</div>
+            <div class="tx-card" id="tx-list">
+                <div class="empty-tx">
+                    <div class="e-icon">📭</div>
+                    <div class="e-title">Okenn tranzaksyon toujou</div>
+                    <div class="e-sub">Chak komisyon ou fè ap parèt isit</div>
+                </div>
+            </div>
+
+            <!-- SELLER PROMO -->
+            <div class="seller-promo" id="seller-promo-box" style="display:none;">
+                <h4>🏪 Vann pwòp pwodwi ou tou!</h4>
+                <p>Ou ka afilye <strong>epi</strong> vann sou Boutique Piyay anmenmtan. Double revni ou!</p>
+                <button class="btn-become-seller" onclick="activateSeller()">Vin yon Machann 🚀</button>
+            </div>
+        `;
+    }
+
+    async function loadTransactions() {
+        const { data: txs } = await supabaseA
+            .from('affiliate_transactions')
+            .select('*')
+            .eq('affiliate_id', currentAff.id)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+        const container = document.getElementById('tx-list');
+        if (!container) return;
+
+        if (txs && txs.length > 0) {
+            container.innerHTML = txs.map(tx => {
+                const isEarn = tx.type !== 'withdrawal';
+                const date = new Date(tx.created_at).toLocaleDateString('fr-HT', { day: 'numeric', month: 'short', year: 'numeric' });
+                return `
+                    <div class="tx-item">
+                        <div class="tx-left">
+                            <div class="tx-icon ${isEarn ? 'earn' : 'withdraw'}">${isEarn ? '💸' : '🏧'}</div>
+                            <div>
+                                <div class="tx-label">${isEarn ? 'Komisyon resevwa' : 'Retrè'}</div>
+                                <div class="tx-date">${date}</div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div id="seller-promo-box" class="seller-promo" style="display: none;">
-                    <h4 style="margin: 0 0 10px 0; color: #3b82f6;">🏪 Vle vann pwòp pwodwi ou tou?</h4>
-                    <button onclick="activateSeller()" style="background: #0f172a; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer;">VIN YON MACHANN 🚀</button>
-                </div>
-
-                <h3 style="margin:35px 0 10px 0; font-size:16px; font-weight:800;">📜 Istwa Komisyon</h3>
-                <div id="tx-list" class="aff-card" style="padding:0; overflow:hidden;">
-                    <div style="padding:30px; text-align:center; color:#94a3b8;">Okenn tranzaksyon.</div>
-                </div>
-            `;
+                        <div class="tx-amount ${isEarn ? 'earn' : 'withdraw'}">${isEarn ? '+' : '-'}${parseFloat(tx.amount).toFixed(0)} HTG</div>
+                    </div>`;
+            }).join('');
         }
+    }
 
-        function generateProdLink() {
-            let url = document.getElementById('prod-url-input').value.trim();
-            if (!url) return;
-            const separator = url.includes('?') ? '&' : '?';
-            const newUrl = `${url}${separator}ref=${currentAff.referral_code}`;
-            document.getElementById('new-url').innerText = newUrl;
-            document.getElementById('gen-result').style.display = 'block';
-        }
+    function generateProdLink() {
+        let url = document.getElementById('prod-url-input').value.trim();
+        if (!url) return;
+        const separator = url.includes('?') ? '&' : '?';
+        const newUrl = `${url}${separator}ref=${currentAff.referral_code}`;
+        document.getElementById('new-url').innerText = newUrl;
+        document.getElementById('gen-result').classList.add('show');
+    }
 
-        function copyGenerated() { copyText(document.getElementById('new-url').innerText); }
-        function copyText(t) { navigator.clipboard.writeText(t); alert("Lyen kopye!"); }
+    function copyGenerated() { copyText(document.getElementById('new-url').innerText, null); }
 
-        initAffiliate();
-    </script>
+    function copyText(t, btn) {
+        navigator.clipboard.writeText(t).then(() => {
+            if (btn) { const orig = btn.innerText; btn.innerText = '✅ Kopye!'; setTimeout(() => btn.innerText = orig, 2000); }
+            else alert("✅ Lyen kopye!");
+        });
+    }
+
+    async function requestWithdrawal() {
+        const bal = parseFloat(currentAff.balance || 0);
+        if (bal < 500) return alert("Ou bezwen omwen 500 HTG pou retire.");
+        const method = prompt("Ki metòd peman? (MonCash / NatCash)");
+        if (!method) return;
+        const number = prompt("Ki nimewo ou a?");
+        if (!number) return;
+        const { error } = await supabaseA.from('affiliate_withdrawals').insert([{
+            affiliate_id: currentAff.id, amount: bal, method, number, status: 'pending'
+        }]);
+        if (error) alert("Erè: " + error.message);
+        else alert("✅ Demann retrè voye! Nou pral kontakte ou nan 24h.");
+    }
+
+    initAffiliate();
+</script>
 </body>
 </html>
