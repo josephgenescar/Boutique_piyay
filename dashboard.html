@@ -5,864 +5,254 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Machann - Boutique Piyay</title>
     <link rel="stylesheet" href="/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --primary: #ff4747;
-            --primary-light: #ff6b6b;
-            --primary-glow: rgba(255,71,71,0.15);
-            --dark: #0f172a;
-            --dark-2: #1e293b;
-            --dark-3: #334155;
-            --gray: #64748b;
-            --light: #f1f5f9;
-            --white: #ffffff;
-            --green: #10b981;
-            --gold: #f59e0b;
-            --blue: #3b82f6;
-            --purple: #6366f1;
-            --radius: 20px;
-            --radius-sm: 12px;
-        }
+        :root { --primary: #ff4747; --dark: #0f172a; --gray: #64748b; --light: #f8fafc; }
+        body { background: var(--light); font-family: 'Sora', sans-serif; margin: 0; padding: 0; }
+        .db-container { max-width: 900px; margin: 0 auto; padding: 20px; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* NAVIGATION */
+        .db-nav { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
+        .db-nav::-webkit-scrollbar { display: none; }
+        .db-tab { padding: 12px 20px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--gray); white-space: nowrap; transition: 0.3s; border: none; background: none; }
+        .db-tab.active { background: var(--dark); color: white; }
 
-        body {
-            background: #f1f5f9;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-            color: var(--dark);
-        }
+        /* CARDS */
+        .white-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .stat-val { display: block; font-size: 24px; font-weight: 900; color: var(--dark); }
+        .stat-lbl { font-size: 10px; color: var(--gray); text-transform: uppercase; font-weight: 800; margin-top: 5px; }
 
-        /* LAYOUT */
-        .layout {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            min-height: 100vh;
-        }
+        /* REWARDS SYSTEM */
+        .reward-box { background: #fffbeb; border: 2px solid #fef3c7; padding: 15px; border-radius: 15px; margin-top: 15px; }
+        .badge-level { font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 50px; background: #94a3b8; color: white; }
 
-        /* SIDEBAR */
-        .sidebar {
-            background: var(--dark);
-            padding: 28px 20px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            overflow-y: auto;
-        }
-
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 8px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            margin-bottom: 8px;
-        }
-
-        .sidebar-logo img { width: 40px; border-radius: 10px; }
-        .sidebar-logo-text { font-size: 15px; font-weight: 900; color: white; letter-spacing: -0.3px; }
-        .sidebar-logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-
-        .nav-section-label {
-            font-size: 9px;
-            font-weight: 800;
-            color: rgba(255,255,255,0.3);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            padding: 8px 12px 4px;
-            margin-top: 8px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13.5px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.5);
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            text-decoration: none;
-        }
-
-        .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
-        .nav-item.active { background: var(--primary); color: white; font-weight: 800; box-shadow: 0 8px 20px rgba(255,71,71,0.35); }
-        .nav-item .icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-        .nav-item.active .icon { background: rgba(255,255,255,0.2); }
-
-        .sidebar-footer {
-            margin-top: auto;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 16px;
-        }
-
-        .btn-logout {
-            display: flex; align-items: center; gap: 10px;
-            padding: 12px 14px; border-radius: 12px; cursor: pointer;
-            background: rgba(255,71,71,0.1); color: var(--primary);
-            border: 1px solid rgba(255,71,71,0.2); font-size: 13px;
-            font-weight: 700; width: 100%; transition: 0.2s; font-family: inherit;
-        }
-        .btn-logout:hover { background: rgba(255,71,71,0.2); }
-
-        /* MAIN CONTENT */
-        .main {
-            padding: 32px;
-            overflow-x: hidden;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 32px;
-        }
-
-        .page-title { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
-        .page-subtitle { font-size: 13px; color: var(--gray); font-weight: 500; margin-top: 4px; }
-
-        .btn-add {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.2s;
-            box-shadow: 0 8px 20px rgba(255,71,71,0.3);
-            font-family: inherit;
-            flex-shrink: 0;
-        }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,71,71,0.4); }
-
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* STAT CARDS */
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -30px; right: -30px;
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            opacity: 0.08;
-        }
-
-        .stat-card.blue::before { background: var(--blue); }
-        .stat-card.gold::before { background: var(--gold); }
-        .stat-card.green::before { background: var(--green); }
-
-        .stat-icon {
-            width: 44px; height: 44px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-            margin-bottom: 16px;
-        }
-        .stat-icon.blue { background: rgba(59,130,246,0.1); }
-        .stat-icon.gold { background: rgba(245,158,11,0.1); }
-        .stat-icon.green { background: rgba(16,185,129,0.1); }
-
-        .stat-val { font-size: 30px; font-weight: 900; letter-spacing: -1px; }
-        .stat-lbl { font-size: 11px; color: var(--gray); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
-        .stat-change { font-size: 11px; font-weight: 700; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 50px; }
-        .stat-change.up { background: rgba(16,185,129,0.1); color: var(--green); }
-
-        /* REWARD CARD */
-        .reward-main {
-            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
-            border-radius: var(--radius);
-            padding: 28px;
-            color: white;
-            margin-bottom: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .reward-main::after {
-            content: '💎';
-            position: absolute;
-            right: 28px; top: 50%;
-            transform: translateY(-50%);
-            font-size: 70px;
-            opacity: 0.08;
-        }
-
-        .reward-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .reward-points { font-size: 42px; font-weight: 900; letter-spacing: -1.5px; }
-        .reward-points span { font-size: 16px; color: rgba(255,255,255,0.5); font-weight: 600; margin-left: 6px; }
-
-        .progress-bar-wrap {
-            background: rgba(255,255,255,0.1);
-            height: 6px;
-            border-radius: 50px;
-            margin: 20px 0 10px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 50px;
-            background: linear-gradient(90deg, var(--primary), var(--gold));
-            transition: width 1s ease;
-        }
-
-        .level-badges { display: flex; gap: 10px; flex-wrap: wrap; }
-        .badge { font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 50px; letter-spacing: 0.5px; }
-        .badge.bronze { background: rgba(205,127,50,0.2); color: #cd7f32; border: 1px solid rgba(205,127,50,0.3); }
-        .badge.silver { background: rgba(192,192,192,0.2); color: #c0c0c0; border: 1px solid rgba(192,192,192,0.3); }
-        .badge.gold-b { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
-
-        /* CHART */
-        .chart-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            margin-bottom: 24px;
-        }
-        .chart-title { font-size: 15px; font-weight: 800; margin-bottom: 20px; }
-
-        /* PRODUCTS */
-        .prods-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 18px;
-        }
-
-        .prod-card {
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
-
-        .prod-img-wrap { position: relative; }
-        .prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
-        .prod-status { position: absolute; top: 10px; right: 10px; background: rgba(16,185,129,0.9); color: white; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.8px; }
-
-        .prod-body { padding: 14px; }
-        .prod-name { font-size: 13px; font-weight: 800; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .prod-price { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
-        .prod-price span { font-size: 11px; font-weight: 600; color: var(--gray); }
-
-        .prod-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 14px; }
-        .btn-sm { padding: 9px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; transition: 0.2s; }
+        /* PWODWI CARD */
+        .prod-item-card { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; display: flex; flex-direction: column; position: relative; }
+        .prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; margin-bottom: 12px; }
+        .prod-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .btn-action { padding: 10px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; }
         .btn-edit { background: #f1f5f9; color: var(--dark); }
-        .btn-edit:hover { background: #e2e8f0; }
         .btn-delete { background: #fee2e2; color: #ef4444; }
-        .btn-delete:hover { background: #fecaca; }
 
-        /* WALLET */
-        .wallet-card {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1a1035 100%);
-            border-radius: var(--radius);
-            padding: 32px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-        .wallet-card::before {
-            content: '';
-            position: absolute;
-            width: 300px; height: 300px;
-            border-radius: 50%;
-            background: var(--primary);
-            opacity: 0.05;
-            top: -100px; right: -100px;
-        }
-        .wallet-card::after {
-            content: '';
-            position: absolute;
-            width: 200px; height: 200px;
-            border-radius: 50%;
-            background: var(--purple);
-            opacity: 0.05;
-            bottom: -60px; left: -60px;
-        }
+        /* PROFILE FORM */
+        .profile-form label { display: block; font-size: 11px; font-weight: 800; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; margin-top: 15px; }
+        .profile-form input { width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; font-family: inherit; font-size: 14px; outline: none; box-sizing: border-box; }
+        .btn-save { background: #00C853; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 20px; }
 
-        .wallet-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
-        .wallet-bal { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 6px; }
-        .wallet-bal span { font-size: 20px; color: rgba(255,255,255,0.5); font-weight: 600; margin-left: 4px; }
-        .wallet-sub { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 500; }
+        /* SHARE BOX */
+        .social-share-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-soc { flex: 1; padding: 10px; border-radius: 10px; border: none; color: white; font-weight: 800; font-size: 12px; cursor: pointer; text-align: center; text-decoration: none; }
+        .bg-fb { background: #1877F2; } .bg-wa { background: #25D366; } .bg-tg { background: #0088cc; }
 
-        .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
-        .wallet-btn {
-            padding: 14px; border-radius: 14px; border: none;
-            font-size: 13px; font-weight: 800; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.2s; font-family: inherit;
-        }
-        .wallet-btn.primary { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(255,71,71,0.3); }
-        .wallet-btn.primary:hover { transform: translateY(-2px); }
-        .wallet-btn.secondary { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.1); }
-        .wallet-btn.secondary:hover { background: rgba(255,255,255,0.12); }
-
-        .wallet-stats {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 14px; margin-bottom: 24px;
-        }
-        .wallet-stat-item {
-            background: white; border-radius: var(--radius-sm);
-            padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-        }
-        .ws-val { font-size: 22px; font-weight: 900; }
-        .ws-lbl { font-size: 11px; color: var(--gray); font-weight: 700; margin-top: 4px; }
-
-        /* PROFILE */
-        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
-        .form-group { margin-bottom: 18px; }
-        .form-label { display: block; font-size: 11px; font-weight: 800; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #f1f5f9;
-            border-radius: var(--radius-sm);
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 500;
-            outline: none;
-            transition: 0.2s;
-            background: #fafbfc;
-        }
-        .form-input:focus { border-color: var(--primary); background: white; }
-
-        .btn-save {
-            background: var(--green);
-            color: white;
-            border: none;
-            padding: 15px 28px;
-            border-radius: var(--radius-sm);
-            font-weight: 800;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            width: 100%;
-            transition: 0.2s;
-            box-shadow: 0 8px 20px rgba(16,185,129,0.25);
-        }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(16,185,129,0.35); }
-
-        .share-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        }
-        .share-url-box {
-            background: #f8fafc;
-            border: 2px solid #f1f5f9;
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .share-url-text { font-family: 'Space Mono', monospace; font-size: 11px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gray); }
-        .btn-copy { background: var(--dark); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; flex-shrink: 0; }
-
-        .social-btns { display: flex; gap: 10px; }
-        .btn-social { flex: 1; padding: 12px; border-radius: 12px; border: none; color: white; font-weight: 800; font-size: 12px; cursor: pointer; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
-        .btn-social:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .bg-wa { background: #25D366; }
-        .bg-fb { background: #1877F2; }
-        .bg-tg { background: #0088cc; }
-
-        /* API TAB */
-        .api-header {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-radius: var(--radius);
-            padding: 28px;
-            color: white;
-            margin-bottom: 24px;
-        }
-        .api-header h2 { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
-        .api-header p { font-size: 13px; opacity: 0.7; }
-
-        .api-key-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        }
-        .api-key-display {
-            background: var(--dark);
-            color: #10b981;
-            font-family: 'Space Mono', monospace;
-            font-size: 12px;
-            padding: 18px;
-            border-radius: var(--radius-sm);
-            margin: 14px 0;
-            word-break: break-all;
-            line-height: 1.6;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* EMPTY STATE */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray);
-        }
-        .empty-icon { font-size: 50px; margin-bottom: 16px; }
-        .empty-title { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
-        .empty-sub { font-size: 13px; line-height: 1.6; }
-
-        /* MOBILE */
-        @media (max-width: 768px) {
-            .layout { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
-            .main { padding: 20px; }
-            .stat-grid { grid-template-columns: 1fr; }
-            .profile-grid { grid-template-columns: 1fr; }
-            .wallet-stats { grid-template-columns: 1fr; }
-        }
-
-        /* MOBILE NAV */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--dark);
-            padding: 12px;
-            gap: 4px;
-            z-index: 100;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
-        }
-        @media (max-width: 768px) { .mobile-nav { display: flex; } }
-
-        .m-nav-btn {
-            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-            padding: 8px 4px; border-radius: 10px; border: none; background: none;
-            color: rgba(255,255,255,0.4); font-size: 9px; font-weight: 700;
-            cursor: pointer; transition: 0.2s; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .m-nav-btn.active { background: var(--primary); color: white; }
-        .m-nav-btn .m-icon { font-size: 18px; }
+        /* API BOX */
+        .api-card { background: #f1f5f9; border-left: 5px solid var(--dark); padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .api-key-box { background: white; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 11px; border: 1px solid #ddd; margin: 8px 0; word-break: break-all; color: var(--dark); font-weight: 600; }
+        .btn-copy-api { width: 100%; background: var(--dark); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 12px; transition: 0.2s; }
+        .btn-copy-api:hover { background: var(--primary); }
     </style>
 </head>
 <body>
-
-<div class="layout">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <img src="/assets/images/logo.png" onerror="this.src='https://ui-avatars.com/api/?name=BP&background=ff4747&color=fff'">
-            <div>
-                <div class="sidebar-logo-text">Boutique Piyay</div>
-                <div class="sidebar-logo-sub">Tableau de bord</div>
+    <div class="db-container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <img src="/assets/images/logo.png" style="width:45px;">
+                <h1 style="font-size: 20px; font-weight:900;">Boutik Pa m</h1>
             </div>
-        </div>
-
-        <div class="nav-section-label">Jeneral</div>
-        <button class="nav-item active" onclick="switchTab('stat', this)">
-            <span class="icon">📊</span> Statistik & Pwen
-        </button>
-        <button class="nav-item" onclick="switchTab('prod', this)">
-            <span class="icon">📦</span> Pwodwi m yo
-        </button>
-        <button class="nav-item" onclick="switchTab('wallet', this)">
-            <span class="icon">💰</span> Lajan
-        </button>
-
-        <div class="nav-section-label">Konfigurasyon</div>
-        <button class="nav-item" onclick="switchTab('profile', this)">
-            <span class="icon">🏪</span> Boutik & Profil
-        </button>
-        <button class="nav-item" onclick="switchTab('integration', this)" style="color: #a5b4fc;">
-            <span class="icon">🛠️</span> API
-        </button>
-
-        <div class="nav-section-label">Aksyon</div>
-        <button class="nav-item" onclick="goToVendre()" style="color: #fca5a5;">
-            <span class="icon">➕</span> Ajoute Pwodwi
-        </button>
-        <a href="/" class="nav-item">
-            <span class="icon">🏠</span> Retounen Mache
-        </a>
-
-        <div class="sidebar-footer">
-            <button class="btn-logout" onclick="handleLogout()">
-                🚪 Dekonekte
-            </button>
-        </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-
-        <!-- ===== TAB: STATISTIK ===== -->
-        <div id="tab-stat" class="tab-content active">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Tableau de bord 📊</h1>
-                    <p class="page-subtitle">Swiv pèfòmans boutik ou a</p>
-                </div>
-                <button class="btn-add" onclick="goToVendre()">
-                    ➕ Nouvo Pwodwi
-                </button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="/" style="text-decoration: none; background:#f1f5f9; color:var(--dark); padding:8px 15px; border-radius:10px; font-size:12px; font-weight:800;">MACHE 🏠</a>
+                <button onclick="handleLogout()" style="background:#fee2e2; border:none; color:var(--primary); padding:8px 15px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer;">DEKONEKTE 🚪</button>
             </div>
+        </header>
 
+        <nav class="db-nav">
+            <button class="db-tab active" onclick="switchTab('stat')">Statistik & Pwen</button>
+            <button class="db-tab" onclick="switchTab('prod')">Pwodwi m yo</button>
+            <button class="db-tab" onclick="switchTab('wallet')">Lajan 💰</button>
+            <button class="db-tab" onclick="switchTab('profile')">Boutik & Profil 🔗</button>
+            <button class="db-tab" onclick="switchTab('integration')" style="color: #6366f1;">Entegrasyon API 🛠️</button>
+            <button class="db-tab" onclick="goToVendre()" style="color:var(--primary); font-weight:900;">+ METE PWODWI</button>
+        </nav>
+
+        <!-- TAB: STATISTIK -->
+        <div id="tab-stat" class="tab-content">
             <div class="stat-grid">
-                <div class="stat-card blue">
-                    <div class="stat-icon blue">📦</div>
-                    <div class="stat-val" id="stat-orders">0</div>
-                    <div class="stat-lbl">Total Vant</div>
-                    <span class="stat-change up">↑ Aktif</span>
-                </div>
-                <div class="stat-card gold">
-                    <div class="stat-icon gold">💎</div>
-                    <div class="stat-val" id="stat-points">0</div>
-                    <div class="stat-lbl">Pwen Total</div>
-                    <span class="stat-change up">↑ ap grandi</span>
-                </div>
-                <div class="stat-card green">
-                    <div class="stat-icon green">🏆</div>
-                    <div class="stat-val" id="stat-level">Bronze</div>
-                    <div class="stat-lbl">Nivo Kouran</div>
-                    <span class="stat-change up">↑ Nivo</span>
-                </div>
+                <div class="stat-card" style="border-bottom-color: #3b82f6;"><span id="stat-orders" class="stat-val">0</span><span class="stat-lbl">Vant</span></div>
+                <div class="stat-card" style="border-bottom-color: #f59e0b;"><span id="stat-points" class="stat-val">0</span><span class="stat-lbl">💎 Pwen</span></div>
+                <div class="stat-card" style="border-bottom-color: #10b981;"><span id="stat-level" class="stat-val">Bronze</span><span class="stat-lbl">Nivo</span></div>
             </div>
-
-            <!-- Reward Card -->
-            <div class="reward-main">
-                <div class="reward-title">💎 Rekonpans ou</div>
-                <div class="reward-points">
-                    <span id="p-count">0</span>
-                    <span>pwen</span>
-                </div>
-                <div class="progress-bar-wrap">
-                    <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
-                </div>
-                <p style="font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 14px;" id="progress-label">Bronze → Argent (0/500 pwen)</p>
-                <div class="level-badges">
-                    <span class="badge bronze" id="badge-bronze">🥉 Bronze 100pts</span>
-                    <span class="badge silver" id="badge-silver">🥈 Argent 500pts</span>
-                    <span class="badge gold-b" id="badge-gold">🥇 Or 1000pts</span>
-                </div>
-            </div>
-
-            <!-- Chart -->
-            <div class="chart-card">
-                <div class="chart-title">📈 Evòlisyon Vant yo</div>
-                <canvas id="salesChart" height="100"></canvas>
-            </div>
-        </div>
-
-        <!-- ===== TAB: PWODWI ===== -->
-        <div id="tab-prod" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Pwodwi m yo 📦</h1>
-                    <p class="page-subtitle">Jere tout pwodwi ou yo</p>
-                </div>
-                <button class="btn-add" onclick="goToVendre()">➕ Nouvo Pwodwi</button>
-            </div>
-            <div class="prods-grid" id="prods-grid">
-                <div class="empty-state" style="grid-column: 1/-1;">
-                    <div class="empty-icon">📦</div>
-                    <div class="empty-title">Chaje pwodwi yo...</div>
+            <div class="reward-box">
+                <h3 style="margin:0 0 10px 0; font-size:16px;">🎁 Rekonpans</h3>
+                <p style="font-size:13px; color:#92400e;">Ou gen <b id="p-count">0</b> pwen.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                    <span class="badge-level">Bronze (100)</span>
+                    <span class="badge-level">Argent (500)</span>
+                    <span class="badge-level">Or (1000)</span>
                 </div>
             </div>
         </div>
 
-        <!-- ===== TAB: WALLET ===== -->
-        <div id="tab-wallet" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Lajan mwen 💰</h1>
-                    <p class="page-subtitle">Jere finansman boutik ou</p>
-                </div>
-            </div>
+        <!-- TAB: PWODWI -->
+        <div id="tab-prod" class="tab-content" style="display:none;">
+            <div id="prods-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;"></div>
+        </div>
 
-            <div class="wallet-stats">
-                <div class="wallet-stat-item">
-                    <div class="ws-val" style="color: var(--green);">0 HTG</div>
-                    <div class="ws-lbl">💵 Total Rantre</div>
-                </div>
-                <div class="wallet-stat-item">
-                    <div class="ws-val" style="color: var(--blue);">0</div>
-                    <div class="ws-lbl">📦 Kòmand Konplete</div>
-                </div>
-            </div>
-
-            <div class="wallet-card">
-                <div class="wallet-label">Balans Disponib</div>
-                <div class="wallet-bal" id="wall-balance">0 <span>HTG</span></div>
-                <div class="wallet-sub">Dènye mizajou: jodi a</div>
-                <div class="wallet-actions">
-                    <button class="wallet-btn primary">💸 Retire Lajan</button>
-                    <button class="wallet-btn secondary">📊 Istwa</button>
-                </div>
+        <!-- TAB: WALLET -->
+        <div id="tab-wallet" class="tab-content" style="display:none;">
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 30px; border-radius: 25px;">
+                <span id="wall-balance" style="font-size:36px; font-weight:900; display:block;">0 HTG</span>
+                <button style="background:var(--primary); color:white; border:none; padding:15px; border-radius:12px; font-weight:800; width:100%; cursor:pointer; margin-top:15px;">Retire Lajan 💸</button>
             </div>
         </div>
 
-        <!-- ===== TAB: PROFIL ===== -->
-        <div id="tab-profile" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Boutik & Profil 🏪</h1>
-                    <p class="page-subtitle">Jere enfòmasyon boutik ou</p>
+        <!-- TAB: PROFIL -->
+        <div id="tab-profile" class="tab-content" style="display:none;">
+            <div class="white-card">
+                <h3>🔗 Pataje Boutik ou</h3>
+                <div style="background:#f8fafc; padding:15px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                    <span id="shop-url-display" style="font-family:monospace; font-size:11px; flex:1; overflow:hidden; text-overflow:ellipsis;">Chaje...</span>
+                    <button onclick="copyShopUrl()" style="background:var(--dark); color:white; border:none; padding:8px 15px; border-radius:8px; font-size:11px; cursor:pointer;">KOPYE</button>
+                </div>
+                <div class="social-share-btns">
+                    <a id="share-wa" target="_blank" class="btn-soc bg-wa">WhatsApp</a>
+                    <a id="share-fb" target="_blank" class="btn-soc bg-fb">Facebook</a>
                 </div>
             </div>
-
-            <div class="profile-grid">
-                <!-- SHARE -->
-                <div>
-                    <div class="share-card" style="margin-bottom: 20px;">
-                        <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 16px;">🔗 Lyen Boutik ou</h3>
-                        <div class="share-url-box">
-                            <span class="share-url-text" id="shop-url-display">Chaje...</span>
-                            <button class="btn-copy" onclick="copyShopUrl()">KOPYE</button>
-                        </div>
-                        <div class="social-btns">
-                            <a id="share-wa" target="_blank" class="btn-social bg-wa">📱 WhatsApp</a>
-                            <a id="share-fb" target="_blank" class="btn-social bg-fb">📘 Facebook</a>
-                            <a id="share-tg" target="_blank" class="btn-social bg-tg">✈️ Telegram</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FORM -->
-                <div class="share-card">
-                    <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 20px;">✏️ Edite Enfòmasyon</h3>
-                    <div class="form-group">
-                        <label class="form-label">Non Boutik</label>
-                        <input type="text" class="form-input" id="prof-name" placeholder="Non boutik ou...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">WhatsApp</label>
-                        <input type="text" class="form-input" id="prof-whatsapp" placeholder="+509...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Adrès</label>
-                        <input type="text" class="form-input" id="prof-address" placeholder="Adrès ou...">
-                    </div>
-                    <button class="btn-save" onclick="saveProfile()">✅ Sove Chanjman</button>
-                </div>
+            <div class="profile-form white-card">
+                <h3>✏️ Edite Profil Boutik</h3>
+                <label>Non Boutik</label><input type="text" id="prof-name">
+                <label>WhatsApp</label><input type="text" id="prof-whatsapp">
+                <label>Adrès</label><input type="text" id="prof-address">
+                <button class="btn-save" onclick="saveProfile()">Sove Chanjman ✅</button>
             </div>
         </div>
 
-        <!-- ===== TAB: API ===== -->
-        <div id="tab-integration" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Entegrasyon API 🛠️</h1>
-                    <p class="page-subtitle">Konekte boutik ou ak lòt sistèm</p>
+        <!-- TAB: API ENTEGRASYON -->
+        <div id="tab-integration" class="tab-content" style="display:none;">
+            <div class="white-card">
+                <h2 style="font-weight: 900; color: #6366f1; margin-bottom: 10px;">🛠️ Konekte ak Lòt Sistèm</h2>
+                <p style="font-size: 13px; color: var(--gray); line-height: 1.5;">Itilize enfòmasyon sa yo pou w konekte Boutique Piyay ak <b>Caisse Haïtienne</b> oswa lòt lojisyèl.</p>
+
+                <div class="api-card">
+                    <label style="font-weight: 800; font-size: 10px; color: var(--gray); text-transform: uppercase;">1. LYEN API (API URL)</label>
+                    <div id="api-url-display" class="api-key-box">https://boutique-piyay.netlify.app/.netlify/functions/api</div>
+                    <button onclick="copyToClipboard('api-url-display', 'Lyen API')" class="btn-copy-api">KOPYE LYEN 📋</button>
                 </div>
-            </div>
 
-            <div class="api-header">
-                <h2>🔑 Kle API ou</h2>
-                <p>Itilize ID sa a pou konekte boutik ou ak nenpòt sèvis entènasyonal</p>
-            </div>
+                <div class="api-card">
+                    <label style="font-weight: 800; font-size: 10px; color: var(--gray); text-transform: uppercase;">2. KLE API (MERCHANT ID)</label>
+                    <div id="api-key-display" class="api-key-box">Chaje...</div>
+                    <button onclick="copyToClipboard('api-key-display', 'Kle API')" class="btn-copy-api">KOPYE KLE API 📋</button>
+                </div>
 
-            <div class="api-key-card">
-                <div class="form-label">MERCHANT ID (API KEY)</div>
-                <div class="api-key-display" id="api-key-display">Chaje...</div>
-                <button onclick="copyApiKey()" class="btn-save" style="background: var(--dark); box-shadow: none;">
-                    📋 KOPYE KLE API
-                </button>
+                <div style="margin-top: 30px; background: #fffbeb; padding: 15px; border-radius: 12px; border: 1px solid #fef3c7;">
+                    <h4 style="font-size: 13px; color: #92400e; margin-bottom: 8px;">Kijan pou w fè l?</h4>
+                    <ol style="font-size: 12px; color: #92400e; padding-left: 20px; line-height: 1.6;">
+                        <li>Kole <b>Lyen API</b> a nan premye kaz la nan konektè a.</li>
+                        <li>Kole <b>Kle API</b> a nan dezyèm kaz la.</li>
+                        <li>Klike sou <b>Connecter & Importer</b>.</li>
+                    </ol>
+                </div>
             </div>
         </div>
+    </div>
 
-    </main>
-</div>
+    <script>
+        const supD = supabase.createClient("https://letyferfjpxmstohvgcj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg");
+        let currentUser = null;
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="mobile-nav">
-    <button class="m-nav-btn active" onclick="switchTab('stat', this)"><span class="m-icon">📊</span>Stats</button>
-    <button class="m-nav-btn" onclick="switchTab('prod', this)"><span class="m-icon">📦</span>Pwodwi</button>
-    <button class="m-nav-btn" onclick="switchTab('wallet', this)"><span class="m-icon">💰</span>Lajan</button>
-    <button class="m-nav-btn" onclick="switchTab('profile', this)"><span class="m-icon">🏪</span>Profil</button>
-    <button class="m-nav-btn" onclick="goToVendre()"><span class="m-icon">➕</span>Ajoute</button>
-</nav>
-
-<script>
-    const supD = window.supabase.createClient(
-        "https://letyferfjpxmstohvgcj.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
-    );
-
-    let currentUser = null;
-
-    async function init() {
-        const { data: { user } } = await supD.auth.getUser();
-        if (!user) return window.location.href = "/login.html";
-        currentUser = user;
-        loadAll();
-        syncPointsWithSales();
-        initChart();
-    }
-
-    function initChart() {
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Fev', 'Mas', 'Avr', 'Me', 'Jen'],
-                datasets: [{
-                    label: 'Vant (HTG)',
-                    data: [0, 0, 0, 0, 0, 0],
-                    borderColor: '#ff4747',
-                    backgroundColor: 'rgba(255,71,71,0.06)',
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#ff4747',
-                    pointRadius: 4,
-                    borderWidth: 2.5
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', weight: '700', size: 11 } } },
-                    y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: 'Plus Jakarta Sans', weight: '700', size: 11 } } }
-                }
-            }
-        });
-    }
-
-    async function syncPointsWithSales() {
-        const { data: orders } = await supD.from('orders').select('amount').eq('seller_id', currentUser.id);
-        if (orders) {
-            const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
-            const newPoints = Math.floor(totalSales);
-            await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
-            document.getElementById('stat-points').innerText = newPoints;
-            document.getElementById('p-count').innerText = newPoints;
-            document.getElementById('stat-orders').innerText = orders.length;
-            updateRewardUI(newPoints);
-        }
-    }
-
-    function updateRewardUI(points) {
-        const levels = [{t:100, n:'Bronze'}, {t:500, n:'Argent'}, {t:1000, n:'Or'}];
-        let currentLevel = 'Debutants';
-        let progressPct = Math.min((points / 100) * 100, 100);
-        let progressLabel = `Debutants → Bronze (${points}/100 pwen)`;
-
-        if (points >= 100) { currentLevel = 'Bronze'; progressPct = Math.min(((points-100)/400)*100, 100); progressLabel = `Bronze → Argent (${points}/500 pwen)`; }
-        if (points >= 500) { currentLevel = 'Argent'; progressPct = Math.min(((points-500)/500)*100, 100); progressLabel = `Argent → Or (${points}/1000 pwen)`; }
-        if (points >= 1000) { currentLevel = 'Or'; progressPct = 100; progressLabel = `🏆 Ou rive nivo maksimòm!`; }
-
-        document.getElementById('stat-level').innerText = currentLevel;
-        document.getElementById('progress-fill').style.width = progressPct + '%';
-        document.getElementById('progress-label').innerText = progressLabel;
-    }
-
-    async function loadAll() {
-        const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
-        const grid = document.getElementById('prods-grid');
-
-        if (prods && prods.length > 0) {
-            grid.innerHTML = prods.map(p => `
-                <div class="prod-card">
-                    <div class="prod-img-wrap">
-                        <img src="${p.image_url}" class="prod-img" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
-                        <span class="prod-status">Aktif</span>
-                    </div>
-                    <div class="prod-body">
-                        <div class="prod-name">${p.title}</div>
-                        <div class="prod-price">${p.price} <span>HTG</span></div>
-                    </div>
-                    <div class="prod-actions">
-                        <a href="/edit-product.html?id=${p.id}" class="btn-sm btn-edit">✏️ Edit</a>
-                        <button onclick="deleteProduct('${p.id}')" class="btn-sm btn-delete">🗑️ Efase</button>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
-                <div class="empty-icon">📦</div>
-                <div class="empty-title">Pa gen pwodwi toujou</div>
-                <div class="empty-sub">Klike sou "Nouvo Pwodwi" pou kòmanse vann</div>
-            </div>`;
-        }
-
-        const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
-        if (prof) {
-            document.getElementById('prof-name').value = prof.full_name || '';
-            document.getElementById('prof-whatsapp').value = prof.whatsapp_number || '';
-            document.getElementById('prof-address').value = prof.address || '';
-            document.getElementById('api-key-display').innerText = currentUser.id;
-            const shopLink = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
-            document.getElementById('shop-url-display').innerText = shopLink;
-            document.getElementById('share-wa').href = `https://wa.me/?text=Vizite boutik mwen sou Boutique Piyay: ${encodeURIComponent(shopLink)}`;
-            document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shopLink)}`;
-            document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(shopLink)}`;
-        }
-    }
-
-    async function saveProfile() {
-        const { error } = await supD.from('profiles').update({
-            full_name: document.getElementById('prof-name').value,
-            whatsapp_number: document.getElementById('prof-whatsapp').value,
-            address: document.getElementById('prof-address').value
-        }).eq('id', currentUser.id);
-        if (error) alert("Erè: " + error.message);
-        else alert("✅ Profil sove!");
-    }
-
-    async function deleteProduct(id) {
-        if (confirm("Efase pwodwi sa a definitivman?")) {
-            await supD.from('user_products').delete().eq('id', id);
+        async function init() {
+            const { data: { user } } = await supD.auth.getUser();
+            if (!user) return window.location.href = "/login.html";
+            currentUser = user;
             loadAll();
+            syncPointsWithSales();
         }
-    }
 
-    function switchTab(tab, el) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.nav-item, .m-nav-btn').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + tab).classList.add('active');
-        if (el) el.classList.add('active');
-    }
+        async function syncPointsWithSales() {
+            const { data: orders } = await supD.from('orders').select('amount').eq('seller_id', currentUser.id);
+            if (orders) {
+                const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
+                const newPoints = Math.floor(totalSales);
+                await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
+                document.getElementById('stat-points').innerText = newPoints;
+                document.getElementById('p-count').innerText = newPoints;
+                updateRewardUI(newPoints);
+            }
+        }
 
-    function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("✅ Lyen kopye!")); }
-    function copyApiKey() { navigator.clipboard.writeText(document.getElementById('api-key-display').innerText).then(() => alert("✅ Kle API kopye!")); }
-    function handleLogout() { supD.auth.signOut().then(() => location.href = '/'); }
-    function goToVendre() { location.href = '/vendre.html'; }
+        function updateRewardUI(points) {
+            const levels = [{t:100, c:'#cd7f32', n:'Bronze'}, {t:500, c:'#c0c0c0', n:'Argent'}, {t:1000, c:'#ffd700', n:'Or'}];
+            let currentLevel = 'Debutants';
+            const badges = document.querySelectorAll('.badge-level');
+            levels.forEach((l, i) => {
+                if (points >= l.t) { currentLevel = l.n; badges[i].style.background = l.c; }
+            });
+            document.getElementById('stat-level').innerText = currentLevel;
+        }
 
-    init();
-</script>
+        async function loadAll() {
+            const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+            if (prods) {
+                document.getElementById('prods-grid').innerHTML = prods.map(p => `
+                    <div class="prod-item-card">
+                        <img src="${p.image_url}" class="prod-img" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+                        <div style="font-size:13px; font-weight:800;">${p.title}</div>
+                        <div style="color:var(--primary); font-weight:900;">${p.price} HTG</div>
+                        <div class="prod-actions">
+                            <a href="/edit-product.html?id=${p.id}" class="btn-action btn-edit">✏️ Edit</a>
+                            <button onclick="deleteProduct('${p.id}')" class="btn-action btn-delete">🗑️ Retire</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
+            if (prof) {
+                document.getElementById('prof-name').value = prof.full_name || '';
+                document.getElementById('prof-whatsapp').value = prof.whatsapp_number || '';
+                document.getElementById('prof-address').value = prof.address || '';
+                document.getElementById('api-key-display').innerText = currentUser.id;
+                const shopLink = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
+                document.getElementById('shop-url-display').innerText = shopLink;
+
+                document.getElementById('share-wa').href = `https://wa.me/?text=Vizite boutik mwen sou Boutique Piyay: ${shopLink}`;
+                document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${shopLink}`;
+            }
+        }
+
+        async function saveProfile() {
+            const { error } = await supD.from('profiles').update({
+                full_name: document.getElementById('prof-name').value,
+                whatsapp_number: document.getElementById('prof-whatsapp').value,
+                address: document.getElementById('prof-address').value
+            }).eq('id', currentUser.id);
+            if (error) alert("Erè: " + error.message);
+            else alert("✅ Profil sove!");
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Efase pwodwi sa a?")) { await supD.from('user_products').delete().eq('id', id); loadAll(); }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tab).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function copyToClipboard(elementId, label) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => alert("✅ " + label + " kopye!"));
+        }
+
+        function handleLogout() { supD.auth.signOut().then(() => location.href='/'); }
+        function goToVendre() { location.href='/vendre.html'; }
+        function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("Kopye!")); }
+
+        init();
+    </script>
 </body>
 </html>
