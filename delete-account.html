@@ -25,83 +25,31 @@ title: Efase Kont - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supD = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    const supD = supabase.createClient(SUP_URL, SUP_KEY);
 
     async function checkUser() {
         const { data: { user } } = await supD.auth.getUser();
-        if (!user) {
-            window.location.href = "/login.html";
-            return;
-        }
+        if (!user) { window.location.href = "/login.html"; return; }
         document.getElementById('user-email-display').innerText = `Konekte kòm: ${user.email}`;
     }
 
     async function handlePermanentDelete() {
         if (!confirm("🚨 ATANSYON: Èske ou sèten ou vle efase boutik ou a? Tout pwodwi ou yo ap disparèt nèt.")) return;
-
         const btn = document.getElementById('btn-delete-confirm');
         const status = document.getElementById('status-msg');
-
         btn.disabled = true;
-        btn.innerText = "⏳ Pwosesis efasman...";
         status.style.display = 'block';
-        status.style.background = '#fef2f2';
-        status.style.color = '#ef4444';
-        status.innerHTML = "1. Netwayaj pwodwi yo...<br>";
+        status.innerHTML = "Netwayaj ankou...<br>";
 
         try {
             const { data: { user } } = await supD.auth.getUser();
-            if (!user) throw new Error("Sesyon ou fini. Tanpri rekonekte.");
-
-            // ETAP 1: Efase tout pwodwi yo
-            const { error: pErr } = await supD.from('user_products').delete().eq('seller_id', user.id);
-            if (pErr) {
-                console.warn("Pwodwi deja efase oswa erè:", pErr.message);
-                status.innerHTML += "⚠️ Pwodwi pa ka efase (petèt yo deja efase).<br>";
-            } else {
-                status.innerHTML += "✅ Pwodwi efase ak siksè.<br>";
-            }
-
-            // ETAP 2: Dezaktive boutik la (San 'avatar_url' pou evite erè)
-            status.innerHTML += "2. Dezaktive boutik la nan marketplace...<br>";
-
-            // Nou kreye objè update la san kolon ki pa egziste yo
-            const updateData = {
-                is_active_seller: false,
-                full_name: "Kont Efase",
-                whatsapp: null
-            };
-
-            const { error: sErr } = await supD.from('profiles').update(updateData).eq('id', user.id);
-
-            if (sErr) {
-                console.error("Erè Profil:", sErr);
-                status.innerHTML += `⚠️ Yon ti erè nan profil la, men n ap kontinye...<br>`;
-                // Nou pa 'throw' erè a isit la pou n ka fini dekoneksyon an
-            } else {
-                status.innerHTML += "✅ Boutik dezaktive.<br>";
-            }
-
-            status.innerHTML += "3. Dekoneksyon ankou...<br>";
-
-            // ETAP 3: Dekonekte
+            await supD.from('user_products').delete().eq('seller_id', user.id);
+            await supD.from('profiles').update({ is_active_seller: false }).eq('id', user.id);
             await supD.auth.signOut();
-
-            status.style.background = '#ecfdf5';
-            status.style.color = '#059669';
-            status.style.borderColor = '#10b981';
-            status.innerHTML = "🎉 Kont ou efase nèt ak siksè! W ap redirije nan akèy la kounye a...";
-
-            setTimeout(() => window.location.href = "/", 3500);
-
-        } catch (err) {
-            btn.disabled = false;
-            btn.innerText = "Eseye ankò";
-            status.style.background = '#fff1f2';
-            status.style.color = '#e11d48';
-            status.innerHTML += `<br>❌ ERÈ KRITIK: ${err.message}. Tanpri kontakte sipò si sa pèsiste.`;
-        }
+            window.location.href = "/";
+        } catch (err) { alert(err.message); btn.disabled = false; }
     }
-
     document.addEventListener('DOMContentLoaded', checkUser);
 </script>

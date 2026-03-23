@@ -17,13 +17,6 @@
         .role-option.active { border-color: #ff4747; background: #fff5f5; color: #ff4747; }
         label { display: block; font-size: 11px; font-weight: 800; color: #475569; margin-bottom: 5px; text-transform: uppercase; padding-left: 5px; }
         .terms-box { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #64748b; margin: 20px 0; cursor: pointer; line-height: 1.4; }
-        .terms-box input { margin-top: 2px; }
-        .file-upload-box { border: 2px dashed #cbd5e1; padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; margin-bottom: 15px; position: relative; overflow: hidden; }
-        .file-upload-box:hover { border-color: #ff4747; background: #fff5f5; }
-        .preview-img { max-width: 100%; max-height: 150px; border-radius: 10px; margin-top: 10px; display: none; }
-        .camera-container { width: 100%; height: 250px; background: #000; border-radius: 15px; margin-bottom: 15px; display: none; overflow: hidden; position: relative; }
-        #camera-video { width: 100%; height: 100%; object-fit: cover; }
-        .camera-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.5); width: 200px; height: 200px; border-radius: 50%; pointer-events: none; }
     </style>
 </head>
 <body style="background: #f8fafc;">
@@ -41,59 +34,35 @@
         </div>
 
         <form id="signupForm" onsubmit="handleSignup(event)">
-            <div id="common-fields">
-                <label>Non konplè ou *</label>
-                <input type="text" id="fullName" class="auth-input" placeholder="Non ak Siyati" required>
+            <label>Non konplè ou *</label>
+            <input type="text" id="fullName" class="auth-input" required>
 
-                <label>Email *</label>
-                <input type="email" id="email" class="auth-input" placeholder="email@egzanp.com" required>
+            <label>Email *</label>
+            <input type="email" id="email" class="auth-input" required>
 
-                <label>WhatsApp *</label>
-                <input type="tel" id="whatsapp" class="auth-input" placeholder="Eg: 50944443333" required>
+            <label>WhatsApp *</label>
+            <input type="tel" id="whatsapp" class="auth-input" placeholder="Eg: 50944443333" required>
 
-                <label>Modpas *</label>
-                <input type="password" id="password" class="auth-input" placeholder="Minimòm 6 karaktè" required>
-            </div>
+            <label>Modpas *</label>
+            <input type="password" id="password" class="auth-input" required>
 
             <div id="seller-fields">
                 <label>Non Boutik ou *</label>
-                <input type="text" id="shopName" class="auth-input" placeholder="Eg: Store Lakay">
+                <input type="text" id="shopName" class="auth-input">
                 <label>Adrès Boutik la *</label>
-                <input type="text" id="address" class="auth-input" placeholder="Eg: Delmas 33">
+                <input type="text" id="address" class="auth-input">
             </div>
 
             <div id="delivery-fields" style="display:none;">
                 <label>Zòn kote w ka livre *</label>
-                <input type="text" id="deliveryZone" class="auth-input" placeholder="Eg: Pétion-Ville, Delmas, ets.">
-                <label>Veyikil ou genyen (Moto, Machin, ets.) *</label>
-                <input type="text" id="vehicle" class="auth-input" placeholder="Eg: Moto Haojin">
-
-                <label style="color:#ff4747;">🛡️ Verifikasyon Idantite (Obligatwa)</label>
-                <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Voye yon foto pyès idantite w (NIF/CIN) ak yon selfie pou nou verifye kont ou.</p>
-
-                <div class="file-upload-box" onclick="document.getElementById('id-card-file').click()">
-                    <span id="id-label">📷 Foto Pyès Idantite (Devan)</span>
-                    <input type="file" id="id-card-file" hidden accept="image/*" onchange="previewFile(this, 'id-preview')">
-                    <img id="id-preview" class="preview-img">
-                </div>
-
-                <div id="selfie-section">
-                    <div class="camera-container" id="camera-container">
-                        <video id="camera-video" autoplay playsinline></video>
-                        <div class="camera-overlay"></div>
-                    </div>
-                    <div id="selfie-result" style="display:none; text-align:center; margin-bottom:15px;">
-                        <img id="selfie-preview" class="preview-img" style="display:inline-block;">
-                        <button type="button" onclick="startCamera()" style="display:block; margin:5px auto; font-size:10px; border:none; background:none; color:#ff4747; cursor:pointer;">Refè foto a</button>
-                    </div>
-                    <button type="button" id="btn-start-camera" onclick="startCamera()" class="auth-input" style="background:#f1f5f9; cursor:pointer;">🤳 Pran yon Selfie</button>
-                    <button type="button" id="btn-capture" onclick="captureSelfie()" class="auth-input" style="background:#ff4747; color:white; display:none;">📸 Tire Foto</button>
-                </div>
+                <input type="text" id="deliveryZone" class="auth-input">
+                <label>Veyikil ou genyen *</label>
+                <input type="text" id="vehicle" class="auth-input">
             </div>
 
             <label class="terms-box">
                 <input type="checkbox" id="acceptTerms" onchange="toggleBtn()">
-                <span>Mwen aksepte **<a href="/regleman.html" target="_blank" style="color:#ff4747; text-decoration:none; font-weight:700;">Regleman ak Prensip</a>** platform nan.</span>
+                <span>Mwen aksepte Regleman ak Prensip yo.</span>
             </label>
 
             <button type="submit" id="btnSignup" class="btn-submit" disabled>KREYE KONT MWEN</button>
@@ -101,69 +70,15 @@
     </div>
 
     <script>
-        const supS = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+        const supS = supabase.createClient("https://letyferfjpxmstohvgcj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg");
         let currentRole = 'seller';
-        let selfieBlob = null;
-        let stream = null;
 
         function setRole(role) {
             currentRole = role;
             document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('active'));
             document.getElementById('opt-' + role).classList.add('active');
-
             document.getElementById('seller-fields').style.display = role === 'seller' ? 'block' : 'none';
             document.getElementById('delivery-fields').style.display = role === 'delivery' ? 'block' : 'none';
-
-            document.getElementById('shopName').required = (role === 'seller');
-            document.getElementById('address').required = (role === 'seller');
-            document.getElementById('deliveryZone').required = (role === 'delivery');
-            document.getElementById('vehicle').required = (role === 'delivery');
-        }
-
-        function previewFile(input, previewId) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById(previewId);
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    document.getElementById('id-label').innerText = "✅ Foto Chwazi";
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function startCamera() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                const video = document.getElementById('camera-video');
-                video.srcObject = stream;
-                document.getElementById('camera-container').style.display = 'block';
-                document.getElementById('btn-capture').style.display = 'block';
-                document.getElementById('btn-start-camera').style.display = 'none';
-                document.getElementById('selfie-result').style.display = 'none';
-            } catch (err) { alert("Nou pa ka aksede kamera w: " + err.message); }
-        }
-
-        function captureSelfie() {
-            const video = document.getElementById('camera-video');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-
-            canvas.toBlob(blob => {
-                selfieBlob = blob;
-                const url = URL.createObjectURL(blob);
-                document.getElementById('selfie-preview').src = url;
-                document.getElementById('selfie-preview').style.display = 'block';
-                document.getElementById('selfie-result').style.display = 'block';
-                document.getElementById('camera-container').style.display = 'none';
-                document.getElementById('btn-capture').style.display = 'none';
-
-                if (stream) stream.getTracks().forEach(track => track.stop());
-            }, 'image/jpeg');
         }
 
         function toggleBtn() {
@@ -184,32 +99,13 @@
                 const { data: authData, error: authErr } = await supS.auth.signUp({
                     email,
                     password: pass,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                            whatsapp: wa
-                        }
-                    }
+                    options: { data: { full_name: fullName } }
                 });
 
                 if (authErr) throw authErr;
 
                 if (authData.user) {
-                    let idUrl = '', selfieUrl = '';
-
-                    if (currentRole === 'delivery') {
-                        const idFile = document.getElementById('id-card-file').files[0];
-                        if (idFile) {
-                            const idExt = idFile.name.split('.').pop();
-                            const { data: idData } = await supS.storage.from('verification').upload(`${authData.user.id}/id_card.${idExt}`, idFile);
-                            if (idData) idUrl = idData.path;
-                        }
-                        if (selfieBlob) {
-                            const { data: selfData } = await supS.storage.from('verification').upload(`${authData.user.id}/selfie.jpg`, selfieBlob);
-                            if (selfData) selfieUrl = selfData.path;
-                        }
-                    }
-
+                    // ✅ ITILIZE UPSERT POU RANJE ERÈ VIOLATION AN
                     const profileData = {
                         id: authData.user.id,
                         full_name: (currentRole === 'seller') ? document.getElementById('shopName').value : fullName,
@@ -219,20 +115,11 @@
                         role: currentRole,
                         is_active_seller: (currentRole === 'seller'),
                         delivery_zone: (currentRole === 'delivery') ? document.getElementById('deliveryZone').value : '',
-                        vehicle: (currentRole === 'delivery') ? document.getElementById('vehicle').value : '',
-                        id_card_url: idUrl,
-                        selfie_url: selfieUrl
+                        vehicle: (currentRole === 'delivery') ? document.getElementById('vehicle').value : ''
                     };
 
-                    const { error: dbErr } = await supS.from('profiles').upsert([profileData], { onConflict: 'id' });
-                    if (dbErr) throw dbErr;
-
-                    await supS.from('wallets').insert([{ user_id: authData.user.id }]);
-
-                    if (currentRole === 'affiliate') {
-                        const code = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-                        await supS.from('affiliates').insert([{ user_id: authData.user.id, referral_code: code }]);
-                    }
+                    const { error: dbErr } = await supS.from('profiles').upsert([profileData]);
+                    if (dbErr) console.error("Profile update error:", dbErr);
 
                     alert("Felisitasyon! Kont ou kreye. Verifye email ou.");
                     window.location.href = "/login.html";
@@ -242,8 +129,6 @@
                 btn.disabled = false; btn.innerHTML = "KREYE KONT MWEN";
             }
         }
-
-        setRole('seller');
     </script>
 </body>
 </html>

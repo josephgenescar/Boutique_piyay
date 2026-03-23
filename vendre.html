@@ -4,18 +4,8 @@ title: Vann yon Pwodwi - Boutique Piyay
 ---
 
 <div class="container" style="max-width: 800px; padding: 40px 20px;">
-    <div id="loading" style="text-align: center; padding: 100px 0;">
-        <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
-        <p style="margin-top: 15px; color: #666;">Verifikasyon kont ou...</p>
-    </div>
-
-    <div id="vendreCard" class="seller-card" style="display: none; background: white; padding: 35px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.08);">
+    <div id="vendreCard" class="seller-card" style="background: white; padding: 35px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.08);">
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 25px; color: #0f172a;">🚀 Pibliye yon Pwodwi</h1>
-
-        <!-- VIDEYO GID (AJISTE POU PAYSAGE) -->
-        <div style="max-width: 600px; margin: 0 auto 40px; border-radius: 20px; overflow: hidden; background: #000; position: relative; padding-top: 56.25%; box-shadow: 0 15px 45px rgba(0,0,0,0.15);">
-            <iframe src="LINK_VIDEYO_MACHANN_LAN" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
-        </div>
 
         <form id="uploadForm">
             <div class="form-group" style="margin-bottom: 20px;">
@@ -41,6 +31,18 @@ title: Vann yon Pwodwi - Boutique Piyay
                 </div>
             </div>
 
+            <!-- SEKSYON VANTE FLASH -->
+            <div style="background: #fff5f5; padding: 20px; border-radius: 15px; border: 2px dashed #ff4747; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <input type="checkbox" id="isFlash" style="width: 20px; height: 20px; accent-color: #ff4747;">
+                    <label for="isFlash" style="font-weight: 800; color: #ff4747; cursor: pointer;">⚡ METE PWODWI SA NAN VANTE FLASH</label>
+                </div>
+                <div id="flashOptions" style="display: none;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 11px;">ANSYEN PRI (HTG)</label>
+                    <input type="number" id="oldPrice" placeholder="Eg: 1000" style="width: 100%; padding: 12px; border: 1px solid #ffcccc; border-radius: 10px;">
+                </div>
+            </div>
+
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">DESKRIPSYON PWODWI A *</label>
                 <textarea id="prodDesc" required placeholder="Bay detay sou pwodwi a..." style="width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc; min-height: 80px; font-family: inherit;"></textarea>
@@ -49,12 +51,9 @@ title: Vann yon Pwodwi - Boutique Piyay
             <div class="form-group" style="margin-bottom: 30px;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 13px;">FOTO PWODWI A *</label>
                 <input type="file" id="prodImage" accept="image/*" required style="width: 100%; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc;">
-                <div id="preview" style="margin-top: 20px; display: none; text-align: center;">
-                    <img id="imgPreview" src="" style="width: 180px; height: 180px; object-fit: cover; border-radius: 15px; border: 3px solid #ff4747;">
-                </div>
             </div>
 
-            <button type="submit" id="submitBtn" style="width: 100%; padding: 188px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;">🚀 PIBLIYE PWODWI A</button>
+            <button type="submit" id="submitBtn" style="width: 100%; padding: 20px; background: #ff4747; color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer;">🚀 PIBLIYE PWODWI A</button>
         </form>
         <div id="statusMsg" style="margin-top: 25px; text-align: center; font-weight: 700; display: none; padding: 15px; border-radius: 10px;"></div>
     </div>
@@ -62,122 +61,86 @@ title: Vann yon Pwodwi - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supV = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    const supV = window._supabaseClient || supabase.createClient("https://letyferfjpxmstohvgcj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg");
 
-async function optimizeImage(file) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                const MAX_WIDTH = 1000;
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-                }, 'image/jpeg', 0.7);
-            };
-        };
-    });
-}
-
-async function checkAuthAndStatus() {
-    try {
-        const { data: { user } } = await supV.auth.getUser();
-        if (!user) { window.location.href = "/login.html"; return; }
-
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('vendreCard').style.display = 'block';
-
-    } catch (e) {
-        console.error(e);
-        document.getElementById('loading').innerText = "Erè koneksyon ak sèvè a.";
-    }
-}
-
-    document.getElementById('prodImage').onchange = function() {
-        const [file] = this.files;
-        if (file) {
-            document.getElementById('imgPreview').src = URL.createObjectURL(file);
-            document.getElementById('preview').style.display = 'block';
-        }
+    document.getElementById('isFlash').onchange = function() {
+        document.getElementById('flashOptions').style.display = this.checked ? 'block' : 'none';
     };
 
-    const toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
+    async function uploadToImageKit(file) {
+        try {
+            // ✅ Tcheke si n ap travay lokalman oswa sou sit la
+            const functionUrl = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+                ? "/.netlify/functions/auth"
+                : "/auth"; // Netlify redirects
 
-document.getElementById('uploadForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const { data: { user } } = await supV.auth.getUser();
-    const btn = document.getElementById('submitBtn');
-    const status = document.getElementById('statusMsg');
-    const file = document.getElementById('prodImage').files[0];
+            const authRes = await fetch(functionUrl);
+            const contentType = authRes.headers.get("content-type");
 
-    btn.disabled = true; btn.innerText = "⏳ VERIFIKASYON...";
-    status.style.display = 'block'; status.innerText = "Tanpri tann...";
+            if (!authRes.ok || !contentType || !contentType.includes("application/json")) {
+                throw new Error("Sèvis foto a pa ka konekte (Netlify Functions not reachable). Si w ap teste lokalman, sèvi ak 'netlify dev'.");
+            }
 
-    try {
-        const { count } = await supV
-            .from('user_products')
-            .select('*', { count: 'exact', head: true })
-            .eq('seller_id', user.id);
+            const authData = await authRes.json();
 
-        if (count >= 20) throw new Error("Ou rive nan limit 20 pwodwi.");
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("publicKey", authData.publicKey);
+            formData.append("signature", authData.signature);
+            formData.append("expire", authData.expire);
+            formData.append("token", authData.token);
+            formData.append("fileName", `prod_${Date.now()}.jpg`);
 
-        status.innerText = "⚡ Optimizasyon foto...";
-        const optimizedBlob = await optimizeImage(file);
+            const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+                method: "POST",
+                body: formData
+            });
 
-        status.innerText = "📤 Piblikasyon an kous...";
-        const fileName = `prod_${user.id}_${Date.now()}.jpg`;
-        const { data: uploadData, error: uploadError } = await supV.storage
-            .from('product-images')
-            .upload(fileName, optimizedBlob);
+            if (!uploadRes.ok) throw new Error("Erè ImageKit: " + uploadRes.statusText);
 
-        let imageUrl = "";
-        if (!uploadError) {
-            const { data: publicUrlData } = supV.storage.from('product-images').getPublicUrl(fileName);
-            imageUrl = publicUrlData.publicUrl;
-        } else {
-            imageUrl = await toBase64(file);
+            const uploadData = await uploadRes.json();
+            return uploadData.url;
+        } catch (err) {
+            throw new Error("Foto pa ka pibliye: " + err.message);
         }
-
-        const { error: dbErr } = await supV.from('user_products').insert([{
-            title: document.getElementById('prodTitle').value,
-            price: parseFloat(document.getElementById('prodPrice').value),
-            category: document.getElementById('prodCat').value,
-            description: document.getElementById('prodDesc').value,
-            image_url: imageUrl,
-            seller_id: user.id,
-            is_approved: false,
-            created_at: new Date()
-        }]);
-
-        if (dbErr) throw dbErr;
-
-        // ✅ Bay Machann nan 5 Pwen pou piblikasyon an
-        await supV.rpc('increment_points', { user_id: user.id, amount: 5 });
-
-        status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye! (+5 Pwen ⭐)";
-        setTimeout(() => window.location.href = "/dashboard.html", 2000);
-    } catch (err) {
-        status.style.color = "#ff4747"; status.innerText = "❌ Erè: " + err.message;
-        btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
     }
-};
-document.addEventListener('DOMContentLoaded', checkAuthAndStatus);
+
+    document.getElementById('uploadForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
+        const file = document.getElementById('prodImage').files[0];
+        const isFlash = document.getElementById('isFlash').checked;
+
+        btn.disabled = true; btn.innerText = "⏳ Tanpri tann...";
+        status.style.display = 'block'; status.innerText = "Piblikasyon foto a...";
+
+        try {
+            const { data: { user } } = await supV.auth.getUser();
+            if(!user) throw new Error("Ou dwe konekte anvan w pibliye.");
+
+            const imageUrl = await uploadToImageKit(file);
+
+            status.innerText = "Anrejistreman pwodwi...";
+            const { error: dbErr } = await supV.from('user_products').insert([{
+                title: document.getElementById('prodTitle').value,
+                price: parseFloat(document.getElementById('prodPrice').value),
+                old_price: isFlash ? parseFloat(document.getElementById('oldPrice').value) : null,
+                category: document.getElementById('prodCat').value,
+                description: document.getElementById('prodDesc').value,
+                image_url: imageUrl,
+                seller_id: user.id,
+                is_approved: true,
+                created_at: new Date().toISOString()
+            }]);
+
+            if (dbErr) throw dbErr;
+
+            status.style.color = "#00C853"; status.innerText = "🎉 Pwodwi pibliye ak siksè!";
+            setTimeout(() => window.location.href = "/index.html", 2000);
+        } catch (err) {
+            status.style.color = "#ff4747"; status.innerText = "❌ Erè: " + err.message;
+            btn.disabled = false; btn.innerText = "ESEYE ANKÒ";
+        }
+    };
 </script>

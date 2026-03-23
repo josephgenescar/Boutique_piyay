@@ -2,7 +2,10 @@ const CART_STORAGE_KEY = 'boutique_piyay_cart';
 let cartItems = [];
 try { cartItems = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || []; } catch(e) { cartItems = []; }
 
-const supabaseMain = typeof supabase !== 'undefined' ? supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13") : null;
+// ✅ NOUVO KLE SUPABASE
+const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+const supabaseMain = typeof supabase !== 'undefined' ? supabase.createClient(SUP_URL, SUP_KEY) : null;
 
 // --- DETEKTE AFILIASYON ---
 let currentAffiliateId = null;
@@ -84,15 +87,7 @@ function renderCart() {
 
     summary.innerHTML = `
         <table class="receipt-table" style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr>
-                    <th>Foto</th>
-                    <th>Pwodwi</th>
-                    <th style="text-align:center;">Kte</th>
-                    <th style="text-align:right;">Total</th>
-                    <th></th>
-                </tr>
-            </thead>
+            <thead><tr><th>Foto</th><th>Pwodwi</th><th style="text-align:center;">Kte</th><th style="text-align:right;">Total</th><th></th></tr></thead>
             <tbody>${tableRows}</tbody>
             <tfoot>
                 <tr class="total-row">
@@ -136,13 +131,10 @@ async function submitOrder() {
             const itemTotal = item.price * item.quantity;
             grandTotal += itemTotal;
 
-            // --- KALKIL KOMISYON OTOMATIK ---
-            const systemFee = itemTotal * 0.03; // 3% pou Boutique Piyay
+            const systemFee = itemTotal * 0.03;
             let affiliateFee = 0;
-            if (currentAffiliateId) {
-                affiliateFee = itemTotal * 0.05; // 5% pou Afilye
-            }
-            const sellerNet = itemTotal - systemFee - affiliateFee; // Res la pou Machann nan (92% oswa 97%)
+            if (currentAffiliateId) affiliateFee = itemTotal * 0.05;
+            const sellerNet = itemTotal - systemFee - affiliateFee;
 
             await supabaseMain.from('orders').insert([{
                 seller_id: sellerId,
@@ -197,94 +189,27 @@ function showReceiptView(orderId, name, phone, zone, payment, orders, grandTotal
         <button onclick="location.reload()" style="background:none; border:none; color:#64748b; cursor:pointer; font-size:12px; text-decoration:underline; width:100%; margin-top:15px;">Fè yon lòt kòmand</button>`;
 }
 
-// --- SEARCH ENGINE FIX ---
+// --- SEARCH ENGINE ---
 let staticSearchData = [];
-async function initSearch() {
-    try {
-        const resp = await fetch('/search.json');
-        staticSearchData = await resp.json();
-    } catch (e) { console.error("Static search load error", e); }
-}
+async function initSearch() { try { const resp = await fetch('/search.json'); staticSearchData = await resp.json(); } catch (e) {} }
 
 window.liveSearch = async function() {
     const input = document.getElementById('search-input');
     const resultsDiv = document.getElementById('search-results');
     if (!input || !resultsDiv) return;
-
     const query = input.value.toLowerCase().trim();
-    if (query.length < 2) {
-        resultsDiv.style.display = 'none';
-        return;
-    }
+    if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
 
-    // 1. Chèche nan Static Data (Fichye yo)
-    let matches = staticSearchData.filter(p =>
-        p.title.toLowerCase().includes(query) ||
-        (p.category && p.category.toLowerCase().includes(query))
-    );
-
-    // 2. Chèche nan Supabase (Pwodwi Machann yo)
+    let matches = staticSearchData.filter(p => p.title.toLowerCase().includes(query));
     if (supabaseMain) {
-        const { data: dbMatches } = await supabaseMain
-            .from('user_products')
-            .select('id, title, price, image_url, category')
-            .ilike('title', `%${query}%`)
-            .limit(5);
-
-        if (dbMatches) {
-            dbMatches.forEach(dm => {
-                // Evite kopi si pwodwi a ta nan de kote yo
-                if (!matches.find(m => m.id === dm.id)) {
-                    matches.push({
-                        title: dm.title,
-                        url: `/pwodwi-machann.html?id=${dm.id}`,
-                        price: dm.price,
-                        image: dm.image_url,
-                        category: dm.category
-                    });
-                }
-            });
-        }
+        const { data: dbMatches } = await supabaseMain.from('user_products').select('id, title, price, image_url, category').ilike('title', `%${query}%`).limit(5);
+        if (dbMatches) dbMatches.forEach(dm => {
+            if (!matches.find(m => m.id === dm.id)) matches.push({ title: dm.title, url: `/pwodwi-machann.html?id=${dm.id}`, price: dm.price, image: dm.image_url });
+        });
     }
-
-    matches = matches.slice(0, 8); // Limite rezilta yo
-
-    if (matches.length === 0) {
-        resultsDiv.innerHTML = '<div style="padding:15px; text-align:center; color:#666; font-size:13px;">Okenn pwodwi yo pa jwenn 🧐</div>';
-    } else {
-        resultsDiv.innerHTML = matches.map(p => `
-            <a href="${p.url}" style="display:flex; align-items:center; gap:12px; padding:10px; text-decoration:none; border-bottom:1px solid #f8fafc;">
-                <img src="${p.image}" style="width:45px; height:45px; object-fit:cover; border-radius:8px;">
-                <div style="flex:1;">
-                    <div style="font-weight:700; color:#0f172a; font-size:13px; line-height:1.2;">${p.title}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                        <span style="color:#ff4747; font-weight:900; font-size:12px;">${p.price} HTG</span>
-                        <span style="font-size:10px; color:#94a3b8; background:#f1f5f9; padding:2px 6px; border-radius:4px;">${p.category || 'Piyay'}</span>
-                    </div>
-                </div>
-            </a>
-        `).join('');
-    }
+    resultsDiv.innerHTML = matches.slice(0, 8).map(p => `<a href="${p.url}" style="display:flex; align-items:center; gap:12px; padding:10px; text-decoration:none; border-bottom:1px solid #f8fafc;"><img src="${p.image}" style="width:40px; height:40px; object-fit:cover; border-radius:8px;"><div><div style="font-weight:700; color:#0f172a; font-size:12px;">${p.title}</div><div style="color:#ff4747; font-weight:900; font-size:11px;">${p.price} HTG</div></div></a>`).join('');
     resultsDiv.style.display = 'block';
 };
 
-// Fermer les résultats si on clique ailleurs
-document.addEventListener('click', (e) => {
-    const res = document.getElementById('search-results');
-    const input = document.getElementById('search-input');
-    if (res && !res.contains(e.target) && e.target !== input) {
-        res.style.display = 'none';
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartUI();
-    initSearch();
-    if(!window.html2canvas) {
-        const script = document.createElement('script');
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-        document.head.appendChild(script);
-    }
-});
-
-window.orderProduct=orderProduct; window.openOrderModal=openOrderModal; window.closeOrderModal=closeOrderModal; window.openCart=openCart; window.submitOrder=submitOrder; window.removeFromCart=removeFromCart; window.chgQty=chgQty; window.downloadReceipt=() => {};
+document.addEventListener('DOMContentLoaded', () => { updateCartUI(); initSearch(); });
+window.orderProduct=orderProduct; window.openOrderModal=openOrderModal; window.closeOrderModal=closeOrderModal; window.openCart=openCart; window.submitOrder=submitOrder; window.removeFromCart=removeFromCart; window.chgQty=chgQty;

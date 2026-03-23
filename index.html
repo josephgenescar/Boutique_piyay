@@ -55,9 +55,9 @@ title: Akèy - Boutique Piyay
             <h2 style="font-size: 22px; margin: 0; font-weight: 800; display: inline-block;">Vante Flash</h2>
         </div>
         <div id="countdown" class="timer-modern" style="display: flex; align-items: center; gap: 8px;">
-            <div class="t-segment" style="background: #0f172a; color: white; padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 4px;"><span id="hours" style="font-size: 18px; font-weight: 900;">02</span><small style="font-size: 10px; opacity: 0.8;">h</small></div>
+            <div class="t-segment" style="background: #0f172a; color: white; padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 4px;"><span id="hours" style="font-size: 18px; font-weight: 900;">24</span><small style="font-size: 10px; opacity: 0.8;">h</small></div>
             <div class="t-divider" style="font-weight: 900; color: #0f172a;">:</div>
-            <div class="t-segment" style="background: #0f172a; color: white; padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 4px;"><span id="minutes" style="font-size: 18px; font-weight: 900;">30</span><small style="font-size: 10px; opacity: 0.8;">m</small></div>
+            <div class="t-segment" style="background: #0f172a; color: white; padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 4px;"><span id="minutes" style="font-size: 18px; font-weight: 900;">00</span><small style="font-size: 10px; opacity: 0.8;">m</small></div>
             <div class="t-divider" style="font-weight: 900; color: #0f172a;">:</div>
             <div class="t-segment" style="background: #0f172a; color: white; padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 4px;"><span id="seconds" style="font-size: 18px; font-weight: 900;">00</span><small style="font-size: 10px; opacity: 0.8;">s</small></div>
         </div>
@@ -129,20 +129,31 @@ title: Akèy - Boutique Piyay
 </style>
 
 <script>
-    const supabaseHome = typeof supabase !== 'undefined' ? supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13") : null;
+    const supabaseHome = typeof supabase !== 'undefined' ? supabase.createClient("https://letyferfjpxmstohvgcj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg") : null;
     let allSellers = [];
     let allProducts = [];
 
-    function startFlashTimers() {
+    // ✅ REVÈY BOUK 24H (PÈMANAN)
+    function startInfiniteFlashTimer() {
         const hEl = document.getElementById('hours');
         const mEl = document.getElementById('minutes');
         const sEl = document.getElementById('seconds');
-        if (!hEl || !mEl || !sEl) return;
-        let time = 3600 * 2.5;
+        if (!hEl) return;
+
         setInterval(() => {
-            let h = Math.floor(time / 3600); let m = Math.floor((time % 3600) / 60); let s = time % 60;
-            hEl.innerText = h < 10 ? '0' + h : h; mEl.innerText = m < 10 ? '0' + m : m; sEl.innerText = s < 10 ? '0' + s : s;
-            if (time > 0) time--; else time = 3600 * 2.5;
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = tomorrow - now;
+
+            let h = Math.floor(diff / (1000 * 60 * 60));
+            let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            hEl.innerText = h.toString().padStart(2, '0');
+            mEl.innerText = m.toString().padStart(2, '0');
+            sEl.innerText = s.toString().padStart(2, '0');
+
+            if (h === 0 && m === 0 && s === 0) loadAllData();
         }, 1000);
     }
 
@@ -154,15 +165,21 @@ title: Akèy - Boutique Piyay
             const { data: sellers } = await supabaseHome.from('profiles').select('*').eq('is_active_seller', true);
             allSellers = sellers || [];
 
+            // ✅ RESTORE PWODWI AK MACHANN JAN YO TE YE
             renderSellers(allSellers);
             renderProducts(allProducts);
-            renderFlashSlider(allProducts.filter(p => p.old_price && p.old_price > p.price));
+            renderBoosted(allProducts.filter(p => p.is_boosted === true));
 
-            // CHAJMAN PWODWI VEDÈT (BOOSTED)
-            const boosted = allProducts.filter(p => p.is_boosted === true);
-            renderBoosted(boosted);
+            // ✅ FILTRE PWODWI FLASH (BACKGROUND)
+            const now = new Date().getTime();
+            const flashProds = allProducts.filter(p => {
+                if (!p.old_price) return false;
+                const createdAt = new Date(p.created_at).getTime();
+                return (now - createdAt) / (1000 * 60 * 60) < 24;
+            });
+            renderFlashSlider(flashProds);
 
-            startFlashTimers();
+            startInfiniteFlashTimer();
         } catch (e) { console.error(e); }
     }
 
@@ -170,14 +187,7 @@ title: Akèy - Boutique Piyay
         const section = document.getElementById('boosted-section');
         const grid = document.getElementById('boosted-grid');
         if (!grid || !section) return;
-
-        // ✅ SI PA GEN PWODWI VEDÈT, KACHE SEKSYON AN NÈT
-        if (list.length === 0) {
-            section.style.display = 'none';
-            return;
-        }
-
-        // ✅ SI GEN PWODWI, MONTRE SEKSYON AN
+        if (list.length === 0) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         grid.innerHTML = list.map(p => `
             <div style="background:white; padding:20px; border-radius:25px; box-shadow: 0 15px 35px rgba(255, 71, 71, 0.1); border:2px solid #fff1f1; display:flex; flex-direction:column; position:relative;">
@@ -220,10 +230,13 @@ title: Akèy - Boutique Piyay
             </div>`).join('');
     }
 
-    function renderFlashSlider(flashProds) {
+    function renderFlashSlider(list) {
+        const section = document.getElementById('flash-sale');
         const slider = document.getElementById('flash-slider-inner');
-        if (!slider || flashProds.length === 0) return;
-        slider.innerHTML = flashProds.map(p => {
+        if (!slider || !section) return;
+        if (list.length === 0) { section.style.display = 'none'; return; }
+        section.style.display = 'block';
+        slider.innerHTML = list.map(p => {
             const discount = Math.round(((p.old_price - p.price) / p.old_price) * 100);
             return `
                 <div class="flash-card-mini">

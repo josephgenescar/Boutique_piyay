@@ -37,15 +37,15 @@
     </div>
 
     <script>
-        const SUP_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
-        const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+        const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+        const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
         const supabaseA = supabase.createClient(SUP_URL, SUP_KEY);
         let currentUser = null;
         let currentAff = null;
 
         async function initAffiliate() {
             const { data: { user } } = await supabaseA.auth.getUser();
-            if (!user) return window.location.href = "/login.html";
+            if (!user) return window.location.href = "/login.html?redirect=/affiliate.html";
             currentUser = user;
 
             const { data: aff } = await supabaseA.from('affiliates').select('*').eq('user_id', user.id).single();
@@ -69,7 +69,7 @@
             const { data: prof } = await supabaseA.from('profiles').select('is_active_seller').eq('id', currentUser.id).single();
             if (prof && !prof.is_active_seller) {
                 document.getElementById('seller-promo-box').style.display = 'block';
-            } else {
+            } else if(document.getElementById('already-seller')) {
                 document.getElementById('already-seller').style.display = 'block';
             }
         }
@@ -88,12 +88,12 @@
         }
 
         function renderDashboard(aff) {
-            const refLink = `https://boutique-piyay.netlify.app/?ref=${aff.referral_code}`;
+            const refLink = `${window.location.origin}/?ref=${aff.referral_code}`;
             document.getElementById('aff-content').innerHTML = `
                 <div class="aff-card">
                     <div class="stat-lbl">Kòd Referans ou</div>
                     <div style="font-size:28px; font-weight:900; color:#ff4747; margin:5px 0;">${aff.referral_code}</div>
-                    <div class="stat-lbl" style="margin-top:15px;">Lyen Boutik ou (Paj Akèy)</div>
+                    <div class="stat-lbl" style="margin-top:15px;">Lyen Pataje ou</div>
                     <div class="ref-link-box">
                         <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:75%;">${refLink}</span>
                         <button class="copy-btn" onclick="copyText('${refLink}')">Kopye</button>
@@ -103,31 +103,18 @@
                 <div class="stat-grid">
                     <div class="stat-box">
                         <span id="wallet-balance" class="stat-val">0 HTG</span>
-                        <span class="stat-lbl">Balans Disponib</span>
+                        <span class="stat-lbl">Balans</span>
                     </div>
                     <div class="stat-box">
-                        <span class="stat-val">${aff.total_referrals}</span>
+                        <span class="stat-val">${aff.total_referrals || 0}</span>
                         <span class="stat-lbl">Vant Refere</span>
                     </div>
                 </div>
 
-                <button id="withdraw-btn" class="btn-withdraw" onclick="requestWithdrawal()" disabled>Retire Lajan (Min 500 HTG)</button>
+                <button id="withdraw-btn" class="btn-withdraw" onclick="requestWithdrawal()" disabled>Retire Lajan</button>
 
-<div class="aff-card" style="padding: 0; overflow: hidden; margin-top: 20px; background: #000;">
-    <div style="position: relative; padding-top: 56.25%;">
-        <iframe src="LINK_VIDEYO_AFILYE_LAN" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
-    </div>
-    <div style="padding: 15px; background: white; text-align: center;">
-        <h4 style="margin: 0; font-size: 14px; color: #0f172a;">📺 Gade kijan pou w fè kòb kòm Afilye</h4>
-    </div>
-</div>
                 <div class="prod-link-gen">
-                    <h4 style="margin:0 0 15px 0; font-size:16px; color:#ff4747;">🛍️ Kouman pou w kreye lyen pou yon pwodwi?</h4>
-                    <ol class="step-list">
-                        <li>Ale sou sit la : <a href="https://boutique-piyay.netlify.app" target="_blank" style="font-weight:800; color:#0f172a;">boutique-piyay.netlify.app</a></li>
-                        <li>Klike sou pwodwi ou vle vann nan epi <b>kopye adrès (URL)</b> li anwo nan navigatè w la.</li>
-                        <li>Kole lyen an nan bwat blan anba a epi klike sou bouton <b>OK</b> wouj la.</li>
-                    </ol>
+                    <h4 style="margin:0 0 15px 0; font-size:16px; color:#ff4747;">🛍️ Lyen pou yon pwodwi?</h4>
                     <div style="display:flex; gap:8px;">
                         <input type="text" id="prod-url-input" placeholder="Kole lyen pwodwi a isit la..." style="flex:1; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:13px; outline:none;">
                         <button onclick="generateProdLink()" style="background:#ff4747; color:white; border:none; padding:0 25px; border-radius:10px; font-weight:800; cursor:pointer;">OK</button>
@@ -142,63 +129,14 @@
 
                 <div id="seller-promo-box" class="seller-promo" style="display: none;">
                     <h4 style="margin: 0 0 10px 0; color: #3b82f6;">🏪 Vle vann pwòp pwodwi ou tou?</h4>
-                    <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Vin yon machann pou w ka pibliye pwodwi pa w nan marketplace la.</p>
                     <button onclick="activateSeller()" style="background: #0f172a; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer;">VIN YON MACHANN 🚀</button>
-                </div>
-                <div id="already-seller" class="seller-promo" style="display: none; background: #f0fdf4; border-color: #22c55e;">
-                    <p style="font-size: 13px; color: #15803d; font-weight: 700;">✅ Ou se yon Machann tou!</p>
-                    <a href="/dashboard.html" style="color: #15803d; font-size: 12px;">Ale nan Dashboard Machann →</a>
                 </div>
 
                 <h3 style="margin:35px 0 10px 0; font-size:16px; font-weight:800;">📜 Istwa Komisyon</h3>
                 <div id="tx-list" class="aff-card" style="padding:0; overflow:hidden;">
-                    <div style="padding:30px; text-align:center; color:#94a3b8;">Chaje tranzaksyon...</div>
+                    <div style="padding:30px; text-align:center; color:#94a3b8;">Okenn tranzaksyon.</div>
                 </div>
             `;
-            updateWalletUI();
-        }
-
-        async function updateWalletUI() {
-            const res = await fetch(`/.netlify/functions/wallet/me?userId=${currentUser.id}`);
-            const wallet = await res.json();
-            if (wallet && !wallet.error) {
-                document.getElementById('wallet-balance').innerText = `${wallet.balance} HTG`;
-                if (wallet.balance >= 500) {
-                    document.getElementById('withdraw-btn').disabled = false;
-                    document.getElementById('withdraw-btn').innerText = `Retire ${wallet.balance} HTG 💸`;
-                }
-            }
-        }
-
-        async function loadTransactions() {
-            const res = await fetch(`/.netlify/functions/wallet/transactions?userId=${currentUser.id}`);
-            const txs = await res.json();
-            const list = document.getElementById('tx-list');
-            if (!txs || txs.length === 0) {
-                list.innerHTML = '<div style="padding:30px; text-align:center; color:#94a3b8;">Okenn komisyon poko fèt ankò.</div>';
-                return;
-            }
-            list.innerHTML = txs.map(t => `
-                <div class="tx-item">
-                    <div>
-                        <div style="font-weight:700;">${t.product_title || (t.type === 'commission' ? 'Komisyon Afilyasyon' : 'Retrè Lajan')}</div>
-                        <small style="color:#94a3b8;">${new Date(t.created_at).toLocaleDateString()}</small>
-                    </div>
-                    <div style="color:${t.type === 'commission' ? '#22c55e' : '#ef4444'}; font-weight:800; font-size:15px;">${t.type === 'commission' ? '+' : '-'}${t.amount} HTG</div>
-                </div>
-            `).join('');
-        }
-
-        async function requestWithdrawal() {
-            const amount = prompt("Konbe ou vle retire?");
-            if (!amount || isNaN(amount)) return;
-            const res = await fetch('/.netlify/functions/wallet/withdraw?userId=' + currentUser.id, {
-                method: 'POST',
-                body: JSON.stringify({ amount: parseFloat(amount) })
-            });
-            const data = await res.json();
-            alert(data.message || data.error);
-            if (!data.error) location.reload();
         }
 
         function generateProdLink() {
@@ -211,7 +149,7 @@
         }
 
         function copyGenerated() { copyText(document.getElementById('new-url').innerText); }
-        function copyText(t) { navigator.clipboard.writeText(t); alert("Lyen kopye ak siksè!"); }
+        function copyText(t) { navigator.clipboard.writeText(t); alert("Lyen kopye!"); }
 
         initAffiliate();
     </script>

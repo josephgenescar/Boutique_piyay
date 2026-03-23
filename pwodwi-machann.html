@@ -42,7 +42,10 @@ title: Detay Pwodwi - Marketplace
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supV = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    // ✅ NOUVO KLE SUPABASE
+    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    const supV = supabase.createClient(SUP_URL, SUP_KEY);
 
     async function loadData() {
         const id = new URLSearchParams(window.location.search).get('id');
@@ -57,9 +60,6 @@ title: Detay Pwodwi - Marketplace
             document.getElementById('pImg').src = prod.image_url;
             document.getElementById('pDesc').innerText = prod.description || "";
 
-            const sellerPhone = prod.profiles ? prod.profiles.whatsapp : '';
-            const sellerId = prod.seller_id;
-
             if (prod.old_price) {
                 document.getElementById('pOldPrice').innerText = prod.old_price;
                 document.getElementById('pOldPrice').style.display = 'inline';
@@ -67,15 +67,15 @@ title: Detay Pwodwi - Marketplace
 
             if (prod.profiles) {
                 document.getElementById('sellerName').innerText = prod.profiles.full_name;
-                document.getElementById('sellerLoc').innerText += prod.profiles.address || "Zòn non-defini";
+                document.getElementById('sellerLoc').innerText += prod.profiles.address || "Ayiti";
                 const soc = document.getElementById('sellerSocials');
-                if (prod.profiles.facebook_url) soc.innerHTML += `<a href="${prod.profiles.facebook_url}" target="_blank">🔵 Facebook</a>`;
-                if (prod.profiles.instagram_url) soc.innerHTML += `<a href="${prod.profiles.instagram_url}" target="_blank">📸 Instagram</a>`;
+                if (prod.profiles.facebook_url) soc.innerHTML += `<a href="${prod.profiles.facebook_url}" target="_blank" style="text-decoration:none;">🔵 Facebook</a>`;
+                if (prod.profiles.whatsapp) soc.innerHTML += `<a href="https://wa.me/${prod.profiles.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="text-decoration:none;">🟢 WhatsApp</a>`;
             }
 
-            document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url, sellerId, sellerPhone);
+            document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url);
             document.getElementById('buyBtn').onclick = () => {
-                orderProduct(prod.title, prod.price, prod.id, prod.image_url, sellerId, sellerPhone);
+                orderProduct(prod.title, prod.price, prod.id, prod.image_url);
                 openCart();
             };
 

@@ -166,16 +166,24 @@
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
+    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+
     async function updateHeaderAuth() {
         if (typeof supabase !== 'undefined') {
-            const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+            const sup = window._supabaseClient || supabase.createClient(SUP_URL, SUP_KEY);
             window._supabaseClient = sup;
             const { data: { user } } = await sup.auth.getUser();
+            const authLinks = document.getElementById('authLinks');
+            const userInfo = document.getElementById('userInfo');
+
             if (user) {
-                const authLinks = document.getElementById('authLinks');
-                const userInfo = document.getElementById('userInfo');
                 if (authLinks) authLinks.style.display = 'none';
                 if (userInfo) userInfo.style.display = 'flex';
+                window._currentUserId = user.id;
+            } else {
+                if (authLinks) authLinks.style.display = 'flex';
+                if (userInfo) userInfo.style.display = 'none';
             }
         }
     }
@@ -185,9 +193,6 @@
 <script>
 // ── NOTIFIKASYON SYSTEM (Supabase Realtime) ──────────────────
 (function() {
-  const SUPABASE_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
-
   const ICONS = {
     new_order: "🛍️", order_confirmed: "✅", order_delivered: "📦",
     delivery_coming: "🛵", commission_earned: "💰", payment_received: "💳",
@@ -247,8 +252,8 @@
   }
 
   async function loadNotifs(userId) {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/notifications?user_id=eq.${userId}&order=created_at.desc&limit=30`, {
-      headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY }
+    const res = await fetch(`${SUP_URL}/rest/v1/notifications?user_id=eq.${userId}&order=created_at.desc&limit=30`, {
+      headers: { "apikey": SUP_KEY, "Authorization": "Bearer " + SUP_KEY }
     });
     if (res.ok) {
       allNotifs = await res.json();
@@ -272,9 +277,9 @@
   window.readNotif = async function(id) {
     allNotifs = allNotifs.map(n => n.id === id ? {...n, read: true} : n);
     renderNotifs();
-    await fetch(`${SUPABASE_URL}/rest/v1/notifications?id=eq.${id}`, {
+    await fetch(`${SUP_URL}/rest/v1/notifications?id=eq.${id}`, {
       method: "PATCH",
-      headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": "application/json" },
+      headers: { "apikey": SUP_KEY, "Authorization": "Bearer " + SUP_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({ read: true })
     });
   };
@@ -284,9 +289,9 @@
     if (!userId) return;
     allNotifs = allNotifs.map(n => ({...n, read: true}));
     renderNotifs();
-    await fetch(`${SUPABASE_URL}/rest/v1/notifications?user_id=eq.${userId}&read=eq.false`, {
+    await fetch(`${SUP_URL}/rest/v1/notifications?user_id=eq.${userId}&read=eq.false`, {
       method: "PATCH",
-      headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": "application/json" },
+      headers: { "apikey": SUP_KEY, "Authorization": "Bearer " + SUP_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({ read: true })
     });
   };
@@ -317,9 +322,8 @@
     } catch(_) {}
   }
 
-  // Démarrage
   async function init() {
-    supClient = window._supabaseClient || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    supClient = window._supabaseClient || supabase.createClient(SUP_URL, SUP_KEY);
     window._supabaseClient = supClient;
     const { data: { user } } = await supClient.auth.getUser();
     if (!user) return;

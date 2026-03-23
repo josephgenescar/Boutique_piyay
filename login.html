@@ -6,7 +6,7 @@ title: Konekte - Boutique Piyay
 <div class="container" style="max-width: 500px; padding: 60px 20px;">
     <div class="auth-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
         <h1 style="font-family: 'Sora', sans-serif; font-weight: 800; margin-bottom: 10px;">👋 Bonretou!</h1>
-        <p style="color: #666; margin-bottom: 30px;">Konekte sou kont ou pou w jere boutik ou a.</p>
+        <p style="color: #666; margin-bottom: 30px;">Konekte sou kont ou pou w jere kont ou.</p>
 
         <form id="loginForm">
             <div style="margin-bottom: 20px; text-align: left;">
@@ -32,9 +32,7 @@ title: Konekte - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient("https://letyferfjpxmstohvgcj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg");
 
     document.getElementById('loginForm').onsubmit = async (e) => {
         e.preventDefault();
@@ -46,23 +44,25 @@ title: Konekte - Boutique Piyay
         btn.disabled = true;
         btn.innerText = "⏳ Verifikasyon...";
 
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
         if (error) {
             msg.innerText = "❌ Erè: " + error.message;
-            msg.style.color = "red";
-            msg.style.display = "block";
-            btn.disabled = false;
-            btn.innerText = "Konekte Kounye a";
+            msg.style.color = "red"; msg.style.display = "block";
+            btn.disabled = false; btn.innerText = "Konekte Kounye a";
         } else {
             msg.innerText = "✅ Siksè! Wap redireksyon...";
-            msg.style.color = "green";
-            msg.style.display = "block";
-            localStorage.setItem('piyay_user', JSON.stringify(data.user));
-            setTimeout(() => { window.location.href = "/dashboard.html"; }, 1500);
+            msg.style.color = "green"; msg.style.display = "block";
+
+            // ✅ REDIREKSYON ENTELLIJAN:
+            // Si moun nan te soti nan paj afilye, voye l retounen la. Sinon, voye l sou dashboard.
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+
+            setTimeout(() => {
+                if (redirect) window.location.href = redirect;
+                else window.location.href = "/dashboard.html";
+            }, 1000);
         }
     };
 </script>
