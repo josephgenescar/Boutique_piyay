@@ -17,9 +17,16 @@ title: Modifye Pwodwi - Boutique Piyay
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div class="form-group">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">PRI (HTG)</label>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">PRI AKTYÈL (HTG)</label>
                     <input type="number" id="editPrice" required style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
                 </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">ANSYEN PRI (POU VANTE FLASH)</label>
+                    <input type="number" id="editOldPrice" placeholder="Eg: 2000" style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; margin-bottom: 20px;">
                 <div class="form-group">
                     <label style="display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px;">CHWAZI KATEGORI</label>
                     <select id="editCat" required style="width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px; background: #f8fafc;">
@@ -47,7 +54,10 @@ title: Modifye Pwodwi - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supE = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    const supE = supabase.createClient(
+        "https://letyferfjpxmstohvgcj.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
+    );
     let prodId = new URLSearchParams(window.location.search).get('id');
 
     async function loadProd() {
@@ -59,6 +69,7 @@ title: Modifye Pwodwi - Boutique Piyay
 
         document.getElementById('editTitle').value = p.title;
         document.getElementById('editPrice').value = p.price;
+        document.getElementById('editOldPrice').value = p.old_price || "";
         document.getElementById('editCat').value = p.category;
         document.getElementById('editDesc').value = p.description || "";
 
@@ -74,6 +85,7 @@ title: Modifye Pwodwi - Boutique Piyay
         const { error } = await supE.from('user_products').update({
             title: document.getElementById('editTitle').value,
             price: parseFloat(document.getElementById('editPrice').value),
+            old_price: document.getElementById('editOldPrice').value ? parseFloat(document.getElementById('editOldPrice').value) : null,
             category: document.getElementById('editCat').value,
             description: document.getElementById('editDesc').value
         }).eq('id', prodId);

@@ -1,90 +1,115 @@
 ---
 layout: default
-title: Detay Pwodwi - Marketplace
+title: Detay Pwodwi
 ---
 
-<div id="product-view" class="container" style="padding: 40px 20px; min-height: 80vh;">
-    <!-- LOADING -->
-    <div id="loading" style="text-align: center; padding: 100px 0;">
-        <div style="font-size: 50px; animation: spin 1s linear infinite;">⏳</div>
-        <p>Chajman detay pwodwi...</p>
+<div id="app" class="container" style="padding: 50px 20px; min-height: 80vh; text-align: center; font-family: sans-serif;">
+    <div id="loader">
+        <div style="font-size: 50px; animation: spin 2s linear infinite; display: inline-block;">⏳</div>
+        <h2 id="msg">Ap chaje...</h2>
     </div>
 
-    <!-- CONTENT -->
-    <div id="content" style="display: none;">
+    <div id="error-display" style="display:none; color: red; background: #ffeeee; padding: 20px; border-radius: 10px; border: 1px solid red;">
+        <h3>⚠️ Erè nan Sistèm nan</h3>
+        <p id="error-text"></p>
+        <button onclick="location.reload()" style="padding: 10px 20px; cursor: pointer;">Eseye ankò</button>
+    </div>
+
+    <div id="product-content" style="display:none; text-align: left;">
         <div style="display: flex; gap: 40px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 300px;">
-                <img id="pImg" src="" style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <img id="mainImg" src="" style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             </div>
             <div style="flex: 1.2; min-width: 300px;">
-                <h1 id="pTitle" style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 900;"></h1>
-                <div style="margin-bottom: 20px;">
-                    <span id="pPrice" style="font-size: 32px; font-weight: 800; color: #ff4747;"></span>
-                    <span id="pOldPrice" style="text-decoration: line-through; color: #aaa; margin-left: 10px; display: none;"></span>
-                    <span style="font-weight: 800;"> HTG</span>
+                <h1 id="title" style="font-size: 2.5rem; margin-bottom: 10px;"></h1>
+                <div style="font-size: 30px; font-weight: bold; color: #ff4747; margin-bottom: 20px;">
+                    <span id="price"></span> HTG
                 </div>
-                <div id="pDesc" style="line-height: 1.6; color: #444; margin-bottom: 30px; white-space: pre-wrap;"></div>
+                <p id="desc" style="line-height: 1.6; color: #555; margin-bottom: 30px;"></p>
 
-                <div style="background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 30px;">
-                    <div id="sellerName" style="font-weight: 800; font-size: 18px;"></div>
-                    <div id="sellerLoc" style="color: #ff4747; font-weight: 700; margin-top: 5px;">📍 </div>
-                    <div id="sellerSocials" style="display: flex; gap: 10px; margin-top: 15px;"></div>
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+                    <h4 id="seller">Machann: ...</h4>
+                    <p id="loc">📍 ...</p>
+                    <div id="wa-link"></div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <button id="addBtn" style="padding: 18px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">🛒 Panye</button>
-                    <button id="buyBtn" style="padding: 18px; background: #ff4747; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">⚡ Achte</button>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btnPanye" style="flex:1; padding: 15px; background: #333; color: white; border: none; border-radius: 10px; cursor: pointer;">Mete nan Panye</button>
+                    <button id="btnAchte" style="flex:1; padding: 15px; background: #ff4747; color: white; border: none; border-radius: 10px; cursor: pointer;">Achte Kounye a</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // ✅ NOUVO KLE SUPABASE
-    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-    const supV = supabase.createClient(SUP_URL, SUP_KEY);
+    const S_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
-    async function loadData() {
-        const id = new URLSearchParams(window.location.search).get('id');
-        if (!id) return;
+    async function start() {
+        const msg = document.getElementById('msg');
+        const errDisp = document.getElementById('error-display');
+        const errTxt = document.getElementById('error-text');
 
         try {
-            const { data: prod, error } = await supV.from('user_products').select('*, profiles(*)').eq('id', id).single();
-            if (error || !prod) throw error;
+            const id = new URLSearchParams(window.location.search).get('id');
+            if (!id) throw new Error("ID pwodwi a manke nan lyen an.");
 
-            document.getElementById('pTitle').innerText = prod.title;
-            document.getElementById('pPrice').innerText = prod.price;
-            document.getElementById('pImg').src = prod.image_url;
-            document.getElementById('pDesc').innerText = prod.description || "";
+            msg.innerText = "Koneksyon ak Supabase...";
+            const client = supabase.createClient(S_URL, S_KEY);
 
-            if (prod.old_price) {
-                document.getElementById('pOldPrice').innerText = prod.old_price;
-                document.getElementById('pOldPrice').style.display = 'inline';
+            msg.innerText = "Rechèch pwodwi...";
+            const { data: p, error } = await client.from('user_products').select('*').eq('id', id).maybeSingle();
+
+            if (error) throw error;
+            if (!p) throw new Error("Pwodwi sa a pa egziste nan baz done a.");
+
+            // Afiche done
+            document.getElementById('title').innerText = p.title;
+            document.getElementById('price').innerText = p.price;
+            document.getElementById('mainImg').src = p.image_url;
+            document.getElementById('desc').innerText = p.description || "";
+
+            // Machann
+            if (p.seller_id) {
+                const { data: prof } = await client.from('profiles').select('*').eq('id', p.seller_id).maybeSingle();
+                if (prof) {
+                    document.getElementById('seller').innerText = "Machann: " + (prof.full_name || "Boutique Piyay");
+                    document.getElementById('loc').innerText = "📍 " + (prof.address || "Ayiti");
+                    const wa = prof.whatsapp_number || prof.whatsapp;
+                    if (wa) {
+                        document.getElementById('wa-link').innerHTML = `<a href="https://wa.me/${wa.replace(/[^0-9]/g, '')}" target="_blank" style="color: green; font-weight: bold; text-decoration: none;">💬 Ekri machann nan sou WhatsApp</a>`;
+                    }
+                }
             }
 
-            if (prod.profiles) {
-                document.getElementById('sellerName').innerText = prod.profiles.full_name;
-                document.getElementById('sellerLoc').innerText += prod.profiles.address || "Ayiti";
-                const soc = document.getElementById('sellerSocials');
-                if (prod.profiles.facebook_url) soc.innerHTML += `<a href="${prod.profiles.facebook_url}" target="_blank" style="text-decoration:none;">🔵 Facebook</a>`;
-                if (prod.profiles.whatsapp) soc.innerHTML += `<a href="https://wa.me/${prod.profiles.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="text-decoration:none;">🟢 WhatsApp</a>`;
-            }
-
-            document.getElementById('addBtn').onclick = () => orderProduct(prod.title, prod.price, prod.id, prod.image_url);
-            document.getElementById('buyBtn').onclick = () => {
-                orderProduct(prod.title, prod.price, prod.id, prod.image_url);
-                openCart();
+            // Panye
+            document.getElementById('btnPanye').onclick = () => {
+                if (window.orderProduct) orderProduct(p.title, p.price, p.id, p.image_url);
+                else alert("Pwodwi ajoute!");
+            };
+            document.getElementById('btnAchte').onclick = () => {
+                if (window.orderProduct) {
+                    orderProduct(p.title, p.price, p.id, p.image_url);
+                    if (window.openCart) openCart();
+                }
             };
 
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('content').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('product-content').style.display = 'block';
+
         } catch (e) {
-            document.getElementById('loading').innerHTML = `<h2 style="color:red;">Erè nan chaje pwodwi a</h2><p>${e.message}</p>`;
+            console.error(e);
+            document.getElementById('loader').style.display = 'none';
+            errDisp.style.display = 'block';
+            errTxt.innerText = e.message;
         }
     }
-    document.addEventListener('DOMContentLoaded', loadData);
+
+    window.onload = start;
 </script>
-<style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>
+
+<style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+</style>

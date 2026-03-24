@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Machann - Boutique Piyay</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -58,8 +58,7 @@
 
         .sidebar-logo {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            align-items: center; gap: 12px;
             padding: 0 8px 24px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
             margin-bottom: 8px;
@@ -118,10 +117,7 @@
         .btn-logout:hover { background: rgba(255,71,71,0.2); }
 
         /* MAIN CONTENT */
-        .main {
-            padding: 32px;
-            overflow-x: hidden;
-        }
+        .main { padding: 32px; overflow-x: hidden; }
 
         .page-header {
             display: flex;
@@ -269,6 +265,7 @@
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
         .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
 
@@ -281,12 +278,16 @@
         .prod-price { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
         .prod-price span { font-size: 11px; font-weight: 600; color: var(--gray); }
 
-        .prod-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 14px; }
-        .btn-sm { padding: 9px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; transition: 0.2s; }
+        .prod-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 8px; }
+        .prod-actions-row2 { padding: 0 14px 14px; }
+        .btn-sm { padding: 9px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; transition: 0.2s; display: block; width: 100%; }
         .btn-edit { background: #f1f5f9; color: var(--dark); }
         .btn-edit:hover { background: #e2e8f0; }
         .btn-delete { background: #fee2e2; color: #ef4444; }
         .btn-delete:hover { background: #fecaca; }
+        .btn-flash { background: #fffbeb; color: #d97706; border: 1.5px dashed #f59e0b; }
+        .btn-flash:hover { background: #fef3c7; }
+        .btn-unflash { background: #0f172a; color: #fbbf24; }
 
         /* WALLET */
         .wallet-card {
@@ -702,6 +703,16 @@
                     📋 KOPYE KLE API
                 </button>
             </div>
+            <!-- NOUVO: Bwat pou Lyen Done JSON - Menm style ak Claude AI -->
+            <div class="api-key-card" style="margin-top: 20px;">
+                <div class="form-label">🛍️ Done Pwodwi yo (JSON)</div>
+                <div class="api-key-display" id="json-link-display" style="color: #10b981; font-size: 11px;">
+                    Loading...
+                </div>
+                <button onclick="copyJsonLink()" class="btn-save" style="background: var(--dark); box-shadow: none; margin-top: 10px;">
+                    📋 KOPYE LYEN JSON
+                </button>
+            </div>
         </div>
 
     </main>
@@ -728,9 +739,27 @@
         const { data: { user } } = await supD.auth.getUser();
         if (!user) return window.location.href = "/login.html";
         currentUser = user;
+
+        // ✅ EFASMAN OTO PWODWI FLASH KI GEN PLIS PASE 24H
+        await cleanupFlashSales(user.id);
+
         loadAll();
         syncPointsWithSales();
         initChart();
+        const jsonLink = document.getElementById('json-link-display');
+        if (jsonLink) jsonLink.innerText = window.location.origin + "/search.json";
+    }
+
+    async function cleanupFlashSales(sellerId) {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        // Nou efase nenpòt pwodwi ki gen old_price (sa vle di li nan Flash) epi flash_at li gen plis pase 24h
+        const { error } = await supD.from('user_products')
+            .delete()
+            .eq('seller_id', sellerId)
+            .not('old_price', 'is', null)
+            .lt('flash_at', twentyFourHoursAgo);
+
+        if (error) console.error("Error cleaning up flash sales:", error);
     }
 
     function initChart() {
@@ -795,24 +824,41 @@
         const grid = document.getElementById('prods-grid');
 
         if (prods && prods.length > 0) {
-            grid.innerHTML = prods.map(p => `
+            grid.innerHTML = prods.map(p => {
+                let isFlashActive = p.old_price !== null;
+
+                let discountBadge = '';
+                if (isFlashActive) {
+                    const pct = Math.round(((p.old_price - p.price) / p.old_price) * 100);
+                    discountBadge = `<span class="prod-status" style="background: var(--primary); right: auto; left: 10px;">⚡ FLASH -${pct}%</span>`;
+                }
+
+                return `
                 <div class="prod-card">
                     <div class="prod-img-wrap">
                         <img src="${p.image_url}" class="prod-img" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
-                        <span class="prod-status">Aktif</span>
+                        <span class="prod-status">${isFlashActive ? 'FLASH' : 'Aktif'}</span>
+                        ${discountBadge}
                     </div>
                     <div class="prod-body">
                         <div class="prod-name">${p.title}</div>
                         <div class="prod-price">${p.price} <span>HTG</span></div>
+                        ${isFlashActive ? `<div style="text-decoration: line-through; color: var(--gray); font-size: 11px; margin-top: 2px;">${p.old_price} HTG</div>` : ''}
                     </div>
                     <div class="prod-actions">
                         <a href="/edit-product.html?id=${p.id}" class="btn-sm btn-edit">✏️ Edit</a>
                         <button onclick="deleteProduct('${p.id}')" class="btn-sm btn-delete">🗑️ Efase</button>
                     </div>
+                    <div class="prod-actions-row2">
+                        ${isFlashActive
+                            ? `<button onclick="toggleFlashSale('${p.id}', null)" class="btn-sm btn-unflash">🚫 Retire Flash</button>`
+                            : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash">⚡ Mete nan Flash</button>`
+                        }
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
         } else {
-            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+            grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
                 <div class="empty-icon">📦</div>
                 <div class="empty-title">Pa gen pwodwi toujou</div>
                 <div class="empty-sub">Klike sou "Nouvo Pwodwi" pou kòmanse vann</div>
@@ -830,6 +876,36 @@
             document.getElementById('share-wa').href = `https://wa.me/?text=Vizite boutik mwen sou Boutique Piyay: ${encodeURIComponent(shopLink)}`;
             document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shopLink)}`;
             document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(shopLink)}`;
+        }
+    }
+
+    async function toggleFlashSale(id, currentPrice) {
+        if (currentPrice === null) {
+            // Retire nan flash
+            const { error } = await supD.from('user_products').update({ old_price: null, flash_at: null }).eq('id', id);
+            if (!error) loadAll();
+            return;
+        }
+
+        // Verifikasyon limit 3 flash aktif
+        const { count } = await supD.from('user_products').select('*', { count: 'exact', head: true })
+            .eq('seller_id', currentUser.id).not('old_price', 'is', null);
+
+        if (count >= 3) {
+            alert("❌ Ou rive nan limit 3 pwodwi Flash anmenmtan. Retire youn pou mete sa a.");
+            return;
+        }
+
+        const oldP = prompt(`Mete ansyen pri a pou pwodwi sa a (Dwe pi wo pase ${currentPrice} HTG):`);
+        if (oldP && parseFloat(oldP) > currentPrice) {
+            const { error } = await supD.from('user_products').update({
+                old_price: parseFloat(oldP),
+                flash_at: new Date().toISOString() // Nou mete tan flash la kòmanse kounye a
+            }).eq('id', id);
+            if (error) alert(error.message);
+            else { alert("✅ Pwodwi a nan Flash kounye a!"); loadAll(); }
+        } else if (oldP) {
+            alert("Ansyen pri a dwe pi wo pase pri aktyèl la!");
         }
     }
 
@@ -859,6 +935,10 @@
 
     function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("✅ Lyen kopye!")); }
     function copyApiKey() { navigator.clipboard.writeText(document.getElementById('api-key-display').innerText).then(() => alert("✅ Kle API kopye!")); }
+    function copyJsonLink() {
+        const link = window.location.origin + "/search.json";
+        navigator.clipboard.writeText(link).then(() => alert("✅ Lyen JSON kopye!"));
+    }
     function handleLogout() { supD.auth.signOut().then(() => location.href = '/'); }
     function goToVendre() { location.href = '/vendre.html'; }
 

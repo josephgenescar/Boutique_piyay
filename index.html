@@ -28,7 +28,7 @@ title: Akèy - Boutique Piyay
     .home-wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px 100px; }
 
     /* ══════════════════════════════
-       1. PWODWI VEDÈT
+       1. PWODWI VEDÈT (Booster/Publicité)
     ══════════════════════════════ */
     #boosted-section { margin: 28px 0; display: none; }
 
@@ -86,58 +86,7 @@ title: Akèy - Boutique Piyay
     .btn-add:hover { background: var(--primary); }
 
     /* ══════════════════════════════
-       2. VIDEYO
-    ══════════════════════════════ */
-    #guide-video { margin: 32px 0; }
-    .video-wrap {
-      max-width: 640px; margin: 0 auto;
-      background: var(--dark); border-radius: 24px; overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15); position: relative; padding-top: 56.25%;
-    }
-    .video-wrap iframe {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%; border: none;
-    }
-    .video-caption {
-      text-align: center; color: var(--gray);
-      font-size: 12px; font-weight: 700; margin-top: 12px;
-      letter-spacing: 0.3px;
-    }
-
-    /* ══════════════════════════════
-       3. KATEGORIS
-    ══════════════════════════════ */
-    #categories-section { margin: 36px 0; }
-    .cat-scroll {
-      display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px;
-      scrollbar-width: none; -webkit-overflow-scrolling: touch;
-    }
-    .cat-scroll::-webkit-scrollbar { display: none; }
-
-    .cat-bubble {
-      display: flex; flex-direction: column; align-items: center;
-      min-width: 88px; text-decoration: none; transition: 0.2s; gap: 10px;
-    }
-    .cat-bubble:hover { transform: translateY(-3px); }
-    .cat-bubble-img {
-      width: 76px; height: 76px; border-radius: 50%;
-      border: 3px solid var(--primary); overflow: hidden;
-      background: var(--light);
-      box-shadow: 0 6px 16px rgba(255,71,71,0.15);
-      transition: 0.2s;
-    }
-    .cat-bubble:hover .cat-bubble-img {
-      box-shadow: 0 10px 24px rgba(255,71,71,0.25);
-      border-width: 4px;
-    }
-    .cat-bubble-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .cat-bubble span {
-      font-size: 12px; font-weight: 700; color: var(--dark-2);
-      text-align: center; line-height: 1.3;
-    }
-
-    /* ══════════════════════════════
-       4. FLASH SALE
+       2. FLASH SALE
     ══════════════════════════════ */
     #flash-sale { margin: 36px 0; }
 
@@ -208,7 +157,39 @@ title: Akèy - Boutique Piyay
     .btn-flash:hover { background: var(--primary); }
 
     /* ══════════════════════════════
-       5. MARKETPLACE
+       3. KATEGORIS
+    ══════════════════════════════ */
+    #categories-section { margin: 36px 0; }
+    .cat-scroll {
+      display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+
+    .cat-bubble {
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 88px; text-decoration: none; transition: 0.2s; gap: 10px;
+    }
+    .cat-bubble:hover { transform: translateY(-3px); }
+    .cat-bubble-img {
+      width: 76px; height: 76px; border-radius: 50%;
+      border: 3px solid var(--primary); overflow: hidden;
+      background: var(--light);
+      box-shadow: 0 6px 16px rgba(255,71,71,0.15);
+      transition: 0.2s;
+    }
+    .cat-bubble:hover .cat-bubble-img {
+      box-shadow: 0 10px 24px rgba(255,71,71,0.25);
+      border-width: 4px;
+    }
+    .cat-bubble-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cat-bubble span {
+      font-size: 12px; font-weight: 700; color: var(--dark-2);
+      text-align: center; line-height: 1.3;
+    }
+
+    /* ══════════════════════════════
+       4. MARKETPLACE
     ══════════════════════════════ */
     #user-market {
       margin-top: 44px; padding-top: 36px;
@@ -344,7 +325,7 @@ title: Akèy - Boutique Piyay
 
 <div class="home-wrap">
 
-    <!-- 1. PWODWI VEDÈT -->
+    <!-- 1. PWODWI VEDÈT (Booster / Publicité) 🔥 -->
     <section id="boosted-section">
         <div class="section-hdr">
             <div class="section-hdr-left">
@@ -355,15 +336,25 @@ title: Akèy - Boutique Piyay
         <div class="boosted-grid" id="boosted-grid"></div>
     </section>
 
-    <!-- 2. VIDEYO -->
-    <section id="guide-video">
-        <div class="video-wrap">
-            <iframe src="LINK_VIDEYO_OU_A" allowfullscreen></iframe>
+    <!-- 2. VANTE FLASH (Promo) ⚡ -->
+    <section id="flash-sale">
+        <div class="flash-header">
+            <div class="flash-title-wrap">
+                <div class="flash-dot"></div>
+                <h2>⚡ Vante Flash</h2>
+            </div>
+            <div class="timer-wrap">
+                <div class="t-seg"><span id="hours">24</span><small>h</small></div>
+                <span class="t-div">:</span>
+                <div class="t-seg"><span id="minutes">00</span><small>m</small></div>
+                <span class="t-div">:</span>
+                <div class="t-seg"><span id="seconds">00</span><small>s</small></div>
+            </div>
         </div>
-        <p class="video-caption">📺 Kijan Boutique Piyay Mache?</p>
+        <div class="flash-slider" id="flash-slider-inner"></div>
     </section>
 
-    <!-- 3. KATEGORIS -->
+    <!-- 3. KATEGORIS 📂 -->
     <section id="categories-section">
         <div class="section-hdr">
             <div class="section-hdr-left">
@@ -384,25 +375,7 @@ title: Akèy - Boutique Piyay
         </div>
     </section>
 
-    <!-- 4. FLASH SALE -->
-    <section id="flash-sale">
-        <div class="flash-header">
-            <div class="flash-title-wrap">
-                <div class="flash-dot"></div>
-                <h2>⚡ Vante Flash</h2>
-            </div>
-            <div class="timer-wrap">
-                <div class="t-seg"><span id="hours">24</span><small>h</small></div>
-                <span class="t-div">:</span>
-                <div class="t-seg"><span id="minutes">00</span><small>m</small></div>
-                <span class="t-div">:</span>
-                <div class="t-seg"><span id="seconds">00</span><small>s</small></div>
-            </div>
-        </div>
-        <div class="flash-slider" id="flash-slider-inner"></div>
-    </section>
-
-    <!-- 5. MARKETPLACE -->
+    <!-- 4. MARKETPLACE 🚀 -->
     <section id="user-market">
         <div class="section-hdr">
             <div class="section-hdr-left">
@@ -486,14 +459,19 @@ title: Akèy - Boutique Piyay
         allProducts = prods || [];
         allSellers  = sellers || [];
 
-        renderBoosted(allProducts.filter(p => p.is_boosted === true));
+        // ✅ BOOSTER OTO: Montre pwodwi kote is_boosted se true OUBYEN machann nan gen plis pase 500 pwen
+        const boostedList = allProducts.filter(p => {
+            return p.is_boosted === true || (p.profiles && p.profiles.points >= 500);
+        });
+        renderBoosted(boostedList);
+
         renderSellers(allSellers);
         renderProducts(allProducts);
 
         const now = new Date().getTime();
+        // ✅ FLASH SALE: Montre tout pwodwi ki gen old_price (san limit 24h pou w ka wè yo)
         const flashProds = allProducts.filter(p => {
-          if (!p.old_price) return false;
-          return (now - new Date(p.created_at).getTime()) / 3600000 < 24;
+          return p.old_price && p.old_price > p.price;
         });
         renderFlashSlider(flashProds);
         startInfiniteFlashTimer();

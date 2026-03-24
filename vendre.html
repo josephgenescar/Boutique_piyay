@@ -125,45 +125,6 @@ title: Vann yon Pwodwi - Boutique Piyay
     .img-upload-zone:hover .img-overlay { display: flex; }
     #prodImage { display: none; }
 
-    /* FLASH SALE */
-    .flash-card {
-        background: #fff5f5; border: 2px dashed var(--primary);
-        border-radius: var(--radius-sm); padding: 20px;
-    }
-    .flash-toggle {
-        display: flex; align-items: center; gap: 12px; cursor: pointer;
-        margin-bottom: 0;
-    }
-    .toggle-switch {
-        width: 44px; height: 24px; background: #cbd5e1; border-radius: 50px;
-        position: relative; transition: 0.3s; flex-shrink: 0; cursor: pointer;
-    }
-    .toggle-switch::after {
-        content: ''; width: 18px; height: 18px; border-radius: 50%;
-        background: white; position: absolute; top: 3px; left: 3px; transition: 0.3s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .toggle-switch.on { background: var(--primary); }
-    .toggle-switch.on::after { left: 23px; }
-    .toggle-label { font-size: 14px; font-weight: 800; color: var(--primary); }
-    .toggle-sub { font-size: 11px; color: var(--gray); font-weight: 500; margin-top: 2px; }
-
-    .flash-options {
-        display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid #ffcccc;
-    }
-    .flash-options.show { display: block; }
-
-    /* PRIX DISPLAY */
-    .price-preview {
-        display: none; margin-top: 10px;
-        background: white; border-radius: 10px; padding: 12px 16px;
-        border: 1px solid #f1f5f9;
-    }
-    .price-preview.show { display: flex; align-items: center; gap: 10px; }
-    .price-new { font-size: 20px; font-weight: 900; color: var(--primary); }
-    .price-old { font-size: 14px; color: var(--gray); text-decoration: line-through; font-weight: 600; }
-    .price-badge { background: var(--primary); color: white; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 50px; }
-
     /* SUBMIT */
     .submit-section { margin-top: 8px; }
     .btn-submit {
@@ -242,7 +203,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Pri (HTG) <span class="required-star">*</span></label>
-                <input type="number" id="prodPrice" class="form-input" placeholder="Eg: 500" oninput="updatePricePreview(); updateSteps()">
+                <input type="number" id="prodPrice" class="form-input" placeholder="Eg: 500" oninput="updateSteps()">
             </div>
             <div class="form-group">
                 <label class="form-label">Kategori <span class="required-star">*</span></label>
@@ -263,32 +224,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         </div>
     </div>
 
-    <!-- CARD 2: FLASH -->
-    <div class="form-card">
-        <div class="form-card-title">⚡ Vant Flash (Opsyonèl)</div>
-        <div class="flash-card">
-            <div class="flash-toggle" onclick="toggleFlash()">
-                <div class="toggle-switch" id="flashToggle"></div>
-                <div>
-                    <div class="toggle-label">⚡ Aktive Vant Flash</div>
-                    <div class="toggle-sub">Montre ansyen pri ak pri redui</div>
-                </div>
-            </div>
-            <div class="flash-options" id="flashOptions">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label">Ansyen Pri (HTG)</label>
-                    <input type="number" id="oldPrice" class="form-input" placeholder="Eg: 1000" oninput="updatePricePreview()">
-                </div>
-                <div class="price-preview" id="pricePreview">
-                    <span class="price-new" id="previewNew">--</span>
-                    <span class="price-old" id="previewOld">--</span>
-                    <span class="price-badge" id="previewDiscount">--%</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CARD 3: FOTO -->
+    <!-- CARD 2: FOTO -->
     <div class="form-card">
         <div class="form-card-title">📸 Foto Pwodwi a <span style="color:var(--primary);">*</span></div>
         <div class="img-upload-zone" id="uploadZone" onclick="document.getElementById('prodImage').click()">
@@ -308,7 +244,6 @@ title: Vann yon Pwodwi - Boutique Piyay
         <div class="tips-title">💡 Konsèy pou vann pi vit</div>
         <div class="tip-item"><span class="tip-icon">📸</span><span>Pran foto klè nan yon bon limyè, sou fon blan si posib</span></div>
         <div class="tip-item"><span class="tip-icon">✍️</span><span>Bay yon deskripsyon ki gen tout detay: gwosè, materyèl, koulè, eta</span></div>
-        <div class="tip-item"><span class="tip-icon">⚡</span><span>Itilize Vant Flash pou atire plis kliyan ak yon reduksyon pri</span></div>
         <div class="tip-item"><span class="tip-icon">💬</span><span>Reponn kliyan yo vit sou WhatsApp pou genyen konfyans yo</span></div>
     </div>
 
@@ -327,35 +262,6 @@ title: Vann yon Pwodwi - Boutique Piyay
         "https://letyferfjpxmstohvgcj.supabase.co",
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
     );
-
-    let flashEnabled = false;
-
-    function toggleFlash() {
-        flashEnabled = !flashEnabled;
-        document.getElementById('flashToggle').classList.toggle('on', flashEnabled);
-        document.getElementById('flashOptions').classList.toggle('show', flashEnabled);
-        if (!flashEnabled) {
-            document.getElementById('oldPrice').value = '';
-            document.getElementById('pricePreview').classList.remove('show');
-        }
-        updatePricePreview();
-    }
-
-    function updatePricePreview() {
-        if (!flashEnabled) return;
-        const newP = parseFloat(document.getElementById('prodPrice').value);
-        const oldP = parseFloat(document.getElementById('oldPrice').value);
-        const preview = document.getElementById('pricePreview');
-        if (newP > 0 && oldP > 0 && oldP > newP) {
-            const disc = Math.round(((oldP - newP) / oldP) * 100);
-            document.getElementById('previewNew').innerText = newP + ' HTG';
-            document.getElementById('previewOld').innerText = oldP + ' HTG';
-            document.getElementById('previewDiscount').innerText = '-' + disc + '%';
-            preview.classList.add('show');
-        } else {
-            preview.classList.remove('show');
-        }
-    }
 
     function previewImage(input) {
         const file = input.files[0];
@@ -400,7 +306,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         if (step1Done && step2Done) {
             s2.className = 'step-circle done'; s2.innerText = '✓';
             l2.classList.add('done');
-            s3.className = 'step-circle active';
+            document.getElementById('step3').className = 'step-circle active';
         }
     }
 
@@ -413,7 +319,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 
     async function uploadToImageKit(file) {
         const authRes = await fetch("/.netlify/functions/auth");
-        if (!authRes.ok) throw new Error("Sèvis foto a pa ka konekte. Sèvi ak 'netlify dev' pou teste.");
+        if (!authRes.ok) throw new Error("Sèvis foto a pa ka konekte.");
         const authData = await authRes.json();
         const formData = new FormData();
         formData.append("file", file);
@@ -451,7 +357,6 @@ title: Vann yon Pwodwi - Boutique Piyay
             const { error: dbErr } = await supV.from('user_products').insert([{
                 title,
                 price: parseFloat(price),
-                old_price: flashEnabled ? parseFloat(document.getElementById('oldPrice').value) || null : null,
                 category: cat,
                 description: desc,
                 image_url: imageUrl,
@@ -462,16 +367,14 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             if (dbErr) throw dbErr;
 
-            // Update step 3
             document.getElementById('step3').className = 'step-circle done';
             document.getElementById('step3').innerText = '✓';
 
-            setStatus("🎉 Pwodwi pibliye ak siksè! Redireksyon...", "success");
+            setStatus("🎉 Pwodwi pibliye ak siksè!", "success");
             setTimeout(() => window.location.href = "/dashboard.html", 2000);
         } catch (err) {
             setStatus("❌ Erè: " + err.message, "error");
             btn.disabled = false;
-            btn.innerHTML = '🔄 ESEYE ANKÒ';
         }
     }
 </script>

@@ -35,7 +35,11 @@ layout: default
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supC = supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
+    // ✅ URL AK KLE SUPABASE KI KORÈK
+    const supC = supabase.createClient(
+        "https://letyferfjpxmstohvgcj.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
+    );
     const catId = "{{ category_id }}";
 
     async function loadCategoryProducts() {
@@ -44,10 +48,11 @@ layout: default
         const noProds = document.getElementById('no-products');
 
         try {
+            // Nou rale tout pwodwi ki apwouve nan kategori sa a
             const { data: products, error } = await supC
                 .from('user_products')
                 .select('*')
-                .eq('category', catId)
+                .eq('category', catId.toLowerCase()) // Asire kategori a an miniskil pou konparezon
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -60,23 +65,33 @@ layout: default
             }
 
             countLabel.innerText = `${products.length} pwodwi disponib`;
+            grid.style.display = 'grid';
+            noProds.style.display = 'none';
 
             grid.innerHTML = products.map(p => `
                 <div class="product-card-modern">
-                    <div class="card-img-wrap">
-                        <a href="/pwodwi-machann.html?id=${p.id}"><img src="${p.image_url}"></a>
+                    <div class="card-img-wrap" style="position:relative;">
+                        <a href="/pwodwi-machann.html?id=${p.id}">
+                            <img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px;">
+                        </a>
+                        ${p.old_price ? `<span style="position:absolute; top:10px; left:10px; background:#ff4747; color:white; padding:5px 12px; border-radius:50px; font-size:10px; font-weight:900;">⚡ FLASH</span>` : ''}
                     </div>
-                    <div class="card-info">
-                        <h3><a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
-                        <div class="price-modern">${p.price} HTG</div>
-                        <button class="btn-add-modern" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')" style="width:100%; background:#f1f5f9; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer;">🛒 Ajoute</button>
+                    <div class="card-info" style="padding:15px;">
+                        <h3 style="font-size:14px; font-weight:800; margin-bottom:8px;">
+                            <a href="/pwodwi-machann.html?id=${p.id}" style="text-decoration:none; color:inherit;">${p.title}</a>
+                        </h3>
+                        <div class="price-modern" style="color:#ff4747; font-weight:900; font-size:18px;">
+                            ${p.price} HTG
+                            ${p.old_price ? `<span style="text-decoration:line-through; color:#888; font-size:12px; margin-left:8px; font-weight:600;">${p.old_price} HTG</span>` : ''}
+                        </div>
+                        <button class="btn-add-modern" onclick="location.href='/pwodwi-machann.html?id=${p.id}'" style="width:100%; margin-top:12px; background:#0f172a; color:white; border:none; padding:12px; border-radius:12px; font-weight:800; cursor:pointer;">🛍️ Detay</button>
                     </div>
                 </div>
             `).join('');
 
         } catch (e) {
             console.error(e);
-            grid.innerHTML = '<p style="color:red; text-align:center;">Erè nan chajman pwodwi yo.</p>';
+            grid.innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Erè nan chajman pwodwi yo. Tanpri verifye koneksyon ou.</p>';
         }
     }
 
@@ -89,4 +104,20 @@ layout: default
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)); display: flex; align-items: center; justify-content: center; text-align: center; color: white; padding: 0 20px; }
 .hero-title { font-size: 3rem; font-weight: 900; text-transform: uppercase; }
 .hero-badge { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 8px 25px; border-radius: 50px; margin-top: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.3); }
+
+/* Grid modern style si style.css pa genyen l */
+.product-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+}
+.product-card-modern {
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+.product-card-modern:hover { transform: translateY(-10px); }
 </style>
