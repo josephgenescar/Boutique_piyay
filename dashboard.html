@@ -265,7 +265,6 @@
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
         }
         .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
 
@@ -739,27 +738,11 @@
         const { data: { user } } = await supD.auth.getUser();
         if (!user) return window.location.href = "/login.html";
         currentUser = user;
-
-        // ✅ EFASMAN OTO PWODWI FLASH KI GEN PLIS PASE 24H
-        await cleanupFlashSales(user.id);
-
         loadAll();
         syncPointsWithSales();
         initChart();
         const jsonLink = document.getElementById('json-link-display');
         if (jsonLink) jsonLink.innerText = window.location.origin + "/search.json";
-    }
-
-    async function cleanupFlashSales(sellerId) {
-        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        // Nou efase nenpòt pwodwi ki gen old_price (sa vle di li nan Flash) epi flash_at li gen plis pase 24h
-        const { error } = await supD.from('user_products')
-            .delete()
-            .eq('seller_id', sellerId)
-            .not('old_price', 'is', null)
-            .lt('flash_at', twentyFourHoursAgo);
-
-        if (error) console.error("Error cleaning up flash sales:", error);
     }
 
     function initChart() {
@@ -825,12 +808,17 @@
 
         if (prods && prods.length > 0) {
             grid.innerHTML = prods.map(p => {
-                let isFlashActive = p.old_price !== null;
+                const now = new Date();
+                const createdAt = new Date(p.created_at);
+                const diffHours = (now - createdAt) / (1000 * 60 * 60);
+
+                // ✅ CHEKE SI FLASH LA ANKÒ VALAB
+                let isFlashActive = p.is_flash_sale === true || (p.old_price && diffHours < 24);
 
                 let discountBadge = '';
                 if (isFlashActive) {
-                    const pct = Math.round(((p.old_price - p.price) / p.old_price) * 100);
-                    discountBadge = `<span class="prod-status" style="background: var(--primary); right: auto; left: 10px;">⚡ FLASH -${pct}%</span>`;
+                    const pct = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
+                    discountBadge = `<span class="prod-status" style="background: var(--primary); right: auto; left: 10px;">⚡ FLASH ${pct > 0 ? '-' + pct + '%' : ''}</span>`;
                 }
 
                 return `
@@ -843,7 +831,7 @@
                     <div class="prod-body">
                         <div class="prod-name">${p.title}</div>
                         <div class="prod-price">${p.price} <span>HTG</span></div>
-                        ${isFlashActive ? `<div style="text-decoration: line-through; color: var(--gray); font-size: 11px; margin-top: 2px;">${p.old_price} HTG</div>` : ''}
+                        ${p.old_price ? `<div style="text-decoration: line-through; color: var(--gray); font-size: 11px; margin-top: 2px;">${p.old_price} HTG</div>` : ''}
                     </div>
                     <div class="prod-actions">
                         <a href="/edit-product.html?id=${p.id}" class="btn-sm btn-edit">✏️ Edit</a>
@@ -882,17 +870,21 @@
     async function toggleFlashSale(id, currentPrice) {
         if (currentPrice === null) {
             // Retire nan flash
-            const { error } = await supD.from('user_products').update({ old_price: null, flash_at: null }).eq('id', id);
+            const { error } = await supD.from('user_products').update({
+                old_price: null,
+                is_flash_sale: false
+            }).eq('id', id);
             if (!error) loadAll();
             return;
         }
 
-        // Verifikasyon limit 3 flash aktif
+        // Verifikasyon limit 3 flash nan 24h
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { count } = await supD.from('user_products').select('*', { count: 'exact', head: true })
-            .eq('seller_id', currentUser.id).not('old_price', 'is', null);
+            .eq('seller_id', currentUser.id).eq('is_flash_sale', true).gt('created_at', twentyFourHoursAgo);
 
         if (count >= 3) {
-            alert("❌ Ou rive nan limit 3 pwodwi Flash anmenmtan. Retire youn pou mete sa a.");
+            alert("❌ Ou rive nan limit 3 pwodwi Flash pa jou. Tann demen pou w mete sa a.");
             return;
         }
 
@@ -900,7 +892,8 @@
         if (oldP && parseFloat(oldP) > currentPrice) {
             const { error } = await supD.from('user_products').update({
                 old_price: parseFloat(oldP),
-                flash_at: new Date().toISOString() // Nou mete tan flash la kòmanse kounye a
+                is_flash_sale: true,
+                created_at: new Date().toISOString() // Nou reset tan an pou l kòmanse 24h a kounye a
             }).eq('id', id);
             if (error) alert(error.message);
             else { alert("✅ Pwodwi a nan Flash kounye a!"); loadAll(); }

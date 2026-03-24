@@ -54,7 +54,7 @@ title: Modifye Pwodwi - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const supE = supabase.createClient(
+    const supE = window.supabase.createClient(
         "https://letyferfjpxmstohvgcj.supabase.co",
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
     );
@@ -82,10 +82,15 @@ title: Modifye Pwodwi - Boutique Piyay
         const btn = document.getElementById('saveBtn');
         btn.disabled = true; btn.innerText = "⏳ Enregistre...";
 
+        const price = parseFloat(document.getElementById('editPrice').value);
+        const oldPrice = document.getElementById('editOldPrice').value;
+        const isFlash = oldPrice && parseFloat(oldPrice) > price;
+
         const { error } = await supE.from('user_products').update({
             title: document.getElementById('editTitle').value,
-            price: parseFloat(document.getElementById('editPrice').value),
-            old_price: document.getElementById('editOldPrice').value ? parseFloat(document.getElementById('editOldPrice').value) : null,
+            price: price,
+            old_price: oldPrice ? parseFloat(oldPrice) : null,
+            is_flash_sale: isFlash,
             category: document.getElementById('editCat').value,
             description: document.getElementById('editDesc').value
         }).eq('id', prodId);
