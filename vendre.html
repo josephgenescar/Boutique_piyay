@@ -318,8 +318,13 @@ title: Vann yon Pwodwi - Boutique Piyay
     }
 
     async function uploadToImageKit(file) {
+        // Asire n ap chèche fonksyon an nan bon kote
         const authRes = await fetch("/.netlify/functions/auth");
-        if (!authRes.ok) throw new Error("Sèvis foto a pa ka konekte.");
+        if (!authRes.ok) {
+            const errData = await authRes.json().catch(() => ({}));
+            throw new Error(errData.error || "Sèvis foto a pa ka konekte (Status: " + authRes.status + ")");
+        }
+
         const authData = await authRes.json();
         const formData = new FormData();
         formData.append("file", file);
@@ -328,6 +333,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         formData.append("expire", authData.expire);
         formData.append("token", authData.token);
         formData.append("fileName", `prod_${Date.now()}.jpg`);
+
         const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", { method: "POST", body: formData });
         if (!uploadRes.ok) throw new Error("Erè ImageKit: " + uploadRes.statusText);
         return (await uploadRes.json()).url;

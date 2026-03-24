@@ -88,7 +88,7 @@ title: Akèy - Boutique Piyay
     /* ══════════════════════════════
        2. FLASH SALE
     ══════════════════════════════ */
-    #flash-sale { margin: 36px 0; display: none; } /* Kache pa defo pou evite flicker */
+    #flash-sale { margin: 36px 0; display: none; }
 
     .flash-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -435,32 +435,41 @@ title: Akèy - Boutique Piyay
     async function loadAllData() {
       if (!supabaseHome) return;
       try {
-        const [{ data: prods }, { data: sellers }] = await Promise.all([
-          supabaseHome.from('user_products').select('*, profiles(*)').order('created_at', { ascending: false }),
-          supabaseHome.from('profiles').select('*').eq('is_active_seller', true)
-        ]);
+        // Queri senp san JOIN pou asire match sellers/prods mache
+        const { data: prods } = await supabaseHome
+          .from('user_products')
+          .select('id, title, price, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at')
+          .eq('is_approved', true)
+          .order('created_at', { ascending: false });
+
+        const { data: sellers } = await supabaseHome
+          .from('profiles')
+          .select('*')
+          .eq('is_active_seller', true);
+
         allProducts = prods || [];
         allSellers  = sellers || [];
 
-        // ✅ BOOSTER OTO
-        const boostedList = allProducts.filter(p => {
-            return p.is_boosted === true || (p.profiles && p.profiles.points >= 500);
-        });
+        // ✅ 1. PWODWI VEDÈT
+        const boostedList = allProducts.filter(p => p.is_boosted === true);
         renderBoosted(boostedList);
 
+        // ✅ 2. MARKETPLACE (FOTO YO)
         renderSellers(allSellers);
         renderProducts(allProducts);
 
-        // ✅ FLASH SALE - FILTÈ PI SOLID
+        // ✅ 3. VANTE FLASH (Seksyon an)
         const flashProds = allProducts.filter(p =>
-          p.is_flash_sale === true || (p.old_price && p.old_price > p.price)
+          p.is_flash_sale === true || (p.old_price && parseFloat(p.old_price) > parseFloat(p.price))
         );
 
-        console.log("Flash Products Found:", flashProds.length);
         if (flashProds.length > 0) {
           document.getElementById('flash-sale').style.display = 'block';
           renderFlashSlider(flashProds);
+        } else {
+          document.getElementById('flash-sale').style.display = 'none';
         }
+
         startInfiniteFlashTimer();
       } catch(e) { console.error("Erè chajman:", e); }
     }
@@ -492,21 +501,28 @@ title: Akèy - Boutique Piyay
       const grid = document.getElementById('sellers-grid-home');
       if (!grid) return;
       if (list.length === 0) {
-        grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Pa gen machann toujou</div><div class="e-sub">Premye machann yo ap vin byento!</div></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Pa gen machann toujou</div></div>`;
         return;
       }
       grid.innerHTML = list.map(s => {
-        const sProds = allProducts.filter(p => p.seller_id === s.id && p.image_url).slice(0, 4);
+        // MATCH solid: Konvèti ID an String pou evite manti nan filtre
+        const sProds = allProducts
+          .filter(p => String(p.seller_id) === String(s.id) && p.image_url)
+          .slice(0, 4);
+
         let previews = sProds.map(p => `
           <div class="preview-img">
             <img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;"
                  onerror="this.parentElement.innerHTML='📦'">
           </div>`).join('');
+
         for (let i = sProds.length; i < 4; i++) previews += `<div class="preview-img">📦</div>`;
+
         const initial = (s.full_name || 'M').charAt(0).toUpperCase();
         const avatarContent = s.avatar_url
           ? `<img src="${s.avatar_url}" onerror="this.style.display='none'; this.parentElement.innerText='${initial}'">`
           : initial;
+
         return `
           <div class="seller-card">
             <div class="seller-head">
@@ -549,22 +565,13 @@ title: Akèy - Boutique Piyay
 
     /* ── RENDER FLASH ── */
     function renderFlashSlider(list) {
-      const section = document.getElementById('flash-sale');
       const slider  = document.getElementById('flash-slider-inner');
-      if (!slider || !section) return;
-
-      if (list.length === 0) {
-        section.style.display = 'none';
-        return;
-      }
-
-      // Montre seksyon an sèlman si nou jwenn pwodwi
-      section.style.display = 'block';
+      if (!slider) return;
 
       slider.innerHTML = list.map(p => {
-        const valOld = p.old_price ? parseFloat(String(p.old_price).replace(/[^0-9.]/g, '')) : 0;
-        const valNew = parseFloat(String(p.price).replace(/[^0-9.]/g, ''));
-        const disc = valOld > valNew ? Math.round(((valOld - valNew) / valOld) * 100) : 0;
+        const valOld = p.old_price ? parseFloat(p.old_price) : 0;
+        const valNew = parseFloat(p.price);
+        const disc = (valOld > valNew) ? Math.round(((valOld - valNew) / valOld) * 100) : 0;
 
         return `
           <div class="flash-card">
