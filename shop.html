@@ -109,8 +109,9 @@ permalink: /shop/
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    // Itilize yon lòt non pou evite konfli ak main.js
+    const SHOP_SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SHOP_SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
     let allProducts = [];
 
@@ -127,7 +128,6 @@ permalink: /shop/
         try {
             log("Y ap tcheke bibliyotèk Supabase...");
 
-            // Tcheke si SDK a la
             if (typeof window.supabase === 'undefined') {
                 log("ERÈ: SDK pa jwenn!");
                 status.innerHTML = "❌ Erè: Bibliyotèk Supabase la pa chaje. Tanpri rafrechi paj la (F5).";
@@ -135,7 +135,8 @@ permalink: /shop/
             }
 
             log("SDK jwenn. Y ap kreye kliyan...");
-            const supabaseShop = window.supabase.createClient(SUP_URL, SUP_KEY);
+            // Itilize nouvo non varyab yo
+            const supabaseShop = window.supabase.createClient(SHOP_SUP_URL, SHOP_SUP_KEY);
 
             log("Kliyan kreye. Y ap rekipere done nan tablo 'user_products'...");
             const { data, error } = await supabaseShop
@@ -176,8 +177,8 @@ permalink: /shop/
                 <div class="info">
                     <div class="cat">${p.category || 'Boutik'}</div>
                     <div class="title">${p.title}</div>
-                    <div class="price">${p.price ? p.price.toLocaleString() : 0} HTG</div>
-                    <button class="btn-add" onclick="addToCart('${p.id}', '${p.title.replace(/'/g, "\\'")}', ${p.price || 0}, '${p.image_url}')">
+                    <div class="price">${p.price ? Number(p.price).toLocaleString() : 0} HTG</div>
+                    <button class="btn-add" onclick="if(window.orderProduct) window.orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price || 0}', '${p.id}', '${p.image_url}')">
                         🛒 Ajoute nan Panye
                     </button>
                 </div>
@@ -206,15 +207,6 @@ permalink: /shop/
         }
     }
 
-    function addToCart(id, title, price, img) {
-        let cart = JSON.parse(localStorage.getItem('piyay_cart') || '[]');
-        const existing = cart.find(item => item.id === id);
-        if (existing) existing.quantity++;
-        else cart.push({ id, title, price, image: img, quantity: 1 });
-        localStorage.setItem('piyay_cart', JSON.stringify(cart));
-        alert("✅ " + title + " ajoute!");
-    }
-
     // Lanse chajman an dirèktman
-    initShop();
+    document.addEventListener('DOMContentLoaded', initShop);
 </script>
