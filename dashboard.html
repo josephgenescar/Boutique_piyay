@@ -6,7 +6,7 @@
     <title>Dashboard Machann - Boutique Piyay</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
         :root {
@@ -505,6 +505,15 @@
         .empty-title { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
         .empty-sub { font-size: 13px; line-height: 1.6; }
 
+        /* LOADING OVERLAY */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10000;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* MOBILE */
         @media (max-width: 768px) {
             .layout { grid-template-columns: 1fr; }
@@ -539,6 +548,11 @@
     </style>
 </head>
 <body>
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-weight: 700; color: var(--gray);">Ap verifye koneksyon...</p>
+</div>
 
 <div class="layout">
     <!-- SIDEBAR -->
@@ -855,9 +869,25 @@
     let selectedProdId = null;
 
     async function init() {
-        const { data: { user } } = await supD.auth.getUser();
-        if (!user) return window.location.href = "/login.html";
-        currentUser = user;
+        // Tann yon ti kras pou sesyon an chaje
+        const { data: { session } } = await supD.auth.getSession();
+
+        if (!session) {
+            // Si pa gen sesyon nan getSession, tcheke getUser
+            const { data: { user } } = await supD.auth.getUser();
+            if (!user) {
+                console.log("No user found, redirecting...");
+                return window.location.assign('login.html');
+            }
+            currentUser = user;
+        } else {
+            currentUser = session.user;
+        }
+
+        // Retire loading overlay
+        document.getElementById('loading-overlay').style.display = 'none';
+
+        // Chaje tout done yo
         loadAll();
         loadOrders();
         loadFeedbacks();
@@ -897,18 +927,29 @@
     }
 
     async function syncPointsWithSales() {
-        const { data: orders } = await supD.from('orders').select('amount').eq('seller_id', currentUser.id);
-        const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
-        currentProfile = prof;
+        try {
+            const { data: orders } = await supD.from('orders').select('amount').eq('seller_id', currentUser.id);
+            const { data: prof, error: profErr } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
 
-        if (orders) {
-            const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
-            const newPoints = Math.floor(totalSales);
-            await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
-            document.getElementById('stat-points').innerText = newPoints;
-            document.getElementById('p-count').innerText = newPoints;
-            document.getElementById('stat-orders').innerText = orders.length;
-            updateRewardUI(newPoints);
+            if (profErr || !prof) {
+                console.log("Profile missing, creating one...");
+                const { data: newProf } = await supD.from('profiles').insert([{ id: currentUser.id, full_name: currentUser.email.split('@')[0] }]).select().single();
+                currentProfile = newProf;
+            } else {
+                currentProfile = prof;
+            }
+
+            if (orders && currentProfile) {
+                const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
+                const newPoints = Math.floor(totalSales);
+                await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
+                document.getElementById('stat-points').innerText = newPoints;
+                document.getElementById('p-count').innerText = newPoints;
+                document.getElementById('stat-orders').innerText = orders.length;
+                updateRewardUI(newPoints);
+            }
+        } catch (e) {
+            console.error("Error syncing points:", e);
         }
     }
 
@@ -1063,7 +1104,6 @@
 
         let boostData = { is_boosted: true };
 
-        // Kalkile tan ekspirasyon (48 èdtan a kòmanse kounye a)
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 48);
         boostData.boost_expires_at = expiresAt.toISOString();
@@ -1071,7 +1111,6 @@
         if (type === 'paid') {
             const confirmed = confirm("Èske ou vle peye 100 HTG pou boost pwodwi sa a pandan 48h?");
             if (!confirmed) return;
-            // Nan yon sistèm reyèl, isit la ou ta rele API MonCash la.
         }
 
         const { error } = await supD.from('user_products').update(boostData).eq('id', selectedProdId);
@@ -1125,8 +1164,8 @@
     function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("✅ Lyen kopye!")); }
     function copyApiKey() { navigator.clipboard.writeText(document.getElementById('api-key-display').innerText).then(() => alert("✅ Kle API kopye!")); }
     function copyJsonLink() { navigator.clipboard.writeText(window.location.origin + "/search.json").then(() => alert("✅ Lyen JSON kopye!")); }
-    function handleLogout() { supD.auth.signOut().then(() => location.href = '/'); }
-    function goToVendre() { location.href = '/vendre.html'; }
+    function handleLogout() { supD.auth.signOut().then(() => location.href = 'index.html'); }
+    function goToVendre() { location.href = 'vendre.html'; }
 
     init();
 </script>
