@@ -10,11 +10,7 @@ permalink: /account/
   :root {
     --orange: #FF5722;
     --orange-light: #FF7043;
-    --orange-pale: #FFF3EF;
     --navy: #0D1B2A;
-    --gold: #FFB300;
-    --green: #00C853;
-    --red: #F44336;
     --gray-100: #F8F9FA;
     --gray-200: #EAEDF0;
     --gray-500: #8A94A6;
@@ -28,486 +24,174 @@ permalink: /account/
   * { box-sizing: border-box; }
   body { font-family: 'DM Sans', sans-serif; background: #F4F5F7; color: var(--navy); min-height: 100vh; }
 
-  /* ========== AUTH SCREEN ========== */
-  .auth-wrapper {
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 30px 16px;
-  }
-  .auth-card {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    padding: 40px;
-    width: 100%;
-    max-width: 440px;
-    animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .auth-logo {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  .auth-logo .brand {
-    font-family: 'Sora', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--navy);
-  }
-  .auth-logo .brand span { color: var(--orange); }
-  .auth-logo .tagline { font-size: 0.85rem; color: var(--gray-500); margin-top: 4px; }
-
-  .auth-tabs {
-    display: flex;
-    background: var(--gray-100);
-    border-radius: var(--radius-sm);
-    padding: 4px;
-    margin-bottom: 24px;
-  }
-  .auth-tab {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Sora', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 700;
-    cursor: pointer;
-    background: transparent;
-    color: var(--gray-500);
-    transition: all 0.2s;
-  }
-  .auth-tab.active {
-    background: white;
-    color: var(--navy);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .auth-panel { display: none; }
-  .auth-panel.active { display: block; animation: fadeIn 0.25s; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  .form-group { margin-bottom: 14px; }
-  .form-label {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-  }
-  .form-input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 2px solid var(--gray-200);
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.92rem;
-    outline: none;
-    transition: border-color 0.2s;
-    background: white;
-    color: var(--navy);
-  }
-  .form-input:focus { border-color: var(--orange); }
-  .form-input.error { border-color: var(--red); }
-
-  .form-error {
-    font-size: 0.78rem;
-    color: var(--red);
-    margin-top: 4px;
-    display: none;
-  }
-
-  .btn-auth {
-    width: 100%;
-    padding: 14px;
-    background: var(--orange);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 6px;
-  }
-  .btn-auth:hover { background: var(--orange-light); transform: translateY(-1px); }
-  .btn-auth:disabled { background: var(--gray-500); cursor: not-allowed; transform: none; }
-
-  .auth-divider {
-    text-align: center;
-    position: relative;
-    margin: 18px 0;
-    color: var(--gray-500);
-    font-size: 0.8rem;
-  }
-  .auth-divider::before, .auth-divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 42%;
-    height: 1px;
-    background: var(--gray-200);
-  }
-  .auth-divider::before { left: 0; }
-  .auth-divider::after { right: 0; }
-
-  .forgot-link {
-    text-align: right;
-    margin-top: -8px;
-    margin-bottom: 12px;
-  }
-  .forgot-link a {
-    font-size: 0.8rem;
-    color: var(--orange);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  /* ========== DASHBOARD ========== */
-  .dashboard {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 16px;
-  }
-
-  /* Welcome bar */
-  .welcome-bar {
-    background: linear-gradient(135deg, var(--navy) 0%, #1E3A5F 100%);
-    border-radius: var(--radius);
-    padding: 24px 28px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .welcome-bar::before {
-    content: '🛍️';
-    position: absolute;
-    right: 24px;
-    font-size: 4rem;
-    opacity: 0.15;
-  }
-  .user-avatar-big {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: var(--orange);
-    color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Sora', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 800;
-    flex-shrink: 0;
-    border: 3px solid rgba(255,255,255,0.3);
-  }
+  /* DASHBOARD */
+  .dashboard { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+  .welcome-bar { background: linear-gradient(135deg, var(--navy) 0%, #1E3A5F 100%); border-radius: var(--radius); padding: 24px 28px; display: flex; align-items: center; gap: 20px; margin-bottom: 24px; position: relative; overflow: hidden; color: white; }
+  .user-avatar-big { width: 56px; height: 56px; border-radius: 50%; background: var(--orange); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-size: 1.4rem; font-weight: 800; flex-shrink: 0; border: 3px solid rgba(255,255,255,0.3); }
   .welcome-text { flex: 1; }
-  .welcome-text h2 {
-    font-family: 'Sora', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 4px;
-  }
-  .welcome-text p { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
-  .logout-btn {
-    padding: 8px 18px;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    border: 1.5px solid rgba(255,255,255,0.25);
-    border-radius: 100px;
-    font-family: 'Sora', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    backdrop-filter: blur(4px);
-  }
-  .logout-btn:hover { background: rgba(255,255,255,0.25); }
+  .welcome-text h2 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+  .logout-btn { padding: 8px 18px; background: rgba(255,255,255,0.15); color: white; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 100px; font-weight: 600; cursor: pointer; transition: 0.2s; }
 
-  /* Stats */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-  .stat-card {
-    background: white;
-    border-radius: var(--radius-sm);
-    padding: 18px;
-    box-shadow: var(--shadow-sm);
-    text-align: center;
-    transition: transform 0.2s;
-  }
-  .stat-card:hover { transform: translateY(-2px); }
-  .stat-icon { font-size: 1.6rem; margin-bottom: 6px; }
-  .stat-num {
-    font-family: 'Sora', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--orange);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-label { font-size: 0.78rem; color: var(--gray-500); font-weight: 500; }
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card { background: white; border-radius: var(--radius-sm); padding: 18px; box-shadow: var(--shadow-sm); text-align: center; }
+  .stat-num { font-family: 'Sora', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--orange); }
 
-  /* Dashboard grid */
-  .dash-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
+  .dash-panel { background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 24px; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); font-weight: 700; }
 
-  /* Panel */
-  .dash-panel {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-  }
-  .dash-panel.full { grid-column: 1/-1; }
-  .panel-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--gray-200);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .panel-title {
-    font-family: 'Sora', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--navy);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .panel-link {
-    font-size: 0.8rem;
-    color: var(--orange);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  /* Order list */
-  .order-item {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--gray-200);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: background 0.15s;
-  }
-  .order-item:last-child { border-bottom: none; }
-  .order-item:hover { background: var(--gray-100); }
-  .order-thumb {
-    width: 44px; height: 44px;
-    border-radius: 8px;
-    object-fit: cover;
-    background: var(--gray-100);
-    flex-shrink: 0;
-  }
-  .order-info { flex: 1; min-width: 0; }
-  .order-title {
-    font-weight: 600;
-    font-size: 0.88rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .order-date { font-size: 0.75rem; color: var(--gray-500); }
-  .order-price {
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    color: var(--orange);
-    font-size: 0.9rem;
-    white-space: nowrap;
-  }
-  .order-status {
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 100px;
-  }
-  .status-pending { background: #FFF3E0; color: #E65100; }
-  .status-confirmed { background: #E8F5E9; color: var(--green); }
+  .order-item { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+  .order-info { flex: 1; min-width: 200px; }
+  .order-title { font-weight: 700; font-size: 0.9rem; }
+  .order-status { font-size: 0.7rem; font-weight: 800; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; }
+  .status-pending { background: #FFF9C4; color: #F57F17; }
   .status-delivered { background: #E3F2FD; color: #1565C0; }
-  .status-cancelled { background: #FFEBEE; color: var(--red); }
+  .status-completed { background: #E8F5E9; color: #2E7D32; }
 
-  .empty-state {
-    padding: 30px;
-    text-align: center;
-    color: var(--gray-500);
-    font-size: 0.88rem;
+  /* BUTTONS */
+  .btn-action {
+    padding: 10px 16px; background: var(--orange); color: white; border: none;
+    border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    text-decoration: none; display: inline-block; transition: 0.2s; margin-top: 5px;
   }
-  .empty-state .emoji { font-size: 2.5rem; margin-bottom: 8px; }
+  .btn-action.approve { background: #2E7D32; }
+  .btn-action.review { background: var(--navy); }
+  .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
 
-  /* Wishlist */
-  .wish-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    padding: 16px;
-  }
-  .wish-card {
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1.5px solid var(--gray-200);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    color: inherit;
-  }
-  .wish-card:hover { border-color: var(--orange); transform: scale(1.02); }
-  .wish-img { aspect-ratio: 1; background: var(--gray-100); overflow: hidden; }
-  .wish-img img { width: 100%; height: 100%; object-fit: cover; }
-  .wish-name { padding: 8px; font-size: 0.78rem; font-weight: 600; line-height: 1.3; }
-
-  /* Profile form */
-  .profile-form { padding: 20px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .save-btn {
-    padding: 11px 24px;
-    background: var(--orange);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 8px;
-  }
-  .save-btn:hover { background: var(--orange-light); }
-
-  /* ========== RESPONSIVE ========== */
-  @media (max-width: 860px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .dash-grid { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 520px) {
-    .auth-card { padding: 24px 20px; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .wish-grid { grid-template-columns: repeat(2, 1fr); }
-    .form-row { grid-template-columns: 1fr; }
-  }
+  /* AUTH */
+  #authScreen { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .auth-card { background: white; padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow-md); width: 100%; max-width: 400px; text-align: center; }
+  .form-group { text-align: left; margin-bottom: 15px; }
+  .form-input { width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; outline: none; }
+  .btn-auth { width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
 </style>
 
-<!-- AUTH SCREEN -->
 <div id="authScreen">
-  <div class="auth-wrapper">
-    <div class="auth-card">
-      <div class="auth-logo">
-        <div class="brand">Boutique <span>Piyay</span></div>
-        <div class="tagline">Konekte pou jwenn aksè nan kont ou</div>
-      </div>
-
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchAuthTab('login')">🔑 Konekte</button>
-        <button class="auth-tab" onclick="switchAuthTab('register')">🆕 Kreye Kont</button>
-      </div>
-
-      <div class="auth-panel active" id="loginPanel">
-        <div class="form-group">
-          <label class="form-label">📧 Adrès Email</label>
-          <input class="form-input" id="loginEmail" type="email" placeholder="ou@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">🔒 Modpas</label>
-          <input class="form-input" id="loginPwd" type="password" placeholder="Modpas ou...">
-        </div>
-        <button class="btn-auth" onclick="handleLogin()">🔑 Konekte</button>
-      </div>
-
-      <div class="auth-panel" id="registerPanel">
-        <div class="form-group">
-          <label class="form-label">👤 Non Konplè</label>
-          <input class="form-input" id="regName" type="text" placeholder="Non ak Prenon">
-        </div>
-        <div class="form-group">
-          <label class="form-label">📧 Adrès Email</label>
-          <input class="form-input" id="regEmail" type="email" placeholder="ou@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">🔒 Modpas</label>
-          <input class="form-input" id="regPwd" type="password" placeholder="Modpas (min. 8 karaktè)">
-        </div>
-        <button class="btn-auth" onclick="handleRegister()">🚀 Kreye Kont</button>
-      </div>
-
-      <div id="authMsg" style="margin-top:14px;padding:10px 14px;border-radius:8px;font-size:0.85rem;font-weight:600;display:none;"></div>
+  <div class="auth-card">
+    <h2 style="font-family: 'Sora', sans-serif; margin-bottom: 20px;">Kont Kliyan</h2>
+    <div class="form-group">
+      <label class="form-label">📧 Email</label>
+      <input class="form-input" id="loginEmail" type="email" placeholder="ou@email.com">
     </div>
+    <div class="form-group">
+      <label class="form-label">🔒 Modpas</label>
+      <input class="form-input" id="loginPwd" type="password" placeholder="Modpas ou...">
+    </div>
+    <button class="btn-auth" onclick="handleLogin()">🔑 Konekte</button>
+    <p id="authMsg" style="margin-top: 15px; color: red; font-size: 0.8rem; display: none;"></p>
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashboard" style="display:none;">
   <div class="dashboard">
     <div class="welcome-bar">
       <div class="user-avatar-big" id="userAvatar">?</div>
       <div class="welcome-text">
-        <h2>Bonjou, <span id="userName">Kliyan</span>! 👋</h2>
-        <p id="userEmail">kliyan@email.com</p>
+        <h2 id="welcomeName">Bonjou! 👋</h2>
+        <p id="userEmailLabel">kliyan@email.com</p>
       </div>
-      <button class="logout-btn" onclick="handleLogout()">🚪 Dekonekte</button>
+      <button class="logout-btn" onclick="handleLogout()">🚪 Soti</button>
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div class="stat-num" id="statOrders">0</div>
-        <div class="stat-label">Kòmand Total</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">❤️</div>
-        <div class="stat-num" id="statWish">0</div>
-        <div class="stat-label">Wishlist</div>
-      </div>
+      <div class="stat-card"><div class="stat-num" id="statOrders">0</div><div class="stat-label">Kòmand</div></div>
+      <div class="stat-card"><div class="stat-num">⭐</div><div class="stat-label">Avis Mwen</div></div>
     </div>
 
-    <div class="dash-grid">
-      <div class="dash-panel">
-        <div class="panel-header">
-          <span class="panel-title">📦 Dènye Kòmand</span>
-        </div>
-        <div id="ordersList">
-          <div class="empty-state">Okenn kòmand poko.</div>
-        </div>
+    <div class="dash-panel">
+      <div class="panel-header">📦 Istwa Kòmand mwen yo</div>
+      <div id="ordersList">
+        <div style="padding: 30px; text-align: center; color: #888;">⏳ Chaje kòmand yo...</div>
       </div>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Piske nou gen lòt sistèm kont (login.html/signup.html),
-// paj sa a ap jis rale menm done yo nan Supabase si w vle l pwofesyonèl.
-// Men pou ranje erè Liquid la touswit, mwen senplifye kòd la.
+const S_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+const client = supabase.createClient(S_URL, S_KEY);
 
-function switchAuthTab(tab) {
-  document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
-  document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
-  document.querySelectorAll('.auth-tab').forEach((t, i) => {
-    t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
-  });
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const pass = document.getElementById('loginPwd').value;
+  const msg = document.getElementById('authMsg');
+
+  const { data, error } = await client.auth.signInWithPassword({ email, password: pass });
+  if (error) { msg.innerText = error.message; msg.style.display = 'block'; }
+  else { checkUser(); }
 }
 
-function handleLogout() {
-  localStorage.removeItem('piyay_user');
-  location.reload();
+async function checkUser() {
+  const { data: { user } } = await client.auth.getUser();
+  if (user) {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('welcomeName').innerText = "Bonjou " + (user.user_metadata.full_name || 'Kliyan') + "! 👋";
+    document.getElementById('userEmailLabel').innerText = user.email;
+    document.getElementById('userAvatar').innerText = (user.email.charAt(0)).toUpperCase();
+    loadOrders(user.id);
+  }
 }
 
-// ... lòt fonksyon yo ap mache via JS sèlman kounye a pou evite erè Liquid
+async function loadOrders(userId) {
+  const { data: orders } = await client.from('orders').select('*').eq('customer_email', (await client.auth.getUser()).data.user.email);
+  const list = document.getElementById('ordersList');
+
+  if (!orders || orders.length === 0) {
+    list.innerHTML = '<div style="padding:30px; text-align:center; color:#888;">Okenn kòmand poko.</div>';
+    return;
+  }
+
+  document.getElementById('statOrders').innerText = orders.length;
+  list.innerHTML = orders.map(o => {
+    const status = o.status || 'pending';
+    let actionsHtml = '';
+
+    if (status === 'delivered') {
+      actionsHtml = `<button onclick="approveOrder('${o.id}', '${o.seller_id}', ${o.amount})" class="btn-action approve">✅ Aprouve Resepsyon</button>`;
+    } else if (status === 'completed') {
+      actionsHtml = `<a href="/pwodwi-machann.html?id=${o.product_id}" class="btn-action review">⭐ Bay Avis</a>`;
+    }
+
+    return `
+      <div class="order-item">
+        <div class="order-info">
+          <div class="order-title">Kòmand #${o.id.substring(0,8)}</div>
+          <div style="font-size:0.8rem; color:#666;">Pwodwi: ${o.product_name || 'N/A'} · <b>${o.amount} HTG</b></div>
+          <div style="margin-top:5px;">
+            <span class="order-status status-${status}">${status}</span>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          ${actionsHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function approveOrder(orderId, sellerId, amount) {
+  if (!confirm("Èske ou resevwa kòmand lan tout bon? Sa pral lage lajan an bay machann nan.")) return;
+
+  // 1. Make kòmand lan konplè
+  const { error: err1 } = await client.from('orders').update({ status: 'completed' }).eq('id', orderId);
+  if (err1) { alert(err1.message); return; }
+
+  // 2. Mizajou balans machann nan (Wallet)
+  // Nan yon sistèm reyèl, nou ta fè sa via yon Edge Function pou sekirite,
+  // men isit la nou pral chèche balans lan epi ajoute li.
+  const { data: profile } = await client.from('profiles').select('wallet_balance').eq('id', sellerId).single();
+  const currentBal = parseFloat(profile.wallet_balance || 0);
+  const newBal = currentBal + parseFloat(amount);
+
+  await client.from('profiles').update({ wallet_balance: newBal }).eq('id', sellerId);
+
+  alert("✅ Mèsi! Kòmand lan konplè epi lajan an transfere bay machann nan.");
+  loadOrders();
+}
+
+function handleLogout() { client.auth.signOut().then(() => location.reload()); }
+
+window.onload = checkUser;
 </script>

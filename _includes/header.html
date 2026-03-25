@@ -1,341 +1,310 @@
 <style>
-/* ===== HEADER — Kreyòl Modèn & Animé ak Ble ===== */
-.main-header { box-shadow:0 2px 15px rgba(0,0,0,0.1); position:sticky; top:0; z-index:1000; width: 100%; background: #fff; }
-.top-bar { background:#111; color:#fff; padding:6px 0; font-size:11px; font-weight:600; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.top-bar .container { display:flex; justify-content:space-between; align-items:center; padding: 0 15px; }
-.top-bar-links { display:flex; gap:10px; }
-.top-bar a { color:#ccc; text-decoration:none; }
+    /* ===== HEADER ===== */
+    .main-header { box-shadow:0 2px 15px rgba(0,0,0,0.1); position:sticky; top:0; z-index:1000; width: 100%; background: #fff; }
+    .top-bar { background:#111; color:#fff; padding:6px 0; font-size:11px; font-weight:600; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .top-bar .container { display:flex; justify-content:space-between; align-items:center; padding: 0 15px; }
+    .top-bar-links { display:flex; gap:10px; }
+    .top-bar a { color:#ccc; text-decoration:none; }
 
-/* 1. ANIMASYON GRADIENT LOGO (ALE ADWAT - MELANJE AK BLE) */
-.header-main {
-    padding:10px 0;
-    background: linear-gradient(90deg, #ffffff, #fff1f1, #e0f2fe, #fff1f1, #ffffff);
-    background-size: 200% 100%;
-    animation: move-right 10s linear infinite;
-    border-bottom: 1px solid #eee;
-}
+    .header-main {
+        padding:10px 0;
+        background: linear-gradient(90deg, #ffffff, #fff1f1, #e0f2fe, #fff1f1, #ffffff);
+        background-size: 200% 100%;
+        animation: move-right 10s linear infinite;
+        border-bottom: 1px solid #eee;
+    }
+    @keyframes move-right { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
-@keyframes move-right {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-}
+    .header-main .container { display:flex; align-items:center; justify-content: space-between; padding: 0 15px; gap: 10px; }
 
-.header-main .container { display:flex; align-items:center; justify-content: space-between; padding: 0 15px; gap: 10px; }
+    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0; }
+    .logo img { height:34px; width:auto; }
+    .logo span { font-size:18px; font-weight:900; font-family:'Sora', sans-serif;
+      background:linear-gradient(135deg,#ff4747,#ff8c42);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
 
-.logo { display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0; }
-.logo img { height:34px; width:auto; }
-.logo span { font-size:18px; font-weight:900; font-family:'Sora', sans-serif;
-  background:linear-gradient(135deg,#ff4747,#ff8c42);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
+    /* ── SEARCH ── */
+    .search-wrap { flex:1; max-width:500px; position:relative; margin: 0 15px; }
+    .search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; background: #fff; height: 42px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .search-form input { flex:1; padding:0 15px; border:none; outline:none; font-size:13px; background: transparent; font-family: inherit; }
+    .search-form button { padding:0 20px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 13px; border-radius: 0 50px 50px 0; }
+    .search-form:focus-within { border-color: #ff4747; box-shadow: 0 4px 20px rgba(255,71,71,0.15); }
 
-.search-wrap { flex:1; max-width:500px; position:relative; margin: 0 15px; }
-.search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; background: #fff; height: 42px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-.search-form input { flex:1; padding:0 15px; border:none; outline:none; font-size:13px; background: transparent; }
-.search-form button { padding:0 20px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 13px; }
+    /* ── SEARCH RESULTS DROPDOWN ── */
+    #search-results {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0; right: 0;
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+        border: 1.5px solid #f1f5f9;
+        overflow: hidden;
+        z-index: 9999;
+        max-height: 420px;
+        overflow-y: auto;
+    }
+    #search-results::-webkit-scrollbar { width: 4px; }
+    #search-results::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 4px; }
 
-/* BOUTON AUTH YO */
-.header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.btn-auth {
-    display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800;
-    text-decoration: none; padding: 9px 16px; border-radius: 50px;
-    transition: all 0.3s ease; text-transform: uppercase;
-}
-.btn-login { background: #0f172a; color: white; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
-.btn-signup {
-    background: linear-gradient(135deg, #ff4747, #ff8c42); color: white;
-    box-shadow: 0 4px 12px rgba(255, 71, 71, 0.3);
-    animation: pulse-orange 2s infinite;
-}
+    .search-result-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 16px; text-decoration: none;
+        border-bottom: 1px solid #f8fafc; transition: 0.15s;
+        cursor: pointer;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: #fff5f5; }
+    .search-result-img {
+        width: 46px; height: 46px; border-radius: 10px;
+        object-fit: cover; flex-shrink: 0; background: #f1f5f9;
+    }
+    .search-result-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .search-result-price { font-size: 12px; font-weight: 900; color: #ff4747; }
+    .search-result-cat { font-size: 10px; color: #64748b; font-weight: 600; margin-left: auto; flex-shrink: 0; }
 
-@keyframes pulse-orange {
-    0% { transform: scale(1); }
-    70% { transform: scale(1.03); }
-    100% { transform: scale(1); }
-}
+    .search-no-result { padding: 24px; text-align: center; color: #64748b; font-size: 13px; font-weight: 600; }
+    .search-loading { padding: 20px; text-align: center; color: #94a3b8; font-size: 13px; }
 
-/* 2. ANIMASYON GRADIENT KATEGORI (SOTI DWAT ALE GÒCH - MELANJE AK BLE GLACÉ) */
-.site-nav {
-    background: linear-gradient(270deg, #ffffff, #f0f9ff, #e5e7eb, #f0f9ff, #ffffff);
-    background-size: 200% 100%;
-    animation: move-left 10s linear infinite;
-    border-bottom: 1px solid #eee;
-}
+    /* Header actions */
+    .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .btn-auth { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-decoration: none; padding: 9px 16px; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; }
+    .btn-login { background: #0f172a; color: white; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
+    .btn-signup { background: linear-gradient(135deg, #ff4747, #ff8c42); color: white; box-shadow: 0 4px 12px rgba(255, 71, 71, 0.3); }
 
-@keyframes move-left {
-    0% { background-position: 200% 50%; }
-    100% { background-position: 0% 50%; }
-}
+    .site-nav { background: linear-gradient(270deg, #ffffff, #f0f9ff, #e5e7eb, #f0f9ff, #ffffff); background-size: 200% 100%; animation: move-left 10s linear infinite; border-bottom: 1px solid #eee; }
+    @keyframes move-left { 0% { background-position: 200% 50%; } 100% { background-position: 0% 50%; } }
+    .nav-scroll { display:flex; gap:18px; padding:12px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; align-items: center; }
+    .nav-lnk { text-decoration: none; color: #475569; font-size: 13px; font-weight: 700; transition: 0.3s; }
+    .nav-lnk:hover { color: #ff4747; transform: translateY(-2px); }
 
-.nav-scroll { display:flex; gap:18px; padding:12px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; align-items: center; }
-.nav-lnk { text-decoration: none; color: #475569; font-size: 13px; font-weight: 700; transition: 0.3s; }
-.nav-lnk:hover { color: #ff4747; transform: translateY(-2px); }
+    .act-btn { display:flex; flex-direction:column; align-items:center; background:none; border:none; cursor:pointer; color:#333; position:relative; padding: 0; }
+    .cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:18px; height:18px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 2px solid white; }
 
-.act-btn { display:flex; flex-direction:column; align-items:center; background:none; border:none; cursor:pointer; color:#333; position:relative; padding: 0; }
-.cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:18px; height:18px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 2px solid white; }
+    @keyframes shake-bell { 0% { transform: rotate(0); } 15% { transform: rotate(15deg); } 30% { transform: rotate(-15deg); } 45% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); } 85% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
+    .bell-ring { animation: shake-bell 0.5s ease-in-out infinite; }
 
-@media (max-width: 768px) {
-  .top-bar { display: none; }
-  .header-main .container { flex-wrap: wrap; justify-content: space-between; }
-  .logo { order: 1; }
-  .header-actions { order: 2; }
-  .search-wrap { order: 3; flex-basis: 100%; margin: 10px 0 0 0; display: block; max-width: none; }
-  .logo span { font-size: 14px; }
-  .btn-auth { padding: 6px 12px; font-size: 10px; }
-}
+    @media (max-width: 768px) {
+      .top-bar { display: none; }
+      .header-main .container { flex-wrap: wrap; justify-content: space-between; }
+      .search-wrap { order: 3; max-width: 100%; margin: 8px 0 4px; flex: 0 0 100%; }
+    }
 </style>
 
 <header class="main-header">
-  <div class="top-bar">
-    <div class="container">
-      <span>🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
-      <div class="top-bar-links">
-        <a href="/regleman.html" style="color:#ff4747;">📜 Regleman Sit la</a>
-        <a href="https://wa.me/50948868964" target="_blank">💬 WhatsApp</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="header-main">
-    <div class="container">
-      <a href="/" class="logo">
-        <img src="/assets/images/logo.png" alt="Boutique Piyay">
-        <span>BOUTIQUE PIYAY</span>
-      </a>
-
-      <div class="search-wrap">
-        <form class="search-form" onsubmit="return false;">
-          <input type="text" id="search-input" placeholder="Chèche yon pwodwi..." oninput="if(window.liveSearch) window.liveSearch()" autocomplete="off">
-          <button type="submit">OK</button>
-        </form>
-        <div id="search-results" style="display:none; position:absolute; top:46px; width:100%; background:white; z-index:100; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-radius: 12px;"></div>
-      </div>
-
-      <div class="header-actions">
-        <div id="authLinks" style="display: flex; gap: 10px;">
-            <a href="/login.html" class="btn-auth btn-login">🔑 Kont</a>
-            <a href="/signup.html" class="btn-auth btn-signup">✨ Enskri</a>
-        </div>
-        <div id="userInfo" style="display: none;">
-            <a href="/dashboard.html" class="btn-auth btn-login">👤 Mwen</a>
-        </div>
-
-        <!-- KLÒCH NOTIFIKASYON -->
-        <div style="position:relative;">
-          <button class="act-btn" onclick="toggleNotifPanel()" id="notif-btn">
-            <span>🔔</span>
-            <div class="cart-badge" id="notif-count" style="display:none;">0</div>
-            <small style="font-size:9px;font-weight:800;text-transform:uppercase;margin-top:2px;">Alèt</small>
-          </button>
-          <div id="notif-panel" style="display:none;position:absolute;top:calc(100% + 10px);right:0;width:320px;max-height:420px;background:white;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);border:1px solid #eee;overflow:hidden;flex-direction:column;z-index:9999;">
-            <div style="padding:14px 18px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;">
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-weight:700;font-size:15px;color:#111;">Notifikasyon</span>
-                <span id="notif-badge" style="display:none;background:#ff4747;color:white;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;"></span>
-              </div>
-              <button onclick="markAllRead()" style="background:none;border:none;color:#ff4747;font-size:12px;cursor:pointer;font-weight:600;">Tout li ✓</button>
+    <div class="top-bar">
+        <div class="container">
+            <span>🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
+            <div class="top-bar-links">
+                <a href="/regleman.html" style="color:#ff4747;">📜 Regleman</a>
+                <a href="https://wa.me/50948868964" target="_blank">💬 WhatsApp</a>
             </div>
-            <div id="notif-list" style="overflow-y:auto;flex:1;max-height:340px;">
-              <div style="padding:40px;text-align:center;color:#9ca3af;">
-                <div style="font-size:36px;margin-bottom:8px;">🔔</div>
-                <div style="font-size:13px;">Pa gen notifikasyon toujou</div>
-              </div>
-            </div>
-          </div>
         </div>
-
-        <button class="act-btn" onclick="openCart()">
-          <span>🛒</span>
-          <div class="cart-badge" id="cart-count" style="display:none;">0</div>
-          <small style="font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 2px;">Panye</small>
-        </button>
-      </div>
     </div>
-  </div>
 
-  <nav class="site-nav">
-    <div class="nav-scroll">
-      <a href="/" class="nav-lnk">Tout Pwodwi</a>
-      <a href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900;">🚀 Vann pa w</a>
-      <a href="/affiliate.html" class="nav-lnk" style="color:#10b981; font-weight:900;">💸 Afilyasyon</a>
-      {% for cat in site.categories %}
-      <a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>
-      {% endfor %}
+    <div class="header-main">
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/assets/images/logo.png" alt="Boutique Piyay">
+                <span>BOUTIQUE PIYAY</span>
+            </a>
+
+            <!-- SEARCH -->
+            <div class="search-wrap">
+                <form class="search-form" onsubmit="return false;">
+                    <input type="text" id="search-input" placeholder="Chèche yon pwodwi..."
+                           oninput="headerSearch(this.value)"
+                           autocomplete="off">
+                    <button type="submit" onclick="headerSearch(document.getElementById('search-input').value)">OK</button>
+                </form>
+                <!-- RESULTS DROPDOWN -->
+                <div id="search-results"></div>
+            </div>
+
+            <div class="header-actions">
+                <div id="authLinks" style="display: flex; gap: 8px;">
+                    <a href="/login.html" class="btn-auth btn-login">🔑 Kont</a>
+                    <a href="/signup.html" class="btn-auth btn-signup">✨ Enskri</a>
+                </div>
+                <div id="userInfo" style="display: none; gap: 8px;">
+                    <a id="btn-customer-account" href="/account/" class="btn-auth btn-login" style="background:#003F87; display:none;">👤 Mwen</a>
+                    <a id="btn-merchant-dash" href="/dashboard.html" class="btn-auth btn-login" style="background:#ff4747; display:none;">📊 Dashboard</a>
+                    <button onclick="handleHeaderLogout()" class="btn-auth btn-login" style="background:#475569; border:none; cursor:pointer;">🚪</button>
+                </div>
+                <button class="act-btn" id="notif-bell-btn">
+                    <span id="bell-icon" style="font-size:20px;">🔔</span>
+                    <div class="cart-badge" id="notif-count" style="display:none;">0</div>
+                </button>
+                <button class="act-btn" onclick="openCart()">
+                    <span>🛒</span>
+                    <div class="cart-badge" id="cart-count" style="display:none;">0</div>
+                </button>
+            </div>
+        </div>
     </div>
-  </nav>
+
+    <nav class="site-nav">
+        <div class="nav-scroll">
+            <a href="/" class="nav-lnk">Tout Pwodwi</a>
+            <a href="/shop/" class="nav-lnk" style="color:#ff4747; font-weight:900;">🛍️ BOUTIK</a>
+            <a href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900;">🚀 Vann pa w</a>
+            <a href="/affiliate.html" class="nav-lnk" style="color:#10b981; font-weight:900;">💸 Afilyasyon</a>
+            {% for cat in site.categories %}<a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>{% endfor %}
+        </div>
+    </nav>
 </header>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
     const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
     const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    const supHeader = window.supabase.createClient(SUP_URL, SUP_KEY);
 
-    async function updateHeaderAuth() {
-        if (typeof supabase !== 'undefined') {
-            const sup = window._supabaseClient || supabase.createClient(SUP_URL, SUP_KEY);
-            window._supabaseClient = sup;
-            const { data: { user } } = await sup.auth.getUser();
-            const authLinks = document.getElementById('authLinks');
-            const userInfo = document.getElementById('userInfo');
+    /* ── SEARCH ── */
+    let staticData = [];
+    let searchTimer = null;
 
-            if (user) {
-                if (authLinks) authLinks.style.display = 'none';
-                if (userInfo) userInfo.style.display = 'flex';
-                window._currentUserId = user.id;
-            } else {
-                if (authLinks) authLinks.style.display = 'flex';
-                if (userInfo) userInfo.style.display = 'none';
-            }
+    // Chaje done statik yo (search.json) yon sèl fwa
+    fetch('/search.json')
+      .then(r => r.ok ? r.json() : [])
+      .then(d => { staticData = d || []; })
+      .catch(() => { staticData = []; });
+
+    async function headerSearch(query) {
+      const resultsDiv = document.getElementById('search-results');
+      query = (query || '').trim().toLowerCase();
+
+      if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
+
+      // Debounce — tann 300ms anvan chèch
+      clearTimeout(searchTimer);
+      resultsDiv.innerHTML = '<div class="search-loading">🔍 Ap chèche...</div>';
+      resultsDiv.style.display = 'block';
+
+      searchTimer = setTimeout(async () => {
+        // 1. Chèche nan JSON statik
+        let results = staticData.filter(p =>
+          (p.title || '').toLowerCase().includes(query) ||
+          (p.category || '').toLowerCase().includes(query)
+        );
+
+        // 2. Chèche nan Supabase pou pwodwi machann yo
+        try {
+          const { data: dbResults } = await supHeader
+            .from('user_products')
+            .select('id, title, price, image_url, category')
+            .ilike('title', `%${query}%`)
+            .eq('is_approved', true)
+            .limit(8);
+
+          if (dbResults) {
+            dbResults.forEach(p => {
+              // Evite doublons
+              if (!results.find(r => r.url && r.url.includes(p.id))) {
+                results.push({
+                  title: p.title,
+                  url: `/pwodwi-machann.html?id=${p.id}`,
+                  price: p.price,
+                  image: p.image_url,
+                  category: p.category
+                });
+              }
+            });
+          }
+        } catch(e) {}
+
+        if (results.length === 0) {
+          resultsDiv.innerHTML = `<div class="search-no-result">😔 Okenn rezilta pou "<b>${query}</b>"</div>`;
+          return;
         }
+
+        resultsDiv.innerHTML = results.slice(0, 8).map(p => `
+          <a href="${p.url || '#'}" class="search-result-item">
+            <img class="search-result-img"
+                 src="${p.image || p.image_url || '/assets/images/logo.png'}"
+                 onerror="this.src='/assets/images/logo.png'"
+                 alt="${p.title}">
+            <div style="flex:1; min-width:0;">
+              <div class="search-result-title">${p.title}</div>
+              <div class="search-result-price">${p.price} HTG</div>
+            </div>
+            ${p.category ? `<span class="search-result-cat">${p.category}</span>` : ''}
+          </a>`).join('');
+
+        resultsDiv.style.display = 'block';
+      }, 300);
     }
+
+    // Fèmen dropdown lè klike deyò
+    document.addEventListener('click', function(e) {
+      const wrap = document.querySelector('.search-wrap');
+      if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('search-results').style.display = 'none';
+      }
+    });
+
+    // Fèmen lè peze ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') document.getElementById('search-results').style.display = 'none';
+    });
+
+    /* ── SON KÒMAND ── */
+    function playOrderSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc  = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        const bell = document.getElementById('bell-icon');
+        bell.classList.add('bell-ring');
+        setTimeout(() => bell.classList.remove('bell-ring'), 3000);
+      } catch(e) {}
+    }
+
+    /* ── AUTH ── */
+    async function updateHeaderAuth() {
+      const { data: { user } } = await supHeader.auth.getUser();
+      const authLinks  = document.getElementById('authLinks');
+      const userInfo   = document.getElementById('userInfo');
+      const btnCustomer = document.getElementById('btn-customer-account');
+      const btnMerchant = document.getElementById('btn-merchant-dash');
+
+      if (user) {
+        authLinks.style.display = 'none';
+        userInfo.style.display  = 'flex';
+        const { data: profile } = await supHeader.from('profiles').select('role').eq('id', user.id).maybeSingle();
+        if (profile && profile.role === 'seller') {
+          btnMerchant.style.display = 'flex';
+          supHeader
+            .channel('realtime-orders')
+            .on('postgres_changes', {
+              event: 'INSERT', schema: 'public', table: 'orders',
+              filter: `seller_id=eq.${user.id}`
+            }, () => {
+              playOrderSound();
+              const cnt = document.getElementById('notif-count');
+              cnt.style.display = 'flex';
+              cnt.innerText = parseInt(cnt.innerText || 0) + 1;
+            })
+            .subscribe();
+        } else {
+          btnCustomer.style.display = 'flex';
+        }
+      } else {
+        authLinks.style.display = 'flex';
+        userInfo.style.display  = 'none';
+      }
+    }
+
+    async function handleHeaderLogout() {
+      await supHeader.auth.signOut();
+      window.location.href = '/';
+    }
+
     updateHeaderAuth();
-</script>
-
-<script>
-// ── NOTIFIKASYON SYSTEM (Supabase Realtime) ──────────────────
-(function() {
-  const ICONS = {
-    new_order: "🛍️", order_confirmed: "✅", order_delivered: "📦",
-    delivery_coming: "🛵", commission_earned: "💰", payment_received: "💳",
-    new_message: "💬", flash_sale: "⚡", withdrawal_success: "🏦"
-  };
-
-  let supClient = null;
-  let notifChannel = null;
-  let allNotifs = [];
-
-  function timeAgo(date) {
-    const diff = Date.now() - new Date(date).getTime();
-    const mins = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    if (mins < 1) return "Kounye a";
-    if (mins < 60) return mins + " min";
-    if (hours < 24) return hours + "h";
-    return Math.floor(diff / 86400000) + "j";
-  }
-
-  function renderNotifs() {
-    const list = document.getElementById("notif-list");
-    const count = document.getElementById("notif-count");
-    const badge = document.getElementById("notif-badge");
-    if (!list) return;
-
-    const unread = allNotifs.filter(n => !n.read).length;
-
-    if (unread > 0) {
-      count.style.display = "flex";
-      count.textContent = unread > 99 ? "99+" : unread;
-      badge.style.display = "inline-block";
-      badge.textContent = unread + " nouvo";
-    } else {
-      count.style.display = "none";
-      badge.style.display = "none";
-    }
-
-    if (allNotifs.length === 0) {
-      list.innerHTML = '<div style="padding:40px;text-align:center;color:#9ca3af;"><div style="font-size:36px;margin-bottom:8px;">🔔</div><div style="font-size:13px;">Pa gen notifikasyon toujou</div></div>';
-      return;
-    }
-
-    list.innerHTML = allNotifs.map(n => `
-      <div onclick="readNotif('${n.id}')" style="padding:12px 16px;display:flex;gap:10px;cursor:pointer;background:${n.read ? 'white' : '#eff6ff'};border-bottom:1px solid #f9fafb;">
-        <div style="width:36px;height:36px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
-          ${ICONS[n.type] || "🔔"}
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:${n.read ? '500' : '700'};font-size:12px;color:#111;margin-bottom:2px;">${n.title}</div>
-          <div style="font-size:11px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.body}</div>
-          <div style="font-size:10px;color:#9ca3af;margin-top:3px;">${timeAgo(n.created_at)}</div>
-        </div>
-        ${!n.read ? '<div style="width:7px;height:7px;border-radius:50%;background:#003F87;flex-shrink:0;margin-top:5px;"></div>' : ''}
-      </div>
-    `).join("");
-  }
-
-  async function loadNotifs(userId) {
-    const res = await fetch(`${SUP_URL}/rest/v1/notifications?user_id=eq.${userId}&order=created_at.desc&limit=30`, {
-      headers: { "apikey": SUP_KEY, "Authorization": "Bearer " + SUP_KEY }
-    });
-    if (res.ok) {
-      allNotifs = await res.json();
-      renderNotifs();
-    }
-  }
-
-  async function subscribeRealtime(userId) {
-    if (!supClient) return;
-    notifChannel = supClient.channel("notifications:" + userId)
-      .on("postgres_changes", {
-        event: "INSERT", schema: "public",
-        table: "notifications", filter: "user_id=eq." + userId
-      }, (payload) => {
-        allNotifs.unshift(payload.new);
-        renderNotifs();
-        playSound();
-      }).subscribe();
-  }
-
-  window.readNotif = async function(id) {
-    allNotifs = allNotifs.map(n => n.id === id ? {...n, read: true} : n);
-    renderNotifs();
-    await fetch(`${SUP_URL}/rest/v1/notifications?id=eq.${id}`, {
-      method: "PATCH",
-      headers: { "apikey": SUP_KEY, "Authorization": "Bearer " + SUP_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ read: true })
-    });
-  };
-
-  window.markAllRead = async function() {
-    const userId = window._currentUserId;
-    if (!userId) return;
-    allNotifs = allNotifs.map(n => ({...n, read: true}));
-    renderNotifs();
-    await fetch(`${SUP_URL}/rest/v1/notifications?user_id=eq.${userId}&read=eq.false`, {
-      method: "PATCH",
-      headers: { "apikey": SUP_KEY, "Authorization": "Bearer " + SUP_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ read: true })
-    });
-  };
-
-  window.toggleNotifPanel = function() {
-    const panel = document.getElementById("notif-panel");
-    panel.style.display = panel.style.display === "flex" ? "none" : "flex";
-  };
-
-  document.addEventListener("click", function(e) {
-    const btn = document.getElementById("notif-btn");
-    const panel = document.getElementById("notif-panel");
-    if (panel && btn && !btn.contains(e.target) && !panel.contains(e.target)) {
-      panel.style.display = "none";
-    }
-  });
-
-  function playSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880; osc.type = "sine";
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-      osc.start(); osc.stop(ctx.currentTime + 0.25);
-    } catch(_) {}
-  }
-
-  async function init() {
-    supClient = window._supabaseClient || supabase.createClient(SUP_URL, SUP_KEY);
-    window._supabaseClient = supClient;
-    const { data: { user } } = await supClient.auth.getUser();
-    if (!user) return;
-    window._currentUserId = user.id;
-    await loadNotifs(user.id);
-    await subscribeRealtime(user.id);
-  }
-
-  if (typeof supabase !== "undefined") {
-    init();
-  } else {
-    window.addEventListener("load", init);
-  }
-})();
 </script>

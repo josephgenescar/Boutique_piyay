@@ -252,6 +252,37 @@
         }
         .chart-title { font-size: 15px; font-weight: 800; margin-bottom: 20px; }
 
+        /* ORDERS */
+        .order-card {
+            background: white; border-radius: var(--radius-sm);
+            padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            display: flex; align-items: center; gap: 15px; border-left: 4px solid #eee;
+        }
+        .order-card.pending { border-left-color: var(--gold); }
+        .order-card.delivered { border-left-color: var(--blue); }
+        .order-card.completed { border-left-color: var(--green); }
+        .order-info { flex: 1; }
+        .order-id { font-size: 11px; color: var(--gray); font-weight: 700; }
+        .order-title { font-weight: 800; font-size: 15px; margin: 2px 0; }
+        .order-status-badge { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 50px; text-transform: uppercase; }
+        .status-pending { background: #fffbeb; color: #d97706; }
+        .status-delivered { background: #eff6ff; color: #1d4ed8; }
+        .status-completed { background: #ecfdf5; color: #059669; }
+        .btn-order-action { padding: 9px 16px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; background: var(--dark); color: white; transition: 0.2s; }
+        .btn-order-action:hover { background: var(--primary); }
+
+        /* FEEDBACK CARD */
+        .feedback-item {
+            background: white; border-radius: var(--radius-sm);
+            padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            margin-bottom: 16px; border-left: 5px solid var(--primary);
+        }
+        .fb-user { font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; }
+        .fb-date { font-size: 11px; color: var(--gray); font-weight: 600; }
+        .fb-rating { color: #f59e0b; margin: 5px 0; }
+        .fb-comment { font-size: 13px; line-height: 1.5; color: var(--dark-3); margin-top: 8px; }
+        .fb-prod { font-size: 11px; font-weight: 700; color: var(--primary); margin-top: 10px; text-transform: uppercase; }
+
         /* PRODUCTS */
         .prods-grid {
             display: grid;
@@ -278,7 +309,7 @@
         .prod-price span { font-size: 11px; font-weight: 600; color: var(--gray); }
 
         .prod-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 8px; }
-        .prod-actions-row2 { padding: 0 14px 14px; }
+        .prod-actions-row2 { padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 0; }
         .btn-sm { padding: 9px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; transition: 0.2s; display: block; width: 100%; }
         .btn-edit { background: #f1f5f9; color: var(--dark); }
         .btn-edit:hover { background: #e2e8f0; }
@@ -287,6 +318,9 @@
         .btn-flash { background: #fffbeb; color: #d97706; border: 1.5px dashed #f59e0b; }
         .btn-flash:hover { background: #fef3c7; }
         .btn-unflash { background: #0f172a; color: #fbbf24; }
+        .btn-boost { background: #eff6ff; color: #2563eb; border: 1.5px dashed #3b82f6; }
+        .btn-boost:hover { background: #dbeafe; }
+        .btn-boost-active { background: #1e3a8a; color: #fbbf24; }
 
         /* WALLET */
         .wallet-card {
@@ -436,6 +470,31 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
+        /* MODAL BOOST */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.8); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 9999; padding: 20px;
+        }
+        .modal-card {
+            background: white; border-radius: 24px; padding: 32px;
+            width: 100%; max-width: 440px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center; animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-title { font-size: 22px; font-weight: 900; margin-bottom: 12px; }
+        .modal-sub { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 24px; }
+        .boost-opts { display: grid; gap: 12px; }
+        .boost-opt {
+            padding: 18px; border: 2px solid #f1f5f9; border-radius: 16px;
+            text-align: left; cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .boost-opt:hover { border-color: var(--primary); background: #fff1f1; }
+        .boost-opt-title { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+        .boost-opt-sub { font-size: 12px; color: var(--gray); font-weight: 500; }
+        .boost-opt-tag { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 50px; background: var(--primary); color: white; }
+
         /* EMPTY STATE */
         .empty-state {
             text-align: center;
@@ -496,8 +555,14 @@
         <button class="nav-item active" onclick="switchTab('stat', this)">
             <span class="icon">📊</span> Statistik & Pwen
         </button>
+        <button class="nav-item" onclick="switchTab('orders', this)">
+            <span class="icon">🛒</span> Kòmand yo
+        </button>
         <button class="nav-item" onclick="switchTab('prod', this)">
             <span class="icon">📦</span> Pwodwi m yo
+        </button>
+        <button class="nav-item" onclick="switchTab('feedback', this)">
+            <span class="icon">⭐</span> Avis Kliyan
         </button>
         <button class="nav-item" onclick="switchTab('wallet', this)">
             <span class="icon">💰</span> Lajan
@@ -587,6 +652,22 @@
             </div>
         </div>
 
+        <!-- ===== TAB: KÒMAND YO ===== -->
+        <div id="tab-orders" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Kòmand yo 🛒</h1>
+                    <p class="page-subtitle">Jere livrezon pwodwi ou yo pou debloke lajan ou</p>
+                </div>
+            </div>
+            <div id="orders-list">
+                <div class="empty-state">
+                    <div class="empty-icon">🛒</div>
+                    <div class="empty-title">Chaje kòmand yo...</div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== TAB: PWODWI ===== -->
         <div id="tab-prod" class="tab-content">
             <div class="page-header">
@@ -600,6 +681,22 @@
                 <div class="empty-state" style="grid-column: 1/-1;">
                     <div class="empty-icon">📦</div>
                     <div class="empty-title">Chaje pwodwi yo...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: FEEDBACK ===== -->
+        <div id="tab-feedback" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Avis Kliyan ⭐</h1>
+                    <p class="page-subtitle">Sa kliyan yo panse de pwodwi ou yo</p>
+                </div>
+            </div>
+            <div id="feedback-list">
+                <div class="empty-state">
+                    <div class="empty-icon">⭐</div>
+                    <div class="empty-title">Pa gen avis ankò.</div>
                 </div>
             </div>
         </div>
@@ -717,13 +814,34 @@
     </main>
 </div>
 
+<!-- MODAL BOOST -->
+<div id="boost-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-title">🚀 Boost Pwodwi ou!</div>
+        <p class="modal-sub">Chwazi kijan ou vle mete pwodwi sa a anlè nèt nan paj akey la.</p>
+        <div class="boost-opts">
+            <div class="boost-opt" onclick="processBoost('paid')">
+                <div class="boost-opt-title">💳 Peye Boost (100 HTG)</div>
+                <div class="boost-opt-sub">Boost pwodwi ou pandan 48h pou sèlman 100 HTG.</div>
+                <span class="boost-opt-tag">48 ÈDTAN</span>
+            </div>
+            <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
+                <div class="boost-opt-title">🏆 Nivo Rekonpans</div>
+                <div class="boost-opt-sub" id="boost-free-sub">Sèlman pou nivo Bronze, Argent oswa Or.</div>
+                <span class="boost-opt-tag" style="background:var(--green)">GRATIS</span>
+            </div>
+        </div>
+        <button onclick="closeBoostModal()" style="margin-top:20px; background:none; border:none; color:var(--gray); font-weight:700; cursor:pointer;">Anile</button>
+    </div>
+</div>
+
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-nav">
     <button class="m-nav-btn active" onclick="switchTab('stat', this)"><span class="m-icon">📊</span>Stats</button>
+    <button class="m-nav-btn" onclick="switchTab('orders', this)"><span class="m-icon">🛒</span>Lòd</button>
     <button class="m-nav-btn" onclick="switchTab('prod', this)"><span class="m-icon">📦</span>Pwodwi</button>
-    <button class="m-nav-btn" onclick="switchTab('wallet', this)"><span class="m-icon">💰</span>Lajan</button>
+    <button class="m-nav-btn" onclick="switchTab('feedback', this)"><span class="m-icon">⭐</span>Avis</button>
     <button class="m-nav-btn" onclick="switchTab('profile', this)"><span class="m-icon">🏪</span>Profil</button>
-    <button class="m-nav-btn" onclick="goToVendre()"><span class="m-icon">➕</span>Ajoute</button>
 </nav>
 
 <script>
@@ -733,12 +851,16 @@
     );
 
     let currentUser = null;
+    let currentProfile = null;
+    let selectedProdId = null;
 
     async function init() {
         const { data: { user } } = await supD.auth.getUser();
         if (!user) return window.location.href = "/login.html";
         currentUser = user;
         loadAll();
+        loadOrders();
+        loadFeedbacks();
         syncPointsWithSales();
         initChart();
         const jsonLink = document.getElementById('json-link-display');
@@ -776,6 +898,9 @@
 
     async function syncPointsWithSales() {
         const { data: orders } = await supD.from('orders').select('amount').eq('seller_id', currentUser.id);
+        const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
+        currentProfile = prof;
+
         if (orders) {
             const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
             const newPoints = Math.floor(totalSales);
@@ -802,6 +927,52 @@
         document.getElementById('progress-label').innerText = progressLabel;
     }
 
+    async function loadOrders() {
+        const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
+        const list = document.getElementById('orders-list');
+        if (orders && orders.length > 0) {
+            list.innerHTML = orders.map(o => `
+                <div class="order-card ${o.status || 'pending'}">
+                    <div class="order-info">
+                        <div class="order-id">KÒMAND #${o.id.substring(0,8)}</div>
+                        <div class="order-title">${o.product_name || 'Pwodwi'}</div>
+                        <div class="order-meta">Kliyan: ${o.customer_email} · <b>${o.amount} HTG</b></div>
+                        <div style="margin-top:8px;"><span class="order-status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
+                    </div>
+                    <div>
+                        ${(o.status === 'pending' || !o.status) ? `<button class="btn-order-action" onclick="markAsDelivered('${o.id}')">🚚 Make kòm Livre</button>` : ''}
+                        ${o.status === 'delivered' ? `<small style="color:var(--gray);">Atann kliyan apwouve...</small>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = `<div class="empty-state"><div class="empty-title">Okenn kòmand poko fèt.</div></div>`;
+        }
+    }
+
+    async function markAsDelivered(id) {
+        if (!confirm("Èske ou livre pwodwi sa a?")) return;
+        const { error } = await supD.from('orders').update({ status: 'delivered' }).eq('id', id);
+        if (!error) loadOrders();
+    }
+
+    async function loadFeedbacks() {
+        const { data: fbs } = await supD.from('feedback').select('*, user_products(title), profiles(full_name)').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
+        const list = document.getElementById('feedback-list');
+        if (fbs && fbs.length > 0) {
+            list.innerHTML = fbs.map(f => `
+                <div class="feedback-item">
+                    <div class="fb-user"><span>👤 ${f.profiles ? f.profiles.full_name : 'Kliyan'}</span><span class="fb-date">${new Date(f.created_at).toLocaleDateString()}</span></div>
+                    <div class="fb-rating">${'⭐'.repeat(f.rating)}</div>
+                    <div class="fb-comment">${f.comment || 'Pa gen kòmantè.'}</div>
+                    <div class="fb-prod">📦 Pwodwi: ${f.user_products ? f.user_products.title : 'N/A'}</div>
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = `<div class="empty-state"><div class="empty-title">Pa gen avis ankò.</div></div>`;
+        }
+    }
+
     async function loadAll() {
         const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
         const grid = document.getElementById('prods-grid');
@@ -811,9 +982,8 @@
                 const now = new Date();
                 const createdAt = new Date(p.created_at);
                 const diffHours = (now - createdAt) / (1000 * 60 * 60);
-
-                // ✅ CHEKE SI FLASH LA ANKÒ VALAB
                 let isFlashActive = p.is_flash_sale === true || (p.old_price && diffHours < 24);
+                let isBoosted = p.is_boosted === true;
 
                 let discountBadge = '';
                 if (isFlashActive) {
@@ -840,7 +1010,11 @@
                     <div class="prod-actions-row2">
                         ${isFlashActive
                             ? `<button onclick="toggleFlashSale('${p.id}', null)" class="btn-sm btn-unflash">🚫 Retire Flash</button>`
-                            : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash">⚡ Mete nan Flash</button>`
+                            : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash">⚡ Mete Flash</button>`
+                        }
+                        ${isBoosted
+                            ? `<button onclick="toggleBoost('${p.id}', false)" class="btn-sm btn-boost-active">🚀 Boosted</button>`
+                            : `<button onclick="openBoostModal('${p.id}')" class="btn-sm btn-boost">🚀 Boost</button>`
                         }
                     </div>
                 </div>
@@ -849,7 +1023,6 @@
             grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
                 <div class="empty-icon">📦</div>
                 <div class="empty-title">Pa gen pwodwi toujou</div>
-                <div class="empty-sub">Klike sou "Nouvo Pwodwi" pou kòmanse vann</div>
             </div>`;
         }
 
@@ -858,6 +1031,7 @@
             document.getElementById('prof-name').value = prof.full_name || '';
             document.getElementById('prof-whatsapp').value = prof.whatsapp_number || '';
             document.getElementById('prof-address').value = prof.address || '';
+            document.getElementById('wall-balance').innerHTML = `${prof.wallet_balance || 0} <span>HTG</span>`;
             document.getElementById('api-key-display').innerText = currentUser.id;
             const shopLink = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
             document.getElementById('shop-url-display').innerText = shopLink;
@@ -867,38 +1041,64 @@
         }
     }
 
+    // LOJIK BOOST
+    function openBoostModal(id) {
+        selectedProdId = id;
+        document.getElementById('boost-modal').style.display = 'flex';
+        const points = currentProfile ? (currentProfile.points || 0) : 0;
+        if (points < 100) {
+            document.getElementById('boost-free-opt').style.opacity = '0.5';
+            document.getElementById('boost-free-sub').innerText = "Ou bezwen omwen 100 pwen (Bronze) pou opsyon sa a.";
+        } else {
+            document.getElementById('boost-free-opt').style.opacity = '1';
+            document.getElementById('boost-free-sub').innerText = "Ou gen nivo nesesè! Sèvi ak pwen ou pou boost gratis.";
+        }
+    }
+    function closeBoostModal() { document.getElementById('boost-modal').style.display = 'none'; }
+
+    async function processBoost(type) {
+        if (type === 'free' && (!currentProfile || (currentProfile.points || 0) < 100)) {
+            alert("❌ Ou poko gen ase pwen (Bronze) pou boost gratis!"); return;
+        }
+
+        let boostData = { is_boosted: true };
+
+        // Kalkile tan ekspirasyon (48 èdtan a kòmanse kounye a)
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 48);
+        boostData.boost_expires_at = expiresAt.toISOString();
+
+        if (type === 'paid') {
+            const confirmed = confirm("Èske ou vle peye 100 HTG pou boost pwodwi sa a pandan 48h?");
+            if (!confirmed) return;
+            // Nan yon sistèm reyèl, isit la ou ta rele API MonCash la.
+        }
+
+        const { error } = await supD.from('user_products').update(boostData).eq('id', selectedProdId);
+        if (!error) {
+            alert("✅ Pwodwi ou a gen Boost kounye a pandan 48 èdtan!");
+            closeBoostModal(); loadAll();
+        }
+    }
+
+    async function toggleBoost(id, status) {
+        const { error } = await supD.from('user_products').update({ is_boosted: status, boost_expires_at: null }).eq('id', id);
+        if (!error) loadAll();
+    }
+
     async function toggleFlashSale(id, currentPrice) {
         if (currentPrice === null) {
-            // Retire nan flash
-            const { error } = await supD.from('user_products').update({
-                old_price: null,
-                is_flash_sale: false
-            }).eq('id', id);
+            const { error } = await supD.from('user_products').update({ old_price: null, is_flash_sale: false }).eq('id', id);
             if (!error) loadAll();
             return;
         }
-
-        // Verifikasyon limit 3 flash nan 24h
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        const { count } = await supD.from('user_products').select('*', { count: 'exact', head: true })
-            .eq('seller_id', currentUser.id).eq('is_flash_sale', true).gt('created_at', twentyFourHoursAgo);
-
-        if (count >= 3) {
-            alert("❌ Ou rive nan limit 3 pwodwi Flash pa jou. Tann demen pou w mete sa a.");
-            return;
-        }
-
-        const oldP = prompt(`Mete ansyen pri a pou pwodwi sa a (Dwe pi wo pase ${currentPrice} HTG):`);
+        const { count } = await supD.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', currentUser.id).eq('is_flash_sale', true).gt('created_at', twentyFourHoursAgo);
+        if (count >= 3) { alert("❌ Limit 3 flash pa jou."); return; }
+        const oldP = prompt(`Mete ansyen pri a:`);
         if (oldP && parseFloat(oldP) > currentPrice) {
-            const { error } = await supD.from('user_products').update({
-                old_price: parseFloat(oldP),
-                is_flash_sale: true,
-                created_at: new Date().toISOString() // Nou reset tan an pou l kòmanse 24h a kounye a
-            }).eq('id', id);
-            if (error) alert(error.message);
-            else { alert("✅ Pwodwi a nan Flash kounye a!"); loadAll(); }
-        } else if (oldP) {
-            alert("Ansyen pri a dwe pi wo pase pri aktyèl la!");
+            const { error } = await supD.from('user_products').update({ old_price: parseFloat(oldP), is_flash_sale: true, created_at: new Date().toISOString() }).eq('id', id);
+            if (!error) loadAll();
         }
     }
 
@@ -908,15 +1108,11 @@
             whatsapp_number: document.getElementById('prof-whatsapp').value,
             address: document.getElementById('prof-address').value
         }).eq('id', currentUser.id);
-        if (error) alert("Erè: " + error.message);
-        else alert("✅ Profil sove!");
+        if (!error) alert("✅ Profil sove!");
     }
 
     async function deleteProduct(id) {
-        if (confirm("Efase pwodwi sa a definitivman?")) {
-            await supD.from('user_products').delete().eq('id', id);
-            loadAll();
-        }
+        if (confirm("Efase pwodwi sa a?")) { await supD.from('user_products').delete().eq('id', id); loadAll(); }
     }
 
     function switchTab(tab, el) {
@@ -928,10 +1124,7 @@
 
     function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("✅ Lyen kopye!")); }
     function copyApiKey() { navigator.clipboard.writeText(document.getElementById('api-key-display').innerText).then(() => alert("✅ Kle API kopye!")); }
-    function copyJsonLink() {
-        const link = window.location.origin + "/search.json";
-        navigator.clipboard.writeText(link).then(() => alert("✅ Lyen JSON kopye!"));
-    }
+    function copyJsonLink() { navigator.clipboard.writeText(window.location.origin + "/search.json").then(() => alert("✅ Lyen JSON kopye!")); }
     function handleLogout() { supD.auth.signOut().then(() => location.href = '/'); }
     function goToVendre() { location.href = '/vendre.html'; }
 

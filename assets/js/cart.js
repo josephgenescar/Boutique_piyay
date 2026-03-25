@@ -1,65 +1,52 @@
-// ================================================
-// BOUTIQUE PIYAY — cart.js (V4.2 - FIX FINAL ERÈ)
-// ================================================
-
 const CART_KEY = 'bp_cart';
+const S_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   refreshBadge();
-  prefillCustomerData();
 });
-
-async function prefillCustomerData() {
-  if (typeof supabase === 'undefined') return;
-  const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
-  window._supabaseClient = sup;
-  try {
-    const { data: { user } } = await sup.auth.getUser();
-    if (user) {
-      if(document.getElementById('customer-name')) document.getElementById('customer-name').value = user.user_metadata.full_name || '';
-      if(document.getElementById('customer-phone')) document.getElementById('customer-phone').value = user.user_metadata.phone || user.user_metadata.whatsapp || '';
-    }
-  } catch(e) {}
-}
 
 function orderProduct(title, price, id, image, sellerId, sellerPhone) {
   let currentCart = getCart();
-  var key = id || title.replace(/\s+/g,'-').toLowerCase();
-  var found = false;
-  let cleanPhone = sellerPhone ? sellerPhone.replace(/[^0-9]/g, '') : '50948868964';
+  let key = id || title.replace(/\s+/g,'-').toLowerCase();
+  let found = false;
 
-  for (var i = 0; i < currentCart.length; i++) {
+  for (let i = 0; i < currentCart.length; i++) {
     if (currentCart[i].id === key) { currentCart[i].qty += 1; found = true; break; }
   }
 
   if (!found) {
     currentCart.push({
       id: key, title: title, price: parseFloat(price) || 0,
-      img: image || '', qty: 1, sellerId: sellerId || null, sellerPhone: cleanPhone
+      img: image || '', qty: 1, sellerId: sellerId || null, sellerPhone: sellerPhone || '50948868964'
     });
   }
 
   localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
   refreshBadge();
-  toast('✅ ' + title + ' ajoute!');
+  alert('✅ ' + title + ' ajoute nan panye!');
 }
 
 function openCart() {
-  var m = document.getElementById('order-modal');
-  if (m) { m.style.display = 'flex'; drawCart(); }
+  const m = document.getElementById('order-modal');
+  if (m) {
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    drawCart();
+  }
 }
 
 function closeOrderModal() {
-  var m = document.getElementById('order-modal');
-  if (m) { m.style.display = 'none'; }
+  const m = document.getElementById('order-modal');
+  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
 }
 
 function drawCart() {
-  var box = document.getElementById('order-summary');
+  const box = document.getElementById('order-summary');
   if (!box) return;
   let currentCart = getCart();
 
@@ -72,141 +59,111 @@ function drawCart() {
   document.getElementById('order-form-container').style.display = 'block';
 
   let totalHTG = 0;
-  let html = '<table class="receipt-table"><thead><tr><th>Pwodwi</th><th>Kte</th><th>Total</th><th></th></tr></thead><tbody>';
+  let html = `<style>.cart-item { display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 1px solid #eee; }.cart-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }.cart-info { flex: 1; }.cart-title { font-weight: 700; font-size: 14px; }.cart-price { color: #ff4747; font-weight: 800; }</style>`;
+
   currentCart.forEach(it => {
     let sub = it.price * it.qty;
     totalHTG += sub;
-    html += `<tr><td>${it.title}</td><td>${it.qty}</td><td>${sub} HTG</td><td><button onclick="removeItem('${it.id}')" style="background:none;border:none;cursor:pointer;color:#ff4747;">✕</button></td></tr>`;
+    html += `
+      <div class="cart-item">
+        <img class="cart-img" src="${it.img}" onerror="this.src='/assets/images/logo.png'">
+        <div class="cart-info">
+            <div class="cart-title">${it.title}</div>
+            <div class="cart-price">${it.price.toLocaleString()} HTG x ${it.qty}</div>
+        </div>
+        <button onclick="removeItem('${it.id}')" style="background:none; border:none; color:#ff4747; cursor:pointer; font-weight:bold; padding:10px;">✕</button>
+      </div>`;
   });
-  html += `<tr class="total-row"><td colspan="2">TOTAL:</td><td>${totalHTG} HTG</td><td></td></tr></tbody></table>`;
+
+  html += `<div style="margin-top:20px; text-align:right; font-size:18px; font-weight:900;">TOTAL: ${totalHTG.toLocaleString()} HTG</div>`;
   box.innerHTML = html;
 }
 
-function chgQty(id, d) {
-  let currentCart = getCart();
-  currentCart.forEach(it => { if (it.id === id) it.qty = Math.max(1, it.qty + d); });
-  localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
-  refreshBadge(); drawCart();
-}
-
 function removeItem(id) {
-  let currentCart = getCart();
-  currentCart = currentCart.filter(it => it.id !== id);
+  let currentCart = getCart().filter(it => it.id !== id);
   localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
   refreshBadge(); drawCart();
 }
 
 function refreshBadge() {
-  var b = document.getElementById('cart-count');
+  const b = document.getElementById('cart-count');
   if (!b) return;
   let count = getCart().reduce((s, it) => s + it.qty, 0);
   b.textContent = count; b.style.display = count > 0 ? 'flex' : 'none';
 }
 
-function downloadReceipt() {
-  const data = JSON.parse(localStorage.getItem('last_order_full_data'));
-  if(!data) return;
+function generateReceipt(data) {
+  const serial = "BP-" + Date.now().toString().slice(-6);
+  let itemsHtml = "";
+  data.cart.forEach(it => {
+    itemsHtml += `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${it.title}</td><td style="padding:10px; border-bottom:1px solid #eee; text-align:center;">${it.qty}</td><td style="padding:10px; border-bottom:1px solid #eee; text-align:right;">${(it.price * it.qty).toLocaleString()} HTG</td></tr>`;
+  });
+
   const win = window.open('', '_blank');
-  win.document.write(generateReceiptContent(data));
+  win.document.write(`<html><body style="font-family:Arial;padding:40px;"><div style="text-align:center;"><img src="/assets/images/logo.png" style="width:80px;"><h1 style="color:#ff4747;">BOUTIQUE PIYAY</h1><p>Resi Kòmand #${serial}</p></div><p>Kliyan: ${data.name}</p><p>Tèl: ${data.phone}</p><table style="width:100%;border-collapse:collapse;">${itemsHtml}</table><h2 style="text-align:right;">TOTAL: ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString()} HTG</h2><script>window.print();</script></body></html>`);
   win.document.close();
 }
 
-function generateReceiptContent(data) {
-  let itemsHtml = "";
-  let grandTotal = 0;
-  data.cart.forEach(it => {
-    itemsHtml += `<tr><td>${it.title}</td><td>${it.qty}</td><td>${it.price * it.qty} HTG</td></tr>`;
-    grandTotal += (it.price * it.qty);
-  });
-
-  return `<html><body style="font-family:sans-serif; padding:40px;"><h2>RESI BOUTIQUE PIYAY</h2><p>ID: #${data.orderId}</p><p>Kliyan: ${data.name}</p><table>${itemsHtml}</table><h3>TOTAL: ${grandTotal} HTG</h3></body></html>`;
+function contactWhatsApp(data) {
+  const sPhone = data.cart[0].sellerPhone || '50948868964';
+  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n👤 *Kliyan:* ${data.name}\n📞 *Tèl:* ${data.phone}\n📍 *Zòn:* ${data.zone}\n\n*ATIK YO:*`;
+  data.cart.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
+  msg += `\n\n💰 *TOTAL:* ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0)} HTG`;
+  window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 async function submitOrder() {
-  const name    = document.getElementById('customer-name').value.trim();
-  const phone   = document.getElementById('customer-phone').value.trim();
-  const zone    = document.getElementById('delivery-zone').value;
-  const payment = document.getElementById('payment-method').value;
+  const name = document.getElementById('customer-name').value.trim();
+  const phone = document.getElementById('customer-phone').value.trim();
+  const zone = document.getElementById('delivery-zone').value;
 
-  if (!name || !phone || !zone) { toast('⚠️ Ranpli tout chan yo!'); return; }
+  if (!name || !phone || !zone) { alert('⚠️ Ranpli tout chan yo!'); return; }
 
-  const currentCart = getCart();
-  const orderId = "BP-" + Math.floor(100000 + Math.random() * 900000);
-  const orderData = { name, phone, zone, payment, cart: currentCart, orderId };
-  localStorage.setItem('last_order_full_data', JSON.stringify(orderData));
+  const cart = getCart();
+  if (cart.length === 0) return;
+
+  const btn = document.querySelector('.btn-confirm-order');
+  btn.disabled = true; btn.innerText = "⏳ Anrejistreman...";
 
   try {
-    const sup = window._supabaseClient || supabase.createClient("https://lsyjnhqjssirtgrdfgcu.supabase.co", "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13");
-    window._supabaseClient = sup;
+    const sup = window.supabase.createClient(S_URL, S_KEY);
 
-    const { data: { user } } = await sup.auth.getUser();
-
-    for (const item of currentCart) {
-      const totalItem = item.price * item.qty;
-      // ✅ ENSÈSYON SENPLIFYE NAN DATABASE (Pou evite erè)
+    // ✅ ENSÈSYON NAN DATABASE SUPABASE
+    for (const item of cart) {
       await sup.from('orders').insert({
-        seller_id:       item.sellerId,
-        customer_name:   name,
-        customer_phone:  phone,
-        product_title:   item.title,
-        total_price:     totalItem,
-        delivery_zone:   zone
+        seller_id:      item.sellerId,
+        customer_name:  name,
+        customer_phone: phone,
+        delivery_zone:  zone,
+        product_title:  item.title,
+        total_price:    (item.price * item.qty),
+        status:         'pending'
       });
-
-      if (item.sellerId) {
-        await sup.from('notifications').insert({
-          user_id: item.sellerId,
-          type: 'new_order',
-          title: '🛍️ Nouvo Kòmand!',
-          body: `Ou gen yon nouvo kòmand pou: ${item.title}`,
-          read: false
-        });
-      }
     }
-  } catch(err) { console.error('Supabase error:', err); }
 
-  document.getElementById('order-form-container').style.display = 'none';
-  document.getElementById('order-summary').innerHTML = `
-    <div style="text-align:center;padding:30px;">
-      <div style="font-size:60px;margin-bottom:16px;">✅</div>
-      <h2 style="font-weight:900;color:#0f172a;margin-bottom:8px;">Kòmand anrejistre!</h2>
-      <p style="color:#64748b;margin-bottom:20px;">Kòmand ou an gentan nan sistèm nan. Kontakte machann nan kounye a.</p>
-      <button onclick="contactWhatsApp()" style="width:100%;padding:18px;background:#25D366;color:white;border:none;border-radius:15px;font-weight:800;cursor:pointer;font-size:16px;margin-bottom:10px;">💬 Pale ak Machann nan</button>
-      <p style="font-size:11px; color:#ef4444; font-weight:700; margin-top:15px;">⚠️ PA JANM PEYE DEYÒ PLATFÒM NAN SI W VLE NOU GARANTI KÒB OU.</p>
-    </div>`;
+    const orderData = { name, phone, zone, cart };
+    document.getElementById('order-summary').innerHTML = `
+      <div style="text-align:center; padding:20px;">
+          <div style="font-size:50px;">✅</div>
+          <h2>Kòmand Voye!</h2>
+          <button onclick='contactWhatsApp(${JSON.stringify(orderData)})' style="width:100%; padding:15px; background:#25D366; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-bottom:10px;">💬 Voye bay Machann nan (WhatsApp)</button>
+          <button onclick='generateReceipt(${JSON.stringify(orderData)})' style="width:100%; padding:15px; background:#ff4747; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-bottom:10px;">📄 Telechaje Fich mwen (PDF)</button>
+          <button onclick="location.reload()" style="width:100%; padding:12px; background:#eee; color:#333; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">Fèmen</button>
+      </div>`;
+    document.getElementById('order-form-container').style.display = 'none';
+    localStorage.removeItem(CART_KEY);
+    refreshBadge();
 
-  localStorage.removeItem(CART_KEY);
-  refreshBadge();
-}
-
-function contactWhatsApp() {
-  const data = JSON.parse(localStorage.getItem('last_order_full_data'));
-  if (!data) return;
-  const sellerGroups = {};
-  data.cart.forEach(item => {
-    if (!sellerGroups[item.sellerPhone]) sellerGroups[item.sellerPhone] = [];
-    sellerGroups[item.sellerPhone].push(item);
-  });
-  Object.keys(sellerGroups).forEach((sPhone, index) => {
-    const items = sellerGroups[sPhone];
-    let msg = `🛍️ *COMMANDE BOUTIQUE PIYAY*\n\n👤 *Client:* ${data.name}\n📍 *Zòn:* ${data.zone}\n\n*ATIK YO:*`;
-    items.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
-    setTimeout(() => window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank'), index * 1000);
-  });
-}
-
-function toast(msg) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.style.display = 'block';
-  setTimeout(() => { t.style.display='none'; }, 3000);
+  } catch (err) {
+    alert("Erè: " + err.message);
+    btn.disabled = false; btn.innerText = "Konfime Kòmand la ✅";
+  }
 }
 
 window.orderProduct = orderProduct;
 window.openCart = openCart;
 window.closeOrderModal = closeOrderModal;
 window.submitOrder = submitOrder;
-window.contactWhatsApp = contactWhatsApp;
-window.chgQty = chgQty;
 window.removeItem = removeItem;
-window.downloadReceipt = downloadReceipt;
+window.generateReceipt = generateReceipt;
+window.contactWhatsApp = contactWhatsApp;
