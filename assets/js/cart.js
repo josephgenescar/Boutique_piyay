@@ -1,6 +1,4 @@
 const CART_KEY = 'bp_cart';
-const S_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
@@ -126,9 +124,10 @@ async function submitOrder() {
   btn.disabled = true; btn.innerText = "⏳ Anrejistreman...";
 
   try {
-    const sup = window.supabase.createClient(S_URL, S_KEY);
+    // Sèvi ak supabaseMain ki nan main.js
+    const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
+    if (!sup) throw new Error("Supabase pa disponib!");
 
-    // ✅ ENSÈSYON NAN DATABASE SUPABASE
     for (const item of cart) {
       await sup.from('orders').insert({
         seller_id:      item.sellerId,

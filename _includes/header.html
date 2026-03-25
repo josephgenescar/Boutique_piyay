@@ -155,17 +155,14 @@
     </nav>
 </header>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-    const supHeader = window.supabase.createClient(SUP_URL, SUP_KEY);
-
     /* ── SEARCH ── */
     let staticData = [];
     let searchTimer = null;
 
-    // Chaje done statik yo (search.json) yon sèl fwa
+    // Itilize kliyan global ki nan main.js (supabaseMain)
+    const getSup = () => (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
+
     fetch('/search.json')
       .then(r => r.ok ? r.json() : [])
       .then(d => { staticData = d || []; })
@@ -174,45 +171,43 @@
     async function headerSearch(query) {
       const resultsDiv = document.getElementById('search-results');
       query = (query || '').trim().toLowerCase();
-
       if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
 
-      // Debounce — tann 300ms anvan chèch
       clearTimeout(searchTimer);
       resultsDiv.innerHTML = '<div class="search-loading">🔍 Ap chèche...</div>';
       resultsDiv.style.display = 'block';
 
       searchTimer = setTimeout(async () => {
-        // 1. Chèche nan JSON statik
         let results = staticData.filter(p =>
           (p.title || '').toLowerCase().includes(query) ||
           (p.category || '').toLowerCase().includes(query)
         );
 
-        // 2. Chèche nan Supabase pou pwodwi machann yo
-        try {
-          const { data: dbResults } = await supHeader
-            .from('user_products')
-            .select('id, title, price, image_url, category')
-            .ilike('title', `%${query}%`)
-            .eq('is_approved', true)
-            .limit(8);
+        const sup = getSup();
+        if (sup) {
+          try {
+            const { data: dbResults } = await sup
+              .from('user_products')
+              .select('id, title, price, image_url, category')
+              .ilike('title', `%${query}%`)
+              .eq('is_approved', true)
+              .limit(8);
 
-          if (dbResults) {
-            dbResults.forEach(p => {
-              // Evite doublons
-              if (!results.find(r => r.url && r.url.includes(p.id))) {
-                results.push({
-                  title: p.title,
-                  url: `/pwodwi-machann.html?id=${p.id}`,
-                  price: p.price,
-                  image: p.image_url,
-                  category: p.category
-                });
-              }
-            });
-          }
-        } catch(e) {}
+            if (dbResults) {
+              dbResults.forEach(p => {
+                if (!results.find(r => r.url && r.url.includes(p.id))) {
+                  results.push({
+                    title: p.title,
+                    url: `/pwodwi-machann.html?id=${p.id}`,
+                    price: p.price,
+                    image: p.image_url,
+                    category: p.category
+                  });
+                }
+              });
+            }
+          } catch(e) {}
+        }
 
         if (results.length === 0) {
           resultsDiv.innerHTML = `<div class="search-no-result">😔 Okenn rezilta pou "<b>${query}</b>"</div>`;
@@ -221,54 +216,21 @@
 
         resultsDiv.innerHTML = results.slice(0, 8).map(p => `
           <a href="${p.url || '#'}" class="search-result-item">
-            <img class="search-result-img"
-                 src="${p.image || p.image_url || '/assets/images/logo.png'}"
-                 onerror="this.src='/assets/images/logo.png'"
-                 alt="${p.title}">
+            <img class="search-result-img" src="${p.image || '/assets/images/logo.png'}" onerror="this.src='/assets/images/logo.png'">
             <div style="flex:1; min-width:0;">
               <div class="search-result-title">${p.title}</div>
               <div class="search-result-price">${p.price} HTG</div>
             </div>
-            ${p.category ? `<span class="search-result-cat">${p.category}</span>` : ''}
           </a>`).join('');
-
-        resultsDiv.style.display = 'block';
       }, 300);
-    }
-
-    // Fèmen dropdown lè klike deyò
-    document.addEventListener('click', function(e) {
-      const wrap = document.querySelector('.search-wrap');
-      if (wrap && !wrap.contains(e.target)) {
-        document.getElementById('search-results').style.display = 'none';
-      }
-    });
-
-    // Fèmen lè peze ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') document.getElementById('search-results').style.display = 'none';
-    });
-
-    /* ── SON KÒMAND ── */
-    function playOrderSound() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc  = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-        const bell = document.getElementById('bell-icon');
-        bell.classList.add('bell-ring');
-        setTimeout(() => bell.classList.remove('bell-ring'), 3000);
-      } catch(e) {}
     }
 
     /* ── AUTH ── */
     async function updateHeaderAuth() {
-      const { data: { user } } = await supHeader.auth.getUser();
+      const sup = getSup();
+      if (!sup) return setTimeout(updateHeaderAuth, 500);
+
+      const { data: { user } } = await sup.auth.getUser();
       const authLinks  = document.getElementById('authLinks');
       const userInfo   = document.getElementById('userInfo');
       const btnCustomer = document.getElementById('btn-customer-account');
@@ -277,34 +239,20 @@
       if (user) {
         authLinks.style.display = 'none';
         userInfo.style.display  = 'flex';
-        const { data: profile } = await supHeader.from('profiles').select('role').eq('id', user.id).maybeSingle();
+        const { data: profile } = await sup.from('profiles').select('role').eq('id', user.id).maybeSingle();
         if (profile && profile.role === 'seller') {
           btnMerchant.style.display = 'flex';
-          supHeader
-            .channel('realtime-orders')
-            .on('postgres_changes', {
-              event: 'INSERT', schema: 'public', table: 'orders',
-              filter: `seller_id=eq.${user.id}`
-            }, () => {
-              playOrderSound();
-              const cnt = document.getElementById('notif-count');
-              cnt.style.display = 'flex';
-              cnt.innerText = parseInt(cnt.innerText || 0) + 1;
-            })
-            .subscribe();
         } else {
           btnCustomer.style.display = 'flex';
         }
-      } else {
-        authLinks.style.display = 'flex';
-        userInfo.style.display  = 'none';
       }
     }
 
     async function handleHeaderLogout() {
-      await supHeader.auth.signOut();
+      const sup = getSup();
+      if (sup) await sup.auth.signOut();
       window.location.href = '/';
     }
 
-    updateHeaderAuth();
+    document.addEventListener('DOMContentLoaded', updateHeaderAuth);
 </script>

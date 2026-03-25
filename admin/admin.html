@@ -6,9 +6,8 @@
   <title>Admin Panel - Boutique Piyay</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* PA JANM CHANJE DESIGN */
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-    body { background: #f1f5f9; color: #1e293b; padding: 20px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: #f1f5f9; color: #1e293b; padding: 20px; display: none; } /* Kache paj la jiskaske nou verifye auth */
     .container { max-width: 1200px; margin: 0 auto; }
     header { background: #0f172a; color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
     .nav-tabs { display: flex; gap: 10px; }
@@ -21,21 +20,14 @@
     .stat-label { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700; }
     .stat-value { font-size: 24px; font-weight: 800; color: #0f172a; }
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; font-size: 13px; }
+    th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; }
     td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
     .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
     .badge-active { background: #dcfce7; color: #166534; }
     .badge-blocked { background: #fee2e2; color: #991b1b; }
     .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
-    .btn-add { background: #10b981; color: white; }
-    .btn-edit { background: #3b82f6; color: white; margin-right: 5px; }
     .btn-delete { background: #ef4444; color: white; }
     .btn-toggle { background: #64748b; color: white; margin-right: 5px; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 30px; border-radius: 15px; width: 400px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -51,101 +43,66 @@
     </div>
   </header>
 
-  <!-- TAB STATS -->
   <div id="tab-stats" class="tab-body">
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Total Itilizatè</div>
-        <div class="stat-value" id="stat-total-users">...</div>
-      </div>
-      <div class="stat-card" style="border-left-color: #10b981;">
-        <div class="stat-label">Machann Aktif</div>
-        <div class="stat-value" id="stat-active-sellers">...</div>
+        <div class="stat-value" id="stat-total-users">0</div>
       </div>
       <div class="stat-card" style="border-left-color: #3b82f6;">
         <div class="stat-label">Pwodwi Live</div>
-        <div class="stat-value" id="stat-total-products">...</div>
+        <div class="stat-value" id="stat-total-products">0</div>
       </div>
-    </div>
-    <div class="card">
-      <div class="section-title">Aktivite Resan</div>
-      <p id="activity-msg" style="color: #64748b;">Tout bagay ap mache byen nan sistèm nan.</p>
     </div>
   </div>
 
-  <!-- TAB USERS -->
   <div id="tab-users" class="tab-body" style="display:none;">
     <div class="card">
-      <div class="section-title">Lis Itilizatè yo</div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Non / Email</th>
-              <th>Wòl</th>
-              <th>WhatsApp</th>
-              <th>Status</th>
-              <th>Aksyon</th>
-            </tr>
-          </thead>
-          <tbody id="user-table-body">
-            <tr><td colspan="5" style="text-align:center;">⏳ Chaje itilizatè...</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="section-title">Lis Machann yo</div>
+      <table>
+        <thead><tr><th>Non / Email</th><th>Wòl</th><th>Status</th><th>Aksyon</th></tr></thead>
+        <tbody id="user-table-body"></tbody>
+      </table>
     </div>
   </div>
 
-  <!-- TAB PRODUCTS -->
   <div id="tab-products" class="tab-body" style="display:none;">
     <div class="card">
       <div class="section-title">Kontwòl Pwodwi</div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Foto</th>
-              <th>Tit</th>
-              <th>Pri</th>
-              <th>Machann</th>
-              <th>Status</th>
-              <th>Aksyon</th>
-            </tr>
-          </thead>
-          <tbody id="product-table-body">
-            <tr><td colspan="6" style="text-align:center;">⏳ Chaje pwodwi...</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <table>
+        <thead><tr><th>Foto</th><th>Tit</th><th>Pri</th><th>Aksyon</th></tr></thead>
+        <tbody id="product-table-body"></tbody>
+      </table>
     </div>
   </div>
 </div>
 
 <script>
-  // KONEKSYON AK BON BAZ DE DONE A (Pwoblèm Login)
-  const supabaseAdmin = window.supabase.createClient(
-    "https://letyferfjpxmstohvgcj.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
-  );
+  const SB_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+  const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+  const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-  // Tcheke si moun nan loge ak modpas la (Pwoblèm Login)
-  const AUTH_TOKEN_KEY = 'admin_auth_token';
-  const AUTH_TIME_KEY = 'admin_auth_time';
-  const SESSION_DURATION = 8 * 60 * 60 * 1000;
-
-  function checkAuth() {
-    const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    const authTime = localStorage.getItem(AUTH_TIME_KEY);
-    if (!token || !authTime || (Date.now() - parseInt(authTime) > SESSION_DURATION)) {
+  // PWOTEKSYON PAJ LA (Sèlman Admin)
+  async function checkAdminAuth() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
       window.location.href = '/admin/login.html';
+      return;
+    }
+    const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
+    if (profile?.role !== 'admin') {
+      await sb.auth.signOut();
+      window.location.href = '/admin/login.html';
+    } else {
+      document.body.style.display = 'block'; // Montre paj la si se Admin
+      loadStats();
     }
   }
-  checkAuth();
 
   function handleLogout() {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-    localStorage.removeItem(AUTH_TIME_KEY);
-    window.location.href = '/admin/login.html';
+    sb.auth.signOut().then(() => {
+      window.location.href = '/admin/login.html';
+    });
   }
 
   function showTab(id) {
@@ -155,74 +112,41 @@
     document.getElementById('btn-' + id.replace('tab-', '')).classList.add('active');
     if(id === 'tab-users') fetchUsers();
     if(id === 'tab-products') fetchProducts();
-    if(id === 'tab-stats') loadStats();
   }
 
   async function loadStats() {
-    try {
-      const [{ count: users }, { count: sellers }, { count: prods }] = await Promise.all([
-        supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }),
-        supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('is_active_seller', true),
-        supabaseAdmin.from('user_products').select('*', { count: 'exact', head: true })
-      ]);
-      document.getElementById('stat-total-users').innerText = users || 0;
-      document.getElementById('stat-active-sellers').innerText = sellers || 0;
-      document.getElementById('stat-total-products').innerText = prods || 0;
-    } catch(e) { console.error(e); }
+    const { count: users } = await sb.from('profiles').select('*', { count: 'exact', head: true });
+    const { count: prods } = await sb.from('user_products').select('*', { count: 'exact', head: true });
+    document.getElementById('stat-total-users').innerText = users || 0;
+    document.getElementById('stat-total-products').innerText = prods || 0;
   }
 
   async function fetchUsers() {
-    const { data: users } = await supabaseAdmin.from('profiles').select('*').order('created_at', { ascending: false });
-    const tbody = document.getElementById('user-table-body');
-    tbody.innerHTML = (users || []).map(u => `
+    const { data: users } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+    document.getElementById('user-table-body').innerHTML = (users || []).map(u => `
       <tr>
         <td><strong>${u.full_name || 'Enkoni'}</strong><br><small>${u.email}</small></td>
-        <td style="text-transform: capitalize;">${u.role}</td>
-        <td>${u.whatsapp || '-'}</td>
+        <td>${u.role}</td>
         <td><span class="badge ${u.is_active_seller ? 'badge-active' : 'badge-blocked'}">${u.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
-        <td>
-          <button class="btn btn-toggle" onclick="toggleStatus('${u.id}', ${u.is_active_seller})">${u.is_active_seller ? 'Bloke' : 'Aktive'}</button>
-        </td>
-      </tr>
-    `).join('');
+        <td><button class="btn btn-toggle" onclick="toggleU('${u.id}', ${u.is_active_seller})">Chanje</button></td>
+      </tr>`).join('');
   }
 
   async function fetchProducts() {
-    const { data: prods } = await supabaseAdmin.from('user_products').select('*').order('created_at', { ascending: false });
-    const tbody = document.getElementById('product-table-body');
-    tbody.innerHTML = (prods || []).map(p => `
+    const { data: prods } = await sb.from('user_products').select('*').order('created_at', { ascending: false });
+    document.getElementById('product-table-body').innerHTML = (prods || []).map(p => `
       <tr>
         <td><img src="${p.image_url}" style="width:40px; height:40px; object-fit:cover; border-radius:5px;"></td>
         <td><strong>${p.title}</strong></td>
         <td>${p.price} HTG</td>
-        <td><small>${p.seller_id.substring(0,8)}...</small></td>
-        <td><span class="badge ${p.is_approved ? 'badge-active' : 'badge-blocked'}">${p.is_approved ? 'APWOUVE' : 'PANDING'}</span></td>
-        <td>
-          <button class="btn btn-edit" onclick="approveProduct('${p.id}', ${p.is_approved})">${p.is_approved ? 'Anile' : 'Apwouve'}</button>
-          <button class="btn btn-delete" onclick="deleteProduct('${p.id}')">Efase</button>
-        </td>
-      </tr>
-    `).join('');
+        <td><button class="btn btn-delete" onclick="delP('${p.id}')">Efase</button></td>
+      </tr>`).join('');
   }
 
-  async function toggleStatus(id, current) {
-    await supabaseAdmin.from('profiles').update({ is_active_seller: !current }).eq('id', id);
-    fetchUsers();
-  }
+  async function toggleU(id, s) { await sb.from('profiles').update({ is_active_seller: !s }).eq('id', id); fetchUsers(); }
+  async function delP(id) { if(confirm("Efase?")) { await sb.from('user_products').delete().eq('id', id); fetchProducts(); } }
 
-  async function approveProduct(id, current) {
-    await supabaseAdmin.from('user_products').update({ is_approved: !current }).eq('id', id);
-    fetchProducts();
-  }
-
-  async function deleteProduct(id) {
-    if(confirm("Efase pwodwi sa a?")) {
-      await supabaseAdmin.from('user_products').delete().eq('id', id);
-      fetchProducts();
-    }
-  }
-
-  loadStats();
+  checkAdminAuth();
 </script>
 </body>
 </html>

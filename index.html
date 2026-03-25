@@ -128,7 +128,7 @@ title: Akèy - Boutique Piyay
     }
 
     .ad-slider-wrap {
-      height: 42px; overflow: hidden; position: relative;
+      height: 42px; overflow: hidden; position: relative; width: 100%;
     }
     .ad-slides {
       display: flex; flex-direction: column;
@@ -178,12 +178,32 @@ title: Akèy - Boutique Piyay
     .btn-ad-close:hover { background: rgba(255,255,255,0.15); color: white; }
 
     @media (max-width: 640px) {
-      .konektem-ad { margin: 12px 12px 0; border-radius: 18px; }
-      .konektem-ad-inner { padding: 16px 18px; gap: 14px; }
+      .konektem-ad { margin: 12px 12px 0; border-radius: 18px; min-height: 120px; }
+      .konektem-ad-inner { padding: 18px 16px; gap: 12px; flex-wrap: nowrap; }
       .ad-divider { display: none; }
-      .ad-logo-name { font-size: 17px; }
-      .ad-slide { font-size: 13px; }
+      .ad-logo-icon { width: 48px; height: 48px; border-radius: 13px; }
+      .ad-logo-icon svg { width: 30px !important; height: 30px !important; }
+      .ad-logo-name { font-size: 18px; }
+      .ad-logo-tagline { font-size: 9px; }
+      .ad-text-label { font-size: 8px; padding: 2px 8px; margin-bottom: 5px; }
+      .ad-slider-wrap { height: 30px; }
+      .ad-slides { animation: slideUpMobile 8s ease-in-out infinite; }
+      .ad-slide { height: 30px; font-size: 12px; white-space: nowrap; }
+      @keyframes slideUpMobile {
+        0%   { transform: translateY(0); }
+        20%  { transform: translateY(0); }
+        25%  { transform: translateY(-30px); }
+        45%  { transform: translateY(-30px); }
+        50%  { transform: translateY(-60px); }
+        70%  { transform: translateY(-60px); }
+        75%  { transform: translateY(-90px); }
+        95%  { transform: translateY(-90px); }
+        100% { transform: translateY(0); }
+      }
+      .btn-ad-cta { padding: 9px 12px; font-size: 11px; }
       .btn-ad-cta span { display: none; }
+      .btn-ad-cta::after { content: '→'; }
+      .btn-ad-close { width: 26px; height: 26px; font-size: 12px; }
     }
 
     /* ══════════════════════════════
@@ -389,8 +409,8 @@ title: Akèy - Boutique Piyay
 
         <!-- CTA -->
         <div class="ad-cta">
-            <a href="https://konektem.netlify.app" target="_blank" class="btn-ad-cta">
-                 <span>Découvrir →</span>
+            <a href="https://konektem.com" target="_blank" class="btn-ad-cta">
+                <span>Découvrir →</span>
             </a>
             <button class="btn-ad-close" onclick="document.getElementById('konektem-ad').style.display='none'">✕</button>
         </div>
