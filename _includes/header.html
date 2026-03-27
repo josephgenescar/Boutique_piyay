@@ -3,8 +3,9 @@
     .main-header { box-shadow:0 2px 15px rgba(0,0,0,0.1); position:sticky; top:0; z-index:1000; width: 100%; background: #fff; }
     .top-bar { background:#111; color:#fff; padding:6px 0; font-size:11px; font-weight:600; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .top-bar .container { display:flex; justify-content:space-between; align-items:center; padding: 0 15px; }
-    .top-bar-links { display:flex; gap:10px; }
-    .top-bar a { color:#ccc; text-decoration:none; }
+    .top-bar-links { display:flex; gap:15px; }
+    .top-bar a { color:#ccc; text-decoration:none; display: flex; align-items: center; gap: 5px; }
+    .top-bar a:hover { color:#fff; }
 
     .header-main {
         padding:10px 0;
@@ -28,44 +29,6 @@
     .search-form { display:flex; border:2px solid #eee; border-radius:50px; overflow:hidden; background: #fff; height: 42px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     .search-form input { flex:1; padding:0 15px; border:none; outline:none; font-size:13px; background: transparent; font-family: inherit; }
     .search-form button { padding:0 20px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 13px; border-radius: 0 50px 50px 0; }
-    .search-form:focus-within { border-color: #ff4747; box-shadow: 0 4px 20px rgba(255,71,71,0.15); }
-
-    /* ── SEARCH RESULTS DROPDOWN ── */
-    #search-results {
-        display: none;
-        position: absolute;
-        top: calc(100% + 8px);
-        left: 0; right: 0;
-        background: white;
-        border-radius: 18px;
-        box-shadow: 0 16px 48px rgba(0,0,0,0.14);
-        border: 1.5px solid #f1f5f9;
-        overflow: hidden;
-        z-index: 9999;
-        max-height: 420px;
-        overflow-y: auto;
-    }
-    #search-results::-webkit-scrollbar { width: 4px; }
-    #search-results::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 4px; }
-
-    .search-result-item {
-        display: flex; align-items: center; gap: 12px;
-        padding: 12px 16px; text-decoration: none;
-        border-bottom: 1px solid #f8fafc; transition: 0.15s;
-        cursor: pointer;
-    }
-    .search-result-item:last-child { border-bottom: none; }
-    .search-result-item:hover { background: #fff5f5; }
-    .search-result-img {
-        width: 46px; height: 46px; border-radius: 10px;
-        object-fit: cover; flex-shrink: 0; background: #f1f5f9;
-    }
-    .search-result-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .search-result-price { font-size: 12px; font-weight: 900; color: #ff4747; }
-    .search-result-cat { font-size: 10px; color: #64748b; font-weight: 600; margin-left: auto; flex-shrink: 0; }
-
-    .search-no-result { padding: 24px; text-align: center; color: #64748b; font-size: 13px; font-weight: 600; }
-    .search-loading { padding: 20px; text-align: center; color: #94a3b8; font-size: 13px; }
 
     /* Header actions */
     .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
@@ -74,16 +37,12 @@
     .btn-signup { background: linear-gradient(135deg, #ff4747, #ff8c42); color: white; box-shadow: 0 4px 12px rgba(255, 71, 71, 0.3); }
 
     .site-nav { background: linear-gradient(270deg, #ffffff, #f0f9ff, #e5e7eb, #f0f9ff, #ffffff); background-size: 200% 100%; animation: move-left 10s linear infinite; border-bottom: 1px solid #eee; }
-    @keyframes move-left { 0% { background-position: 200% 50%; } 100% { background-position: 0% 50%; } }
     .nav-scroll { display:flex; gap:18px; padding:12px 15px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; align-items: center; }
     .nav-lnk { text-decoration: none; color: #475569; font-size: 13px; font-weight: 700; transition: 0.3s; }
     .nav-lnk:hover { color: #ff4747; transform: translateY(-2px); }
 
     .act-btn { display:flex; flex-direction:column; align-items:center; background:none; border:none; cursor:pointer; color:#333; position:relative; padding: 0; }
     .cart-badge { position:absolute; top:-7px; right:-7px; background:#ff4747; color:white; border-radius:50%; width:18px; height:18px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border: 2px solid white; }
-
-    @keyframes shake-bell { 0% { transform: rotate(0); } 15% { transform: rotate(15deg); } 30% { transform: rotate(-15deg); } 45% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); } 85% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
-    .bell-ring { animation: shake-bell 0.5s ease-in-out infinite; }
 
     @media (max-width: 768px) {
       .top-bar { display: none; }
@@ -97,8 +56,8 @@
         <div class="container">
             <span>🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
             <div class="top-bar-links">
-                <a href="/regleman.html" style="color:#ff4747;">📜 Regleman</a>
-                <a href="https://wa.me/50948868964" target="_blank">💬 WhatsApp</a>
+                <a href="/kontak.html"><i class="fas fa-envelope"></i> 📩 Kontak</a>
+                <a href="/regleman.html" style="color:#ff4747;"><i class="fas fa-file-alt"></i> 📜 Regleman</a>
             </div>
         </div>
     </div>
@@ -118,7 +77,6 @@
                            autocomplete="off">
                     <button type="submit" onclick="headerSearch(document.getElementById('search-input').value)">OK</button>
                 </form>
-                <!-- RESULTS DROPDOWN -->
                 <div id="search-results"></div>
             </div>
 
@@ -154,135 +112,3 @@
         </div>
     </nav>
 </header>
-
-<script>
-    /* ── SEARCH ── */
-    let staticData = [];
-    let searchTimer = null;
-
-    // Itilize kliyan global ki nan main.js (supabaseMain)
-    const getSup = () => (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
-
-    fetch('/search.json')
-      .then(r => r.ok ? r.json() : [])
-      .then(d => { staticData = d || []; })
-      .catch(() => { staticData = []; });
-
-    async function headerSearch(query) {
-      const resultsDiv = document.getElementById('search-results');
-      query = (query || '').trim().toLowerCase();
-      if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
-
-      clearTimeout(searchTimer);
-      resultsDiv.innerHTML = '<div class="search-loading">🔍 Ap chèche...</div>';
-      resultsDiv.style.display = 'block';
-
-      searchTimer = setTimeout(async () => {
-        let results = staticData.filter(p =>
-          (p.title || '').toLowerCase().includes(query) ||
-          (p.category || '').toLowerCase().includes(query)
-        );
-
-        const sup = getSup();
-        if (sup) {
-          try {
-            const { data: dbResults } = await sup
-              .from('user_products')
-              .select('id, title, price, image_url, category')
-              .ilike('title', `%${query}%`)
-              .eq('is_approved', true)
-              .limit(8);
-
-            if (dbResults) {
-              dbResults.forEach(p => {
-                if (!results.find(r => r.url && r.url.includes(p.id))) {
-                  results.push({
-                    title: p.title,
-                    url: `/pwodwi-machann.html?id=${p.id}`,
-                    price: p.price,
-                    image: p.image_url,
-                    category: p.category
-                  });
-                }
-              });
-            }
-          } catch(e) {}
-        }
-
-        if (results.length === 0) {
-          resultsDiv.innerHTML = `<div class="search-no-result">😔 Okenn rezilta pou "<b>${query}</b>"</div>`;
-          return;
-        }
-
-        resultsDiv.innerHTML = results.slice(0, 8).map(p => `
-          <a href="${p.url || '#'}" class="search-result-item">
-            <img class="search-result-img" src="${p.image || '/assets/images/logo.png'}" onerror="this.src='/assets/images/logo.png'">
-            <div style="flex:1; min-width:0;">
-              <div class="search-result-title">${p.title}</div>
-              <div class="search-result-price">${p.price} HTG</div>
-            </div>
-          </a>`).join('');
-      }, 300);
-    }
-
-    /* ── AUTH & REALTIME NOTIFICATIONS ── */
-    async function updateHeaderAuth() {
-      const sup = getSup();
-      if (!sup) return setTimeout(updateHeaderAuth, 500);
-
-      const { data: { user } } = await sup.auth.getUser();
-      const authLinks  = document.getElementById('authLinks');
-      const userInfo   = document.getElementById('userInfo');
-      const btnCustomer = document.getElementById('btn-customer-account');
-      const btnMerchant = document.getElementById('btn-merchant-dash');
-
-      if (user) {
-        authLinks.style.display = 'none';
-        userInfo.style.display  = 'flex';
-        const { data: profile } = await sup.from('profiles').select('role').eq('id', user.id).maybeSingle();
-        if (profile && profile.role === 'seller') {
-          btnMerchant.style.display = 'flex';
-          initRealtimeNotifs(user.id);
-        } else {
-          btnCustomer.style.display = 'flex';
-        }
-      }
-    }
-
-    function initRealtimeNotifs(userId) {
-      const sup = getSup();
-      if (!sup) return;
-
-      // Koute kòmand yo an tan reyèl pou machann nan
-      sup.channel('custom-insert-channel')
-        .on('postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'orders', filter: `seller_id=eq.${userId}` },
-          (payload) => {
-            triggerNotifEffect();
-          }
-        ).subscribe();
-    }
-
-    function triggerNotifEffect() {
-      const bell = document.getElementById('bell-icon');
-      const count = document.getElementById('notif-count');
-
-      // Efè son oswa animasyon
-      bell.classList.add('bell-ring');
-      count.textContent = parseInt(count.textContent || 0) + 1;
-      count.style.display = 'flex';
-
-      // Retire animasyon apre 3 segonn
-      setTimeout(() => {
-        bell.classList.remove('bell-ring');
-      }, 3000);
-    }
-
-    async function handleHeaderLogout() {
-      const sup = getSup();
-      if (sup) await sup.auth.signOut();
-      window.location.href = '/';
-    }
-
-    document.addEventListener('DOMContentLoaded', updateHeaderAuth);
-</script>

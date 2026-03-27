@@ -59,7 +59,7 @@
 
 .footer-links-list a:hover { color: #fff; transform: translateX(8px); }
 
-/* 🤖 AI ASSISTANT UI - DEPLASE POU L PA BLOKE WHATSAPP */
+/* 🤖 AI ASSISTANT UI */
 #ai-chat-launcher {
     position: fixed;
     bottom: 100px;
@@ -83,17 +83,8 @@
 }
 
 @media (max-width: 480px) {
-    #ai-chat-box {
-        width: 280px;
-        height: 400px;
-        right: 10px;
-        bottom: 160px;
-    }
-    #ai-chat-launcher {
-        right: 10px;
-        bottom: 90px;
-        width: 50px; height: 50px;
-    }
+    #ai-chat-box { width: 280px; height: 400px; right: 10px; bottom: 160px; }
+    #ai-chat-launcher { right: 10px; bottom: 90px; width: 50px; height: 50px; }
 }
 </style>
 
@@ -106,14 +97,19 @@
                     <h2 style="margin: 0;">Boutique Piyay</h2>
                 </div>
                 <p>Pi bon kote pou jwenn tout sa w bezwen ak pi bon pri. Livrezon rapid nan tout Ayiti.</p>
+                <div style="display:flex; gap:15px; margin-top:20px;">
+                    <a href="https://facebook.com/joseph.genescar" target="_blank" style="color:white; font-size:20px;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/50948868964" target="_blank" style="color:white; font-size:20px;"><i class="fab fa-whatsapp"></i></a>
+                    <a href="/kontak.html" style="color:white; font-size:20px;" title="Kontakte nou"><i class="fas fa-envelope"></i></a>
+                </div>
             </div>
 
             <div class="footer-col">
                 <h2>Lyen Rapid</h2>
                 <ul class="footer-links-list">
+                    <li><a href="/kontak.html"><i class="fas fa-envelope"></i> Kontak Direct</a></li>
                     <li><a href="/shop"><i class="fas fa-store"></i> Boutik la</a></li>
                     <li><a href="/vendre.html"><i class="fas fa-plus-circle"></i> Vann pa w</a></li>
-                    <li><a href="/kontak.html"><i class="fas fa-envelope"></i> Kontak</a></li>
                     <li><a href="/faq.html"><i class="fas fa-question-circle"></i> FAQ</a></li>
                 </ul>
             </div>
@@ -123,11 +119,13 @@
                 <ul class="footer-links-list">
                     <li><a href="/conditions.html"><i class="fas fa-file-contract"></i> Kondisyon</a></li>
                     <li><a href="/politique.html"><i class="fas fa-shield-alt"></i> Privasite</a></li>
+                    <li><a href="/retours.html"><i class="fas fa-undo"></i> Règleman Retou</a></li>
                 </ul>
             </div>
         </div>
         <div style="text-align:center; margin-top:50px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-            <p>&copy; {{ "now" | date: "%Y" }} Boutique Piyay. Powered by Rivayo-tech.</p>
+            <p>&copy; {{ "now" | date: "%Y" }} Boutique Piyay. Tout dwa rezève. | <a href="/kontak.html" style="color:var(--primary); text-decoration:none; font-weight:800;">KONTAK</a></p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:5px;">Powered by Rivayo-tech Entreprise</p>
         </div>
     </div>
 </footer>
@@ -142,9 +140,7 @@
         <span style="font-weight:800;">Asistan Boutique Piyay</span>
         <button onclick="toggleAIChat()" aria-label="Close" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
     </div>
-    <div id="ai-chat-body" style="flex:1; padding:15px; overflow-y:auto; background:#fff; scroll-behavior: smooth;">
-        <!-- Mesaj yo ap parèt isit la -->
-    </div>
+    <div id="ai-chat-body" style="flex:1; padding:15px; overflow-y:auto; background:#fff; scroll-behavior: smooth;"></div>
     <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px; background: #f9fafb;">
         <input type="text" id="ai-input" placeholder="Ekri mesaj ou..." style="flex:1; border:1px solid #ddd; padding:10px; border-radius:10px; outline:none; font-size:14px;">
         <button onclick="sendAIMessage()" style="background:#ff4747; border:none; color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">Voye</button>
