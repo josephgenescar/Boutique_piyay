@@ -1,40 +1,45 @@
-async function askPiyayAI(message) {
-    console.log("Ap voye mesaj bay AI:", message);
+let productCatalog = [];
 
+// Chaje katalòg pwodwi yo depi sit la louvri
+async function loadCatalog() {
+    try {
+        const response = await fetch('/search.json');
+        productCatalog = await response.json();
+        console.log("Katalòg chaje ak success:", productCatalog.length, "pwodwi.");
+    } catch (e) {
+        console.error("Erè nan chaje katalòg:", e);
+    }
+}
+
+async function askPiyayAI(message) {
     try {
         const response = await fetch("/.netlify/functions/ai-chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: message })
+            body: JSON.stringify({
+                message: message,
+                catalog: productCatalog.slice(0, 50) // Voye yon pati nan katalòg la pou l pa twò lou
+            })
         });
 
         const data = await response.json();
-        console.log("Done AI resevwa:", data);
+        if (!response.ok || data.error) throw new Error(data.error?.message || "Erè enkoni");
 
-        if (!response.ok || data.error) {
-            const errorMsg = data.error ? (data.error.message || JSON.stringify(data.error)) : "Erè enkoni";
-            console.error("Erè Groq:", errorMsg);
-            throw new Error(errorMsg);
-        }
-
-        if (data.choices && data.choices[0]) {
-            return data.choices[0].message.content;
-        } else {
-            throw new Error("Repons AI a vid");
-        }
+        return data.choices[0].message.content;
     } catch (err) {
         console.error("Erè nan askPiyayAI:", err);
         throw err;
     }
 }
 
-function toggleAIChat() {
-    const box = document.getElementById('ai-chat-box');
-    if (box.style.display === 'none' || box.style.display === '') {
-        box.style.display = 'flex';
-    } else {
-        box.style.display = 'none';
-    }
+function renderAIResponse(text) {
+    const chatBody = document.getElementById('ai-chat-body');
+
+    // Detekte si gen yon referans pwodwi nan repons lan (egz: [PROD:123])
+    // Pou kounye a, n ap jis mete tèks la, men nou ka ajoute bèl UI kat la isit la
+    let formattedText = text;
+
+    chatBody.innerHTML += `<div style="margin-bottom:15px;"><span style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.5;">${formattedText}</span></div>`;
 }
 
 async function sendAIMessage() {
@@ -47,25 +52,23 @@ async function sendAIMessage() {
     input.value = '';
 
     const loadingId = "loading-" + Date.now();
-    chatBody.innerHTML += `<div id="${loadingId}" style="margin-bottom:10px;"><span style="background:#eee; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block;">⏳ M ap reflechi...</span></div>`;
+    chatBody.innerHTML += `<div id="${loadingId}" style="margin-bottom:10px;"><span style="background:#eee; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block;">⏳ M ap chèche pou ou...</span></div>`;
     chatBody.scrollTop = chatBody.scrollHeight;
 
     try {
         const aiResponse = await askPiyayAI(msg);
         const loadingElement = document.getElementById(loadingId);
         if (loadingElement) loadingElement.remove();
-        chatBody.innerHTML += `<div style="margin-bottom:10px;"><span style="background:#f1f5f9; color:#333; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block; border:1px solid #ddd;">${aiResponse}</span></div>`;
+        renderAIResponse(aiResponse);
     } catch (e) {
         const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) {
-            loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè: ${e.message}</span>`;
-        }
+        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè: ${e.message}</span>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-// Louvri chat la otomatikman apre 3 segonn
 window.addEventListener('DOMContentLoaded', () => {
+    loadCatalog();
     setTimeout(() => {
         const box = document.getElementById('ai-chat-box');
         if (box && (box.style.display === 'none' || box.style.display === '')) {
@@ -76,9 +79,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const aiInput = document.getElementById('ai-input');
     if (aiInput) {
         aiInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendAIMessage();
-            }
+            if (e.key === 'Enter') sendAIMessage();
         });
     }
 });
