@@ -5,6 +5,13 @@
 
 [build.environment]
   JEKYLL_ENV = "production"
+  NODE_VERSION = "20"
+
+# ✅ NETLIFY FUNCTIONS (Priyorite)
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 # ✅ NETLIFY CMS ADMIN
 [[redirects]]
