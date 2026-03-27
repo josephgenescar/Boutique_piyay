@@ -58,34 +58,6 @@
 }
 
 .footer-links-list a:hover { color: #fff; transform: translateX(8px); }
-
-/* 🤖 AI ASSISTANT UI */
-#ai-chat-launcher {
-    position: fixed;
-    bottom: 100px;
-    right: 20px;
-    width: 55px; height: 55px;
-    background: #ff4747; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; box-shadow: 0 0 20px rgba(255, 71, 71, 0.6);
-    z-index: 9998; transition: 0.3s;
-}
-
-#ai-chat-box {
-    display: none;
-    position: fixed;
-    bottom: 170px;
-    right: 20px;
-    width: 320px; height: 450px;
-    background: white; border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    z-index: 9999; flex-direction: column; overflow: hidden;
-}
-
-@media (max-width: 480px) {
-    #ai-chat-box { width: 280px; height: 400px; right: 10px; bottom: 160px; }
-    #ai-chat-launcher { right: 10px; bottom: 90px; width: 50px; height: 50px; }
-}
 </style>
 
 <footer class="main-footer">
@@ -129,22 +101,3 @@
         </div>
     </div>
 </footer>
-
-<!-- 🤖 AI ASSISTANT UI -->
-<div id="ai-chat-launcher" onclick="toggleAIChat()" role="button" aria-label="Open AI Assistant">
-    <span style="font-size:25px;">🤖</span>
-</div>
-
-<div id="ai-chat-box">
-    <div style="background:#ff4747; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:800;">Asistan Boutique Piyay</span>
-        <button onclick="toggleAIChat()" aria-label="Close" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
-    </div>
-    <div id="ai-chat-body" style="flex:1; padding:15px; overflow-y:auto; background:#fff; scroll-behavior: smooth;"></div>
-    <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px; background: #f9fafb;">
-        <input type="text" id="ai-input" placeholder="Ekri mesaj ou..." style="flex:1; border:1px solid #ddd; padding:10px; border-radius:10px; outline:none; font-size:14px;">
-        <button onclick="sendAIMessage()" style="background:#ff4747; border:none; color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">Voye</button>
-    </div>
-</div>
-
-<script src="/assets/js/ai-assistant.js"></script>

@@ -273,8 +273,9 @@ title: Akèy - Boutique Piyay
       box-shadow: 0 4px 10px rgba(255,71,71,0.3);
       text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .boosted-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius-sm); display: block; }
-    .boosted-title { font-size: 15px; font-weight: 800; color: var(--dark); margin: 14px 0 6px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
+    .boosted-img { width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-sm); display: block; }
+    .boosted-title { font-size: 15px; font-weight: 800; color: var(--dark); margin: 14px 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; line-height: 1.4; }
+    .boosted-desc { font-size: 12px; color: var(--gray); margin-bottom: 10px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; height: 34px; }
     .boosted-price { color: var(--primary); font-weight: 900; font-size: 20px; margin-top: auto; letter-spacing: -0.3px; }
     .btn-add { width: 100%; background: var(--dark); color: white; border: none; padding: 13px; border-radius: var(--radius-sm); margin-top: 14px; font-weight: 800; cursor: pointer; font-size: 13px; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-add:hover { background: var(--primary); }
@@ -295,14 +296,15 @@ title: Akèy - Boutique Piyay
     .t-div { font-weight: 900; color: var(--dark); font-size: 16px; }
     .flash-slider { display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px; scrollbar-width: none; scroll-behavior: smooth; }
     .flash-slider::-webkit-scrollbar { display: none; }
-    .flash-card { min-width: 172px; max-width: 172px; background: white; border-radius: 22px; padding: 14px; box-shadow: var(--shadow); flex-shrink: 0; border: 1.5px solid #f1f5f9; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+    .flash-card { min-width: 172px; max-width: 172px; background: white; border-radius: 22px; padding: 14px; box-shadow: var(--shadow); flex-shrink: 0; border: 1.5px solid #f1f5f9; position: relative; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
     .flash-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .flash-pct { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; box-shadow: 0 4px 10px rgba(255,71,71,0.3); }
     .flash-img-wrap { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; }
     .flash-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
     .flash-card:hover .flash-img { transform: scale(1.05); }
-    .flash-name { font-size: 13px; font-weight: 700; margin: 10px 0 5px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 36px; }
-    .flash-prices { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .flash-name { font-size: 13px; font-weight: 800; margin: 10px 0 2px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; line-height: 1.4; }
+    .flash-desc { font-size: 10px; color: var(--gray); margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 28px; line-height: 1.4; }
+    .flash-prices { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: auto; }
     .flash-new { color: var(--primary); font-weight: 900; font-size: 15px; }
     .flash-old { color: var(--gray); font-size: 11px; text-decoration: line-through; font-weight: 600; }
     .btn-flash { width: 100%; background: var(--dark); color: white; border: none; padding: 9px; border-radius: 10px; margin-top: 10px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
@@ -347,7 +349,8 @@ title: Akèy - Boutique Piyay
     .mkt-prod-card { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); border: 1.5px solid #f1f5f9; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
     .mkt-prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .mkt-prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
-    .mkt-prod-name { font-size: 14px; font-weight: 700; color: var(--dark); margin: 12px 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 38px; }
+    .mkt-prod-name { font-size: 14px; font-weight: 800; color: var(--dark); margin: 12px 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; line-height: 1.4; }
+    .mkt-prod-desc { font-size: 11px; color: var(--gray); margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; height: 32px; }
     .mkt-prod-price { color: var(--primary); font-weight: 900; font-size: 18px; margin-top: auto; }
     .btn-add-light { width: 100%; background: var(--light); color: var(--dark); border: none; padding: 12px; border-radius: var(--radius-sm); margin-top: 12px; font-weight: 800; cursor: pointer; font-size: 12px; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-add-light:hover { background: var(--dark); color: white; }
@@ -560,7 +563,7 @@ title: Akèy - Boutique Piyay
       try {
         const { data: prods } = await supabaseHome
           .from('user_products')
-          .select('id, title, price, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at')
+          .select('id, title, price, description, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at')
           .eq('is_approved', true)
           .order('created_at', { ascending: false });
 
@@ -626,6 +629,7 @@ title: Akèy - Boutique Piyay
                      onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
               </a>
               <div class="boosted-title">${p.title}</div>
+              <div class="boosted-desc">${p.description || ''}</div>
               <div class="boosted-price">${p.price} HTG</div>
               <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}')">
                 🛒 Ajoute
@@ -698,6 +702,7 @@ title: Akèy - Boutique Piyay
                  onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
           </a>
           <div class="mkt-prod-name">${p.title}</div>
+          <div class="mkt-prod-desc">${p.description || ''}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
           <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}')">
             🛒 Ajoute
@@ -723,6 +728,7 @@ title: Akèy - Boutique Piyay
               </a>
             </div>
             <div class="flash-name">${p.title}</div>
+            <div class="flash-desc">${p.description || ''}</div>
             <div class="flash-prices">
               <span class="flash-new">${p.price} HTG</span>
               ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
