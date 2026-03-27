@@ -1,17 +1,28 @@
 async function askPiyayAI(message) {
-    // Nou rele fonksyon Netlify la pito pou sekirite
-    const response = await fetch("/.netlify/functions/ai-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message })
-    });
+    console.log("Ap voye mesaj bay AI:", message);
 
-    if (!response.ok) {
-        throw new Error("Erè nan sèvè AI a");
+    try {
+        const response = await fetch("/.netlify/functions/ai-chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message })
+        });
+
+        console.log("Repons sèvè Netlify:", response.status, response.statusText);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Erè nan sèvè Netlify:", errorText);
+            throw new Error(`Erè ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Done AI resevwa:", data);
+        return data.choices[0].message.content;
+    } catch (err) {
+        console.error("Erè nan askPiyayAI:", err);
+        throw err;
     }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
 }
 
 function toggleAIChat() {
@@ -42,8 +53,9 @@ async function sendAIMessage() {
         if (loadingElement) loadingElement.remove();
         chatBody.innerHTML += `<div style="margin-bottom:10px;"><span style="background:#f1f5f9; color:#333; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block; border:1px solid #ddd;">${aiResponse}</span></div>`;
     } catch (e) {
+        console.error("Erè final nan sendAIMessage:", e);
         const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè koneksyon...</span>`;
+        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè koneksyon: ${e.message}</span>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
 }
