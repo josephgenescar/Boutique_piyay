@@ -1,12 +1,10 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
 exports.handler = async (event, context) => {
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
   if (!GROQ_API_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Kle GROQ_API_KEY a manke nan konfigirasyon Netlify!" }),
+      body: JSON.stringify({ error: "Kle GROQ_API_KEY a manke sou Netlify" }),
     };
   }
 
@@ -17,6 +15,7 @@ exports.handler = async (event, context) => {
   try {
     const { message } = JSON.parse(event.body);
 
+    // Itilize global fetch (Node 18+)
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
