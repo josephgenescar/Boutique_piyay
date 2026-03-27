@@ -19,6 +19,7 @@ function getGreeting() {
 
 async function typeWriter(text, elementId) {
     const element = document.getElementById(elementId);
+    if (!element) return;
     let i = 0;
     element.innerHTML = "";
     return new Promise(resolve => {
@@ -27,7 +28,8 @@ async function typeWriter(text, elementId) {
                 element.innerHTML += text.charAt(i);
                 i++;
                 setTimeout(type, 20);
-                document.getElementById('ai-chat-body').scrollTop = document.getElementById('ai-chat-body').scrollHeight;
+                const body = document.getElementById('ai-chat-body');
+                if (body) body.scrollTop = body.scrollHeight;
             } else {
                 resolve();
             }
@@ -38,12 +40,11 @@ async function typeWriter(text, elementId) {
 
 function toggleAIChat() {
     const box = document.getElementById('ai-chat-box');
+    if (!box) return;
     if (box.style.display === 'none' || box.style.display === '') {
         box.style.display = 'flex';
-        localStorage.setItem('ai_chat_closed', 'false');
     } else {
         box.style.display = 'none';
-        localStorage.setItem('ai_chat_closed', 'true'); // Sonje ke itilizatè a fèmen l
     }
 }
 
@@ -91,25 +92,27 @@ async function sendAIMessage() {
 window.addEventListener('DOMContentLoaded', async () => {
     await loadCatalog();
 
-    // Tcheke si itilizatè a te fèmen l anvan
-    const isClosed = localStorage.getItem('ai_chat_closed');
-
-    if (isClosed !== 'true') {
-        setTimeout(async () => {
-            const box = document.getElementById('ai-chat-box');
+    // ✅ L ap louvri otomatikman sou chak reload apre 3 segonn
+    setTimeout(async () => {
+        const box = document.getElementById('ai-chat-box');
+        if (box) {
             box.style.display = 'flex';
             const chatBody = document.getElementById('ai-chat-body');
-            chatBody.innerHTML = "";
+            if (chatBody) {
+                chatBody.innerHTML = "";
+                const welcomeId = "welcome-msg";
+                chatBody.innerHTML = `<div style="margin-bottom:15px;"><span id="${welcomeId}" style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.6;"></span></div>`;
 
-            const welcomeId = "welcome-msg";
-            chatBody.innerHTML = `<div style="margin-bottom:15px;"><span id="${welcomeId}" style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.6;"></span></div>`;
+                const introText = `${getGreeting()}! Onè respè pou ou. Mwen se asistan Boutique Piyay. Eske ou se yon Kliyan, yon Machann, oswa yon Afilye? Di m kisa w ap chèche jodia.`;
+                await typeWriter(introText, welcomeId);
+            }
+        }
+    }, 3000);
 
-            const introText = `${getGreeting()}! Onè respè pou ou. Mwen se asistan Boutique Piyay. Eske ou se yon Kliyan, yon Machann, oswa yon Afilye? Di m kisa w ap chèche jodia.`;
-            await typeWriter(introText, welcomeId);
-        }, 3000);
+    const input = document.getElementById('ai-input');
+    if (input) {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendAIMessage();
+        });
     }
-
-    document.getElementById('ai-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendAIMessage();
-    });
 });
