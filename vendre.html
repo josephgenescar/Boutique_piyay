@@ -220,7 +220,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 
         <div class="form-group">
             <label class="form-label">Deskripsyon <span class="required-star">*</span></label>
-            <textarea id="prodDesc" class="form-textarea" placeholder="Bay detay sou pwodwi a: materyèl, gwosè, koulè disponib..."></textarea>
+            <textarea id="prodDesc" class="form-textarea" placeholder="Bay detay sou pwodwi a: materyèl, gwosè, koulè disponib..." oninput="updateSteps()"></textarea>
         </div>
     </div>
 
@@ -283,6 +283,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         const title = document.getElementById('prodTitle').value.trim();
         const price = document.getElementById('prodPrice').value;
         const cat = document.getElementById('prodCat').value;
+        const desc = document.getElementById('prodDesc').value.trim();
         const img = document.getElementById('prodImage').files[0];
 
         const s1 = document.getElementById('step1');
@@ -290,7 +291,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         const l1 = document.getElementById('line1');
         const l2 = document.getElementById('line2');
 
-        const step1Done = title && price && cat;
+        const step1Done = title && price && cat && desc;
         const step2Done = !!img;
 
         if (step1Done) {
@@ -307,6 +308,9 @@ title: Vann yon Pwodwi - Boutique Piyay
             s2.className = 'step-circle done'; s2.innerText = '✓';
             l2.classList.add('done');
             document.getElementById('step3').className = 'step-circle active';
+        } else {
+            l2.classList.remove('done');
+            document.getElementById('step3').className = 'step-circle';
         }
     }
 
@@ -318,7 +322,6 @@ title: Vann yon Pwodwi - Boutique Piyay
     }
 
     async function uploadToImageKit(file) {
-        // Asire n ap chèche fonksyon an nan bon kote
         const authRes = await fetch("/.netlify/functions/auth");
         if (!authRes.ok) {
             const errData = await authRes.json().catch(() => ({}));
@@ -347,7 +350,7 @@ title: Vann yon Pwodwi - Boutique Piyay
         const file = document.getElementById('prodImage').files[0];
         const btn = document.getElementById('submitBtn');
 
-        if (!title || !price || !cat || !desc) return setStatus("❌ Ranpli tout chan obligatwa yo.", "error");
+        if (!title || !price || !cat || !desc) return setStatus("❌ Ranpli tout chan obligatwa yo (Non, Pri, Kategori, Deskripsyon).", "error");
         if (!file) return setStatus("❌ Chwazi yon foto pou pwodwi a.", "error");
 
         btn.disabled = true;
