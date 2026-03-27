@@ -1,14 +1,39 @@
 let productCatalog = [];
 
-// Chaje katalòg pwodwi yo depi sit la louvri
 async function loadCatalog() {
     try {
         const response = await fetch('/search.json');
         productCatalog = await response.json();
-        console.log("Katalòg chaje ak success:", productCatalog.length, "pwodwi.");
+        console.log("Katalòg chaje:", productCatalog.length, "pwodwi.");
     } catch (e) {
-        console.error("Erè nan chaje katalòg:", e);
+        console.error("Erè katalòg:", e);
     }
+}
+
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Bonjou";
+    if (hour < 17) return "Bon apremidi";
+    return "Bonswa";
+}
+
+async function typeWriter(text, elementId) {
+    const element = document.getElementById(elementId);
+    let i = 0;
+    element.innerHTML = "";
+    return new Promise(resolve => {
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, 20); // Vitès ekriti a
+                document.getElementById('ai-chat-body').scrollTop = document.getElementById('ai-chat-body').scrollHeight;
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
 }
 
 async function askPiyayAI(message) {
@@ -18,28 +43,14 @@ async function askPiyayAI(message) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 message: message,
-                catalog: productCatalog.slice(0, 50) // Voye yon pati nan katalòg la pou l pa twò lou
+                catalog: productCatalog // Voye tout katalòg la
             })
         });
-
         const data = await response.json();
-        if (!response.ok || data.error) throw new Error(data.error?.message || "Erè enkoni");
-
         return data.choices[0].message.content;
     } catch (err) {
-        console.error("Erè nan askPiyayAI:", err);
         throw err;
     }
-}
-
-function renderAIResponse(text) {
-    const chatBody = document.getElementById('ai-chat-body');
-
-    // Detekte si gen yon referans pwodwi nan repons lan (egz: [PROD:123])
-    // Pou kounye a, n ap jis mete tèks la, men nou ka ajoute bèl UI kat la isit la
-    let formattedText = text;
-
-    chatBody.innerHTML += `<div style="margin-bottom:15px;"><span style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.5;">${formattedText}</span></div>`;
 }
 
 async function sendAIMessage() {
@@ -48,38 +59,49 @@ async function sendAIMessage() {
     if (!msg) return;
 
     const chatBody = document.getElementById('ai-chat-body');
-    chatBody.innerHTML += `<div style="margin-bottom:10px; text-align:right;"><span style="background:#ff4747; color:white; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block;">${msg}</span></div>`;
+    chatBody.innerHTML += `<div style="margin-bottom:10px; text-align:right;"><span style="background:#ff4747; color:white; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block;">${msg}</span></div>`;
     input.value = '';
 
     const loadingId = "loading-" + Date.now();
-    chatBody.innerHTML += `<div id="${loadingId}" style="margin-bottom:10px;"><span style="background:#eee; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block;">⏳ M ap chèche pou ou...</span></div>`;
+    chatBody.innerHTML += `<div id="${loadingId}" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd;">⏳ M ap ekri...</span></div>`;
     chatBody.scrollTop = chatBody.scrollHeight;
 
     try {
         const aiResponse = await askPiyayAI(msg);
         const loadingElement = document.getElementById(loadingId);
         if (loadingElement) loadingElement.remove();
-        renderAIResponse(aiResponse);
+
+        const responseId = "resp-" + Date.now();
+        chatBody.innerHTML += `<div style="margin-bottom:15px;"><span id="${responseId}" style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.6;"></span></div>`;
+        await typeWriter(aiResponse, responseId);
     } catch (e) {
         const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè: ${e.message}</span>`;
+        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">M gen yon ti pwoblèm koneksyon. Re-ekri m non?</span>`;
     }
-    chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    loadCatalog();
-    setTimeout(() => {
-        const box = document.getElementById('ai-chat-box');
-        if (box && (box.style.display === 'none' || box.style.display === '')) {
-            box.style.display = 'flex';
-        }
-    }, 3000);
+window.addEventListener('DOMContentLoaded', async () => {
+    await loadCatalog();
 
-    const aiInput = document.getElementById('ai-input');
-    if (aiInput) {
-        aiInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendAIMessage();
-        });
-    }
+    // Premye akèy otomatik
+    setTimeout(async () => {
+        const box = document.getElementById('ai-chat-box');
+        box.style.display = 'flex';
+        const chatBody = document.getElementById('ai-chat-body');
+        chatBody.innerHTML = ""; // Efase mesaj default la
+
+        const welcomeId = "welcome-msg";
+        chatBody.innerHTML = `<div style="margin-bottom:15px;"><span id="${welcomeId}" style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.6;"></span></div>`;
+
+        const greeting = getGreeting();
+        const introText = `${greeting}! Onè respè pou ou. Mwen se asistan Boutique Piyay. M la pou m rann eksperyans ou pi fasil.
+
+Eske ou se yon Kliyan k ap chèche yon pwodwi, yon Machann ki vle vann, oswa yon Afilye? Di m kisa w ap chèche jodia pou m ka gide w.`;
+
+        await typeWriter(introText, welcomeId);
+    }, 2000);
+
+    document.getElementById('ai-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendAIMessage();
+    });
 });
