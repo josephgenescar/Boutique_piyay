@@ -26,7 +26,7 @@ async function typeWriter(text, elementId) {
             if (i < text.length) {
                 element.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, 20); // Vitès ekriti a
+                setTimeout(type, 20);
                 document.getElementById('ai-chat-body').scrollTop = document.getElementById('ai-chat-body').scrollHeight;
             } else {
                 resolve();
@@ -36,15 +36,23 @@ async function typeWriter(text, elementId) {
     });
 }
 
+function toggleAIChat() {
+    const box = document.getElementById('ai-chat-box');
+    if (box.style.display === 'none' || box.style.display === '') {
+        box.style.display = 'flex';
+        localStorage.setItem('ai_chat_closed', 'false');
+    } else {
+        box.style.display = 'none';
+        localStorage.setItem('ai_chat_closed', 'true'); // Sonje ke itilizatè a fèmen l
+    }
+}
+
 async function askPiyayAI(message) {
     try {
         const response = await fetch("/.netlify/functions/ai-chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                message: message,
-                catalog: productCatalog // Voye tout katalòg la
-            })
+            body: JSON.stringify({ message: message, catalog: productCatalog })
         });
         const data = await response.json();
         return data.choices[0].message.content;
@@ -76,30 +84,30 @@ async function sendAIMessage() {
         await typeWriter(aiResponse, responseId);
     } catch (e) {
         const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">M gen yon ti pwoblèm koneksyon. Re-ekri m non?</span>`;
+        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè koneksyon...</span>`;
     }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
     await loadCatalog();
 
-    // Premye akèy otomatik
-    setTimeout(async () => {
-        const box = document.getElementById('ai-chat-box');
-        box.style.display = 'flex';
-        const chatBody = document.getElementById('ai-chat-body');
-        chatBody.innerHTML = ""; // Efase mesaj default la
+    // Tcheke si itilizatè a te fèmen l anvan
+    const isClosed = localStorage.getItem('ai_chat_closed');
 
-        const welcomeId = "welcome-msg";
-        chatBody.innerHTML = `<div style="margin-bottom:15px;"><span id="${welcomeId}" style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.6;"></span></div>`;
+    if (isClosed !== 'true') {
+        setTimeout(async () => {
+            const box = document.getElementById('ai-chat-box');
+            box.style.display = 'flex';
+            const chatBody = document.getElementById('ai-chat-body');
+            chatBody.innerHTML = "";
 
-        const greeting = getGreeting();
-        const introText = `${greeting}! Onè respè pou ou. Mwen se asistan Boutique Piyay. M la pou m rann eksperyans ou pi fasil.
+            const welcomeId = "welcome-msg";
+            chatBody.innerHTML = `<div style="margin-bottom:15px;"><span id="${welcomeId}" style="background:#f1f5f9; color:#333; padding:10px 15px; border-radius:18px; font-size:14px; display:inline-block; border:1px solid #ddd; line-height:1.6;"></span></div>`;
 
-Eske ou se yon Kliyan k ap chèche yon pwodwi, yon Machann ki vle vann, oswa yon Afilye? Di m kisa w ap chèche jodia pou m ka gide w.`;
-
-        await typeWriter(introText, welcomeId);
-    }, 2000);
+            const introText = `${getGreeting()}! Onè respè pou ou. Mwen se asistan Boutique Piyay. Eske ou se yon Kliyan, yon Machann, oswa yon Afilye? Di m kisa w ap chèche jodia.`;
+            await typeWriter(introText, welcomeId);
+        }, 3000);
+    }
 
     document.getElementById('ai-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendAIMessage();

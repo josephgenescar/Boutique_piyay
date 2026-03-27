@@ -61,7 +61,6 @@ title: Sant Kontwòl Total - Boutique Piyay
     outline: none; transition: 0.2s; background: #fafbfc; color: var(--dark);
   }
   .form-input:focus { border-color: var(--dark); background: white; box-shadow: 0 0 0 4px rgba(15,23,42,0.06); }
-  .form-input.mfa { text-align: center; font-size: 26px; font-weight: 900; letter-spacing: 8px; font-family: 'Space Mono', monospace; }
 
   .btn-login {
     width: 100%; padding: 15px; background: var(--dark);
@@ -71,10 +70,6 @@ title: Sant Kontwòl Total - Boutique Piyay
   }
   .btn-login:hover:not(:disabled) { background: var(--dark-2); transform: translateY(-1px); }
   .btn-login:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
-  .btn-login.green { background: var(--green); box-shadow: 0 8px 20px rgba(16,185,129,0.25); }
-  .btn-login.green:hover:not(:disabled) { filter: brightness(1.08); }
-
-  .mfa-hint { font-size: 12px; color: var(--gray); text-align: center; margin-bottom: 16px; line-height: 1.5; font-weight: 500; }
 
   /* ══════════════ DASHBOARD ══════════════ */
   #admin-dashboard { display: none; }
@@ -162,12 +157,6 @@ title: Sant Kontwòl Total - Boutique Piyay
   .btn-block:hover { background: #fecaca; }
   .btn-unblock { background: #dcfce7; color: #15803d; }
   .btn-unblock:hover { background: #bbf7d0; }
-  .btn-approve { background: rgba(16,185,129,0.1); color: var(--green); }
-  .btn-approve:hover { background: rgba(16,185,129,0.2); }
-  .btn-reject  { background: #fee2e2; color: #ef4444; }
-  .btn-reject:hover { background: #fecaca; }
-  .btn-del     { background: #fee2e2; color: #ef4444; }
-  .btn-del:hover { background: #fecaca; }
 
   /* PRODUCT GRID */
   .prod-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
@@ -216,7 +205,6 @@ title: Sant Kontwòl Total - Boutique Piyay
     </div>
 
     <div class="login-body">
-      <!-- Step 1 -->
       <div id="auth-step-1">
         <div class="form-group">
           <label class="form-label">Email Admin</label>
@@ -228,17 +216,6 @@ title: Sant Kontwòl Total - Boutique Piyay
         </div>
         <button onclick="handleAdminLogin()" id="loginBtn" class="btn-login">
           🔐 KONEKTE
-        </button>
-      </div>
-
-      <!-- Step 2 MFA -->
-      <div id="auth-step-2" style="display:none;">
-        <p class="mfa-hint">Tape kòd 6 chif Google Authenticator la.</p>
-        <div class="form-group">
-          <input type="text" id="mfaCode" class="form-input mfa" placeholder="000000" maxlength="6">
-        </div>
-        <button onclick="verifyMFAAndEnter()" id="verifyMfaBtn" class="btn-login green">
-          ✅ VERIFYE KÒD
         </button>
       </div>
     </div>
@@ -370,22 +347,38 @@ title: Sant Kontwòl Total - Boutique Piyay
     const password = document.getElementById('adminPass').value;
     const btn = document.getElementById('loginBtn');
     btn.disabled = true; btn.innerText = "⏳ Verifikasyon...";
-    const { data, error } = await supA.auth.signInWithPassword({ email, password });
-    if (error) { showToast("❌ " + error.message, 'error'); btn.disabled = false; btn.innerText = "🔐 KONEKTE"; return; }
-    await checkAccess();
-  }
 
-  async function verifyMFAAndEnter() {
-    // MFA logic placeholder — same as original
+    const { data, error } = await supA.auth.signInWithPassword({ email, password });
+    if (error) {
+        showToast("❌ " + error.message, 'error');
+        btn.disabled = false; btn.innerText = "🔐 KONEKTE";
+        return;
+    }
+
     await checkAccess();
   }
 
   async function checkAccess() {
     const { data: { user } } = await supA.auth.getUser();
     if (user) {
-      document.getElementById('admin-login-section').style.display = "none";
-      document.getElementById('admin-dashboard').style.display = "block";
-      loadAdminData();
+      // ✅ VERIFYE SI SE ADMIN TOUT BON NAN TABLO PROFILES LA
+      const { data: profile, error } = await supA
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profile && profile.role === 'admin') {
+        document.getElementById('admin-login-section').style.display = "none";
+        document.getElementById('admin-dashboard').style.display = "block";
+        loadAdminData();
+      } else {
+        // ❌ SI SE PA ADMIN, NOU METE L DEYÒ
+        await supA.auth.signOut();
+        showToast("❌ Ou pa gen pèmisyon admin!", 'error');
+        document.getElementById('loginBtn').disabled = false;
+        document.getElementById('loginBtn').innerText = "🔐 KONEKTE";
+      }
     }
   }
 
@@ -401,7 +394,6 @@ title: Sant Kontwòl Total - Boutique Piyay
       document.getElementById('stat-withdrawals').innerText = (withdrawals || []).filter(w => w.status === 'pending').length;
       document.getElementById('stat-revenue').innerText    = (orders || []).reduce((a, o) => a + (o.total_price || 0), 0) + " HTG";
 
-      // SELLERS
       document.getElementById('sellers-list').innerHTML = (users || []).map(u => `
         <tr>
           <td>
@@ -423,10 +415,9 @@ title: Sant Kontwòl Total - Boutique Piyay
           </td>
         </tr>`).join('');
 
-      // PRODUCTS
       document.getElementById('all-products-grid').innerHTML = (prods || []).map(p => `
         <div class="prod-admin-card">
-          <img class="prod-admin-img" src="${p.image_url}"
+          <img class="prod-admin-img" src="${p.image_url}" alt="Pwodwi"
                onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
           <div class="prod-admin-body">
             <div class="prod-admin-name">${p.title}</div>
@@ -435,7 +426,6 @@ title: Sant Kontwòl Total - Boutique Piyay
           </div>
         </div>`).join('');
 
-      // WITHDRAWALS
       document.getElementById('withdrawals-list').innerHTML = (withdrawals || []).map(w => `
         <tr>
           <td><b>${w.number || '—'}</b></td>
@@ -451,7 +441,6 @@ title: Sant Kontwòl Total - Boutique Piyay
           </td>
         </tr>`).join('');
 
-      // ORDERS
       document.getElementById('orders-list').innerHTML = (orders || []).map(o => `
         <tr>
           <td><span style="font-family:'Space Mono',monospace;font-size:11px;">${o.id ? o.id.slice(0,8)+'...' : '—'}</span></td>

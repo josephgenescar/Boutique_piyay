@@ -2,9 +2,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-/* FOOTER NEON & LUMINEUX DESIGN */
+/* FOOTER DESIGN */
 .main-footer {
-    background: #020617; /* Nwa pwofon */
+    background: #020617;
     color: #cbd5e1;
     padding: 80px 0 40px;
     margin-top: 80px;
@@ -12,7 +12,6 @@
     overflow: hidden;
 }
 
-/* LIY LUMINEUZ (GLOWING LINE) */
 .main-footer::before {
     content: '';
     position: absolute;
@@ -35,81 +34,66 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 50px;
-    position: relative;
-    z-index: 2;
 }
 
-/* TIT YO KI GEN GWO EFÈ LUMINEUX */
-.footer-col h2 { /* Chanje soti h3 pou h2 pou pi bon yerachi SEO */
+.footer-col h2 {
     color: #fff;
     font-size: 22px;
     margin-bottom: 25px;
     font-family: 'Sora', sans-serif;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: 0 0 10px rgba(255, 71, 71, 0.8), 0 0 20px rgba(255, 71, 71, 0.4);
-    animation: glow-pulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow-pulse {
-    from { text-shadow: 0 0 10px rgba(255, 71, 71, 0.6), 0 0 20px rgba(255, 71, 71, 0.2); }
-    to { text-shadow: 0 0 20px rgba(255, 71, 71, 1), 0 0 30px rgba(255, 71, 71, 0.6); }
-}
-
-.footer-col p {
-    font-size: 15px;
-    line-height: 1.8;
-    color: #cbd5e1;
+    text-shadow: 0 0 10px rgba(255, 71, 71, 0.8);
 }
 
 .footer-links-list { list-style: none; padding: 0; }
 .footer-links-list li { margin-bottom: 15px; }
 .footer-links-list a {
-    color: #cbd5e1; /* Kontras pi bon pou aksesibilite */
+    color: #cbd5e1;
     text-decoration: none;
     transition: 0.3s;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-weight: 500;
 }
 
-.footer-links-list a:hover {
-    color: #fff;
-    transform: translateX(8px);
-}
+.footer-links-list a:hover { color: #fff; transform: translateX(8px); }
 
-.social-glow-wrap {
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
-}
-
-.social-glow-wrap a {
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    font-size: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: 0.4s;
-}
-
-/* 🤖 AI ASSISTANT UI */
+/* 🤖 AI ASSISTANT UI - DEPLASE POU L PA BLOKE WHATSAPP */
 #ai-chat-launcher {
-    position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
-    background: #ff4747; border-radius: 50%; display: flex; align-items: center;
-    justify-content: center; cursor: pointer; box-shadow: 0 0 20px rgba(255, 71, 71, 0.6); z-index: 9999;
+    position: fixed;
+    bottom: 100px; /* Moute l anlè WhatsApp (ki nan 20px) */
+    right: 20px;
+    width: 55px; height: 55px;
+    background: #ff4747; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 0 20px rgba(255, 71, 71, 0.6);
+    z-index: 9998; transition: 0.3s;
 }
+
 #ai-chat-box {
-    display: none; position: fixed; bottom: 90px; right: 20px; width: 320px; height: 450px;
-    background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    z-index: 9999; flex-direction: column; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif;
+    display: none;
+    position: fixed;
+    bottom: 170px; /* Moute l pi wo tou */
+    right: 20px;
+    width: 320px; height: 450px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 9999; flex-direction: column; overflow: hidden;
+}
+
+@media (max-width: 480px) {
+    #ai-chat-box {
+        width: 280px;
+        height: 400px;
+        right: 10px;
+        bottom: 160px;
+    }
+    #ai-chat-launcher {
+        right: 10px;
+        bottom: 90px;
+        width: 50px; height: 50px;
+    }
 }
 </style>
 
@@ -119,47 +103,37 @@
             <div class="footer-col">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px;">
                     <img src="/assets/images/logo.png" alt="Logo Boutique Piyay" width="42" height="42" style="border-radius: 10px;">
-                    <h2 style="margin: 0; font-size: 22px; color: #fff;">Boutique Piyay</h2>
+                    <h2 style="margin: 0;">Boutique Piyay</h2>
                 </div>
                 <p>Pi bon kote pou jwenn tout sa w bezwen ak pi bon pri. Livrezon rapid nan tout Ayiti.</p>
-                <div class="social-glow-wrap">
-                    <a href="https://www.facebook.com/joseph.genescar" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://youtube.com/@josephgenescar" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    <a href="https://www.tiktok.com/@j.m.gfilms3" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://wa.me/50948868964" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                </div>
             </div>
 
             <div class="footer-col">
                 <h2>Lyen Rapid</h2>
                 <ul class="footer-links-list">
-                    <li><a href="/"><i class="fas fa-shopping-cart" aria-hidden="true"></i> Tout Pwodwi</a></li>
-                    <li><a href="/shop"><i class="fas fa-store" aria-hidden="true"></i> Boutik la</a></li>
-                    <li><a href="/vendre.html"><i class="fas fa-plus-circle" aria-hidden="true"></i> Vann pa w</a></li>
-                    <li><a href="/faq.html"><i class="fas fa-question-circle" aria-hidden="true"></i> FAQ</a></li>
+                    <li><a href="/shop"><i class="fas fa-store"></i> Boutik la</a></li>
+                    <li><a href="/vendre.html"><i class="fas fa-plus-circle"></i> Vann pa w</a></li>
+                    <li><a href="/faq.html"><i class="fas fa-question-circle"></i> FAQ</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
                 <h2>Legal</h2>
                 <ul class="footer-links-list">
-                    <li><a href="/conditions.html"><i class="fas fa-file-contract" aria-hidden="true"></i> Kondisyon Jeneral</a></li>
-                    <li><a href="/politique.html"><i class="fas fa-shield-alt" aria-hidden="true"></i> Konfidansyalite</a></li>
-                    <li><a href="/retours.html"><i class="fas fa-undo" aria-hidden="true"></i> Règleman Retou</a></li>
+                    <li><a href="/conditions.html"><i class="fas fa-file-contract"></i> Kondisyon</a></li>
+                    <li><a href="/politique.html"><i class="fas fa-shield-alt"></i> Privasite</a></li>
                 </ul>
             </div>
         </div>
-
-        <div class="footer-bottom-luminous">
-            <p>&copy; {{ "now" | date: "%Y" }} <span class="glow-brand">Boutique Piyay</span>. Tout dwa rezève.</p>
-            <div class="powered-tag">Powered by <span>Rivayo-tech Entreprise</span></div>
+        <div style="text-align:center; margin-top:50px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+            <p>&copy; {{ "now" | date: "%Y" }} Boutique Piyay. Powered by Rivayo-tech.</p>
         </div>
     </div>
 </footer>
 
 <!-- 🤖 AI ASSISTANT UI -->
 <div id="ai-chat-launcher" onclick="toggleAIChat()" role="button" aria-label="Open AI Assistant">
-    <span style="font-size:30px;" aria-hidden="true">🤖</span>
+    <span style="font-size:25px;">🤖</span>
 </div>
 
 <div id="ai-chat-box">
@@ -167,13 +141,11 @@
         <span style="font-weight:800;">Asistan Boutique Piyay</span>
         <button onclick="toggleAIChat()" aria-label="Close" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
     </div>
-    <div id="ai-chat-body" style="flex:1; padding:15px; overflow-y:auto; background:#fff;">
-        <div style="margin-bottom:10px;">
-            <span style="background:#f1f5f9; color:#333; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block; border:1px solid #ddd;">Bonjou! M se asistan Boutique Piyay. Kijan m ka ede w jodi a?</span>
-        </div>
+    <div id="ai-chat-body" style="flex:1; padding:15px; overflow-y:auto; background:#fff; scroll-behavior: smooth;">
+        <!-- Mesaj yo ap parèt isit la -->
     </div>
-    <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px;">
-        <input type="text" id="ai-input" aria-label="Mesaj ou" placeholder="Ekri mesaj ou..." style="flex:1; border:1px solid #ddd; padding:10px; border-radius:10px; font-size:13px; outline:none;">
+    <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px; background: #f9fafb;">
+        <input type="text" id="ai-input" placeholder="Ekri mesaj ou..." style="flex:1; border:1px solid #ddd; padding:10px; border-radius:10px; outline:none; font-size:14px;">
         <button onclick="sendAIMessage()" style="background:#ff4747; border:none; color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">Voye</button>
     </div>
 </div>
