@@ -179,7 +179,7 @@ title: Akèy - Boutique Piyay
 
     @media (max-width: 640px) {
       .konektem-ad { margin: 12px 12px 0; border-radius: 18px; min-height: 120px; }
-      .konektem-ad-inner { padding: 18px 16px; gap: 12px; flex-wrap: nowrap; }
+      .konektem-ad-inner { padding: 18px 16px; gap: 12px; flex-wrap: nowrap; align-items: flex-start; }
       .ad-divider { display: none; }
       .ad-logo-icon { width: 48px; height: 48px; border-radius: 13px; }
       .ad-logo-icon svg { width: 30px !important; height: 30px !important; }
@@ -204,6 +204,7 @@ title: Akèy - Boutique Piyay
       .btn-ad-cta span { display: none; }
       .btn-ad-cta::after { content: '→'; }
       .btn-ad-close { width: 26px; height: 26px; font-size: 12px; }
+      .ad-text-block { max-width: 100%; flex: 1; }
     }
 
     /* ══════════════════════════════
@@ -409,7 +410,7 @@ title: Akèy - Boutique Piyay
 
         <!-- CTA -->
         <div class="ad-cta">
-            <a href="https://konektem.com" target="_blank" class="btn-ad-cta">
+            <a href="https://konektem.netlify.app" target="_blank" class="btn-ad-cta">
                 <span>Découvrir →</span>
             </a>
             <button class="btn-ad-close" onclick="document.getElementById('konektem-ad').style.display='none'">✕</button>
