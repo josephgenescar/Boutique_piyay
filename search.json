@@ -2,21 +2,20 @@
 layout: none
 ---
 [
-{% for product in site.products %}
-{% if product.published != false %}
-{
-"title"       : {{ product.title | jsonify }},
-"category"    : {{ product.category | jsonify }},
-"url"         : {{ product.url | jsonify }},
-"price"       : {{ product.price | jsonify }},
-"old_price"   : {{ product.original_price | jsonify }},
-"image"       : {{ product.featured_image | default: product.image | jsonify }},
-"description" : {{ product.content | strip_html | truncate: 200 | jsonify }},
-"tags"        : {{ product.tags | join: "," | jsonify }},
-"featured"    : {{ product.featured | jsonify }},
-"in_stock"    : {{ product.in_stock | default: true | jsonify }},
-"date"        : {{ product.date | date: "%s" | jsonify }}
-}{% unless forloop.last %},{% endunless %}
-{% endif %}
+{% assign all_items = site.products | concat: site.sellers %}
+{% assign first = true %}
+{% for item in all_items %}
+  {% if item.title %}
+    {% unless first %},{% endunless %}
+    {
+      "type": {{ item.collection | jsonify }},
+      "title": {{ item.title | jsonify }},
+      "price": {{ item.price | default: "" | jsonify }},
+      "seller_name": {{ item.boutik_nom | default: item.vendeur | default: "" | jsonify }},
+      "url": {{ item.url | absolute_url | jsonify }},
+      "desc": {{ item.content | strip_html | truncate: 150 | jsonify }}
+    }
+    {% assign first = false %}
+  {% endif %}
 {% endfor %}
 ]
