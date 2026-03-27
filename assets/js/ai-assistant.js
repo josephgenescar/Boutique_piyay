@@ -1,30 +1,21 @@
-const GROQ_API_KEY = "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"; // Ou mèt ranplase sa ak kle ou a
-
 async function askPiyayAI(message) {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    // Nou rele fonksyon Netlify la pito pou sekirite
+    const response = await fetch("/.netlify/functions/ai-chat", {
         method: "POST",
-        headers: {
-            "Authorization": `Bearer ${GROQ_API_KEY}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model: "llama3-8b-8192",
-            messages: [
-                {
-                    role: "system",
-                    content: "Ou se asistan entelijan Boutique Piyay. Ou pale Kreyòl Ayisyen sèlman. Ou ede kliyan yo jwenn pwodwi, esplike yo ke livrezon soti Sen Domeng pran 3-5 jou, epi peman fèt pa Moncash (4886-8964) oswa Natcash (4068-3108). Ou dwe toujou koutwazi epi bay repons ki kout."
-                },
-                { role: "user", content: message }
-            ]
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
     });
+
+    if (!response.ok) {
+        throw new Error("Erè nan sèvè AI a");
+    }
+
     const data = await response.json();
     return data.choices[0].message.content;
 }
 
 function toggleAIChat() {
     const box = document.getElementById('ai-chat-box');
-    // Verifikasyon pou asire l ap travay menm si style la nan CSS la sèlman
     if (box.style.display === 'none' || box.style.display === '') {
         box.style.display = 'flex';
     } else {
@@ -57,7 +48,7 @@ async function sendAIMessage() {
     chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-// Louvri chat la otomatikman apre 3 segonn pou akeyi kliyan an
+// Louvri chat la otomatikman apre 3 segonn
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const box = document.getElementById('ai-chat-box');
@@ -66,7 +57,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }, 3000);
 
-    // Pèmèt voye mesaj ak bouton "Enter"
     const aiInput = document.getElementById('ai-input');
     if (aiInput) {
         aiInput.addEventListener('keypress', (e) => {
