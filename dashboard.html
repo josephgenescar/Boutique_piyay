@@ -928,7 +928,7 @@
 
     async function syncPointsWithSales() {
         try {
-            const { data: orders } = await supD.from('orders').select('amount').eq('seller_id', currentUser.id);
+            const { data: orders } = await supD.from('orders').select('total_price, amount').eq('seller_id', currentUser.id);
             const { data: prof, error: profErr } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
 
             if (profErr || !prof) {
@@ -940,7 +940,7 @@
             }
 
             if (orders && currentProfile) {
-                const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.amount || 0), 0);
+                const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.total_price || o.amount || 0), 0);
                 const newPoints = Math.floor(totalSales);
                 await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
                 document.getElementById('stat-points').innerText = newPoints;
@@ -976,8 +976,8 @@
                 <div class="order-card ${o.status || 'pending'}">
                     <div class="order-info">
                         <div class="order-id">KÒMAND #${o.id.substring(0,8)}</div>
-                        <div class="order-title">${o.product_name || 'Pwodwi'}</div>
-                        <div class="order-meta">Kliyan: ${o.customer_email} · <b>${o.amount} HTG</b></div>
+                        <div class="order-title">${o.product_title || o.product_name || 'Pwodwi'}</div>
+                        <div class="order-meta">Kliyan: ${o.customer_name || o.customer_phone || o.customer_email || '—'} · <b>${o.total_price || o.amount || 0} HTG</b></div>
                         <div style="margin-top:8px;"><span class="order-status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
                     </div>
                     <div>

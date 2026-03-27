@@ -177,6 +177,13 @@ title: Finaliser la Commande
                 <strong>📱 Instructions:</strong>
                 <p id="instructionText"></p>
               </div>
+
+              <!-- NOUVO: Bwat pou ID Tranzaksyon -->
+              <div id="transactionIdGroup" class="form-group" style="margin-top: 15px; display: none;">
+                <label for="transactionId" style="font-weight: bold; color: #ff4747;">Nimewo Tranzaksyon (ID) *</label>
+                <input type="text" id="transactionId" name="transaction_id" placeholder="Ex: 12345678" style="border: 2px solid #ff4747;">
+                <small style="color: #666;">Mete kòd ou resevwa nan SMS apre ou fin voye kòb la.</small>
+              </div>
             </div>
           </div>
 
@@ -387,8 +394,7 @@ title: Finaliser la Commande
 
 .payment-card {
   display: flex;
-  align-items: center;
-  gap: 15px;
+  align-items: center; gap: 15px;
   padding: 20px;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
@@ -648,10 +654,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadCheckoutSummary() {
-  const cart = JSON.parse(localStorage.getItem('boutique_piyay_cart') || '[]');
+  const cartKey = 'bp_cart';
+  const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
 
   if (cart.length === 0) {
-    window.location.href = '/cart';
+    window.location.href = '/';
     return;
   }
 
@@ -659,48 +666,58 @@ function loadCheckoutSummary() {
   const container = document.getElementById('checkoutItems');
   container.innerHTML = cart.map(item => `
     <div class="checkout-item">
-      <img src="${item.image}" alt="${item.title}">
+      <img src="${item.img}" alt="${item.title}" onerror="this.src='/assets/images/logo.png'">
       <div class="checkout-item-info">
         <div class="checkout-item-title">${item.title}</div>
-        <div class="checkout-item-qty">Quantité: ${item.quantity}</div>
+        <div class="checkout-item-qty">Quantité: ${item.qty}</div>
       </div>
-      <div class="checkout-item-price">${item.price * item.quantity} HTG</div>
+      <div class="checkout-item-price">${(item.price * item.qty).toLocaleString()} HTG</div>
     </div>
   `).join('');
 
   // Calculate totals
-  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
   const shipping = subtotal >= 1000 ? 0 : 100;
   const total = subtotal + shipping;
 
-  document.getElementById('checkoutSubtotal').textContent = `${subtotal} HTG`;
+  document.getElementById('checkoutSubtotal').textContent = `${subtotal.toLocaleString()} HTG`;
   document.getElementById('checkoutShipping').textContent =
-    shipping === 0 ? 'GRATUIT ✅' : `${shipping} HTG`;
-  document.getElementById('checkoutTotal').textContent = `${total} HTG`;
+    shipping === 0 ? 'GRATUIT ✅' : `${shipping.toLocaleString()} HTG`;
+  document.getElementById('checkoutTotal').textContent = `${total.toLocaleString()} HTG`;
 }
 
 function setupPaymentInstructions() {
   const radios = document.querySelectorAll('input[name="payment_method"]');
   const instructions = document.getElementById('paymentInstructions');
   const instructionText = document.getElementById('instructionText');
+  const transactionIdGroup = document.getElementById('transactionIdGroup');
+  const transactionInput = document.getElementById('transactionId');
 
   radios.forEach(radio => {
     radio.addEventListener('change', function() {
       instructions.style.display = 'block';
+
+      if (this.value === 'moncash' || this.value === 'natcash') {
+        transactionIdGroup.style.display = 'block';
+        transactionInput.required = true;
+      } else {
+        transactionIdGroup.style.display = 'none';
+        transactionInput.required = false;
+      }
 
       switch(this.value) {
         case 'moncash':
           instructionText.innerHTML = `
             1. Ouvrez votre application Moncash<br>
             2. Envoyez le montant total au <strong>4886-8964</strong><br>
-            3. Gardez votre reçu de transaction
+            3. Antre nimewo tranzaksyon an anba a pou n valide kòmand lan.
           `;
           break;
         case 'natcash':
           instructionText.innerHTML = `
             1. Ouvrez votre application Natcash<br>
             2. Envoyez le montant total au <strong>4068-3108</strong><br>
-            3. Gardez votre reçu de transaction
+            3. Antre nimewo tranzaksyon an anba a pou n valide kòmand lan.
           `;
           break;
         case 'cash':
@@ -708,7 +725,6 @@ function setupPaymentInstructions() {
             Préparez le montant exact pour faciliter la livraison.<br>
             Le livreur vous contactera avant d'arriver.
           `;
-          instructions.style.display = 'block';
           break;
       }
     });
@@ -718,38 +734,62 @@ function setupPaymentInstructions() {
 function submitCheckout(e) {
   e.preventDefault();
 
-  const formData = new FormData(e.target);
   const btn = document.getElementById('submitOrderBtn');
-
-  // Disable button and show loading
   btn.disabled = true;
   btn.textContent = '⏳ Traitement en cours...';
 
-  // Process checkout (this will be handled by cart.js)
-  setTimeout(() => {
-    if (typeof cart !== 'undefined') {
-      cart.processCheckout(formData);
-    } else {
-      // Fallback if cart.js not loaded
-      alert('Erreur: Système de panier non chargé');
-      btn.disabled = false;
-      btn.textContent = 'Confirmer la commande →';
+  const formData = {
+    name: document.getElementById('customerName').value,
+    phone: document.getElementById('customerPhone').value,
+    address: document.getElementById('customerAddress').value,
+    city: document.getElementById('customerCity').value,
+    payment: document.querySelector('input[name="payment_method"]:checked').value,
+    transaction_id: document.getElementById('transactionId').value,
+    notes: document.getElementById('orderNotes').value
+  };
+
+  // Se cart.js ki pral jere lojik final la (nou sèlman rele l)
+  if (typeof submitOrder !== 'undefined') {
+    // Nou adapte fòm nan pou cart.js ka konprann li
+    // Nou mete valè yo nan eleman cart.js ap chèche yo
+    let cName = document.getElementById('customer-name');
+    let cPhone = document.getElementById('customer-phone');
+    let cZone = document.getElementById('delivery-zone');
+
+    if(!cName) {
+        let input = document.createElement('input');
+        input.id = 'customer-name';
+        input.value = formData.name;
+        input.style.display = 'none';
+        document.body.appendChild(input);
     }
-  }, 1000);
+    if(!cPhone) {
+        let input = document.createElement('input');
+        input.id = 'customer-phone';
+        input.value = formData.phone;
+        input.style.display = 'none';
+        document.body.appendChild(input);
+    }
+    if(!cZone) {
+        let input = document.createElement('input');
+        input.id = 'delivery-zone';
+        input.value = formData.city;
+        input.style.display = 'none';
+        document.body.appendChild(input);
+    }
+
+    submitOrder();
+  } else {
+    alert('Erreur: Système de commande indisponible');
+    btn.disabled = false;
+    btn.textContent = 'Confirmer la commande →';
+  }
 }
 
 function applyPromoCode() {
   const code = document.getElementById('promoCode').value.trim().toUpperCase();
-
-  const validCodes = {
-    'BIENVENUE10': 10, // 10% off
-    'PIYAY2026': 50,   // 50 HTG off
-    'FIRST20': 20      // 20% off
-  };
-
-  if (validCodes[code]) {
-    alert(`✅ Code promo appliqué! Réduction: ${validCodes[code]}${code.includes('10') || code.includes('20') ? '%' : ' HTG'}`);
-    // Apply discount logic here
+  if (code === 'BIENVENUE10') {
+    alert('✅ Code promo appliqué! (10% de réduction)');
   } else if (code) {
     alert('❌ Code promo invalide');
   }

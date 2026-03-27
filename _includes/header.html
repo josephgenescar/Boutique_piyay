@@ -225,7 +225,7 @@
       }, 300);
     }
 
-    /* ── AUTH ── */
+    /* ── AUTH & REALTIME NOTIFICATIONS ── */
     async function updateHeaderAuth() {
       const sup = getSup();
       if (!sup) return setTimeout(updateHeaderAuth, 500);
@@ -242,10 +242,40 @@
         const { data: profile } = await sup.from('profiles').select('role').eq('id', user.id).maybeSingle();
         if (profile && profile.role === 'seller') {
           btnMerchant.style.display = 'flex';
+          initRealtimeNotifs(user.id);
         } else {
           btnCustomer.style.display = 'flex';
         }
       }
+    }
+
+    function initRealtimeNotifs(userId) {
+      const sup = getSup();
+      if (!sup) return;
+
+      // Koute kòmand yo an tan reyèl pou machann nan
+      sup.channel('custom-insert-channel')
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'orders', filter: `seller_id=eq.${userId}` },
+          (payload) => {
+            triggerNotifEffect();
+          }
+        ).subscribe();
+    }
+
+    function triggerNotifEffect() {
+      const bell = document.getElementById('bell-icon');
+      const count = document.getElementById('notif-count');
+
+      // Efè son oswa animasyon
+      bell.classList.add('bell-ring');
+      count.textContent = parseInt(count.textContent || 0) + 1;
+      count.style.display = 'flex';
+
+      // Retire animasyon apre 3 segonn
+      setTimeout(() => {
+        bell.classList.remove('bell-ring');
+      }, 3000);
     }
 
     async function handleHeaderLogout() {

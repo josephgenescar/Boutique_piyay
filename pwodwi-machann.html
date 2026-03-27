@@ -441,12 +441,12 @@ title: Detay Pwodwi
 
         // Bouton aksyon
         document.getElementById('btnPanye').onclick = () => {
-          if (window.orderProduct) orderProduct(p.title, p.price, p.id, p.image_url);
+          if (window.orderProduct) orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id);
           else alert("Fonksyon panye pa disponib.");
         };
         document.getElementById('btnAchte').onclick = () => {
           if (window.orderProduct) {
-            orderProduct(p.title, p.price, p.id, p.image_url);
+            orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id);
             if (window.openCart) openCart();
           }
         };

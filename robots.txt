@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://boutique-piyay.netlify.app/sitemap.xml

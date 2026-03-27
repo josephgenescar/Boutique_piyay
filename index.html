@@ -341,7 +341,7 @@ title: Akèy - Boutique Piyay
     .seller-previews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 0 20px; padding: 18px 0; border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; }
     .preview-img { aspect-ratio: 1; border-radius: 10px; background: var(--light); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .preview-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .btn-visit { display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; background: var(--dark); color: white; padding: 15px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.2s; box-shadow: 0 6px 16px rgba(15,23,42,0.15); }
+    .btn-visit { display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; background: var(--dark); color: white; padding: 15px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.2s; box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15); }
     .btn-visit:hover { background: var(--primary); transform: translateY(-1px); }
     .mkt-prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
     .mkt-prod-card { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); border: 1.5px solid #f1f5f9; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
@@ -579,13 +579,20 @@ title: Akèy - Boutique Piyay
         renderSellers(allSellers);
         renderProducts(allProducts);
 
-        // 3. Flash sale
-        const flashProds = allProducts.filter(p =>
-          p.is_flash_sale === true || (p.old_price && parseFloat(p.old_price) > parseFloat(p.price))
-        );
+        // 3. Flash sale (FILTRE REALTIME)
+        const now = new Date();
+        const flashProds = allProducts.filter(p => {
+          const createdAt = new Date(p.created_at);
+          const diffHours = (now - createdAt) / (1000 * 60 * 60);
+          // Yon pwodwi sispann FLASH si 24h fin pase epi is_flash_sale te true
+          return (p.is_flash_sale === true && diffHours < 24);
+        });
+
         if (flashProds.length > 0) {
           document.getElementById('flash-sale').style.display = 'block';
           renderFlashSlider(flashProds);
+        } else {
+          document.getElementById('flash-sale').style.display = 'none';
         }
 
         startInfiniteFlashTimer();
@@ -620,7 +627,7 @@ title: Akèy - Boutique Piyay
               </a>
               <div class="boosted-title">${p.title}</div>
               <div class="boosted-price">${p.price} HTG</div>
-              <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}')">
+              <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}')">
                 🛒 Ajoute
               </button>
             </div>`).join('')}
@@ -692,7 +699,7 @@ title: Akèy - Boutique Piyay
           </a>
           <div class="mkt-prod-name">${p.title}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
-          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}')">
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}')">
             🛒 Ajoute
           </button>
         </div>`).join('');
@@ -720,7 +727,7 @@ title: Akèy - Boutique Piyay
               <span class="flash-new">${p.price} HTG</span>
               ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
             </div>
-            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}')">
+            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}')">
               🛒 Ajoute
             </button>
           </div>`;
