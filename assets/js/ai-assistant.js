@@ -8,17 +8,20 @@ async function askPiyayAI(message) {
             body: JSON.stringify({ message: message })
         });
 
-        console.log("Repons sèvè Netlify:", response.status, response.statusText);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Erè nan sèvè Netlify:", errorText);
-            throw new Error(`Erè ${response.status}: ${response.statusText}`);
-        }
-
         const data = await response.json();
         console.log("Done AI resevwa:", data);
-        return data.choices[0].message.content;
+
+        if (!response.ok || data.error) {
+            const errorMsg = data.error ? (data.error.message || JSON.stringify(data.error)) : "Erè enkoni";
+            console.error("Erè Groq:", errorMsg);
+            throw new Error(errorMsg);
+        }
+
+        if (data.choices && data.choices[0]) {
+            return data.choices[0].message.content;
+        } else {
+            throw new Error("Repons AI a vid");
+        }
     } catch (err) {
         console.error("Erè nan askPiyayAI:", err);
         throw err;
@@ -53,9 +56,10 @@ async function sendAIMessage() {
         if (loadingElement) loadingElement.remove();
         chatBody.innerHTML += `<div style="margin-bottom:10px;"><span style="background:#f1f5f9; color:#333; padding:8px 12px; border-radius:15px; font-size:13px; display:inline-block; border:1px solid #ddd;">${aiResponse}</span></div>`;
     } catch (e) {
-        console.error("Erè final nan sendAIMessage:", e);
         const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè koneksyon: ${e.message}</span>`;
+        if (loadingElement) {
+            loadingElement.innerHTML = `<span style="color:red; font-size:12px;">Erè: ${e.message}</span>`;
+        }
     }
     chatBody.scrollTop = chatBody.scrollHeight;
 }

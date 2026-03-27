@@ -4,7 +4,7 @@ exports.handler = async (event, context) => {
   if (!GROQ_API_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Kle GROQ_API_KEY a manke sou Netlify. Tanpri tcheke Environment Variables yo." }),
+      body: JSON.stringify({ error: "Kle GROQ_API_KEY a manke sou Netlify." }),
     };
   }
 
@@ -18,7 +18,7 @@ exports.handler = async (event, context) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant", // Nouvo modèl ki sipòte a
         messages: [
           {
             role: "system",
@@ -31,7 +31,6 @@ exports.handler = async (event, context) => {
 
     const data = await response.json();
 
-    // Si Groq voye yon erè, nou voye l bay kliyan an ak menm kòd erè a
     if (!response.ok) {
         return {
             statusCode: response.status,
