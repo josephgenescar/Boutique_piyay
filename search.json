@@ -2,16 +2,19 @@
 layout: none
 ---
 [
-{% assign all_items = site.products | concat: site.sellers %}
+{% assign items = site.products | default: "" | split: "" %}
+{% if site.sellers %}
+  {% assign items = items | concat: site.sellers %}
+{% endif %}
+
 {% assign first = true %}
-{% for item in all_items %}
+{% for item in items %}
   {% if item.title %}
     {% unless first %},{% endunless %}
     {
-      "type": {{ item.collection | jsonify }},
       "title": {{ item.title | jsonify }},
       "price": {{ item.price | default: "" | jsonify }},
-      "seller_name": {{ item.boutik_nom | default: item.vendeur | default: "" | jsonify }},
+      "seller_name": {{ item.boutik_nom | default: item.vendeur | default: "Boutique Piyay" | jsonify }},
       "url": {{ item.url | absolute_url | jsonify }},
       "desc": {{ item.content | strip_html | truncate: 150 | jsonify }}
     }
