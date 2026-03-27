@@ -4,22 +4,17 @@ exports.handler = async (event, context) => {
   if (!GROQ_API_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Kle GROQ_API_KEY a manke sou Netlify" }),
+      body: JSON.stringify({ error: "Kle GROQ_API_KEY a manke sou Netlify. Tanpri tcheke Environment Variables yo." }),
     };
-  }
-
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
     const { message } = JSON.parse(event.body);
 
-    // Itilize global fetch (Node 18+)
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${GROQ_API_KEY}`,
+        "Authorization": `Bearer ${GROQ_API_KEY.trim()}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -36,6 +31,14 @@ exports.handler = async (event, context) => {
 
     const data = await response.json();
 
+    // Si Groq voye yon erè, nou voye l bay kliyan an ak menm kòd erè a
+    if (!response.ok) {
+        return {
+            statusCode: response.status,
+            body: JSON.stringify(data)
+        };
+    }
+
     return {
       statusCode: 200,
       headers: {
@@ -47,7 +50,7 @@ exports.handler = async (event, context) => {
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Erè nan sèvè: " + err.message }),
+      body: JSON.stringify({ error: "Erè nan sèvè Netlify: " + err.message }),
     };
   }
 };
