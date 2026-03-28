@@ -343,17 +343,29 @@ title: Sant Kontwòl Total - Boutique Piyay
   }
 
   async function handleAdminLogin() {
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPass').value;
-    const btn = document.getElementById('loginBtn');
-    btn.disabled = true; btn.innerText = "⏳ Verifikasyon...";
+  const email = document.getElementById('adminEmail').value;
+  const password = document.getElementById('adminPass').value;
+  const btn = document.getElementById('loginBtn');
 
-    const { data, error } = await supA.auth.signInWithPassword({ email, password });
-    if (error) {
-        showToast("❌ " + error.message, 'error');
-        btn.disabled = false; btn.innerText = "🔐 KONEKTE";
-        return;
-    }
+  btn.disabled = true;
+  btn.innerText = "⏳ Verifikasyon...";
+
+  const { data, error } = await supA.auth.signInWithPassword({ email, password });
+
+  if (error) {
+      showToast("❌ " + error.message, 'error');
+      btn.disabled = false;
+      btn.innerText = "🔐 KONEKTE";
+      return;
+  }
+
+  // SI TOUT BAGAY OK (Pa gen erè):
+  showToast("✅ Koneksyon reyisi! Verifikasyon 2fa...", 'success');
+
+  // Nou itilize window.location.href pou voye l sou paj 2AF la
+  setTimeout(() => {
+      window.location.href = "admin-setup-2fa.html";
+  }, 1000); // Mwen mete yon ti tan 1 segonn pou l ka wè mesaj siksè a
 
     await checkAccess();
   }
