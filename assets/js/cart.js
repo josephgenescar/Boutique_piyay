@@ -145,10 +145,11 @@ async function submitOrder() {
             body: JSON.stringify({ amount: totalAmount, orderId: "BP-" + Date.now() })
         });
 
-        if (!moncashRes.ok) throw new Error("Erè: Sèvè MonCash la pa reponn (Tcheke Netlify Settings)");
         const data = await moncashRes.json();
 
-        if (data.error) throw new Error(data.error);
+        if (!moncashRes.ok) {
+            throw new Error(data.error || "Sèvè MonCash la pa reponn (Vérifiez les logs Netlify)");
+        }
 
         // Sove nan DB anvan nou redireksyon
         if (sup) {
