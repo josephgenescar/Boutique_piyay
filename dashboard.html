@@ -813,6 +813,16 @@
                     📋 KOPYE KLE API
                 </button>
             </div>
+            <!-- NOUVO: Bwat pou Lyen Done JSON - Menm style ak Claude AI -->
+            <div class="api-key-card" style="margin-top: 20px;">
+                <div class="form-label">🛍️ Done Pwodwi yo (JSON)</div>
+                <div class="api-key-display" id="json-link-display" style="color: #10b981; font-size: 11px;">
+                    Loading...
+                </div>
+                <button onclick="copyJsonLink()" class="btn-save" style="background: var(--dark); box-shadow: none; margin-top: 10px;">
+                    📋 KOPYE LYEN JSON
+                </button>
+            </div>
         </div>
 
     </main>
@@ -824,16 +834,11 @@
         <div class="modal-title">🚀 Boost Pwodwi ou!</div>
         <p class="modal-sub">Chwazi kijan ou vle mete pwodwi sa a anlè nèt nan paj akey la.</p>
         <div class="boost-opts">
-            <!-- BOUTON MONCASH -->
-            <div class="boost-opt" id="boost-paid-opt" onclick="processBoost('paid')" style="border-color: #ff4747; background: #fff1f1;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <div class="boost-opt-title" style="margin-bottom:0;">💳 Peye ak MonCash</div>
-                    <img src="https://moncashbutton.digicelgroup.com/MonCash-middleware/resources/assets/images/MC_Button.png" style="height: 25px;">
-                </div>
-                <div class="boost-opt-sub">Boost pandan 48h pou sèlman 100 HTG.</div>
-                <span class="boost-opt-tag">100 HTG</span>
+            <div class="boost-opt" id="boost-paid-opt" onclick="processBoost('paid')">
+                <div class="boost-opt-title">💳 Peye Boost (100 HTG)</div>
+                <div class="boost-opt-sub">Boost pwodwi ou pandan 48h pou sèlman 100 HTG via MonCash.</div>
+                <span class="boost-opt-tag">48 ÈDTAN</span>
             </div>
-
             <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
                 <div class="boost-opt-title">🏆 Nivo Rekonpans</div>
                 <div class="boost-opt-sub" id="boost-free-sub">Sèlman pou nivo Bronze, Argent oswa Or.</div>
@@ -1054,12 +1059,13 @@
         }
 
         if (type === 'paid') {
-            const confirmed = confirm("Vle peye 100 HTG via MonCash pou boost pwodwi sa a?");
+            const confirmed = confirm("Vle peye 100 HTG via MonCash pou boost pwodwi sa a pandan 48h?");
             if (!confirmed) return;
 
+            // 💳 MONCASH INTEGRATION POU BOOST
             const btn = document.getElementById('boost-paid-opt');
             btn.style.opacity = '0.5';
-            btn.innerHTML = "⏳ Koneksyon MonCash...";
+            btn.innerText = "⏳ Koneksyon MonCash...";
 
             try {
                 const res = await fetch('/.netlify/functions/moncash', {
@@ -1072,21 +1078,18 @@
 
                 if (!res.ok) throw new Error("Erè MonCash");
                 const { redirectURL } = await res.json();
+
+                // Redirije machann nan pou l al peye
                 window.location.href = redirectURL;
             } catch (err) {
                 alert("❌ Erè: " + err.message);
                 btn.style.opacity = '1';
-                btn.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <div class="boost-opt-title" style="margin-bottom:0;">💳 Peye ak MonCash</div>
-                        <img src="https://moncashbutton.digicelgroup.com/MonCash-middleware/resources/assets/images/MC_Button.png" style="height: 25px;">
-                    </div>
-                    <div class="boost-opt-sub">Boost pandan 48h pou sèlman 100 HTG.</div>
-                    <span class="boost-opt-tag">100 HTG</span>`;
+                btn.innerText = "💳 Peye Boost (100 HTG)";
             }
             return;
         }
 
+        // Si se gratis (via pwen)
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 48);
         await supD.from('user_products').update({ is_boosted: true, boost_expires_at: expiresAt.toISOString() }).eq('id', selectedProdId);
