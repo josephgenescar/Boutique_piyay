@@ -834,9 +834,9 @@
         <div class="modal-title">🚀 Boost Pwodwi ou!</div>
         <p class="modal-sub">Chwazi kijan ou vle mete pwodwi sa a anlè nèt nan paj akey la.</p>
         <div class="boost-opts">
-            <div class="boost-opt" onclick="processBoost('paid')">
+            <div class="boost-opt" id="boost-paid-opt" onclick="processBoost('paid')">
                 <div class="boost-opt-title">💳 Peye Boost (100 HTG)</div>
-                <div class="boost-opt-sub">Boost pwodwi ou pandan 48h pou sèlman 100 HTG.</div>
+                <div class="boost-opt-sub">Boost pwodwi ou pandan 48h pou sèlman 100 HTG via MonCash.</div>
                 <span class="boost-opt-tag">48 ÈDTAN</span>
             </div>
             <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
@@ -869,32 +869,20 @@
     let selectedProdId = null;
 
     async function init() {
-        // Tann yon ti kras pou sesyon an chaje
         const { data: { session } } = await supD.auth.getSession();
-
         if (!session) {
-            // Si pa gen sesyon nan getSession, tcheke getUser
             const { data: { user } } = await supD.auth.getUser();
-            if (!user) {
-                console.log("No user found, redirecting...");
-                return window.location.assign('login.html');
-            }
+            if (!user) return window.location.assign('login.html');
             currentUser = user;
         } else {
             currentUser = session.user;
         }
-
-        // Retire loading overlay
         document.getElementById('loading-overlay').style.display = 'none';
-
-        // Chaje tout done yo
         loadAll();
         loadOrders();
         loadFeedbacks();
         syncPointsWithSales();
         initChart();
-        const jsonLink = document.getElementById('json-link-display');
-        if (jsonLink) jsonLink.innerText = window.location.origin + "/search.json";
     }
 
     function initChart() {
@@ -932,7 +920,6 @@
             const { data: prof, error: profErr } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
 
             if (profErr || !prof) {
-                console.log("Profile missing, creating one...");
                 const { data: newProf } = await supD.from('profiles').insert([{ id: currentUser.id, full_name: currentUser.email.split('@')[0] }]).select().single();
                 currentProfile = newProf;
             } else {
@@ -948,13 +935,10 @@
                 document.getElementById('stat-orders').innerText = orders.length;
                 updateRewardUI(newPoints);
             }
-        } catch (e) {
-            console.error("Error syncing points:", e);
-        }
+        } catch (e) { console.error(e); }
     }
 
     function updateRewardUI(points) {
-        const levels = [{t:100, n:'Bronze'}, {t:500, n:'Argent'}, {t:1000, n:'Or'}];
         let currentLevel = 'Debutants';
         let progressPct = Math.min((points / 100) * 100, 100);
         let progressLabel = `Debutants → Bronze (${points}/100 pwen)`;
@@ -982,7 +966,6 @@
                     </div>
                     <div>
                         ${(o.status === 'pending' || !o.status) ? `<button class="btn-order-action" onclick="markAsDelivered('${o.id}')">🚚 Make kòm Livre</button>` : ''}
-                        ${o.status === 'delivered' ? `<small style="color:var(--gray);">Atann kliyan apwouve...</small>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -993,8 +976,8 @@
 
     async function markAsDelivered(id) {
         if (!confirm("Èske ou livre pwodwi sa a?")) return;
-        const { error } = await supD.from('orders').update({ status: 'delivered' }).eq('id', id);
-        if (!error) loadOrders();
+        await supD.from('orders').update({ status: 'delivered' }).eq('id', id);
+        loadOrders();
     }
 
     async function loadFeedbacks() {
@@ -1009,62 +992,39 @@
                     <div class="fb-prod">📦 Pwodwi: ${f.user_products ? f.user_products.title : 'N/A'}</div>
                 </div>
             `).join('');
-        } else {
-            list.innerHTML = `<div class="empty-state"><div class="empty-title">Pa gen avis ankò.</div></div>`;
         }
     }
 
     async function loadAll() {
         const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
         const grid = document.getElementById('prods-grid');
-
         if (prods && prods.length > 0) {
             grid.innerHTML = prods.map(p => {
                 const now = new Date();
                 const createdAt = new Date(p.created_at);
                 const diffHours = (now - createdAt) / (1000 * 60 * 60);
-                let isFlashActive = p.is_flash_sale === true || (p.old_price && diffHours < 24);
+                let isFlashActive = p.is_flash_sale === true;
                 let isBoosted = p.is_boosted === true;
-
-                let discountBadge = '';
-                if (isFlashActive) {
-                    const pct = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
-                    discountBadge = `<span class="prod-status" style="background: var(--primary); right: auto; left: 10px;">⚡ FLASH ${pct > 0 ? '-' + pct + '%' : ''}</span>`;
-                }
-
                 return `
                 <div class="prod-card">
                     <div class="prod-img-wrap">
                         <img src="${p.image_url}" class="prod-img" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
                         <span class="prod-status">${isFlashActive ? 'FLASH' : 'Aktif'}</span>
-                        ${discountBadge}
                     </div>
                     <div class="prod-body">
                         <div class="prod-name">${p.title}</div>
                         <div class="prod-price">${p.price} <span>HTG</span></div>
-                        ${p.old_price ? `<div style="text-decoration: line-through; color: var(--gray); font-size: 11px; margin-top: 2px;">${p.old_price} HTG</div>` : ''}
                     </div>
                     <div class="prod-actions">
                         <a href="/edit-product.html?id=${p.id}" class="btn-sm btn-edit">✏️ Edit</a>
                         <button onclick="deleteProduct('${p.id}')" class="btn-sm btn-delete">🗑️ Efase</button>
                     </div>
                     <div class="prod-actions-row2">
-                        ${isFlashActive
-                            ? `<button onclick="toggleFlashSale('${p.id}', null)" class="btn-sm btn-unflash">🚫 Retire Flash</button>`
-                            : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash">⚡ Mete Flash</button>`
-                        }
-                        ${isBoosted
-                            ? `<button onclick="toggleBoost('${p.id}', false)" class="btn-sm btn-boost-active">🚀 Boosted</button>`
-                            : `<button onclick="openBoostModal('${p.id}')" class="btn-sm btn-boost">🚀 Boost</button>`
-                        }
+                        ${isFlashActive ? `<button onclick="toggleFlashSale('${p.id}', null)" class="btn-sm btn-unflash">🚫 Retire Flash</button>` : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash">⚡ Mete Flash</button>`}
+                        ${isBoosted ? `<button onclick="toggleBoost('${p.id}', false)" class="btn-sm btn-boost-active">🚀 Boosted</button>` : `<button onclick="openBoostModal('${p.id}')" class="btn-sm btn-boost">🚀 Boost</button>`}
                     </div>
-                </div>
-            `}).join('');
-        } else {
-            grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
-                <div class="empty-icon">📦</div>
-                <div class="empty-title">Pa gen pwodwi toujou</div>
-            </div>`;
+                </div>`;
+            }).join('');
         }
 
         const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
@@ -1074,15 +1034,10 @@
             document.getElementById('prof-address').value = prof.address || '';
             document.getElementById('wall-balance').innerHTML = `${prof.wallet_balance || 0} <span>HTG</span>`;
             document.getElementById('api-key-display').innerText = currentUser.id;
-            const shopLink = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
-            document.getElementById('shop-url-display').innerText = shopLink;
-            document.getElementById('share-wa').href = `https://wa.me/?text=Vizite boutik mwen sou Boutique Piyay: ${encodeURIComponent(shopLink)}`;
-            document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shopLink)}`;
-            document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(shopLink)}`;
+            document.getElementById('shop-url-display').innerText = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
         }
     }
 
-    // LOJIK BOOST
     function openBoostModal(id) {
         selectedProdId = id;
         document.getElementById('boost-modal').style.display = 'flex';
@@ -1095,63 +1050,81 @@
             document.getElementById('boost-free-sub').innerText = "Ou gen nivo nesesè! Sèvi ak pwen ou pou boost gratis.";
         }
     }
+
     function closeBoostModal() { document.getElementById('boost-modal').style.display = 'none'; }
 
     async function processBoost(type) {
         if (type === 'free' && (!currentProfile || (currentProfile.points || 0) < 100)) {
-            alert("❌ Ou poko gen ase pwen (Bronze) pou boost gratis!"); return;
+            alert("❌ Ou poko gen ase pwen!"); return;
         }
-
-        let boostData = { is_boosted: true };
-
-        const expiresAt = new Date();
-        expiresAt.setHours(expiresAt.getHours() + 48);
-        boostData.boost_expires_at = expiresAt.toISOString();
 
         if (type === 'paid') {
-            const confirmed = confirm("Èske ou vle peye 100 HTG pou boost pwodwi sa a pandan 48h?");
+            const confirmed = confirm("Vle peye 100 HTG via MonCash pou boost pwodwi sa a pandan 48h?");
             if (!confirmed) return;
+
+            // 💳 MONCASH INTEGRATION POU BOOST
+            const btn = document.getElementById('boost-paid-opt');
+            btn.style.opacity = '0.5';
+            btn.innerText = "⏳ Koneksyon MonCash...";
+
+            try {
+                const res = await fetch('/.netlify/functions/moncash', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        amount: 100,
+                        orderId: "BOOST-" + selectedProdId + "-" + Date.now()
+                    })
+                });
+
+                if (!res.ok) throw new Error("Erè MonCash");
+                const { redirectURL } = await res.json();
+
+                // Redirije machann nan pou l al peye
+                window.location.href = redirectURL;
+            } catch (err) {
+                alert("❌ Erè: " + err.message);
+                btn.style.opacity = '1';
+                btn.innerText = "💳 Peye Boost (100 HTG)";
+            }
+            return;
         }
 
-        const { error } = await supD.from('user_products').update(boostData).eq('id', selectedProdId);
-        if (!error) {
-            alert("✅ Pwodwi ou a gen Boost kounye a pandan 48 èdtan!");
-            closeBoostModal(); loadAll();
-        }
+        // Si se gratis (via pwen)
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 48);
+        await supD.from('user_products').update({ is_boosted: true, boost_expires_at: expiresAt.toISOString() }).eq('id', selectedProdId);
+        alert("✅ Boost aktive gratis!");
+        closeBoostModal(); loadAll();
     }
 
     async function toggleBoost(id, status) {
-        const { error } = await supD.from('user_products').update({ is_boosted: status, boost_expires_at: null }).eq('id', id);
-        if (!error) loadAll();
+        await supD.from('user_products').update({ is_boosted: status }).eq('id', id);
+        loadAll();
     }
 
     async function toggleFlashSale(id, currentPrice) {
         if (currentPrice === null) {
-            const { error } = await supD.from('user_products').update({ old_price: null, is_flash_sale: false }).eq('id', id);
-            if (!error) loadAll();
-            return;
+            await supD.from('user_products').update({ old_price: null, is_flash_sale: false }).eq('id', id);
+            loadAll(); return;
         }
-        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        const { count } = await supD.from('user_products').select('*', { count: 'exact', head: true }).eq('seller_id', currentUser.id).eq('is_flash_sale', true).gt('created_at', twentyFourHoursAgo);
-        if (count >= 3) { alert("❌ Limit 3 flash pa jou."); return; }
         const oldP = prompt(`Mete ansyen pri a:`);
         if (oldP && parseFloat(oldP) > currentPrice) {
-            const { error } = await supD.from('user_products').update({ old_price: parseFloat(oldP), is_flash_sale: true, created_at: new Date().toISOString() }).eq('id', id);
-            if (!error) loadAll();
+            await supD.from('user_products').update({ old_price: parseFloat(oldP), is_flash_sale: true }).eq('id', id);
+            loadAll();
         }
     }
 
     async function saveProfile() {
-        const { error } = await supD.from('profiles').update({
+        await supD.from('profiles').update({
             full_name: document.getElementById('prof-name').value,
             whatsapp_number: document.getElementById('prof-whatsapp').value,
             address: document.getElementById('prof-address').value
         }).eq('id', currentUser.id);
-        if (!error) alert("✅ Profil sove!");
+        alert("✅ Sove!");
     }
 
     async function deleteProduct(id) {
-        if (confirm("Efase pwodwi sa a?")) { await supD.from('user_products').delete().eq('id', id); loadAll(); }
+        if (confirm("Efase?")) { await supD.from('user_products').delete().eq('id', id); loadAll(); }
     }
 
     function switchTab(tab, el) {
@@ -1161,9 +1134,7 @@
         if (el) el.classList.add('active');
     }
 
-    function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("✅ Lyen kopye!")); }
-    function copyApiKey() { navigator.clipboard.writeText(document.getElementById('api-key-display').innerText).then(() => alert("✅ Kle API kopye!")); }
-    function copyJsonLink() { navigator.clipboard.writeText(window.location.origin + "/search.json").then(() => alert("✅ Lyen JSON kopye!")); }
+    function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("Kopye!")); }
     function handleLogout() { supD.auth.signOut().then(() => location.href = 'index.html'); }
     function goToVendre() { location.href = 'vendre.html'; }
 

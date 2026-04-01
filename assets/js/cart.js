@@ -111,12 +111,18 @@ function contactWhatsApp(data) {
 }
 
 async function submitOrder() {
-  // Rekipere enfòmasyon nan checkout.html si yo la, sinon nan modal la
-  const name = (document.getElementById('customerName') || document.getElementById('customer-name')).value.trim();
-  const phone = (document.getElementById('customerPhone') || document.getElementById('customer-phone')).value.trim();
-  const zone = (document.getElementById('customerCity') || document.getElementById('delivery-zone')).value;
+  const nameInput = document.getElementById('customerName') || document.getElementById('customer-name');
+  const phoneInput = document.getElementById('customerPhone') || document.getElementById('customer-phone');
+  const zoneInput = document.getElementById('customerCity') || document.getElementById('delivery-zone');
 
-  // Rekipere ID Tranzaksyon ak mwayen peman si se nan checkout.html
+  if (!nameInput || !phoneInput || !zoneInput) {
+    alert('⚠️ Erè: Fòm nan pa jwenn.'); return;
+  }
+
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const zone = zoneInput.value;
+
   const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'Cash';
   const transactionId = document.getElementById('transactionId')?.value || 'N/A';
 
@@ -125,13 +131,49 @@ async function submitOrder() {
   const cart = getCart();
   if (cart.length === 0) return;
 
+  const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   const btn = document.getElementById('submitOrderBtn') || document.querySelector('.btn-confirm-order');
-  btn.disabled = true; btn.innerText = "⏳ Anrejistreman...";
+
+  btn.disabled = true;
+  btn.innerText = paymentMethod === 'MonCash' ? "⏳ Koneksyon MonCash..." : "⏳ Anrejistreman...";
 
   try {
     const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
     if (!sup) throw new Error("Supabase pa disponib!");
 
+    // 1. Si se MonCash, nou mande Redirect URL la an premye
+    if (paymentMethod === 'MonCash') {
+        const moncashRes = await fetch('/.netlify/functions/moncash', {
+            method: 'POST',
+            body: JSON.stringify({ amount: totalAmount, orderId: "BP-" + Date.now() })
+        });
+
+        if (!moncashRes.ok) throw new Error("Pa kapab konekte ak MonCash.");
+        const { redirectURL } = await moncashRes.json();
+
+        // Nou sove kòmand lan nan Supabase anvan nou pati
+        for (const item of cart) {
+            await sup.from('orders').insert({
+              seller_id: item.sellerId,
+              customer_name: name,
+              customer_phone: phone,
+              delivery_zone: zone,
+              product_title: item.title,
+              total_price: (item.price * item.qty),
+              status: 'pending_payment',
+              payment_method: 'MonCash'
+            });
+        }
+
+        localStorage.removeItem(CART_KEY);
+        refreshBadge();
+
+        // Nou voye itilizatè a sou MonCash!
+        window.location.href = redirectURL;
+        return;
+    }
+
+    // 2. Si se Cash oswa Natcash (mòd nòmal)
     for (const item of cart) {
       await sup.from('orders').insert({
         seller_id:      item.sellerId,
@@ -148,7 +190,6 @@ async function submitOrder() {
 
     const orderData = { name, phone, zone, cart, payment: paymentMethod, transactionId };
 
-    // Si nou nan paj checkout la
     const summaryBox = document.getElementById('order-summary') || document.querySelector('.checkout-forms');
     summaryBox.innerHTML = `
       <div style="text-align:center; padding:40px; background:white; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
