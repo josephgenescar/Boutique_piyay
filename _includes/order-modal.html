@@ -37,14 +37,14 @@
                 <input type="text" id="other-zone" placeholder="Presize zòn ou an la..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
 
                 <!-- METÒD PEMAN KÒRÈK -->
-                <select id="payment-method" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px;">
-                    <option value="MonCash">Peye par MonCash</option>
-                    <option value="NatCash">Peye par NatCash</option>
-                    <option value="50% avant / 50% après livraison">50% avant / 50% après livraison</option>
-                    <option value="Cash à la livraison">Cash à la livraison (Total)</option>
+                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Chwazi Mwayen Peman</p>
+                <select id="payment-method-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-weight: 700;">
+                    <option value="MonCash">💳 Peye ak MonCash (Rapide)</option>
+                    <option value="NatCash">📲 Peye ak NatCash</option>
+                    <option value="Cash">💵 Cash à la livraison</option>
                 </select>
 
-                <button class="btn-confirm-order" onclick="submitOrder()" style="width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;">
+                <button id="submitOrderBtn" class="btn-confirm-order" onclick="submitOrder()" style="width: 100%; padding: 15px; background: #ff4747; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(255,71,71,0.3);">
                     Konfime Kòmand la ✅
                 </button>
             </div>
@@ -65,10 +65,4 @@
 .modal-content { background: white; width: 95%; max-width: 550px; border-radius: 25px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-close { background: #f3f4f6; border: none; font-size: 20px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-/* EXCEL STYLE TABLE */
-.receipt-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 15px 0; border: 1px solid #ddd; }
-.receipt-table th, .receipt-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-.receipt-table th { background-color: #f8fafc; font-weight: 800; color: #0f172a; }
-.total-row td { background-color: #0f172a !important; color: white !important; font-weight: 900; font-size: 14px; }
 </style>

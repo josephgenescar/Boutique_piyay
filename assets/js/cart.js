@@ -111,20 +111,19 @@ function contactWhatsApp(data) {
 }
 
 async function submitOrder() {
-  const nameInput = document.getElementById('customerName') || document.getElementById('customer-name');
-  const phoneInput = document.getElementById('customerPhone') || document.getElementById('customer-phone');
-  const zoneInput = document.getElementById('customerCity') || document.getElementById('delivery-zone');
+  const nameInput = document.getElementById('customer-name');
+  const phoneInput = document.getElementById('customer-phone');
+  const zoneInput = document.getElementById('delivery-zone');
+  const paymentSelect = document.getElementById('payment-method-select');
 
-  if (!nameInput || !phoneInput || !zoneInput) {
-    alert('⚠️ Erè: Fòm nan pa jwenn.'); return;
+  if (!nameInput || !phoneInput || !zoneInput || !paymentSelect) {
+    alert('⚠️ Erè: Fòm nan pa jwenn nan paj la.'); return;
   }
 
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
   const zone = zoneInput.value;
-
-  const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'Cash';
-  const transactionId = document.getElementById('transactionId')?.value || 'N/A';
+  const paymentMethod = paymentSelect.value;
 
   if (!name || !phone || !zone) { alert('⚠️ Ranpli tout chan yo!'); return; }
 
@@ -132,80 +131,80 @@ async function submitOrder() {
   if (cart.length === 0) return;
 
   const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-  const btn = document.getElementById('submitOrderBtn') || document.querySelector('.btn-confirm-order');
+  const btn = document.getElementById('submitOrderBtn');
 
   btn.disabled = true;
   btn.innerText = paymentMethod === 'MonCash' ? "⏳ Koneksyon MonCash..." : "⏳ Anrejistreman...";
 
   try {
     const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
-    if (!sup) throw new Error("Supabase pa disponib!");
 
-    // 1. Si se MonCash, nou mande Redirect URL la an premye
     if (paymentMethod === 'MonCash') {
         const moncashRes = await fetch('/.netlify/functions/moncash', {
             method: 'POST',
             body: JSON.stringify({ amount: totalAmount, orderId: "BP-" + Date.now() })
         });
 
-        if (!moncashRes.ok) throw new Error("Pa kapab konekte ak MonCash.");
-        const { redirectURL } = await moncashRes.json();
+        if (!moncashRes.ok) throw new Error("Erè: Sèvè MonCash la pa reponn (Tcheke Netlify Settings)");
+        const data = await moncashRes.json();
 
-        // Nou sove kòmand lan nan Supabase anvan nou pati
-        for (const item of cart) {
-            await sup.from('orders').insert({
-              seller_id: item.sellerId,
-              customer_name: name,
-              customer_phone: phone,
-              delivery_zone: zone,
-              product_title: item.title,
-              total_price: (item.price * item.qty),
-              status: 'pending_payment',
-              payment_method: 'MonCash'
-            });
+        if (data.error) throw new Error(data.error);
+
+        // Sove nan DB anvan nou redireksyon
+        if (sup) {
+            for (const item of cart) {
+                await sup.from('orders').insert({
+                  seller_id: item.sellerId,
+                  customer_name: name,
+                  customer_phone: phone,
+                  delivery_zone: zone,
+                  product_title: item.title,
+                  total_price: (item.price * item.qty),
+                  status: 'pending_payment',
+                  payment_method: 'MonCash'
+                });
+            }
         }
 
         localStorage.removeItem(CART_KEY);
         refreshBadge();
-
-        // Nou voye itilizatè a sou MonCash!
-        window.location.href = redirectURL;
+        window.location.href = data.redirectURL;
         return;
     }
 
-    // 2. Si se Cash oswa Natcash (mòd nòmal)
-    for (const item of cart) {
-      await sup.from('orders').insert({
-        seller_id:      item.sellerId,
-        customer_name:  name,
-        customer_phone: phone,
-        delivery_zone:  zone,
-        product_title:  item.title,
-        total_price:    (item.price * item.qty),
-        status:         'pending',
-        payment_method: paymentMethod,
-        transaction_id: transactionId
-      });
+    // Lojik nòmal pou Cash/Natcash
+    if (sup) {
+        for (const item of cart) {
+          await sup.from('orders').insert({
+            seller_id:      item.sellerId,
+            customer_name:  name,
+            customer_phone: phone,
+            delivery_zone:  zone,
+            product_title:  item.title,
+            total_price:    (item.price * item.qty),
+            status:         'pending',
+            payment_method: paymentMethod
+          });
+        }
     }
 
-    const orderData = { name, phone, zone, cart, payment: paymentMethod, transactionId };
-
-    const summaryBox = document.getElementById('order-summary') || document.querySelector('.checkout-forms');
-    summaryBox.innerHTML = `
-      <div style="text-align:center; padding:40px; background:white; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+    const orderData = { name, phone, zone, cart, payment: paymentMethod };
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.innerHTML = `
+      <div style="text-align:center; padding:40px;">
           <div style="font-size:60px; margin-bottom:20px;">✅</div>
           <h2 style="color:#ff4747; margin-bottom:15px;">Kòmand Voye!</h2>
           <p style="margin-bottom:25px; color:#666;">Mèsi ${name}, kòmand ou an anrejistre avèk siksè.</p>
-          <button onclick='contactWhatsApp(${JSON.stringify(orderData)})' style="width:100%; padding:18px; background:#25D366; color:white; border:none; border-radius:15px; font-weight:bold; cursor:pointer; margin-bottom:15px; font-size:16px;">💬 Voye kòmand lan sou WhatsApp</button>
-          <button onclick='generateReceipt(${JSON.stringify(orderData)})' style="width:100%; padding:15px; background:#f1f5f9; color:#334155; border:none; border-radius:15px; font-weight:bold; cursor:pointer; margin-bottom:10px;">📄 Telechaje Resi (PDF)</button>
-          <button onclick="location.href='/'" style="width:100%; padding:12px; background:none; color:#999; border:none; cursor:pointer; font-weight:600;">Retounen nan Akèy</button>
+          <button onclick='contactWhatsApp(${JSON.stringify(orderData)})' style="width:100%; padding:18px; background:#25D366; color:white; border:none; border-radius:15px; font-weight:bold; cursor:pointer; margin-bottom:15px; font-size:16px;">💬 Voye sou WhatsApp</button>
+          <button onclick='generateReceipt(${JSON.stringify(orderData)})' style="width:100%; padding:15px; background:#f1f5f9; color:#334155; border:none; border-radius:15px; font-weight:bold; cursor:pointer; margin-bottom:10px;">📄 Telechaje Resi</button>
+          <button onclick="location.href='/'" style="width:100%; padding:12px; background:none; color:#999; border:none; cursor:pointer;">Retounen nan Akèy</button>
       </div>`;
 
     localStorage.removeItem(CART_KEY);
     refreshBadge();
 
   } catch (err) {
-    alert("Erè: " + err.message);
+    alert("❌ " + err.message);
     btn.disabled = false; btn.innerText = "Konfime Kòmand la ✅";
   }
 }
