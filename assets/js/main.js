@@ -21,7 +21,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const refCode = urlParams.get('ref');
 if (refCode) {
     localStorage.setItem('ref_code', refCode);
-    console.log("Referral code saved:", refCode);
 }
 
 // ============================================================
@@ -34,29 +33,15 @@ function updateCartUI() {
     if (badge) { badge.innerText = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
 }
 
-// Nou ajoute seller_id nan fonksyon sa a
 function orderProduct(title, price, id, image, seller_id = null) {
     const existing = cartItems.find(i => i.id === id);
-    if (existing) {
-        existing.quantity++;
-    } else {
-        cartItems.push({
-            id,
-            title,
-            price: parseFloat(price),
-            quantity: 1,
-            image: image || '/assets/images/logo.png',
-            seller_id: seller_id // Trè enpòtan pou komisyon
-        });
+    if (existing) { existing.quantity++; } else {
+        cartItems.push({ id, title, price: parseFloat(price), quantity: 1, image: image || '/assets/images/logo.png', seller_id: seller_id });
     }
-    saveCart();
-    updateCartUI();
-
+    saveCart(); updateCartUI();
     const btn = event?.target?.closest('button');
     if (btn) {
-        const oldHTML = btn.innerHTML;
-        btn.innerHTML = "✅ Ajoute!";
-        btn.disabled = true;
+        const oldHTML = btn.innerHTML; btn.innerHTML = "✅ Ajoute!"; btn.disabled = true;
         setTimeout(() => { btn.innerHTML = oldHTML; btn.disabled = false; }, 1500);
     }
     const modal = document.getElementById('order-modal');
@@ -65,7 +50,6 @@ function orderProduct(title, price, id, image, seller_id = null) {
 
 function removeFromCart(index) { cartItems.splice(index, 1); saveCart(); updateCartUI(); renderCart(); }
 function chgQty(index, val) { cartItems[index].quantity = Math.max(1, cartItems[index].quantity + val); saveCart(); updateCartUI(); renderCart(); }
-
 function openOrderModal() { const m = document.getElementById('order-modal'); if (m) { m.style.display = 'flex'; renderCart(); } }
 function closeOrderModal() { const m = document.getElementById('order-modal'); if (m) m.style.display = 'none'; }
 function openCart() { openOrderModal(); }
@@ -75,71 +59,97 @@ function renderCart() {
     const footer  = document.getElementById('order-form-container');
     if (!summary) return;
     if (cartItems.length === 0) {
-        summary.innerHTML = `<div style="text-align:center; padding:50px 20px;"><div style="font-size:52px; margin-bottom:14px;">🛍️</div><div style="font-size:16px; font-weight:800; color:#0f172a; margin-bottom:6px;">Panye w la vid</div></div>`;
+        summary.innerHTML = `<div style="text-align:center; padding:50px 20px;"><div style="font-size:52px;">🛍️</div><div style="font-weight:800;">Panye w la vid</div></div>`;
         if (footer) footer.style.display = 'none'; return;
     }
     if (footer) footer.style.display = 'block';
     let rows = ''; let total = 0;
     cartItems.forEach((item, i) => {
         const sub = item.price * item.quantity; total += sub;
-        rows += `<tr><td style="padding:8px; width:52px;"><img src="${item.image}" style="width:48px; height:48px; object-fit:cover; border-radius:10px;"></td><td style="font-size:12px; font-weight:700; color:#0f172a;">${item.title}</td><td style="text-align:center;">${item.quantity}</td><td style="text-align:right; font-weight:900;">${sub} HTG</td></tr>`;
+        rows += `<tr><td style="padding:8px;"><img src="${item.image}" style="width:40px; height:40px; border-radius:8px;"></td><td>${item.title}</td><td style="text-align:center;">${item.quantity}</td><td style="text-align:right;">${sub} HTG</td></tr>`;
     });
-    summary.innerHTML = `<table style="width:100%; border-collapse:collapse;"><tbody>${rows}</tbody><tfoot><tr><td colspan="3" style="padding:14px 8px; font-weight:800;">TOTAL:</td><td style="text-align:right; padding:14px 8px; font-size:20px; font-weight:900; color:#ff4747;">${total} HTG</td></tr></tfoot></table>`;
+    summary.innerHTML = `<table style="width:100%;"><tbody>${rows}</tbody><tfoot><tr><td colspan="3">TOTAL:</td><td style="text-align:right; font-weight:900; color:#ff4747;">${total} HTG</td></tr></tfoot></table>`;
 }
 
-// Lojik soumèt kòmand nan checkout
-async function submitOrder() {
-    // Si nou nan paj checkout, nou pran enfòmasyon yo
-    const name    = document.getElementById('customerName')?.value || document.getElementById('customer-name')?.value;
-    const phone   = document.getElementById('customerPhone')?.value || document.getElementById('customer-phone')?.value;
-    const zone    = document.getElementById('customerCity')?.value || document.getElementById('delivery-zone')?.value;
-    const payment = document.querySelector('input[name="payment_method"]:checked')?.value || "cash";
+// ============================================================
+//  RECHÈCH (LIVE SEARCH)
+// ============================================================
+let staticSearchData = [];
 
-    if (!name || !phone) return showToastMain("⚠️ Ranpli non ak telefòn", "error");
-
-    const orderId = "BP-" + Date.now();
-
+async function initSearch() {
     try {
-        if (supabaseMain) {
-            for (const item of cartItems) {
-                const itemTotal = item.price * item.quantity;
-                const systemFee = itemTotal * 0.03; // 3% Komisyon Sit la
-                const refCode = localStorage.getItem('ref_code');
-                const affiliateFee = refCode ? (itemTotal * 0.05) : 0; // 5% Komisyon Afilye
-                const sellerNet = itemTotal - systemFee - affiliateFee;
-
-                await supabaseMain.from('orders').insert([{
-                    order_group_id: orderId,
-                    seller_id: item.seller_id,
-                    customer_name: name,
-                    customer_phone: phone,
-                    delivery_zone: zone,
-                    product_title: item.title,
-                    amount: itemTotal,
-                    system_commission: systemFee,
-                    affiliate_commission: affiliateFee,
-                    seller_amount: sellerNet,
-                    payment_method: payment,
-                    status: 'pending',
-                    ref_code: refCode
-                }]);
-            }
-        }
-
-        // Redireksyon apre anrejistreman
-        if (payment === 'moncash_api') {
-            // Lojik MonCash la ap jere nan checkout.html
-            return { success: true, orderId: orderId };
-        } else {
-            showToastMain("🎉 Kòmand anrejistre!");
-            localStorage.removeItem(CART_STORAGE_KEY);
-            setTimeout(() => window.location.href = "/merci.html?orderId=" + orderId, 2000);
-        }
-    } catch (err) {
-        console.error(err);
-        showToastMain("❌ Erè: " + err.message, "error");
-    }
+        const resp = await fetch('/search.json');
+        if (resp.ok) staticSearchData = await resp.json();
+    } catch(e) { console.error("Search Data Load Error:", e); }
 }
 
-document.addEventListener('DOMContentLoaded', () => { updateCartUI(); });
-window.orderProduct = orderProduct; window.submitOrder = submitOrder; window.openCart = openCart; window.showToastMain = showToastMain;
+// ✅ DEFINE GLOBAL SEARCH FUNCTION
+window.liveSearch = async function() {
+    const input = document.getElementById('search-input');
+    const resultsDiv = document.getElementById('search-results');
+    if (!input || !resultsDiv) return;
+
+    const query = input.value.toLowerCase().trim();
+    if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
+
+    // Matches from Static JSON
+    let matches = staticSearchData.filter(p => p.title.toLowerCase().includes(query));
+
+    // Matches from Supabase
+    if (window.supabaseMain) {
+        try {
+            const { data: dbMatches } = await window.supabaseMain
+                .from('user_products')
+                .select('id, title, price, image_url')
+                .ilike('title', `%${query}%`)
+                .limit(5);
+
+            if (dbMatches) {
+                dbMatches.forEach(dm => {
+                    if (!matches.find(m => m.url && m.url.includes(dm.id))) {
+                        matches.push({
+                            title: dm.title,
+                            url: `/pwodwi-machann.html?id=${dm.id}`,
+                            price: dm.price,
+                            image: dm.image_url
+                        });
+                    }
+                });
+            }
+        } catch(err) { console.error("Supabase Search Error:", err); }
+    }
+
+    if (matches.length === 0) {
+        resultsDiv.innerHTML = `<div style="padding:15px; text-align:center; color:#64748b; font-size:13px;">😔 Okenn rezilta</div>`;
+    } else {
+        resultsDiv.innerHTML = matches.slice(0, 8).map(p => `
+            <a href="${p.url}" style="display:flex; align-items:center; gap:10px; padding:10px; text-decoration:none; border-bottom:1px solid #f1f5f9;">
+                <img src="${p.image || '/assets/images/logo.png'}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                <div style="flex:1;">
+                    <div style="font-weight:700; color:#111; font-size:13px;">${p.title}</div>
+                    <div style="color:#ff4747; font-weight:800; font-size:12px;">${p.price} HTG</div>
+                </div>
+            </a>
+        `).join('');
+    }
+    resultsDiv.style.display = 'block';
+};
+
+// Close search on click outside
+document.addEventListener('click', (e) => {
+    const box = document.getElementById('search-results');
+    const inp = document.getElementById('search-input');
+    if (box && !box.contains(e.target) && e.target !== inp) box.style.display = 'none';
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+    initSearch();
+});
+
+// EXPOSE FUNCTIONS
+window.openCart = openCart;
+window.closeOrderModal = closeOrderModal;

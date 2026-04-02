@@ -30,6 +30,22 @@
     .search-form input { flex:1; padding:0 15px; border:none; outline:none; font-size:13px; background: transparent; font-family: inherit; }
     .search-form button { padding:0 20px; background:#ff4747; border:none; color:white; font-weight:700; cursor:pointer; font-size: 13px; border-radius: 0 50px 50px 0; }
 
+    /* Search Results Style */
+    #search-results {
+        position: absolute;
+        top: 45px;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        z-index: 1001;
+        max-height: 400px;
+        overflow-y: auto;
+        display: none;
+        border: 1px solid #eee;
+    }
+
     /* Header actions */
     .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
     .btn-auth { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-decoration: none; padding: 9px 16px; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; }
@@ -73,9 +89,9 @@
             <div class="search-wrap">
                 <form class="search-form" onsubmit="return false;">
                     <input type="text" id="search-input" placeholder="Chèche yon pwodwi..."
-                           oninput="if(window.liveSearch) window.liveSearch(this.value)"
+                           oninput="liveSearch()"
                            autocomplete="off">
-                    <button type="submit" onclick="if(window.liveSearch) window.liveSearch(document.getElementById('search-input').value)">OK</button>
+                    <button type="button" onclick="liveSearch()">OK</button>
                 </form>
                 <div id="search-results"></div>
             </div>
@@ -91,7 +107,7 @@
                     <button onclick="handleHeaderLogout()" class="btn-auth btn-login" style="background:#475569; border:none; cursor:pointer;">🚪</button>
                 </div>
                 <button class="act-btn" id="notif-bell-btn">
-                    <span id="bell-icon" style="font-size:20px;">🔔</span>
+                    <span id="bell-icon" style="font-size:20px;"></span>
                     <div class="cart-badge" id="notif-count" style="display:none;">0</div>
                 </button>
                 <button class="act-btn" onclick="openCart()">

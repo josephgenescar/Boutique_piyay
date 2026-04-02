@@ -3,8 +3,23 @@ layout: default
 title: Vann yon Pwodwi - Boutique Piyay
 ---
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+    // ✅ SEKIRITE BLOKAY: Tcheke anvan kontni an chaje
+    (async function() {
+        const URL_V = "https://letyferfjpxmstohvgcj.supabase.co";
+        const KEY_V = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+        const sb = window.supabase.createClient(URL_V, KEY_V);
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+            window.location.href = "/login.html?redirect=/vendre.html";
+            // Efase body a pou sekirite si moun nan ta eseye bloke redireksyon an
+            document.documentElement.innerHTML = "<html><body style='background:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;'><h2>Oup! Ou dwe konekte... Redireksyon an kòmanse.</h2></body></html>";
+        }
+    })();
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
     :root {
@@ -234,7 +249,7 @@ title: Vann yon Pwodwi - Boutique Piyay
 
         <div class="form-group">
             <label class="form-label">Deskripsyon <span class="required-star">*</span></label>
-            <textarea id="prodDesc" class="form-textarea" placeholder="Bay detay sou pwodwi a: materyèl, gwosè, koulè disponib..." oninput="updateSteps()"></textarea>
+            <textarea id="prodDesc" class="form-textarea" placeholder="Bay detay sou pwodwi a..." oninput="updateSteps()"></textarea>
         </div>
     </div>
 
@@ -256,9 +271,8 @@ title: Vann yon Pwodwi - Boutique Piyay
     <!-- TIPS -->
     <div class="tips-card" style="margin-bottom: 20px;">
         <div class="tips-title">💡 Konsèy pou vann pi vit</div>
-        <div class="tip-item"><span class="tip-icon">📸</span><span>Pran foto klè nan yon bon limyè, sou fon blan si posib</span></div>
-        <div class="tip-item"><span class="tip-icon">✍️</span><span>Bay yon deskripsyon ki gen tout detay: gwosè, materyèl, koulè, eta</span></div>
-        <div class="tip-item"><span class="tip-icon">💬</span><span>Reponn kliyan yo vit sou WhatsApp pou genyen konfyans yo</span></div>
+        <div class="tip-item"><span class="tip-icon">📸</span><span>Pran foto klè nan yon bon limyè</span></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><span>Bay yon deskripsyon ki gen tout detay</span></div>
     </div>
 
     <!-- SUBMIT -->
@@ -271,21 +285,8 @@ title: Vann yon Pwodwi - Boutique Piyay
 
     <!-- ADSTERRA BANNER BOTTOM -->
     <div class="adsterra-banner">
-        <!-- BANNER 1 -->
         <script async="async" data-cfasync="false" src="https://pl29038232.profitablecpmratenetwork.com/2e8d42466e54761c90d32db5824eb06c/invoke.js"></script>
         <div id="container-2e8d42466e54761c90d32db5824eb06c"></div>
-
-        <!-- BANNER 2 -->
-        <script type="text/javascript">
-          atOptions = {
-            'key' : '7e583d14333f8a24b10020a036dafea9',
-            'format' : 'iframe',
-            'height' : 50,
-            'width' : 320,
-            'params' : {}
-          };
-        </script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/7e583d14333f8a24b10020a036dafea9/invoke.js"></script>
     </div>
 
 </div>
@@ -347,34 +348,6 @@ title: Vann yon Pwodwi - Boutique Piyay
         }
     }
 
-    function setStatus(msg, type) {
-        const el = document.getElementById('statusMsg');
-        el.className = 'status-msg ' + type;
-        el.innerText = msg;
-        el.style.display = 'block';
-    }
-
-    async function uploadToImageKit(file) {
-        const authRes = await fetch("/.netlify/functions/auth");
-        if (!authRes.ok) {
-            const errData = await authRes.json().catch(() => ({}));
-            throw new Error(errData.error || "Sèvis foto a pa ka konekte (Status: " + authRes.status + ")");
-        }
-
-        const authData = await authRes.json();
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("publicKey", authData.publicKey);
-        formData.append("signature", authData.signature);
-        formData.append("expire", authData.expire);
-        formData.append("token", authData.token);
-        formData.append("fileName", `prod_${Date.now()}.jpg`);
-
-        const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", { method: "POST", body: formData });
-        if (!uploadRes.ok) throw new Error("Erè ImageKit: " + uploadRes.statusText);
-        return (await uploadRes.json()).url;
-    }
-
     async function submitProduct() {
         const title = document.getElementById('prodTitle').value.trim();
         const price = document.getElementById('prodPrice').value;
@@ -383,40 +356,49 @@ title: Vann yon Pwodwi - Boutique Piyay
         const file = document.getElementById('prodImage').files[0];
         const btn = document.getElementById('submitBtn');
 
-        if (!title || !price || !cat || !desc) return setStatus("❌ Ranpli tout chan obligatwa yo (Non, Pri, Kategori, Deskripsyon).", "error");
-        if (!file) return setStatus("❌ Chwazi yon foto pou pwodwi a.", "error");
+        if (!title || !price || !cat || !desc || !file) {
+             alert("Tanpri ranpli tout chan yo!"); return;
+        }
 
         btn.disabled = true;
-        setStatus("⏳ Piblikasyon foto a...", "loading");
+        document.getElementById('statusMsg').innerText = "⏳ Piblikasyon an kòmanse...";
+        document.getElementById('statusMsg').style.display = 'block';
 
         try {
             const { data: { user } } = await supV.auth.getUser();
-            if (!user) throw new Error("Ou dwe konekte anvan w pibliye.");
+            if (!user) throw new Error("Ou dwe konekte!");
 
-            const imageUrl = await uploadToImageKit(file);
-            setStatus("⏳ Anrejistreman pwodwi...", "loading");
+            // Upload to ImageKit
+            const authRes = await fetch("/.netlify/functions/auth");
+            const authData = await authRes.json();
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("publicKey", authData.publicKey);
+            formData.append("signature", authData.signature);
+            formData.append("expire", authData.expire);
+            formData.append("token", authData.token);
+            formData.append("fileName", `prod_${Date.now()}.jpg`);
 
+            const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", { method: "POST", body: formData });
+            const uploadData = await uploadRes.json();
+
+            // Save to Supabase
             const { error: dbErr } = await supV.from('user_products').insert([{
                 title,
                 price: parseFloat(price),
                 category: cat,
                 description: desc,
-                image_url: imageUrl,
+                image_url: uploadData.url,
                 seller_id: user.id,
                 is_approved: true,
-                is_flash_sale: false,
                 created_at: new Date().toISOString()
             }]);
 
             if (dbErr) throw dbErr;
-
-            document.getElementById('step3').className = 'step-circle done';
-            document.getElementById('step3').innerText = '✓';
-
-            setStatus("🎉 Pwodwi pibliye ak siksè!", "success");
-            setTimeout(() => window.location.href = "/dashboard.html", 2000);
+            alert("🎉 Pwodwi pibliye ak siksè!");
+            window.location.href = "/dashboard.html";
         } catch (err) {
-            setStatus("❌ Erè: " + err.message, "error");
+            alert("❌ Erè: " + err.message);
             btn.disabled = false;
         }
     }
