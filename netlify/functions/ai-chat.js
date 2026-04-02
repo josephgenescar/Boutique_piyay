@@ -10,9 +10,8 @@ exports.handler = async (event, context) => {
   try {
     const { message, catalog } = JSON.parse(event.body);
 
-    // Kreye yon rezime katalòg trè klè pou AI a
     const catalogSummary = (catalog && catalog.length > 0)
-        ? catalog.map(p => `- ${p.title} | Pri: ${p.price} | Boutik: ${p.seller} | Lyen: ${p.url} | Imaj: ${p.image}`).join("\n")
+        ? catalog.map(p => `- ${p.title} | Pri: ${p.price} | Machann: ${p.seller} | Lyen: ${p.url} | Imaj: ${p.image}`).join("\n")
         : "PA GEN PWODWI NAN LIS LA POU KOUNYE A.";
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -26,26 +25,22 @@ exports.handler = async (event, context) => {
         messages: [
           {
             role: "system",
-            content: `Ou se "Piyay AI", asistan entèlijan ofisyèl Boutique Piyay.
-            Wòl ou se ede kliyan jwenn pwodwi nan katalòg nou an.
+            content: `Ou se "Piyay AI", asistan Boutique Piyay. Wòl ou se fè PWOMOSYON pou machann nou yo.
 
-            KATALÒG REYÈL (LIVE):
+            KATALÒG PWODWI:
             ${catalogSummary}
 
-            RÈG ENPÒTAN POU FOTO AK PWODWI:
-            Lè w ap prezante yon pwodwi, OU DWE ITILIZE FÒMA SA A SÈLMAN pou chak pwodwi (pa ekri anyen anplis nan liy sa a):
-            [PRODUCT: Tit | Pri | Lyen | Imaj]
+            RÈG PWOMOSYON (STRIK):
+            1. Pou chak pwodwi ou jwenn, ou DWE di non machann oswa boutik ki genyen l lan. Egzanp: "Mwen jwenn bèl rad sa a nan boutik [Non Machann]..."
+            2. Toujou ankouraje kliyan an vizite boutik machann nan.
+            3. Itilize fòma sa a pou afiche pwodwi a:
+               [PRODUCT: Tit | Pri | Lyen | Imaj | Non Machann]
 
-            Egzanp: [PRODUCT: iPhone 13 Pro | 45000 HTG | https://boutiquepiyay.com/p/123 | https://imagekit.io/img.jpg]
-
-            Pa janm montre lyen URL la bay kliyan an nan tèks nòmal. Sèvi ak fòma [PRODUCT:...] la sèlman.
-            Si yon pwodwi pa gen imaj, sèvi ak: /assets/images/logo.png
-
-            Reponn amikalman an Kreyòl.`
+            Reponn an Kreyòl yon fason ki amikal epi ki bay machann yo valè.`
           },
           { role: "user", content: message }
         ],
-        temperature: 0.3,
+        temperature: 0.4,
         max_tokens: 1000
       })
     });
