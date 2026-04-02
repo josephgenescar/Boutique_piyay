@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ff4747">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -22,7 +25,7 @@
 
     {% seo %}
 
-    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
 
     {% feed_meta %}
 
@@ -106,16 +109,29 @@
     </div>
 
     <!-- Script prensipal -->
-    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/cart.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/main.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+    <script src="{{ '/assets/js/cart.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 
     <script>
-      // Service Worker Registration
+      // Service Worker Registration with automatic update logic
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('Service Worker registered'))
-            .catch(err => console.log('Service Worker registration failed: ', err));
+          navigator.serviceWorker.register('/sw.js').then(reg => {
+            reg.onupdatefound = () => {
+              const installingWorker = reg.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // Nouvo vèsyon disponib! Fòse rafrechi.
+                  window.location.reload();
+                }
+              };
+            };
+          });
+        });
+
+        // Fòse rafrechi lè Service Worker a chanje
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
         });
       }
 

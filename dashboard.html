@@ -514,6 +514,20 @@
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* ADSTERRA STYLES */
+        .adsterra-banner {
+            margin: 30px auto;
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
         /* MOBILE */
         @media (max-width: 768px) {
             .layout { grid-template-columns: 1fr; }
@@ -825,6 +839,25 @@
             </div>
         </div>
 
+        <!-- ADSTERRA BANNER BOTTOM -->
+        <div class="adsterra-banner">
+            <!-- BANNER 1 -->
+            <script async="async" data-cfasync="false" src="https://pl29038232.profitablecpmratenetwork.com/2e8d42466e54761c90d32db5824eb06c/invoke.js"></script>
+            <div id="container-2e8d42466e54761c90d32db5824eb06c"></div>
+
+            <!-- BANNER 2 -->
+            <script type="text/javascript">
+              atOptions = {
+                'key' : '7e583d14333f8a24b10020a036dafea9',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/7e583d14333f8a24b10020a036dafea9/invoke.js"></script>
+        </div>
+
     </main>
 </div>
 
@@ -1104,12 +1137,32 @@
 
     async function toggleFlashSale(id, currentPrice) {
         if (currentPrice === null) {
-            await supD.from('user_products').update({ old_price: null, is_flash_sale: false }).eq('id', id);
+            await supD.from('user_products').update({
+                old_price: null,
+                is_flash_sale: false,
+                flash_start_at: null
+            }).eq('id', id);
             loadAll(); return;
         }
-        const oldP = prompt(`Mete ansyen pri a:`);
+
+        // 🚀 NOUVO: Tcheke limit 3 pwodwi pou chak machann
+        const { data: flashProds } = await supD.from('user_products')
+            .select('id')
+            .eq('seller_id', currentUser.id)
+            .eq('is_flash_sale', true);
+
+        if (flashProds && flashProds.length >= 3) {
+            alert("❌ Ou ka mete sèlman 3 pwodwi nan Vante Flash anmenmtan!");
+            return;
+        }
+
+        const oldP = prompt(`Mete ansyen pri a (dwe pi gwo pase ${currentPrice}):`);
         if (oldP && parseFloat(oldP) > currentPrice) {
-            await supD.from('user_products').update({ old_price: parseFloat(oldP), is_flash_sale: true }).eq('id', id);
+            await supD.from('user_products').update({
+                old_price: parseFloat(oldP),
+                is_flash_sale: true,
+                flash_start_at: new Date().toISOString() // Sove lè flash la kòmanse
+            }).eq('id', id);
             loadAll();
         }
     }

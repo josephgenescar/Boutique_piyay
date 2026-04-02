@@ -1,243 +1,90 @@
 ---
 layout: default
-title: Finaliser la Commande
+title: Finaliser la Commande - Boutique Piyay
 ---
 
 <div class="checkout-page">
   <div class="checkout-container">
-    <!-- Progress Steps -->
     <div class="checkout-steps">
-      <div class="step active">
-        <div class="step-number">1</div>
-        <div class="step-label">Panier</div>
-      </div>
-      <div class="step-line"></div>
-      <div class="step active">
-        <div class="step-number">2</div>
-        <div class="step-label">Informations</div>
-      </div>
-      <div class="step-line"></div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <div class="step-label">Confirmation</div>
-      </div>
+        <div class="step active"><div class="step-number">1</div><div class="step-label">Panier</div></div>
+        <div class="step-line"></div>
+        <div class="step active"><div class="step-number">2</div><div class="step-label">Enfòmasyon</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-number">3</div><div class="step-label">Peman</div></div>
     </div>
 
     <div class="checkout-content">
-      <!-- Left Column: Forms -->
       <div class="checkout-forms">
-        <form id="checkoutForm" onsubmit="submitCheckout(event)">
-          <!-- Customer Information -->
+        <form id="checkoutForm" onsubmit="handleCheckoutSubmit(event)">
           <div class="form-section">
-            <h2>📋 Informations de Livraison</h2>
-
+            <h2>📋 Enfòmasyon Livrezon</h2>
             <div class="form-row">
               <div class="form-group">
-                <label for="customerName">Nom complet *</label>
-                <input
-                  type="text"
-                  id="customerName"
-                  name="name"
-                  required
-                  placeholder="Ex: Jean Baptiste"
-                  pattern="[A-Za-zÀ-ÿ\s]{3,50}"
-                  title="Entrez votre nom complet">
+                <label>Non konplè *</label>
+                <input type="text" id="customerName" required placeholder="Eg: Jean Baptiste">
               </div>
             </div>
-
             <div class="form-row">
               <div class="form-group">
-                <label for="customerPhone">Numéro de téléphone *</label>
-                <input
-                  type="tel"
-                  id="customerPhone"
-                  name="phone"
-                  required
-                  placeholder="Ex: 5094886-8964"
-                  pattern="[0-9\-\s]{8,15}"
-                  title="Entrez un numéro valide">
+                <label>Telefòn *</label>
+                <input type="tel" id="customerPhone" required placeholder="Eg: 4886-8964">
               </div>
-
               <div class="form-group">
-                <label for="customerEmail">Email (optionnel)</label>
-                <input
-                  type="email"
-                  id="customerEmail"
-                  name="email"
-                  placeholder="exemple@email.com">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group full-width">
-                <label for="customerAddress">Adresse de livraison *</label>
-                <input
-                  type="text"
-                  id="customerAddress"
-                  name="address"
-                  required
-                  placeholder="Ex: 123 Rue Lamartinière, Bois Verna">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="customerCity">Ville/Commune *</label>
-                <select id="customerCity" name="city" required>
-                  <option value="">-- Choisir --</option>
-                  <optgroup label="Aire Métropolitaine">
-                    <option value="Port-au-Prince">Port-au-Prince</option>
-                    <option value="Delmas">Delmas</option>
-                    <option value="Pétion-Ville">Pétion-Ville</option>
-                    <option value="Carrefour">Carrefour</option>
-                    <option value="Tabarre">Tabarre</option>
-                  </optgroup>
-                  <optgroup label="Artibonite">
-                    <option value="Gonaïves">Gonaïves</option>
-                    <option value="Saint-Marc">Saint-Marc</option>
-                  </optgroup>
-                  <optgroup label="Nord">
-                    <option value="Cap-Haïtien">Cap-Haïtien</option>
-                  </optgroup>
-                  <optgroup label="Sud">
-                    <option value="Les Cayes">Les Cayes</option>
-                    <option value="Jacmel">Jacmel</option>
-                  </optgroup>
-                  <optgroup label="Ouest">
-                    <option value="Léogâne">Léogâne</option>
-                    <option value="Croix-des-Bouquets">Croix-des-Bouquets</option>
-                  </optgroup>
+                <label>Zòn Livrezon *</label>
+                <select id="customerCity" required>
+                  <option value="">-- Chwazi --</option>
+                  <option value="Port-au-Prince">Port-au-Prince</option>
+                  <option value="Delmas">Delmas</option>
+                  <option value="Pétion-Ville">Pétion-Ville</option>
+                  <option value="Carrefour">Carrefour</option>
+                  <option value="Tabarre">Tabarre</option>
                 </select>
-              </div>
-
-              <div class="form-group">
-                <label for="deliveryTime">Moment préféré</label>
-                <select id="deliveryTime" name="delivery_time">
-                  <option value="any">N'importe quand</option>
-                  <option value="morning">Matin (8h-12h)</option>
-                  <option value="afternoon">Après-midi (12h-17h)</option>
-                  <option value="evening">Soir (17h-20h)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group full-width">
-                <label for="orderNotes">Notes supplémentaires (optionnel)</label>
-                <textarea
-                  id="orderNotes"
-                  name="notes"
-                  rows="3"
-                  placeholder="Instructions spéciales pour la livraison..."></textarea>
               </div>
             </div>
           </div>
 
-          <!-- Payment Method -->
           <div class="form-section">
-            <h2>💳 Mode de Paiement</h2>
-
+            <h2>💳 Chwazi kijan w ap peye</h2>
             <div class="payment-methods">
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="moncash" required>
+                <input type="radio" name="payment_method" value="moncash_api" checked>
                 <div class="payment-card">
-                  <div class="payment-icon">💸</div>
+                  <div class="payment-icon">⚡</div>
                   <div class="payment-info">
-                    <strong>Moncash</strong>
-                    <p>Numéro: <strong>4886-8964</strong></p>
+                    <strong>MonCash (Otomatik)</strong>
+                    <p>Peye ak kont MonCash ou rapidman.</p>
                   </div>
                 </div>
               </label>
 
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="natcash" required>
-                <div class="payment-card">
-                  <div class="payment-icon">💳</div>
-                  <div class="payment-info">
-                    <strong>Natcash</strong>
-                    <p>Numéro: <strong>4068-3108</strong></p>
-                  </div>
-                </div>
-              </label>
-
-              <label class="payment-option">
-                <input type="radio" name="payment_method" value="cash" required>
+                <input type="radio" name="payment_method" value="cash">
                 <div class="payment-card">
                   <div class="payment-icon">💵</div>
                   <div class="payment-info">
-                    <strong>Espèces</strong>
-                    <p>Paiement à la livraison</p>
+                    <strong>Lè w resevwa (COD)</strong>
+                    <p>Peye kach lè yo livre w pwodwi a.</p>
                   </div>
                 </div>
               </label>
             </div>
-
-            <div class="payment-instructions" id="paymentInstructions" style="display: none;">
-              <div class="alert-info">
-                <strong>📱 Instructions:</strong>
-                <p id="instructionText"></p>
-              </div>
-
-              <!-- NOUVO: Bwat pou ID Tranzaksyon -->
-              <div id="transactionIdGroup" class="form-group" style="margin-top: 15px; display: none;">
-                <label for="transactionId" style="font-weight: bold; color: #ff4747;">Nimewo Tranzaksyon (ID) *</label>
-                <input type="text" id="transactionId" name="transaction_id" placeholder="Ex: 12345678" style="border: 2px solid #ff4747;">
-                <small style="color: #666;">Mete kòd ou resevwa nan SMS apre ou fin voye kòb la.</small>
-              </div>
-            </div>
           </div>
 
-          <!-- Terms and Conditions -->
-          <div class="form-section">
-            <label class="checkbox-label">
-              <input type="checkbox" id="acceptTerms" required>
-              <span>J'accepte les <a href="/conditions" target="_blank">conditions générales</a> et la <a href="/politique" target="_blank">politique de confidentialité</a></span>
-            </label>
-          </div>
-
-          <!-- Submit Buttons -->
           <div class="form-actions">
-            <a href="/cart" class="btn-secondary">
-              ← Retour au panier
-            </a>
-            <button type="submit" class="btn-primary" id="submitOrderBtn">
-              Confirmer la commande →
+            <button type="submit" class="btn-primary" id="btn-pay" style="width:100%; padding:20px;">
+               KONFIME AK PEYE →
             </button>
           </div>
         </form>
       </div>
 
-      <!-- Right Column: Order Summary -->
       <div class="order-summary">
         <div class="summary-card">
-          <h3>📦 Résumé de la Commande</h3>
-
-          <div id="checkoutItems" class="checkout-items"></div>
-
-          <div class="summary-row">
-            <span>Sous-total</span>
-            <span id="checkoutSubtotal">0 HTG</span>
-          </div>
-
-          <div class="summary-row">
-            <span>Livraison</span>
-            <span id="checkoutShipping">0 HTG</span>
-          </div>
-
-          <div class="summary-row total">
-            <strong>Total</strong>
-            <strong id="checkoutTotal">0 HTG</strong>
-          </div>
-
-          <div class="promo-code-section">
-            <input type="text" placeholder="Code promo" id="promoCode">
-            <button onclick="applyPromoCode()">Appliquer</button>
-          </div>
-
-          <div class="trust-badges">
-            <div class="badge">🛡️ Paiement sécurisé</div>
-            <div class="badge">✅ Livraison rapide</div>
-            <div class="badge">📞 Support 24/7</div>
+          <h3>📦 Rezime Kòmand</h3>
+          <div id="checkoutItems"></div>
+          <div class="summary-row total" style="border-top:2px solid #eee; margin-top:15px; padding-top:15px;">
+            <strong>TOTAL POU PEYE</strong>
+            <strong id="checkoutTotal" style="color:#ff4747; font-size:22px;">0 HTG</strong>
           </div>
         </div>
       </div>
@@ -245,553 +92,96 @@ title: Finaliser la Commande
   </div>
 </div>
 
-<style>
-.checkout-page {
-  background: #f9fafb;
-  min-height: 100vh;
-  padding: 40px 20px;
-}
-
-.checkout-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.checkout-steps {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.step-number {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  color: #9ca3af;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
-  transition: all 0.3s;
-}
-
-.step.active .step-number {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-}
-
-.step-label {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.step.active .step-label {
-  color: #4facfe;
-}
-
-.step-line {
-  width: 100px;
-  height: 2px;
-  background: #e5e7eb;
-  margin: 0 20px;
-}
-
-.checkout-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 30px;
-}
-
-.checkout-forms {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.form-section {
-  margin-bottom: 35px;
-}
-
-.form-section h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #111827;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-group label {
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 12px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: all 0.3s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #4facfe;
-  box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
-}
-
-.form-group input:invalid:not(:placeholder-shown) {
-  border-color: #ef4444;
-}
-
-.payment-methods {
-  display: grid;
-  gap: 15px;
-}
-
-.payment-option {
-  cursor: pointer;
-}
-
-.payment-option input[type="radio"] {
-  display: none;
-}
-
-.payment-card {
-  display: flex;
-  align-items: center; gap: 15px;
-  padding: 20px;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  transition: all 0.3s;
-}
-
-.payment-option input:checked + .payment-card {
-  border-color: #4facfe;
-  background: #eff6ff;
-}
-
-.payment-icon {
-  font-size: 32px;
-}
-
-.payment-info strong {
-  display: block;
-  margin-bottom: 5px;
-  color: #111827;
-}
-
-.payment-info p {
-  margin: 0;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.alert-info {
-  padding: 15px;
-  background: #dbeafe;
-  border-left: 4px solid #3b82f6;
-  border-radius: 8px;
-  margin-top: 20px;
-}
-
-.alert-info strong {
-  display: block;
-  margin-bottom: 8px;
-  color: #1e40af;
-}
-
-.alert-info p {
-  margin: 0;
-  color: #1e3a8a;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.checkbox-label input {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.checkbox-label a {
-  color: #4facfe;
-  text-decoration: underline;
-}
-
-.form-actions {
-  display: flex;
-  gap: 15px;
-  justify-content: space-between;
-  margin-top: 30px;
-}
-
-.btn-primary,
-.btn-secondary {
-  flex: 1;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-decoration: none;
-  text-align: center;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
-}
-
-.btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.btn-secondary:hover {
-  background: #e5e7eb;
-}
-
-.order-summary {
-  position: sticky;
-  top: 20px;
-  height: fit-content;
-}
-
-.summary-card {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.summary-card h3 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: #111827;
-}
-
-.checkout-items {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-  padding-right: 10px;
-}
-
-.checkout-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.checkout-item:last-child {
-  border-bottom: none;
-}
-
-.checkout-item img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.checkout-item-info {
-  flex: 1;
-}
-
-.checkout-item-title {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 5px;
-}
-
-.checkout-item-qty {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.checkout-item-price {
-  font-weight: bold;
-  color: #4facfe;
-  text-align: right;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-top: 1px solid #e5e7eb;
-}
-
-.summary-row.total {
-  font-size: 20px;
-  color: #4facfe;
-  padding-top: 15px;
-  border-top: 2px solid #e5e7eb;
-}
-
-.promo-code-section {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.promo-code-section input {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-.promo-code-section button {
-  padding: 10px 20px;
-  background: #f3f4f6;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.trust-badges {
-  display: grid;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #6b7280;
-}
-
-@media (max-width: 968px) {
-  .checkout-content {
-    grid-template-columns: 1fr;
-  }
-
-  .order-summary {
-    position: static;
-  }
-
-  .checkout-steps {
-    padding: 20px;
-  }
-
-  .step-line {
-    width: 50px;
-    margin: 0 10px;
-  }
-
-  .step-label {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .form-actions {
-    flex-direction: column;
-  }
-}
-</style>
-
 <script>
-// Load cart items on page load
-document.addEventListener('DOMContentLoaded', function() {
-  loadCheckoutSummary();
-  setupPaymentInstructions();
-});
+document.addEventListener('DOMContentLoaded', loadCheckout);
 
-function loadCheckoutSummary() {
-  const cartKey = 'bp_cart';
-  const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+function loadCheckout() {
+    const cart = JSON.parse(localStorage.getItem('boutique_piyay_cart') || '[]');
+    if (cart.length === 0) { window.location.href = '/'; return; }
 
-  if (cart.length === 0) {
-    window.location.href = '/';
-    return;
-  }
-
-  // Render items
-  const container = document.getElementById('checkoutItems');
-  container.innerHTML = cart.map(item => `
-    <div class="checkout-item">
-      <img src="${item.img}" alt="${item.title}" onerror="this.src='/assets/images/logo.png'">
-      <div class="checkout-item-info">
-        <div class="checkout-item-title">${item.title}</div>
-        <div class="checkout-item-qty">Quantité: ${item.qty}</div>
-      </div>
-      <div class="checkout-item-price">${(item.price * item.qty).toLocaleString()} HTG</div>
-    </div>
-  `).join('');
-
-  // Calculate totals
-  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  const shipping = subtotal >= 1000 ? 0 : 100;
-  const total = subtotal + shipping;
-
-  document.getElementById('checkoutSubtotal').textContent = `${subtotal.toLocaleString()} HTG`;
-  document.getElementById('checkoutShipping').textContent =
-    shipping === 0 ? 'GRATUIT ✅' : `${shipping.toLocaleString()} HTG`;
-  document.getElementById('checkoutTotal').textContent = `${total.toLocaleString()} HTG`;
+    const container = document.getElementById('checkoutItems');
+    let total = 0;
+    container.innerHTML = cart.map(item => {
+        total += (item.price * item.quantity);
+        return `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
+                <span>${item.quantity}x ${item.title}</span>
+                <span style="font-weight:700;">${(item.price * item.quantity).toLocaleString()} HTG</span>
+            </div>
+        `;
+    }).join('');
+    document.getElementById('checkoutTotal').textContent = total.toLocaleString() + " HTG";
 }
 
-function setupPaymentInstructions() {
-  const radios = document.querySelectorAll('input[name="payment_method"]');
-  const instructions = document.getElementById('paymentInstructions');
-  const instructionText = document.getElementById('instructionText');
-  const transactionIdGroup = document.getElementById('transactionIdGroup');
-  const transactionInput = document.getElementById('transactionId');
+async function handleCheckoutSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-pay');
+    const method = document.querySelector('input[name="payment_method"]:checked').value;
+    const cart = JSON.parse(localStorage.getItem('boutique_piyay_cart') || '[]');
+    const totalAmount = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+    const orderId = "BP-" + Date.now();
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      instructions.style.display = 'block';
+    // ── PREPARASYON DONE YO ──
+    const customerInfo = {
+        name: document.getElementById('customerName').value,
+        phone: document.getElementById('customerPhone').value,
+        city: document.getElementById('customerCity').value
+    };
 
-      if (this.value === 'moncash' || this.value === 'natcash') {
-        transactionIdGroup.style.display = 'block';
-        transactionInput.required = true;
-      } else {
-        transactionIdGroup.style.display = 'none';
-        transactionInput.required = false;
-      }
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Traitement en cours...";
 
-      switch(this.value) {
-        case 'moncash':
-          instructionText.innerHTML = `
-            1. Ouvrez votre application Moncash<br>
-            2. Envoyez le montant total au <strong>4886-8964</strong><br>
-            3. Antre nimewo tranzaksyon an anba a pou n valide kòmand lan.
-          `;
-          break;
-        case 'natcash':
-          instructionText.innerHTML = `
-            1. Ouvrez votre application Natcash<br>
-            2. Envoyez le montant total au <strong>4068-3108</strong><br>
-            3. Antre nimewo tranzaksyon an anba a pou n valide kòmand lan.
-          `;
-          break;
-        case 'cash':
-          instructionText.innerHTML = `
-            Préparez le montant exact pour faciliter la livraison.<br>
-            Le livreur vous contactera avant d'arriver.
-          `;
-          break;
-      }
-    });
-  });
-}
+    try {
+        // 1. ANREJISTRE KÒMAND LAN NAN SUPABASE ANVAN (PENDING)
+        // Nou kalkile komisyon yo isit la tou
+        if (window.supabaseMain) {
+            for (const item of cart) {
+                const itemTotal = item.price * item.quantity;
+                const systemFee = itemTotal * 0.03; // 3% pou platfòm nan
+                const affiliateFee = localStorage.getItem('ref_code') ? (itemTotal * 0.05) : 0; // 5% si gen afilye
+                const sellerNet = itemTotal - systemFee - affiliateFee;
 
-function submitCheckout(e) {
-  e.preventDefault();
+                await window.supabaseMain.from('orders').insert([{
+                    order_group_id: orderId,
+                    seller_id: item.seller_id || null, // Asire w ID machann nan la
+                    customer_name: customerInfo.name,
+                    customer_phone: customerInfo.phone,
+                    delivery_zone: customerInfo.city,
+                    product_title: item.title,
+                    amount: itemTotal,
+                    system_commission: systemFee,
+                    affiliate_commission: affiliateFee,
+                    seller_amount: sellerNet,
+                    payment_method: method,
+                    status: 'pending_payment',
+                    ref_code: localStorage.getItem('ref_code') || null
+                }]);
+            }
+        }
 
-  const btn = document.getElementById('submitOrderBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Traitement en cours...';
+        // 2. SI SE MONCASH, REDIREKSYON SOU API A
+        if (method === 'moncash_api') {
+            const resp = await fetch('/.netlify/functions/moncash', {
+                method: 'POST',
+                body: JSON.stringify({ amount: totalAmount, orderId: orderId })
+            });
+            const data = await resp.json();
+            if (data.redirectURL) {
+                window.location.href = data.redirectURL;
+            } else {
+                throw new Error(data.error || "Impossible de générer le lien MonCash.");
+            }
+        } else {
+            // Si se COD, nou voye l sou yon paj siksè
+            alert("Kòmand ou anrejistre! N ap kontakte w pou livrezon an.");
+            localStorage.removeItem('boutique_piyay_cart');
+            window.location.href = "/merci.html";
+        }
 
-  const formData = {
-    name: document.getElementById('customerName').value,
-    phone: document.getElementById('customerPhone').value,
-    address: document.getElementById('customerAddress').value,
-    city: document.getElementById('customerCity').value,
-    payment: document.querySelector('input[name="payment_method"]:checked').value,
-    transaction_id: document.getElementById('transactionId').value,
-    notes: document.getElementById('orderNotes').value
-  };
-
-  // Se cart.js ki pral jere lojik final la (nou sèlman rele l)
-  if (typeof submitOrder !== 'undefined') {
-    // Nou adapte fòm nan pou cart.js ka konprann li
-    // Nou mete valè yo nan eleman cart.js ap chèche yo
-    let cName = document.getElementById('customer-name');
-    let cPhone = document.getElementById('customer-phone');
-    let cZone = document.getElementById('delivery-zone');
-
-    if(!cName) {
-        let input = document.createElement('input');
-        input.id = 'customer-name';
-        input.value = formData.name;
-        input.style.display = 'none';
-        document.body.appendChild(input);
+    } catch (err) {
+        alert("❌ Erè: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = "KONFIME AK PEYE →";
     }
-    if(!cPhone) {
-        let input = document.createElement('input');
-        input.id = 'customer-phone';
-        input.value = formData.phone;
-        input.style.display = 'none';
-        document.body.appendChild(input);
-    }
-    if(!cZone) {
-        let input = document.createElement('input');
-        input.id = 'delivery-zone';
-        input.value = formData.city;
-        input.style.display = 'none';
-        document.body.appendChild(input);
-    }
-
-    submitOrder();
-  } else {
-    alert('Erreur: Système de commande indisponible');
-    btn.disabled = false;
-    btn.textContent = 'Confirmer la commande →';
-  }
-}
-
-function applyPromoCode() {
-  const code = document.getElementById('promoCode').value.trim().toUpperCase();
-  if (code === 'BIENVENUE10') {
-    alert('✅ Code promo appliqué! (10% de réduction)');
-  } else if (code) {
-    alert('❌ Code promo invalide');
-  }
 }
 </script>

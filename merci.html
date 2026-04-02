@@ -1,0 +1,82 @@
+---
+layout: default
+title: Konfimasyon Peman - Boutique Piyay
+---
+
+<div style="max-width: 600px; margin: 80px auto; text-align: center; padding: 20px; font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div id="status-icon" style="font-size: 80px; margin-bottom: 20px;">⏳</div>
+    <h1 id="status-title" style="font-weight: 900; color: #0f172a; margin-bottom: 10px;">Verifikasyon...</h1>
+    <p id="status-desc" style="color: #64748b; font-size: 16px; margin-bottom: 30px;">N ap verifye peman ou an ak MonCash, tanpri pa fèmen paj la.</p>
+
+    <div id="order-details" style="display:none; background: #f8fafc; border-radius: 20px; padding: 25px; text-align: left; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+        <h3 style="margin-top: 0; font-weight: 800;">Detay Peman</h3>
+        <p id="order-id-display" style="font-size: 14px; font-weight: 700; color: #0f172a;"></p>
+        <p id="payment-status" style="font-size: 14px; font-weight: 700; color: #10b981;"></p>
+        <p id="payment-amount" style="font-size: 18px; font-weight: 900; color: #ff4747; margin-top: 10px;"></p>
+    </div>
+
+    <div style="display: flex; gap: 15px; justify-content: center;">
+        <a href="/" style="background: #0f172a; color: white; text-decoration: none; padding: 15px 25px; border-radius: 12px; font-weight: 800; font-size: 14px;">Tounen nan akèy</a>
+        <a href="https://wa.me/50948868964" target="_blank" style="background: #25d366; color: white; text-decoration: none; padding: 15px 25px; border-radius: 12px; font-weight: 800; font-size: 14px;">WhatsApp Sipò</a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('orderId');
+
+    if (!orderId) {
+        showError("ID kòmand lan manke.");
+        return;
+    }
+
+    try {
+        // 1. RELE FONKSYON VERIFIKASYON AN
+        const resp = await fetch('/.netlify/functions/moncash-confirm', {
+            method: 'POST',
+            body: JSON.stringify({ orderId: orderId })
+        });
+
+        const data = await resp.json();
+
+        // 2. TCHEKE SI PEMAN AN REYISI (STATUS 200 NAN MONCASH)
+        if (data.status === 200 || (data.payment && data.payment.status === 'successful')) {
+            showSuccess(data);
+
+            // 3. MIZAJOU NAN SUPABASE (CHANGE STATUS TO 'PAID')
+            if (window.supabaseMain) {
+                await window.supabaseMain
+                    .from('orders')
+                    .update({ status: 'paid', updated_at: new Date().toISOString() })
+                    .eq('order_group_id', orderId);
+            }
+
+            // Netwaye panye a
+            localStorage.removeItem('boutique_piyay_cart');
+        } else {
+            showError("Peman an pa konfime kòmsadwa. Si w te peye deja, kontakte sipò a.");
+        }
+    } catch (err) {
+        console.error(err);
+        showError("Erè verifikasyon: " + err.message);
+    }
+});
+
+function showSuccess(data) {
+    document.getElementById('status-icon').innerText = "✅";
+    document.getElementById('status-title').innerText = "Peman Reyisi!";
+    document.getElementById('status-desc').innerText = "Mèsi! Nou resevwa peman ou an. Machann nan pral prepare kòmand ou an kounye a.";
+    document.getElementById('order-details').style.display = 'block';
+    document.getElementById('order-id-display').innerText = "ID: " + (data.orderId || "Konfime");
+    document.getElementById('payment-status').innerText = "Status: PAID";
+    document.getElementById('payment-amount').innerText = (data.amount || "") + " HTG";
+}
+
+function showError(msg) {
+    document.getElementById('status-icon').innerText = "❌";
+    document.getElementById('status-title').innerText = "Pwoblèm Peman";
+    document.getElementById('status-desc').innerText = msg;
+    document.getElementById('status-desc').style.color = "#ff4747";
+}
+</script>
