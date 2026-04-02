@@ -7,13 +7,15 @@ async function loadSupabaseCatalogForAI() {
     if (!window.supabaseMain) return;
 
     try {
+        // Nou rale pwodwi yo ak non machann nan (si relasyon an egziste)
         const { data, error } = await window.supabaseMain
             .from('user_products')
-            .select('id, title, price, image_url, category, created_at')
+            .select(`
+                id, title, price, image_url,
+                profiles:seller_id (full_name)
+            `)
             .order('created_at', { ascending: false })
             .limit(100);
-
-        if (error) throw error;
 
         if (data) {
             aiCatalog = data.map(p => ({
@@ -21,9 +23,9 @@ async function loadSupabaseCatalogForAI() {
                 price: p.price + " HTG",
                 url: `${window.location.origin}/pwodwi-machann.html?id=${p.id}`,
                 image: p.image_url || '/assets/images/logo.png',
-                seller: "Boutique Piyay" // Nou ka ajiste sa si nou gen non profiles yo pita
+                seller: p.profiles ? p.profiles.full_name : "Machann Boutique Piyay"
             }));
-            console.log("✅ Katalòg AI pare ak " + aiCatalog.length + " pwodwi.");
+            console.log("✅ Katalòg AI pare ak non machann.");
         }
     } catch (e) {
         console.error("❌ Erè katalòg AI:", e);
@@ -56,15 +58,16 @@ function addAIMessage(role, text) {
 
     let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
-    // 🔥 DETEKTE AK DESINE KAD PWODWI (CARD) AVÈK NON MACHANN
-    // Fòma: [PRODUCT: Tit | Pri | Lyen | Imaj | Non Machann]
+    // 🔥 PARSING PI SOLID POU EVITE TÈKS K AP DEBÒDE
     let htmlContent = formattedText.replace(/\[PRODUCT:(.*?)\]/g, (match, content) => {
         const parts = content.split('|').map(p => p.trim());
-        const title  = parts[0] || 'Pwodwi';
-        const price  = parts[1] || '';
-        const url    = parts[2] || '#';
-        const img    = parts[3] || '/assets/images/logo.png';
-        const seller = parts[4] || 'Machann Piyay';
+        if (parts.length < 4) return ""; // Evite afiche si done yo manke
+
+        const title  = parts[0];
+        const price  = parts[1];
+        const url    = parts[2];
+        const img    = parts[3];
+        const seller = parts[4] || "Machann Piyay";
 
         return `
             <div style="background:white; border:1px solid #e2e8f0; border-radius:15px; overflow:hidden; margin-top:10px; width:100%; max-width:240px; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
@@ -75,7 +78,7 @@ function addAIMessage(role, text) {
                     <div style="font-size:10px; font-weight:800; color:#ff4747; text-transform:uppercase; margin-bottom:4px; letter-spacing:0.5px;">🏪 ${seller}</div>
                     <div style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:34px;">${title}</div>
                     <div style="font-size:15px; font-weight:900; color:#ff4747; margin-bottom:10px;">${price}</div>
-                    <a href="${url}" style="display:block; text-align:center; background:#ff4747; color:white; text-decoration:none; padding:10px; border-radius:10px; font-size:12px; font-weight:800; transition:0.2s;">Wè Pwodwi</a>
+                    <a href="${url}" style="display:block; text-align:center; background:#ff4747; color:white; text-decoration:none; padding:10px; border-radius:10px; font-size:12px; font-weight:800;">Wè Pwodwi</a>
                 </div>
             </div>
         `;
@@ -119,8 +122,6 @@ async function sendAIMessage() {
 
         if (data.choices && data.choices[0]) {
             addAIMessage('assistant', data.choices[0].message.content);
-        } else {
-            addAIMessage('assistant', "Eskize m, mwen pa ka reponn kounye a.");
         }
     } catch (err) {
         if (document.getElementById('ai-typing')) document.getElementById('ai-typing').remove();
