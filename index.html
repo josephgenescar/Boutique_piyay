@@ -431,8 +431,80 @@ title: Akèy - Boutique Piyay
       backdrop-filter: blur(4px);
     }
 
-    @media (max-width: 768px) {
-      .boosted-slide { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 640px) {
+  .konektem-ad {
+    margin: 12px 12px 0;
+    border-radius: 18px;
+    min-height: 130px;
+  }
+  .konektem-ad-inner {
+    padding: 16px 14px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .ad-divider { display: none; }
+
+  /* LOGO PI PITI */
+  .ad-logo-icon { width: 46px; height: 46px; border-radius: 12px; }
+  .ad-logo-icon svg { width: 28px !important; height: 28px !important; }
+  .ad-logo-name { font-size: 16px; }
+  .ad-logo-tagline { display: none; } /* Kache sous-tit pou bay plis espas */
+
+  /* TEKS SLIDER — ASIRE LI PARÈT */
+  .ad-text-block {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: block !important;
+    visibility: visible !important;
+  }
+  .ad-text-label {
+    font-size: 8px;
+    padding: 2px 7px;
+    margin-bottom: 5px;
+    display: inline-flex !important;
+  }
+  .ad-slider-wrap {
+    height: 28px;
+    overflow: hidden;
+    width: 100%;
+    display: block !important;
+  }
+  .ad-slides {
+    display: flex !important;
+    flex-direction: column;
+    animation: slideUpMobile 8s ease-in-out infinite;
+  }
+  .ad-slide {
+    height: 28px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    display: flex !important;
+    align-items: center;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  @keyframes slideUpMobile {
+    0%   { transform: translateY(0); }
+    20%  { transform: translateY(0); }
+    25%  { transform: translateY(-28px); }
+    45%  { transform: translateY(-28px); }
+    50%  { transform: translateY(-56px); }
+    70%  { transform: translateY(-56px); }
+    75%  { transform: translateY(-84px); }
+    95%  { transform: translateY(-84px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* BOUTON CTA */
+  .btn-ad-cta { padding: 9px 12px; font-size: 11px; }
+  .btn-ad-cta span { display: none; }
+  .btn-ad-cta::after { content: '→'; }
+  .btn-ad-close { width: 26px; height: 26px; font-size: 12px; }
+}
     }
 
 

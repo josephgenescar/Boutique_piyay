@@ -1,10 +1,21 @@
 let aiCatalog = [];
 
-// ✅ Fonksyon pou chèche pwodwi "live" nan Supabase
+/**
+ * ✅ LOAD SUPABASE CATALOG FOR AI
+ * Nou rale sèlman pwodwi ki nan tab 'user_products' (Pwodwi Machann yo)
+ * Nou espesifye relasyon an via seller_id:profiles(full_name)
+ */
 async function loadSupabaseCatalogForAI() {
-    if (!window.supabaseMain) return;
+    if (!window.supabaseMain) {
+        console.error("Supabase pa inisyalize");
+        return;
+    }
+
     try {
-        // Chèche pwodwi yo ansanm ak enfòmasyon sou machann yo (profiles)
+        console.log("AI ap rale pwodwi machann yo nan Supabase...");
+
+        // Nou eseye rale profiles via seller_id (relasyon an dwe defini nan Supabase)
+        // Si sa bay erè 400 toujou, se paske "Foreign Key" a pa aktive nan Dashboard Supabase la.
         const { data, error } = await window.supabaseMain
             .from('user_products')
             .select(`
@@ -13,9 +24,13 @@ async function loadSupabaseCatalogForAI() {
                 price,
                 image_url,
                 category,
-                profiles (full_name)
+                created_at,
+                profiles:seller_id (full_name)
             `)
-            .limit(50); // Nou pran 50 pi resan yo pou AI a pa parèt twò lou
+            .order('created_at', { ascending: false })
+            .limit(100);
+
+        if (error) throw error;
 
         if (data) {
             aiCatalog = data.map(p => ({
@@ -25,9 +40,33 @@ async function loadSupabaseCatalogForAI() {
                 image: p.image_url || '/assets/images/logo.png',
                 seller: p.profiles ? p.profiles.full_name : "Boutique Piyay"
             }));
+            console.log("✅ Katalòg AI rafrechi ak " + aiCatalog.length + " pwodwi machann.");
         }
     } catch (e) {
-        console.error("AI Catalog Load Error:", e);
+        console.error("❌ Erè lè AI ap rale katalòg la:", e);
+
+        // --- FALLBACK SI RELASYON AN ECHWE ---
+        // Si nou gen yon erè relasyon (Foreign Key), nou rale pwodwi yo san non machann nan
+        try {
+            const { data: fallbackData } = await window.supabaseMain
+                .from('user_products')
+                .select('id, title, price, image_url, category, created_at')
+                .order('created_at', { ascending: false })
+                .limit(100);
+
+            if (fallbackData) {
+                aiCatalog = fallbackData.map(p => ({
+                    title: p.title,
+                    price: p.price + " HTG",
+                    url: `${window.location.origin}/pwodwi-machann.html?id=${p.id}`,
+                    image: p.image_url || '/assets/images/logo.png',
+                    seller: "Machann Boutique Piyay"
+                }));
+                console.log("✅ Katalòg AI rafrechi (Mod mòd sekirite - san profiles).");
+            }
+        } catch (err2) {
+            console.error("❌ Fallback la echwe tou:", err2);
+        }
     }
 }
 
@@ -38,10 +77,9 @@ function toggleAIChat() {
     box.style.display = isVisible ? 'none' : 'flex';
 
     if (!isVisible) {
-        // Chak fwa li ouvri chat la, nou rafrechi katalòg la pou l "live"
         loadSupabaseCatalogForAI();
         if (document.getElementById('ai-chat-body').innerHTML === "") {
-            addAIMessage("assistant", "Bonjou! Mwen se **Piyay AI**, asistan entèlijan Boutique Piyay la. Mwen konekte an dirèk ak tout machann nou yo. Ki pwodwi w ap chèche jodi a? 😊");
+            addAIMessage("assistant", "Bonjou! Mwen se **Piyay AI**, asistan entèlijan Boutique Piyay la. Mwen konekte an dirèk ak baz done machann nou yo. Ki sa m ka ede w jwenn jodi a? 😊");
         }
     }
 }
@@ -56,10 +94,8 @@ function addAIMessage(role, text) {
     div.style.flexDirection = 'column';
     div.style.alignItems = role === 'user' ? 'flex-end' : 'flex-start';
 
-    // Ranje tèks la pou li bèl (Markdown-ish)
     let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
-    // Parse pwodwi yo [PRODUCT: Tit | Pri | Lyen | Imaj]
     let htmlContent = formattedText.replace(/\[PRODUCT:(.*?)\]/g, (match, content) => {
         const parts = content.split('|').map(p => p.trim());
         const title = parts[0] || '';
@@ -98,7 +134,6 @@ async function sendAIMessage() {
     input.value = '';
     addAIMessage('user', msg);
 
-    // Show typing
     const typing = document.createElement('div');
     typing.id = 'ai-typing';
     typing.style.margin = '10px';
@@ -112,7 +147,7 @@ async function sendAIMessage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: msg,
-                catalog: aiCatalog // Voye katalòg Supabase la bay AI a
+                catalog: aiCatalog
             })
         });
 
@@ -123,17 +158,16 @@ async function sendAIMessage() {
         if (data.choices && data.choices[0]) {
             addAIMessage('assistant', data.choices[0].message.content);
         } else {
-            addAIMessage('assistant', "Mwen regrèt, mwen pa ka reponn kounye a. Tanpri eseye ankò.");
+            addAIMessage('assistant', "Mwen regrèt, sistèm nan okipe. Tanpri eseye ankò nan yon ti moman.");
         }
     } catch (err) {
         console.error(err);
         const typingElem = document.getElementById('ai-typing');
         if (typingElem) typingElem.remove();
-        addAIMessage('assistant', "Mwen gen yon ti pwoblèm koneksyon. Verifye entènèt ou.");
+        addAIMessage('assistant', "Mwen gen yon ti pwoblèm koneksyon. Verifye si w gen entènèt.");
     }
 }
 
-// Event listener
 document.addEventListener('DOMContentLoaded', () => {
     const inp = document.getElementById('ai-input');
     if (inp) {
@@ -141,6 +175,5 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') sendAIMessage();
         });
     }
-    // Premye chajman katalòg
     setTimeout(loadSupabaseCatalogForAI, 2000);
 });
