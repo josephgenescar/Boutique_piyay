@@ -10,9 +10,10 @@ exports.handler = async (event, context) => {
   try {
     const { message, catalog } = JSON.parse(event.body);
 
+    // Nou voye done reyèl yo sèlman
     const catalogSummary = (catalog && catalog.length > 0)
-        ? catalog.map(p => `- ${p.title} | Pri: ${p.price} | Machann: ${p.seller} | Lyen: ${p.url} | Imaj: ${p.image}`).join("\n")
-        : "PA GEN PWODWI NAN LIS LA POU KOUNYE A.";
+        ? catalog.map(p => `- ${p.title} | Pri: ${p.price} | Lyen: ${p.url} | Imaj: ${p.image}`).join("\n")
+        : "PA GEN PWODWI NAN LIS LA.";
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -25,38 +26,31 @@ exports.handler = async (event, context) => {
         messages: [
           {
             role: "system",
-            content: `Ou se "Piyay AI", asistan Boutique Piyay. Wòl ou se fè PWOMOSYON pou machann nou yo.
+            content: `Ou se "Piyay AI", asistan Boutique Piyay.
 
-            KATALÒG PWODWI:
-            ${catalogSummary}
+            RÈG STRIK:
+            1. Sèvi ak done ki nan KATALÒG la SÈLMAN. Pa envante pri, pa envante pwodwi.
+            2. Reponn kout, senp, epi dirèk an Kreyòl. Pa fè diskou.
+            3. Pou chak pwodwi, sèvi ak fòma sa a: [PRODUCT: Tit | Pri | Lyen | Imaj | Machann Boutique Piyay]
+            4. Toujou mete "Machann Boutique Piyay" kòm non machann nan pou sekirite.
 
-            RÈG PWOMOSYON (STRIK):
-            1. Pou chak pwodwi ou jwenn, ou DWE di non machann oswa boutik ki genyen l lan. Egzanp: "Mwen jwenn bèl rad sa a nan boutik [Non Machann]..."
-            2. Toujou ankouraje kliyan an vizite boutik machann nan.
-            3. Itilize fòma sa a pou afiche pwodwi a:
-               [PRODUCT: Tit | Pri | Lyen | Imaj | Non Machann]
-
-            Reponn an Kreyòl yon fason ki amikal epi ki bay machann yo valè.`
+            KATALÒG REYÈL:
+            ${catalogSummary}`
           },
           { role: "user", content: message }
         ],
-        temperature: 0.4,
-        max_tokens: 1000
+        temperature: 0.0, // Zero pou l pa janm envante anyen
+        max_tokens: 500
       })
     });
 
     const data = await response.json();
     return {
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type"
-      },
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify(data)
     };
   } catch (err) {
-    console.error("AI Function Error:", err);
     return { statusCode: 500, body: JSON.stringify({ error: "Server error" }) };
   }
 };
