@@ -801,7 +801,7 @@
                         <label class="form-label">Adrès</label>
                         <input type="text" class="form-input" id="prof-address" placeholder="Adrès ou...">
                     </div>
-                    <button class="btn-save" onclick="saveProfile()">✅ Sove Chanjman</button>
+                    <button class="btn-save" onclick="saveProfile()">✅ Sove Chanjman envi</button>
                 </div>
             </div>
         </div>
@@ -1035,18 +1035,26 @@
             grid.innerHTML = prods.map(p => {
                 const now = new Date();
                 const createdAt = new Date(p.created_at);
-                const diffHours = (now - createdAt) / (1000 * 60 * 60);
+
+                // Tcheke si Flash la toujou aktif (mwens pase 24h)
                 let isFlashActive = p.is_flash_sale === true;
+                if (isFlashActive && p.flash_start_at) {
+                    const start = new Date(p.flash_start_at);
+                    const diffFlash = (now - start) / (1000 * 60 * 60);
+                    if (diffFlash >= 24) isFlashActive = false;
+                }
+
                 let isBoosted = p.is_boosted === true;
                 return `
                 <div class="prod-card">
                     <div class="prod-img-wrap">
                         <img src="${p.image_url}" class="prod-img" onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
-                        <span class="prod-status">${isFlashActive ? 'FLASH' : 'Aktif'}</span>
+                        <span class="prod-status">${isFlashActive ? '⚡ FLASH' : 'Aktif'}</span>
                     </div>
                     <div class="prod-body">
                         <div class="prod-name">${p.title}</div>
                         <div class="prod-price">${p.price} <span>HTG</span></div>
+                        ${isFlashActive ? `<div style="font-size:9px; color:var(--primary); font-weight:700;">24h Flash Sale aktif</div>` : ''}
                     </div>
                     <div class="prod-actions">
                         <a href="/edit-product.html?id=${p.id}" class="btn-sm btn-edit">✏️ Edit</a>
@@ -1145,7 +1153,7 @@
             loadAll(); return;
         }
 
-        // 🚀 NOUVO: Tcheke limit 3 pwodwi pou chak machann
+        // 🚀 Tcheke limit 3 pwodwi pou chak machann
         const { data: flashProds } = await supD.from('user_products')
             .select('id')
             .eq('seller_id', currentUser.id)

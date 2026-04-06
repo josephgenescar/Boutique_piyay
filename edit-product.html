@@ -59,6 +59,7 @@ title: Modifye Pwodwi - Boutique Piyay
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
     );
     let prodId = new URLSearchParams(window.location.search).get('id');
+    let originalFlashStatus = false;
 
     async function loadProd() {
         const { data: { user } } = await supE.auth.getUser();
@@ -73,6 +74,8 @@ title: Modifye Pwodwi - Boutique Piyay
         document.getElementById('editCat').value = p.category;
         document.getElementById('editDesc').value = p.description || "";
 
+        originalFlashStatus = p.is_flash_sale;
+
         document.getElementById('loading').style.display = 'none';
         document.getElementById('editCard').style.display = 'block';
     }
@@ -83,17 +86,45 @@ title: Modifye Pwodwi - Boutique Piyay
         btn.disabled = true; btn.innerText = "⏳ Enregistre...";
 
         const price = parseFloat(document.getElementById('editPrice').value);
-        const oldPrice = document.getElementById('editOldPrice').value;
-        const isFlash = oldPrice && parseFloat(oldPrice) > price;
+        const oldPriceVal = document.getElementById('editOldPrice').value;
+        const oldPrice = oldPriceVal ? parseFloat(oldPriceVal) : null;
 
-        const { error } = await supE.from('user_products').update({
+        let isFlash = oldPrice && oldPrice > price;
+        let flashStartAt = null;
+
+        // Si nouvo flash sale ap aktive
+        if (isFlash && !originalFlashStatus) {
+            const { data: { user } } = await supE.auth.getUser();
+            const { data: flashProds } = await supE.from('user_products')
+                .select('id')
+                .eq('seller_id', user.id)
+                .eq('is_flash_sale', true);
+
+            if (flashProds && flashProds.length >= 3) {
+                alert("❌ Ou ka mete sèlman 3 pwodwi nan Vante Flash anmenmtan!");
+                btn.disabled = false; btn.innerText = "💾 Sove Chanjman yo";
+                return;
+            }
+            flashStartAt = new Date().toISOString();
+        } else if (isFlash && originalFlashStatus) {
+            // Si li te deja nan flash, nou pa chanje flashStartAt pou pa reset 24h la (opsyonèl)
+            // flashStartAt: pa manyen li nan update la si nou pa vle reset li
+        }
+
+        const updateData = {
             title: document.getElementById('editTitle').value,
             price: price,
-            old_price: oldPrice ? parseFloat(oldPrice) : null,
+            old_price: oldPrice,
             is_flash_sale: isFlash,
             category: document.getElementById('editCat').value,
             description: document.getElementById('editDesc').value
-        }).eq('id', prodId);
+        };
+
+        if (flashStartAt) updateData.flash_start_at = flashStartAt;
+        // Si se pa flash ankò, nou netwaye flash_start_at
+        if (!isFlash) updateData.flash_start_at = null;
+
+        const { error } = await supE.from('user_products').update(updateData).eq('id', prodId);
 
         if (error) { alert("Erè: " + error.message); btn.disabled = false; btn.innerText = "💾 Sove Chanjman yo"; }
         else {
