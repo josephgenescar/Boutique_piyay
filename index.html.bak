@@ -1,0 +1,982 @@
+---
+layout: default
+title: Akèy - Boutique Piyay
+---
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Sora:wght@700;800;900&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+      --primary: #ff4747;
+      --primary-light: rgba(255,71,71,0.08);
+      --dark: #0f172a;
+      --dark-2: #1e293b;
+      --gray: #64748b;
+      --light: #f1f5f9;
+      --white: #ffffff;
+      --green: #10b981;
+      --gold: #f59e0b;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: var(--dark); }
+
+    /* ══════════════════════════════
+       KONEKTEM AD BANNER
+    ══════════════════════════════ */
+    .konektem-ad {
+      background: linear-gradient(135deg, #061a0e 0%, #0a2e16 40%, #072010 100%);
+      position: relative; overflow: hidden;
+      border-radius: 24px; margin: 16px 16px 0;
+      min-height: 160px;
+      display: flex; align-items: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+
+    /* Animated green glow blobs */
+    .konektem-ad::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: #22c55e; opacity: 0.12;
+      animation: adBlob1 4s ease-in-out infinite alternate;
+    }
+    .konektem-ad::after {
+      content: '';
+      position: absolute; bottom: -40px; left: 30%;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: #16a34a; opacity: 0.08;
+      animation: adBlob2 5s ease-in-out infinite alternate;
+    }
+    @keyframes adBlob1 { to { transform: scale(1.3) translate(20px, -10px); } }
+    @keyframes adBlob2 { to { transform: scale(1.2) translate(-15px, 10px); } }
+
+    /* Scanning line effect */
+    .ad-scan-line {
+      position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(34,197,94,0.06), transparent);
+      animation: scanLine 3s ease-in-out infinite;
+    }
+    @keyframes scanLine { to { left: 150%; } }
+
+    .konektem-ad-inner {
+      display: flex; align-items: center;
+      gap: 24px; padding: 32px 36px;
+      width: 100%; position: relative; z-index: 2;
+      flex-wrap: wrap;
+    }
+
+    /* LOGO BLOCK */
+    .ad-logo-block {
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .ad-logo-icon {
+      width: 68px; height: 68px; border-radius: 18px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+      position: relative; overflow: hidden;
+    }
+    .ad-logo-icon::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    }
+    .ad-logo-text { font-family: 'Sora', sans-serif; }
+    .ad-logo-name {
+      font-size: 26px; font-weight: 900; color: white;
+      letter-spacing: -0.5px; line-height: 1;
+    }
+    .ad-logo-name span { color: #22c55e; }
+    .ad-logo-tagline {
+      font-size: 10px; color: rgba(255,255,255,0.4);
+      font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+      margin-top: 3px;
+    }
+
+    /* DIVIDER */
+    .ad-divider {
+      width: 1px; height: 70px;
+      background: rgba(255,255,255,0.1); flex-shrink: 0;
+    }
+
+    /* SLIDING TEXT */
+    .ad-text-block { flex: 1; min-width: 0; overflow: hidden; max-width: 500px; }
+    .ad-text-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
+      color: #4ade80; font-size: 9px; font-weight: 800;
+      padding: 3px 10px; border-radius: 50px; margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .ad-text-label::before {
+      content: '';
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #22c55e;
+      animation: pulse-dot 1.5s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+
+    .ad-slider-wrap {
+      height: 42px; overflow: hidden; position: relative; width: 100%;
+    }
+    .ad-slides {
+      display: flex; flex-direction: column;
+      animation: slideUp 8s ease-in-out infinite;
+    }
+    .ad-slide {
+      height: 42px; display: flex; align-items: center;
+      font-size: 18px; font-weight: 900; color: white;
+      font-family: 'Sora', sans-serif; letter-spacing: -0.3px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .ad-slide .highlight { color: #22c55e; }
+    @keyframes slideUp {
+      0%       { transform: translateY(0); }
+      20%      { transform: translateY(0); }
+      25%      { transform: translateY(-42px); }
+      45%      { transform: translateY(-42px); }
+      50%      { transform: translateY(-84px); }
+      70%      { transform: translateY(-84px); }
+      75%      { transform: translateY(-126px); }
+      95%      { transform: translateY(-126px); }
+      100%     { transform: translateY(0); }
+    }
+
+    /* CTA */
+    .ad-cta {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .btn-ad-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white; border: none; padding: 12px 20px;
+      border-radius: 12px; font-weight: 800; font-size: 13px;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: 0.2s; box-shadow: 0 6px 16px rgba(34,197,94,0.3);
+      white-space: nowrap;
+    }
+    .btn-ad-cta:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+    .btn-ad-close {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.5); font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: 0.2s; font-weight: 700; flex-shrink: 0;
+    }
+    .btn-ad-close:hover { background: rgba(255,255,255,0.15); color: white; }
+
+    @media (max-width: 640px) {
+      .konektem-ad { margin: 12px 12px 0; border-radius: 18px; min-height: 120px; }
+      .konektem-ad-inner { padding: 18px 16px; gap: 12px; flex-wrap: nowrap; }
+      .ad-divider { display: none; }
+      .ad-logo-icon { width: 48px; height: 48px; border-radius: 13px; }
+      .ad-logo-icon svg { width: 30px !important; height: 30px !important; }
+      .ad-logo-name { font-size: 18px; }
+      .ad-logo-tagline { font-size: 9px; }
+      .ad-text-label { font-size: 8px; padding: 2px 8px; margin-bottom: 5px; }
+      .ad-slider-wrap { height: 30px; }
+      .ad-slides { animation: slideUpMobile 8s ease-in-out infinite; }
+      .ad-slide { height: 30px; font-size: 12px; white-space: nowrap; }
+      @keyframes slideUpMobile {
+        0%   { transform: translateY(0); }
+        20%  { transform: translateY(0); }
+        25%  { transform: translateY(-30px); }
+        45%  { transform: translateY(-30px); }
+        50%  { transform: translateY(-60px); }
+        70%  { transform: translateY(-60px); }
+        75%  { transform: translateY(-90px); }
+        95%  { transform: translateY(-90px); }
+        100% { transform: translateY(0); }
+      }
+      .btn-ad-cta { padding: 9px 12px; font-size: 11px; }
+      .btn-ad-cta span { display: none; }
+      .btn-ad-cta::after { content: '→'; }
+      .btn-ad-close { width: 26px; height: 26px; font-size: 12px; }
+    }
+
+    /* ══════════════════════════════
+       HOME WRAP
+    ══════════════════════════════ */
+    .home-wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px 100px; }
+
+    /* ══════════════════════════════
+       PWODWI VEDÈT — SLIDER
+    ══════════════════════════════ */
+    #boosted-section { margin: 28px 0; display: none; }
+
+    .section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-hdr-left { display: flex; flex-direction: column; }
+    .section-hdr-left h2 { font-size: 20px; font-weight: 900; letter-spacing: -0.3px; margin: 0; }
+    .section-hdr-bar { width: 40px; height: 3px; background: var(--primary); border-radius: 10px; margin-top: 7px; }
+
+    /* SLIDER NAVIGATION */
+    .slider-nav { display: flex; gap: 8px; align-items: center; }
+    .slider-arrow {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: white; border: 1.5px solid #f1f5f9;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; transition: 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .slider-arrow:hover { background: var(--dark); color: white; border-color: var(--dark); }
+    .slider-dots { display: flex; gap: 6px; }
+    .slider-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #e2e8f0; transition: 0.3s; cursor: pointer;
+    }
+    .slider-dot.active { background: var(--primary); width: 20px; border-radius: 4px; }
+
+    /* SLIDER CONTAINER */
+    .boosted-slider-wrap { position: relative; overflow: hidden; border-radius: var(--radius); }
+    .boosted-slider-track {
+      display: flex; transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      gap: 0;
+    }
+    .boosted-slide {
+      min-width: 100%; padding: 0 2px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .boosted-card {
+      background: white; border-radius: var(--radius); padding: 16px;
+      box-shadow: 0 6px 24px rgba(255,71,71,0.08);
+      border: 1.5px solid #fff1f1;
+      display: flex; flex-direction: column; position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+      min-height: 340px;
+    }
+    .boosted-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .boosted-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--primary); color: white;
+      padding: 4px 10px; border-radius: 8px;
+      font-size: 9px; font-weight: 900; z-index: 5;
+      box-shadow: 0 4px 10px rgba(255,71,71,0.3);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .boosted-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius-sm); display: block; }
+    .boosted-title { font-size: 15px; font-weight: 800; color: var(--dark); margin: 14px 0 6px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
+    .boosted-price { color: var(--primary); font-weight: 900; font-size: 20px; margin-top: auto; letter-spacing: -0.3px; }
+    .btn-add { width: 100%; background: var(--dark); color: white; border: none; padding: 13px; border-radius: var(--radius-sm); margin-top: 14px; font-weight: 800; cursor: pointer; font-size: 13px; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-add:hover { background: var(--primary); }
+
+    /* ══════════════════════════════
+       FLASH SALE
+    ══════════════════════════════ */
+    #flash-sale { margin: 36px 0; display: none; }
+    .flash-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+    .flash-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .flash-title-wrap h2 { font-size: 20px; font-weight: 900; margin: 0; }
+    .flash-dot { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
+    .timer-wrap { display: flex; align-items: center; gap: 6px; }
+    .t-seg { background: var(--dark); color: white; padding: 7px 11px; border-radius: 10px; display: flex; align-items: baseline; gap: 3px; min-width: 44px; justify-content: center; }
+    .t-seg span { font-size: 18px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .t-seg small { font-size: 9px; opacity: 0.55; font-weight: 700; }
+    .t-div { font-weight: 900; color: var(--dark); font-size: 16px; }
+    .flash-slider { display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px; scrollbar-width: none; scroll-behavior: smooth; }
+    .flash-slider::-webkit-scrollbar { display: none; }
+    .flash-card { min-width: 172px; max-width: 172px; background: white; border-radius: 22px; padding: 14px; box-shadow: var(--shadow); flex-shrink: 0; border: 1.5px solid #f1f5f9; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+    .flash-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .flash-pct { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; box-shadow: 0 4px 10px rgba(255,71,71,0.3); }
+    .flash-img-wrap { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; }
+    .flash-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+    .flash-card:hover .flash-img { transform: scale(1.05); }
+    .flash-name { font-size: 13px; font-weight: 700; margin: 10px 0 5px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 36px; }
+    .flash-prices { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .flash-new { color: var(--primary); font-weight: 900; font-size: 15px; }
+    .flash-old { color: var(--gray); font-size: 11px; text-decoration: line-through; font-weight: 600; }
+    .btn-flash { width: 100%; background: var(--dark); color: white; border: none; padding: 9px; border-radius: 10px; margin-top: 10px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .btn-flash:hover { background: var(--primary); }
+
+    /* ══════════════════════════════
+       KATEGORIS
+    ══════════════════════════════ */
+    #categories-section { margin: 36px 0; }
+    .cat-scroll { display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-bubble { display: flex; flex-direction: column; align-items: center; min-width: 88px; text-decoration: none; transition: 0.2s; gap: 10px; }
+    .cat-bubble:hover { transform: translateY(-3px); }
+    .cat-bubble-img { width: 76px; height: 76px; border-radius: 50%; border: 3px solid var(--primary); overflow: hidden; background: var(--light); box-shadow: 0 6px 16px rgba(255,71,71,0.15); transition: 0.2s; }
+    .cat-bubble:hover .cat-bubble-img { box-shadow: 0 10px 24px rgba(255,71,71,0.25); border-width: 4px; }
+    .cat-bubble-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cat-bubble span { font-size: 12px; font-weight: 700; color: var(--dark-2); text-align: center; line-height: 1.3; }
+
+    /* ══════════════════════════════
+       MARKETPLACE
+    ══════════════════════════════ */
+    #user-market { margin-top: 44px; padding-top: 36px; border-top: 1px solid var(--light); }
+    .market-tabs { display: flex; gap: 6px; margin-bottom: 28px; border-bottom: 2px solid var(--light); }
+    .market-tab { padding: 13px 24px; font-weight: 800; cursor: pointer; border: none; background: none; font-size: 15px; color: var(--gray); transition: 0.2s; border-radius: 14px 14px 0 0; font-family: inherit; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+    .market-tab:hover { color: var(--dark); background: var(--light); }
+    .market-tab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--primary-light); }
+    .sellers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+    .seller-card { background: white; border-radius: 26px; padding: 26px; box-shadow: var(--shadow); border: 1.5px solid #f1f5f9; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+    .seller-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .seller-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .seller-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; border: 3px solid #fff5f5; flex-shrink: 0; overflow: hidden; box-shadow: 0 4px 12px rgba(255,71,71,0.2); }
+    .seller-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .seller-info h4 { margin: 0; font-size: 17px; font-weight: 900; color: var(--dark); }
+    .seller-info p { margin: 5px 0 0; font-size: 13px; color: var(--gray); font-weight: 600; }
+    .seller-verified { display: inline-flex; align-items: center; gap: 4px; background: rgba(16,185,129,0.1); color: var(--green); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 50px; margin-top: 6px; }
+    .seller-previews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 0 20px; padding: 18px 0; border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; }
+    .preview-img { aspect-ratio: 1; border-radius: 10px; background: var(--light); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .preview-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .btn-visit { display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; background: var(--dark); color: white; padding: 15px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.2s; box-shadow: 0 6px 16px rgba(15,23,42,0.15); }
+    .btn-visit:hover { background: var(--primary); transform: translateY(-1px); }
+    .mkt-prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
+    .mkt-prod-card { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); border: 1.5px solid #f1f5f9; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .mkt-prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .mkt-prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
+    .mkt-prod-name { font-size: 14px; font-weight: 700; color: var(--dark); margin: 12px 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 38px; }
+    .mkt-prod-price { color: var(--primary); font-weight: 900; font-size: 18px; margin-top: auto; }
+    .btn-add-light { width: 100%; background: var(--light); color: var(--dark); border: none; padding: 12px; border-radius: var(--radius-sm); margin-top: 12px; font-weight: 800; cursor: pointer; font-size: 12px; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-add-light:hover { background: var(--dark); color: white; }
+
+    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 10px; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--gray); }
+    .empty-state .e-icon { font-size: 44px; margin-bottom: 14px; }
+    .empty-state .e-title { font-size: 16px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .empty-state .e-sub { font-size: 13px; }
+
+    /* ══════════════════════════════
+       PUB SLIDES NAN VEDET
+    ══════════════════════════════ */
+    .pub-slide-card {
+      background: white; border-radius: var(--radius); overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      border: 1.5px solid #f1f5f9;
+      display: flex; flex-direction: column;
+      position: relative; min-height: 340px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none; cursor: pointer;
+    }
+    .pub-slide-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+    /* KayLakou */
+    .pub-kaylakou {
+      background: linear-gradient(160deg, #0d2e6e 0%, #1a4fa0 50%, #0a5c1e 100%);
+    }
+    .pub-kaylakou-img-wrap {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 24px; position: relative; overflow: hidden;
+    }
+    .pub-kaylakou-img-wrap::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: #f97316; opacity: 0.08;
+    }
+    .pub-kaylakou-logo {
+      width: 130px; height: 130px; object-fit: contain;
+      position: relative; z-index: 2;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+    }
+    .pub-kaylakou-body {
+      background: rgba(0,0,0,0.25); padding: 16px;
+      backdrop-filter: blur(8px);
+    }
+    .pub-kaylakou-name {
+      font-size: 18px; font-weight: 900; color: white;
+      letter-spacing: -0.3px; margin-bottom: 4px;
+      font-family: 'Sora', sans-serif;
+    }
+    .pub-kaylakou-name .kl-green { color: #4ade80; }
+    .pub-kaylakou-tag {
+      display: inline-block; background: #f97316; color: white;
+      font-size: 9px; font-weight: 800; padding: 3px 8px;
+      border-radius: 50px; margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .pub-kaylakou-desc {
+      font-size: 11px; color: rgba(255,255,255,0.7);
+      font-weight: 500; line-height: 1.5; margin-bottom: 12px;
+    }
+    .pub-kaylakou-btn {
+      width: 100%; padding: 11px; background: #f97316;
+      color: white; border: none; border-radius: 10px;
+      font-weight: 800; font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .pub-kaylakou-btn:hover { filter: brightness(1.1); }
+
+    /* Badge PUB */
+    .pub-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(255,255,255,0.15); color: white;
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 3px 8px; border-radius: 6px;
+      font-size: 9px; font-weight: 800; z-index: 5;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      backdrop-filter: blur(4px);
+    }
+
+    @media (max-width: 640px) {
+  .konektem-ad {
+    margin: 12px 12px 0;
+    border-radius: 18px;
+    min-height: 130px;
+  }
+  .konektem-ad-inner {
+    padding: 16px 14px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .ad-divider { display: none; }
+
+  /* LOGO PI PITI */
+  .ad-logo-icon { width: 46px; height: 46px; border-radius: 12px; }
+  .ad-logo-icon svg { width: 28px !important; height: 28px !important; }
+  .ad-logo-name { font-size: 16px; }
+  .ad-logo-tagline { display: none; } /* Kache sous-tit pou bay plis espas */
+
+  /* TEKS SLIDER — ASIRE LI PARÈT */
+  .ad-text-block {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: block !important;
+    visibility: visible !important;
+  }
+  .ad-text-label {
+    font-size: 8px;
+    padding: 2px 7px;
+    margin-bottom: 5px;
+    display: inline-flex !important;
+  }
+  .ad-slider-wrap {
+    height: 28px;
+    overflow: hidden;
+    width: 100%;
+    display: block !important;
+  }
+  .ad-slides {
+    display: flex !important;
+    flex-direction: column;
+    animation: slideUpMobile 8s ease-in-out infinite;
+  }
+  .ad-slide {
+    height: 28px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    display: flex !important;
+    align-items: center;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  @keyframes slideUpMobile {
+    0%   { transform: translateY(0); }
+    20%  { transform: translateY(0); }
+    25%  { transform: translateY(-28px); }
+    45%  { transform: translateY(-28px); }
+    50%  { transform: translateY(-56px); }
+    70%  { transform: translateY(-56px); }
+    75%  { transform: translateY(-84px); }
+    95%  { transform: translateY(-84px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* BOUTON CTA */
+  .btn-ad-cta { padding: 9px 12px; font-size: 11px; }
+  .btn-ad-cta span { display: none; }
+  .btn-ad-cta::after { content: '→'; }
+  .btn-ad-close { width: 26px; height: 26px; font-size: 12px; }
+}
+
+
+</style>
+
+<!-- ══ KONEKTEM AD BANNER ══ -->
+<div class="konektem-ad" id="konektem-ad">
+    <div class="ad-scan-line"></div>
+    <div class="konektem-ad-inner">
+
+        <!-- LOGO -->
+        <div class="ad-logo-block">
+            <div class="ad-logo-icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:42px;height:42px;position:relative;z-index:1;">
+                    <!-- Steering wheel outer ring -->
+                    <circle cx="24" cy="24" r="20" stroke="white" stroke-width="3.5" fill="none"/>
+                    <!-- Center hub -->
+                    <circle cx="24" cy="24" r="5" fill="white"/>
+                    <!-- Spokes -->
+                    <line x1="24" y1="4" x2="24" y2="19" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="24" y1="29" x2="24" y2="44" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="4" y1="24" x2="19" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="29" y1="24" x2="44" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="ad-logo-text">
+                <div class="ad-logo-name">Konek<span>tem</span></div>
+                <div class="ad-logo-tagline">Caisse intelligente haïtienne</div>
+            </div>
+        </div>
+
+        <div class="ad-divider"></div>
+
+        <!-- SLIDING TEXT -->
+        <div class="ad-text-block">
+            <div class="ad-text-label">Patnè Ofisyèl</div>
+            <div class="ad-slider-wrap">
+                <div class="ad-slides">
+                    <div class="ad-slide">La caisse qui <span class="highlight">&nbsp;connecte&nbsp;</span> votre boutique</div>
+                    <div class="ad-slide">Tout pour <span class="highlight">&nbsp;vendre mieux&nbsp;</span> en Haïti</div>
+                    <div class="ad-slide">Caisse, stock & clients en <span class="highlight">&nbsp;1 seule app&nbsp;</span></div>
+                    <div class="ad-slide">La caisse qui <span class="highlight">&nbsp;connecte&nbsp;</span> votre boutique</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="ad-cta">
+            <a href="https://konektem.netlify.app" target="_blank" class="btn-ad-cta">
+                <span>Découvrir →</span>
+            </a>
+            <button class="btn-ad-close" onclick="document.getElementById('konektem-ad').style.display='none'">✕</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══ KAYLAKOU AD BANNER ══ -->
+<div class="konektem-ad" id="kaylakou-ad" style="background:linear-gradient(135deg,#0d2e6e 0%,#1a4fa0 40%,#0a5c1e 100%); margin-top:10px;">
+    <div class="ad-scan-line" style="background:linear-gradient(90deg,transparent,rgba(249,115,22,0.08),transparent);"></div>
+    <div class="konektem-ad-inner">
+
+        <!-- LOGO -->
+        <div class="ad-logo-block">
+            <div class="ad-logo-icon" style="background:linear-gradient(135deg,#f97316,#ea580c);">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:42px;height:42px;position:relative;z-index:1;">
+                    <circle cx="24" cy="8" r="5" fill="white"/>
+                    <line x1="24" y1="13" x2="24" y2="18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <polyline points="8,28 24,16 40,28" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <rect x="14" y="28" width="20" height="14" rx="1" stroke="white" stroke-width="2.5" fill="none"/>
+                    <rect x="21" y="30" width="6" height="6" rx="0.5" stroke="white" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+            <div class="ad-logo-text">
+                <div class="ad-logo-name"><span style="color:#4ade80;">KAY</span><span style="color:white;">LAKOU</span></div>
+                <div class="ad-logo-tagline">Kay, Té, Confiance — Tout Ayiti</div>
+            </div>
+        </div>
+
+        <div class="ad-divider"></div>
+
+        <!-- SLIDING TEXT -->
+        <div class="ad-text-block">
+            <div class="ad-text-label" style="background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.3);color:#fb923c;">🏠 Imobilye</div>
+            <div class="ad-slider-wrap">
+                <div class="ad-slides" style="animation-delay:-3s;">
+                    <div class="ad-slide">Pi gwo <span style="color:#4ade80;">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
+                    <div class="ad-slide">Kay, Té, <span style="color:#fb923c;">&nbsp;Konfians&nbsp;</span> — Tout peyi a</div>
+                    <div class="ad-slide">Solisyon biznis <span style="color:#4ade80;">&nbsp;nimerik&nbsp;</span> pou ou</div>
+                    <div class="ad-slide">Pi gwo <span style="color:#4ade80;">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="ad-cta">
+            <a href="https://kaylakou.netlify.app" target="_blank" class="btn-ad-cta" style="background:linear-gradient(135deg,#f97316,#ea580c);box-shadow:0 6px 16px rgba(249,115,22,0.3);">
+                <span>Vizite →</span>
+            </a>
+            <button class="btn-ad-close" onclick="document.getElementById('kaylakou-ad').style.display='none'">✕</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══ HOME CONTENT ══ -->
+<div class="home-wrap">
+
+    <!-- 1. PWODWI VEDÈT — SLIDER -->
+    <section id="boosted-section">
+        <div class="section-hdr">
+            <div class="section-hdr-left">
+                <h2>Pwodwi Vedèt 🔥</h2>
+                <div class="section-hdr-bar"></div>
+            </div>
+            <div class="slider-nav">
+                <button class="slider-arrow" id="boosted-prev" onclick="boostSlide(-1)">‹</button>
+                <div class="slider-dots" id="boosted-dots"></div>
+                <button class="slider-arrow" id="boosted-next" onclick="boostSlide(1)">›</button>
+            </div>
+        </div>
+        <div class="boosted-slider-wrap">
+            <div class="boosted-slider-track" id="boosted-slider-track"></div>
+        </div>
+    </section>
+
+    <!-- 2. VANTE FLASH -->
+    <section id="flash-sale">
+        <div class="flash-header">
+            <div class="flash-title-wrap">
+                <div class="flash-dot"></div>
+                <h2>⚡ Vante Flash</h2>
+            </div>
+            <div class="timer-wrap">
+                <div class="t-seg"><span id="hours">24</span><small>h</small></div>
+                <span class="t-div">:</span>
+                <div class="t-seg"><span id="minutes">00</span><small>m</small></div>
+                <span class="t-div">:</span>
+                <div class="t-seg"><span id="seconds">00</span><small>s</small></div>
+            </div>
+        </div>
+        <div class="flash-slider" id="flash-slider-inner"></div>
+    </section>
+
+    <!-- 3. KATEGORIS -->
+    <section id="categories-section">
+        <div class="section-hdr">
+            <div class="section-hdr-left">
+                <h2>Chwazi pa Kategori</h2>
+                <div class="section-hdr-bar" style="width:50px;"></div>
+            </div>
+        </div>
+        <div class="cat-scroll">
+            {% for cat in site.categories %}
+            <a href="{{ cat.url }}" class="cat-bubble">
+                <div class="cat-bubble-img">
+                    <img src="{{ cat.image }}" alt="{{ cat.title }}"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ cat.title }}&background=ff4747&color=fff'">
+                </div>
+                <span>{{ cat.display_name | default: cat.title }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 4. MARKETPLACE -->
+    <section id="user-market">
+        <div class="section-hdr">
+            <div class="section-hdr-left">
+                <h2>Marketplace 🚀</h2>
+                <div class="section-hdr-bar" style="width:60px;"></div>
+            </div>
+        </div>
+
+        <div class="market-tabs">
+            <button id="tab-sellers" class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Machann yo</button>
+            <button id="tab-products" class="market-tab" onclick="switchMarketTab('products')">🛍️ Tout Pwodwi</button>
+        </div>
+
+        <div id="sellers-view">
+            <div class="sellers-grid" id="sellers-grid-home"></div>
+        </div>
+        <div id="products-view" style="display:none;">
+            <div class="mkt-prod-grid" id="supabase-products-grid"></div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const supabaseHome = typeof window.supabase !== 'undefined'
+      ? window.supabase.createClient(
+          "https://letyferfjpxmstohvgcj.supabase.co",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
+        )
+      : null;
+
+    let allSellers  = [];
+    let allProducts = [];
+    let sellerMap   = {}; // Cache vendeur: { [sellerId]: { full_name, whatsapp_number } }
+
+    // ── BUILD SELLER MAP ──
+    function buildSellerMap() {
+      sellerMap = {};
+      allSellers.forEach(s => {
+        sellerMap[s.id] = {
+          full_name: s.full_name || 'Boutique Piyay',
+          whatsapp_number: s.whatsapp_number || s.whatsapp || '50948868964'
+        };
+      });
+    }
+
+    // ── BOOSTED SLIDER STATE ──
+    let boostCurrentSlide = 0;
+    let boostTotalSlides  = 0;
+    let boostAutoplay     = null;
+    const ITEMS_PER_SLIDE = window.innerWidth < 640 ? 2 : 4;
+
+    function boostSlide(dir) {
+      boostCurrentSlide = (boostCurrentSlide + dir + boostTotalSlides) % boostTotalSlides;
+      updateBoostSlider();
+    }
+
+    function boostGoTo(idx) {
+      boostCurrentSlide = idx;
+      updateBoostSlider();
+    }
+
+    function updateBoostSlider() {
+      const track = document.getElementById('boosted-slider-track');
+      if (track) track.style.transform = `translateX(-${boostCurrentSlide * 100}%)`;
+      document.querySelectorAll('.slider-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === boostCurrentSlide);
+      });
+    }
+
+    // ── TIMER ──
+    function startInfiniteFlashTimer() {
+      const hEl = document.getElementById('hours');
+      const mEl = document.getElementById('minutes');
+      const sEl = document.getElementById('seconds');
+      if (!hEl) return;
+      setInterval(() => {
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const diff = tomorrow - now;
+        hEl.innerText = String(Math.floor(diff / 3600000)).padStart(2, '0');
+        mEl.innerText = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+        sEl.innerText = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      }, 1000);
+    }
+
+    // ── LOAD ALL DATA ──
+    async function loadAllData() {
+      if (!supabaseHome) return;
+      try {
+        const { data: prods } = await supabaseHome
+          .from('user_products')
+          .select('id, title, price, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at, flash_start_at, is_approved')
+          .order('created_at', { ascending: false });
+
+        const { data: sellers } = await supabaseHome
+          .from('profiles')
+          .select('*');
+
+        allProducts = (prods || []).filter(p => p.image_url && p.title && p.price);
+        allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
+
+        console.log(`📦 Total pwodwi chaje: ${allProducts.length}`);
+        console.log(`🏪 Total machann chaje: ${allSellers.length}`);
+
+        // 1. Vedèt slider
+        renderBoosted(allProducts.filter(p => p.is_boosted === true));
+
+        // 2. Marketplace
+        renderSellers(allSellers);
+        renderProducts(allProducts);
+
+        // 3. Flash sale (FILTRE POU 24H)
+        const now = new Date();
+        const flashProds = allProducts.filter(p => {
+          // Si is_flash_sale se vre
+          if (p.is_flash_sale === true && p.flash_start_at) {
+             // Kalkile si sa fè mwens pase 24h
+             const start = new Date(p.flash_start_at);
+             const diffHours = (now - start) / (1000 * 60 * 60);
+             return diffHours < 24;
+          }
+          // Si se jis yon pwodwi ki gen old_price (san flash_sale aktive ekspreseman)
+          return false;
+        });
+
+        console.log(`⚡ Pwodwi flash sale: ${flashProds.length}`);
+
+        if (flashProds.length > 0) {
+          document.getElementById('flash-sale').style.display = 'block';
+          renderFlashSlider(flashProds);
+        } else {
+          document.getElementById('flash-sale').style.display = 'none';
+        }
+
+        startInfiniteFlashTimer();
+      } catch(e) { console.error("Erè chajman:", e); console.error(e); }
+    }
+
+    // ── PUB STATIK YO (sèlman pwodwi vedèt nan slider) ──
+    const staticAdCards = [
+      // Ajoute pub pwodwi isit si ou vle
+    ];
+
+    // ── RENDER BOOSTED (slider ak pub) ──
+    function renderBoosted(list) {
+      const section = document.getElementById('boosted-section');
+      const track   = document.getElementById('boosted-slider-track');
+      const dotsEl  = document.getElementById('boosted-dots');
+      if (!section || !track) return;
+
+      // Toujou montre seksyon an (gen pub menm si pa gen pwodwi vedèt)
+      section.style.display = 'block';
+
+      const perSlide = window.innerWidth < 640 ? 2 : 4;
+
+      // Bati lis tout kart: pwodwi vedèt + pub
+      const allCards = [];
+
+      list.forEach(p => {
+        const seller = sellerMap[p.seller_id] || {};
+        const sellerName = seller.name || 'Boutique Piyay';
+        const sellerPhone = (seller.phone || '50948868964').replace(/[^0-9]/g, '');
+        allCards.push(`
+          <div class="boosted-card">
+            <span class="boosted-badge">VEDÈT 🔥</span>
+            <a href="/pwodwi-machann.html?id=${p.id}">
+              <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
+                   onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+            </a>
+            <div class="boosted-title">${p.title}</div>
+            <div class="boosted-price">${p.price} HTG</div>
+            <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}')">
+              🛒 Ajoute
+            </button>
+          </div>`);
+      });
+
+      // Ajoute pub yo
+      staticAdCards.forEach(adHtml => allCards.push(adHtml));
+
+      // Divize an slides (grupe pa perSlide)
+      const slides = [];
+      for (let i = 0; i < allCards.length; i += perSlide) {
+        slides.push(allCards.slice(i, i + perSlide));
+      }
+      boostTotalSlides = Math.max(slides.length, 1);
+
+      track.innerHTML = slides.map(group =>
+        `<div class="boosted-slide">${group.join('')}</div>`
+      ).join('');
+
+      // Dots
+      dotsEl.innerHTML = slides.map((_, i) =>
+        `<div class="slider-dot ${i === 0 ? 'active' : ''}" onclick="boostGoTo(${i})"></div>`
+      ).join('');
+
+      // Autoplay si plis pase 1 slide
+      clearInterval(boostAutoplay);
+      if (slides.length > 1) {
+        boostAutoplay = setInterval(() => boostSlide(1), 4000);
+      }
+    }
+
+    // ── RENDER SELLERS ──
+    function renderSellers(list) {
+      const grid = document.getElementById('sellers-grid-home');
+      if (!grid) return;
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Pa gen machann toujou</div></div>`;
+        return;
+      }
+      grid.innerHTML = list.map(s => {
+        const sProds = allProducts
+          .filter(p => String(p.seller_id) === String(s.id) && p.image_url)
+          .slice(0, 4);
+        let previews = sProds.map(p => `
+          <div class="preview-img">
+            <img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;"
+                 onerror="this.parentElement.innerHTML='📦'">
+          </div>`).join('');
+        for (let i = sProds.length; i < 4; i++) previews += `<div class="preview-img">📦</div>`;
+        const initial = (s.full_name || 'M').charAt(0).toUpperCase();
+        const avatarContent = s.avatar_url
+          ? `<img src="${s.avatar_url}" onerror="this.style.display='none'; this.parentElement.innerText='${initial}'">`
+          : initial;
+        return `
+          <div class="seller-card">
+            <div class="seller-head">
+              <div class="seller-avatar">${avatarContent}</div>
+              <div class="seller-info">
+                <h4>${s.full_name || 'Boutik'}</h4>
+                <p>📍 ${s.address || 'Ayiti'}</p>
+                <span class="seller-verified">✅ Verifye</span>
+              </div>
+            </div>
+            <div class="seller-previews">${previews}</div>
+            <a href="/boutik-machann.html?id=${s.id}" class="btn-visit">Vizite Boutik →</a>
+          </div>`;
+      }).join('');
+    }
+
+    // ── RENDER PRODUCTS ──
+    function renderProducts(list) {
+      const grid = document.getElementById('supabase-products-grid');
+      if (!grid) return;
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Pa gen pwodwi toujou</div><div class="e-sub">Machann yo ap ajoute byento!</div></div>`;
+        return;
+      }
+      grid.innerHTML = list.map(p => {
+        return `
+        <div class="mkt-prod-card">
+          <a href="/pwodwi-machann.html?id=${p.id}">
+            <img class="mkt-prod-img" src="${p.image_url}" alt="${p.title}"
+                 onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+          </a>
+          <div class="mkt-prod-name">${p.title}</div>
+          <div class="mkt-prod-price">${p.price} HTG</div>
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
+            🛒 Ajoute
+          </button>
+        </div>`;
+      }).join('');
+    }
+
+    // ── RENDER FLASH ──
+    function renderFlashSlider(list) {
+      const slider = document.getElementById('flash-slider-inner');
+      if (!slider) return;
+      slider.innerHTML = list.map(p => {
+        const valOld = p.old_price ? parseFloat(p.old_price) : 0;
+        const valNew = parseFloat(p.price);
+        const disc   = (valOld > valNew) ? Math.round(((valOld - valNew) / valOld) * 100) : 0;
+        return `
+          <div class="flash-card">
+            ${disc > 0 ? `<span class="flash-pct">-${disc}%</span>` : ''}
+            <div class="flash-img-wrap">
+              <a href="/pwodwi-machann.html?id=${p.id}">
+                <img class="flash-img" src="${p.image_url}" alt="${p.title}"
+                     onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+              </a>
+            </div>
+            <div class="flash-name">${p.title}</div>
+            <div class="flash-prices">
+              <span class="flash-new">${p.price} HTG</span>
+              ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
+            </div>
+            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
+              🛒 Ajoute
+            </button>
+          </div>`;
+      }).join('');
+    }
+
+    // ── SWITCH TAB ──
+    function switchMarketTab(tab) {
+      document.getElementById('tab-sellers').classList.toggle('active', tab === 'sellers');
+      document.getElementById('tab-products').classList.toggle('active', tab === 'products');
+      document.getElementById('sellers-view').style.display  = tab === 'sellers'  ? 'block' : 'none';
+      document.getElementById('products-view').style.display = tab === 'products' ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toujou rann pub yo paretmenm si Supabase pa chaje
+      renderBoosted([]);
+      // Chaje done Supabase (pwodwi vedèt yo pral ajoute apre)
+      loadAllData();
+    });
+</script>

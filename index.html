@@ -703,6 +703,18 @@ title: Akèy - Boutique Piyay
 
     let allSellers  = [];
     let allProducts = [];
+    let sellerMap   = {}; // Cache vendeur: { [sellerId]: { full_name, whatsapp_number } }
+
+    // ── BUILD SELLER MAP ──
+    function buildSellerMap() {
+      sellerMap = {};
+      allSellers.forEach(s => {
+        sellerMap[s.id] = {
+          full_name: s.full_name || 'Boutique Piyay',
+          whatsapp_number: s.whatsapp_number || s.whatsapp || '50948868964'
+        };
+      });
+    }
 
     // ── BOOSTED SLIDER STATE ──
     let boostCurrentSlide = 0;
@@ -818,6 +830,9 @@ title: Akèy - Boutique Piyay
       const allCards = [];
 
       list.forEach(p => {
+        const seller = sellerMap[p.seller_id] || {};
+        const sellerName = seller.name || 'Boutique Piyay';
+        const sellerPhone = (seller.phone || '50948868964').replace(/[^0-9]/g, '');
         allCards.push(`
           <div class="boosted-card">
             <span class="boosted-badge">VEDÈT 🔥</span>
@@ -827,7 +842,7 @@ title: Akèy - Boutique Piyay
             </a>
             <div class="boosted-title">${p.title}</div>
             <div class="boosted-price">${p.price} HTG</div>
-            <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}')">
+            <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}')">
               🛒 Ajoute
             </button>
           </div>`);
@@ -905,7 +920,8 @@ title: Akèy - Boutique Piyay
         grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Pa gen pwodwi toujou</div><div class="e-sub">Machann yo ap ajoute byento!</div></div>`;
         return;
       }
-      grid.innerHTML = list.map(p => `
+      grid.innerHTML = list.map(p => {
+        return `
         <div class="mkt-prod-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
             <img class="mkt-prod-img" src="${p.image_url}" alt="${p.title}"
@@ -913,10 +929,11 @@ title: Akèy - Boutique Piyay
           </a>
           <div class="mkt-prod-name">${p.title}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
-          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}')">
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
             🛒 Ajoute
           </button>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     }
 
     // ── RENDER FLASH ──
@@ -941,7 +958,7 @@ title: Akèy - Boutique Piyay
               <span class="flash-new">${p.price} HTG</span>
               ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
             </div>
-            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}')">
+            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
               🛒 Ajoute
             </button>
           </div>`;

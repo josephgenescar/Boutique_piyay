@@ -1028,8 +1028,32 @@
         }
     }
 
+    async function clearExpiredFlashSales(prods) {
+        if (!prods || !prods.length) return false;
+        const now = new Date();
+        const expiredIds = prods
+            .filter(p => p.is_flash_sale === true && p.flash_start_at)
+            .filter(p => (now - new Date(p.flash_start_at)) / (1000 * 60 * 60) >= 24)
+            .map(p => p.id);
+
+        if (expiredIds.length === 0) return false;
+
+        await supD.from('user_products').update({
+            old_price: null,
+            is_flash_sale: false,
+            flash_start_at: null
+        }).in('id', expiredIds);
+
+        return true;
+    }
+
     async function loadAll() {
-        const { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+        let { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+        const hasExpired = await clearExpiredFlashSales(prods);
+        if (hasExpired) {
+            const refreshed = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+            prods = refreshed.data;
+        }
         const grid = document.getElementById('prods-grid');
         if (prods && prods.length > 0) {
             grid.innerHTML = prods.map(p => {
@@ -1153,11 +1177,13 @@
             loadAll(); return;
         }
 
-        // 🚀 Tcheke limit 3 pwodwi pou chak machann
+        // 🚀 Tcheke limit 3 pwodwi aktyèlman nan Vante Flash (24h sèlman)
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { data: flashProds } = await supD.from('user_products')
             .select('id')
             .eq('seller_id', currentUser.id)
-            .eq('is_flash_sale', true);
+            .eq('is_flash_sale', true)
+            .gte('flash_start_at', twentyFourHoursAgo);
 
         if (flashProds && flashProds.length >= 3) {
             alert("❌ Ou ka mete sèlman 3 pwodwi nan Vante Flash anmenmtan!");
@@ -1165,14 +1191,22 @@
         }
 
         const oldP = prompt(`Mete ansyen pri a (dwe pi gwo pase ${currentPrice}):`);
-        if (oldP && parseFloat(oldP) > currentPrice) {
-            await supD.from('user_products').update({
-                old_price: parseFloat(oldP),
-                is_flash_sale: true,
-                flash_start_at: new Date().toISOString() // Sove lè flash la kòmanse
-            }).eq('id', id);
-            loadAll();
+        if (!oldP) {
+            return;
         }
+
+        const oldPriceValue = parseFloat(oldP);
+        if (isNaN(oldPriceValue) || oldPriceValue <= currentPrice) {
+            alert("❌ Pri flash la dwe yon nimewo ki pi gwo pase pri aktyèl la.");
+            return;
+        }
+
+        await supD.from('user_products').update({
+            old_price: oldPriceValue,
+            is_flash_sale: true,
+            flash_start_at: new Date().toISOString() // Sove lè flash la kòmanse
+        }).eq('id', id);
+        loadAll();
     }
 
     async function saveProfile() {

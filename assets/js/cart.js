@@ -56,24 +56,54 @@ function drawCart() {
 
   document.getElementById('order-form-container').style.display = 'block';
 
-  let totalHTG = 0;
-  let html = `<style>.cart-item { display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 1px solid #eee; }.cart-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }.cart-info { flex: 1; }.cart-title { font-weight: 700; font-size: 14px; }.cart-price { color: #ff4747; font-weight: 800; }</style>`;
-
+  // Group items by seller
+  let bySeller = {};
   currentCart.forEach(it => {
-    let sub = it.price * it.qty;
-    totalHTG += sub;
-    html += `
-      <div class="cart-item">
-        <img class="cart-img" src="${it.img}" onerror="this.src='/assets/images/logo.png'">
-        <div class="cart-info">
-            <div class="cart-title">${it.title}</div>
-            <div class="cart-price">${it.price.toLocaleString()} HTG x ${it.qty}</div>
-        </div>
-        <button onclick="removeItem('${it.id}')" style="background:none; border:none; color:#ff4747; cursor:pointer; font-weight:bold; padding:10px;">✕</button>
-      </div>`;
+    const sid = it.sellerId || 'boutique-piyay';
+    if (!bySeller[sid]) bySeller[sid] = { items: [], phone: it.sellerPhone };
+    bySeller[sid].items.push(it);
   });
 
-  html += `<div style="margin-top:20px; text-align:right; font-size:18px; font-weight:900;">TOTAL: ${totalHTG.toLocaleString()} HTG</div>`;
+  let totalHTG = 0;
+  let html = `<style>
+    .seller-group { background: #f8fafc; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ff4747; }
+    .seller-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-weight: 800; color: #0f172a; padding-bottom: 10px; border-bottom: 2px solid #fbbf24; }
+    .seller-wa { font-size: 12px; }
+    .seller-wa a { color: #25d366; text-decoration: none; font-weight: 700; }
+    .cart-item { display: flex; align-items: center; gap: 15px; padding: 10px 0; }
+    .cart-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+    .cart-info { flex: 1; }
+    .cart-title { font-weight: 700; font-size: 14px; }
+    .cart-price { color: #ff4747; font-weight: 800; }
+  </style>`;
+
+  Object.entries(bySeller).forEach(([sellerId, group]) => {
+    const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
+    html += `<div class="seller-group">
+      <div class="seller-header">
+        <span>🏪 Boutique Piyay</span>
+        <div class="seller-wa">
+          <a href="https://wa.me/${phone}" target="_blank">📱 WhatsApp</a>
+        </div>
+      </div>`;
+    
+    group.items.forEach(it => {
+      let sub = it.price * it.qty;
+      totalHTG += sub;
+      html += `
+        <div class="cart-item">
+          <img class="cart-img" src="${it.img}" onerror="this.src='/assets/images/logo.png'">
+          <div class="cart-info">
+            <div class="cart-title">${it.title}</div>
+            <div class="cart-price">${it.price.toLocaleString()} HTG × ${it.qty}</div>
+          </div>
+          <button onclick="removeItem('${it.id}')" style="background:none; border:none; color:#ff4747; cursor:pointer; font-weight:bold; padding:10px;">✕</button>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<div style="margin-top:20px; text-align:right; font-size:18px; font-weight:900; padding: 15px 0; border-top: 3px solid #ff4747;">💰 TOTAL: ${totalHTG.toLocaleString()} HTG</div>`;
   box.innerHTML = html;
 }
 
