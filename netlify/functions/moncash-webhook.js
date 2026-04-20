@@ -1,9 +1,11 @@
 const axios = require('axios');
-// Nou pa bezwen supabase isit la si nou sèlman ap resevwa alèt la,
-// men li pi bon pou nou mete l pou nou ka chanje status kòmand lan nan baz done a otomatikman.
+const { createClient } = require('@supabase/supabase-js');
+
+const SUPABASE_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+const supabase = SUPABASE_KEY ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 exports.handler = async (event) => {
-    // MonCash voye yon POST sou lyen sa a
     if (event.httpMethod !== "POST") {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
@@ -12,14 +14,24 @@ exports.handler = async (event) => {
         const payload = JSON.parse(event.body);
         console.log("🔔 MONCASH WEBHOOK RECEIVIED:", payload);
 
-        // Payload MonCash la gen ladan l 'v' (transaction_id), 'o' (order_id), elatriye.
         const orderId = payload.o || payload.order_id;
         const transactionId = payload.v || payload.transaction_id;
 
         if (orderId) {
-            // Isit la nou ta ka rele Supabase pou nou mete status 'paid' otomatikman
-            // san nou pa menm tann kliyan an tounen sou paj merci a.
             console.log(`✅ Kòmand ${orderId} konfime pa Webhook. Tranzaksyon: ${transactionId}`);
+
+            if (supabase) {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({ status: 'paid', updated_at: new Date().toISOString() })
+                    .eq('order_group_id', orderId);
+
+                if (error) {
+                    console.error('Webhook Supabase update error:', error);
+                }
+            } else {
+                console.warn('Webhook pa gen SUPABASE_SERVICE_ROLE_KEY oswa SUPABASE_ANON_KEY. Pa t ka mete ajou baz done.');
+            }
         }
 
         return {

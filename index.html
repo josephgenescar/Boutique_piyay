@@ -750,17 +750,18 @@ title: Akèy - Boutique Piyay
       try {
         const { data: prods } = await supabaseHome
           .from('user_products')
-          .select('id, title, price, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at, flash_start_at')
-          .eq('is_approved', true)
+          .select('id, title, price, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at, flash_start_at, is_approved')
           .order('created_at', { ascending: false });
 
         const { data: sellers } = await supabaseHome
           .from('profiles')
-          .select('*')
-          .eq('is_active_seller', true);
+          .select('*');
 
-        allProducts = prods    || [];
-        allSellers  = sellers  || [];
+        allProducts = (prods || []).filter(p => p.image_url && p.title && p.price);
+        allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
+
+        console.log(`📦 Total pwodwi chaje: ${allProducts.length}`);
+        console.log(`🏪 Total machann chaje: ${allSellers.length}`);
 
         // 1. Vedèt slider
         renderBoosted(allProducts.filter(p => p.is_boosted === true));
@@ -773,18 +774,17 @@ title: Akèy - Boutique Piyay
         const now = new Date();
         const flashProds = allProducts.filter(p => {
           // Si is_flash_sale se vre
-          if (p.is_flash_sale === true) {
-             // Si pa gen flash_start_at, nou kite l parèt (pou sekirite)
-             if (!p.flash_start_at) return true;
-
+          if (p.is_flash_sale === true && p.flash_start_at) {
              // Kalkile si sa fè mwens pase 24h
              const start = new Date(p.flash_start_at);
              const diffHours = (now - start) / (1000 * 60 * 60);
              return diffHours < 24;
           }
-          // Si se jis yon pwodwi ki gen old_price (san flash_sale aktive ekspreseman), nou ka kite l tou
-          return (p.old_price && parseFloat(p.old_price) > parseFloat(p.price));
+          // Si se jis yon pwodwi ki gen old_price (san flash_sale aktive ekspreseman)
+          return false;
         });
+
+        console.log(`⚡ Pwodwi flash sale: ${flashProds.length}`);
 
         if (flashProds.length > 0) {
           document.getElementById('flash-sale').style.display = 'block';
@@ -794,7 +794,7 @@ title: Akèy - Boutique Piyay
         }
 
         startInfiniteFlashTimer();
-      } catch(e) { console.error("Erè chajman:", e); }
+      } catch(e) { console.error("Erè chajman:", e); console.error(e); }
     }
 
     // ── PUB STATIK YO (sèlman pwodwi vedèt nan slider) ──

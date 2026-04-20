@@ -131,6 +131,7 @@ async function submitOrder() {
   if (cart.length === 0) return;
 
   const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const orderGroupId = "BP-" + Date.now();
   const btn = document.getElementById('submitOrderBtn');
 
   btn.disabled = true;
@@ -140,15 +141,44 @@ async function submitOrder() {
     const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
 
     if (paymentMethod === 'MonCash') {
+        console.log('📤 Sending to MonCash:', { amount: totalAmount, orderId: orderGroupId });
+        
         const moncashRes = await fetch('/.netlify/functions/moncash', {
             method: 'POST',
-            body: JSON.stringify({ amount: totalAmount, orderId: "BP-" + Date.now() })
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount: totalAmount, orderId: orderGroupId })
         });
 
-        const data = await moncashRes.json();
+        console.log('📥 MonCash response status:', moncashRes.status);
+        console.log('📥 MonCash response headers:', {
+            contentType: moncashRes.headers.get('content-type'),
+            status: moncashRes.status,
+            statusText: moncashRes.statusText
+        });
+
+        // Pran body kòm text anvan
+        const responseText = await moncashRes.text();
+        console.log('📥 MonCash raw response:', responseText.substring(0, 200));
+
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('❌ JSON Parse error:', parseError);
+            console.error('Response was:', responseText.substring(0, 500));
+            throw new Error(`❌ Sèvè a pa reponn korèkteman. Status: ${moncashRes.status}. Check Netlify logs.\n\nRepons: ${responseText.substring(0, 200)}`);
+        }
+
+        console.log('✅ MonCash parsed data:', data);
 
         if (!moncashRes.ok) {
-            throw new Error(data.error || "Sèvè MonCash la pa reponn (Vérifiez les logs Netlify)");
+            throw new Error(data.error || `Erè MonCash (${moncashRes.status}): ${data.message || 'Unknown error'}`);
+        }
+
+        if (!data.redirectURL) {
+            throw new Error('❌ MonCash pa retounen lyen redireksyon. Check Netlify logs.');
         }
 
         // Sove nan DB anvan nou redireksyon
@@ -162,7 +192,8 @@ async function submitOrder() {
                   product_title: item.title,
                   total_price: (item.price * item.qty),
                   status: 'pending_payment',
-                  payment_method: 'MonCash'
+                  payment_method: 'MonCash',
+                  order_group_id: orderGroupId
                 });
             }
         }
@@ -184,7 +215,8 @@ async function submitOrder() {
             product_title:  item.title,
             total_price:    (item.price * item.qty),
             status:         'pending',
-            payment_method: paymentMethod
+            payment_method: paymentMethod,
+            order_group_id: orderGroupId
           });
         }
     }

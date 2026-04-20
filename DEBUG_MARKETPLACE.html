@@ -1,0 +1,68 @@
+<!-- DEBUG PAGE - Ajoute sa avant </body> nan index.html si tu vle test -->
+<!-- <script>
+// DEBUG: Verifye Marketplace Products
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🔍 DEBUG: Marketplace Check...');
+    
+    // Attendre 2 secondes pour que Supabase chaje
+    await new Promise(r => setTimeout(r, 2000));
+    
+    const grid = document.getElementById('supabase-products-grid');
+    const productsView = document.getElementById('products-view');
+    
+    console.log('Grid element:', grid);
+    console.log('Products view:', productsView);
+    console.log('Grid HTML:', grid?.innerHTML);
+    console.log('Grid children count:', grid?.children.length);
+    
+    // Verifye si "allProducts" global egziste
+    console.log('All products array:', window.allProducts?.length || 'NOT FOUND');
+    
+    if (window.allProducts) {
+        console.log('Sample products:', window.allProducts.slice(0, 3));
+        
+        // Filter test
+        const filtered = window.allProducts.filter(p => p.image_url && p.title && p.price);
+        console.log('Filtered (with image/title/price):', filtered.length);
+        
+        // Aproval test
+        const approved = window.allProducts.filter(p => p.is_approved === true);
+        console.log('Approved products:', approved.length);
+        
+        // Flash sale test
+        const flashSales = window.allProducts.filter(p => p.is_flash_sale === true);
+        console.log('Flash sales:', flashSales.length);
+    }
+    
+    // Verifye Supabase connection
+    if (typeof window.supabaseHome !== 'undefined' && window.supabaseHome) {
+        try {
+            const { data: testData, error: testError } = await window.supabaseHome
+                .from('user_products')
+                .select('id, title, is_approved, image_url')
+                .limit(5);
+            
+            console.log('Direct Supabase test:', testData);
+            if (testError) console.error('Supabase error:', testError);
+        } catch (e) {
+            console.error('Supabase connection error:', e);
+        }
+    } else {
+        console.warn('⚠️ Supabase client not initialized');
+    }
+});
+</script> -->
+
+<!-- SIMPLER DEBUG: Just check console after page load -->
+<!-- Open Browser DevTools (F12) → Console tab
+Then check:
+1. window.allProducts - array of all products
+2. window.allSellers - array of all sellers
+3. Look for "📦 Total pwodwi chaje: XX"
+4. Look for errors
+
+If no products shown:
+- Check if user_products table has data with is_approved=true
+- Check if user_products have image_url values
+- Check if is_flash_sale & flash_start_at columns exist
+-->
