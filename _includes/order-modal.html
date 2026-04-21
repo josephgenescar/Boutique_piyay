@@ -38,11 +38,15 @@
 
                 <!-- METÒD PEMAN KÒRÈK -->
                 <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Chwazi Mwayen Peman</p></label>
-                <select id="payment-method-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-weight: 700;">
-                    <option value="MonCash">💳 Peye ak MonCash (Rapide)</option>
-                    <option value="NatCash">📲 Peye ak NatCash</option>
-                    <option value="Cash">💵 Cash à la livraison</option>
-                </select>
+
+                                <select id="payment-method-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-weight: 700;">
+                                        <option value="manual" selected>💵 Peye Manyèlman (Kontakte machann lan)</option>
+                                        <option value="NatCash">📲 Peye ak NatCash</option>
+                                        <option value="Cash">💵 Cash à la livraison</option>
+                                </select>
+                                <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
+                                    <b>Gid:</b> Chwazi "Peye Manyèlman" pou kontakte machann lan sou WhatsApp, negosye epi voye prèv peman an. Machann lan ap valide kòmand ou.
+                                </div>
 
                 <button id="submitOrderBtn" class="btn-confirm-order" onclick="submitOrder()" style="width: 100%; padding: 15px; background: #ff4747; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(255,71,71,0.3);">
                     Konfime Kòmand la ✅

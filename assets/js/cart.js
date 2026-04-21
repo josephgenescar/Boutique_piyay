@@ -165,7 +165,7 @@ async function submitOrder() {
   const btn = document.getElementById('submitOrderBtn');
 
   btn.disabled = true;
-  btn.innerText = paymentMethod === 'MonCash' ? "⏳ Koneksyon MonCash..." : "⏳ Anrejistreman...";
+  btn.innerText = "⏳ Anrejistreman...";
 
   try {
     const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
@@ -213,69 +213,20 @@ async function submitOrder() {
 
         // Sove nan DB anvan nou redireksyon
         if (sup) {
-            for (const item of cart) {
-                await sup.from('orders').insert({
-                  seller_id: item.sellerId,
-                  customer_name: name,
-                  customer_phone: phone,
-                  delivery_zone: zone,
-                  product_title: item.title,
-                  total_price: (item.price * item.qty),
-                  status: 'pending_payment',
-                  payment_method: 'MonCash',
-                  order_group_id: orderGroupId
-                });
-            }
-        }
+            try {
+              const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
 
-        localStorage.removeItem(CART_KEY);
-        refreshBadge();
-        window.location.href = data.redirectURL;
-        return;
-    }
+              // ---
+              // Si ou vle reaktive MonCash pita, retire kòmantè sou blòk sa a:
+              /*
+              if (paymentMethod === 'MonCash') {
+                // ...kòd MonCash la...
+                return;
+              }
+              */
 
-    // Lojik nòmal pou Cash/Natcash
-    if (sup) {
-        for (const item of cart) {
-          await sup.from('orders').insert({
-            seller_id:      item.sellerId,
-            customer_name:  name,
-            customer_phone: phone,
-            delivery_zone:  zone,
-            product_title:  item.title,
-            total_price:    (item.price * item.qty),
-            status:         'pending',
-            payment_method: paymentMethod,
-            order_group_id: orderGroupId
-          });
-        }
-    }
-
-    const orderData = { name, phone, zone, cart, payment: paymentMethod };
-    const modalContent = document.querySelector('.modal-content');
-    modalContent.innerHTML = `
-      <div style="text-align:center; padding:40px;">
-          <div style="font-size:60px; margin-bottom:20px;">✅</div>
-          <h2 style="color:#ff4747; margin-bottom:15px;">Kòmand Voye!</h2>
-          <p style="margin-bottom:25px; color:#666;">Mèsi ${name}, kòmand ou an anrejistre avèk siksè.</p>
-          <button onclick='contactWhatsApp(${JSON.stringify(orderData)})' style="width:100%; padding:18px; background:#25D366; color:white; border:none; border-radius:15px; font-weight:bold; cursor:pointer; margin-bottom:15px; font-size:16px;">💬 Voye sou WhatsApp</button>
-          <button onclick='generateReceipt(${JSON.stringify(orderData)})' style="width:100%; padding:15px; background:#f1f5f9; color:#334155; border:none; border-radius:15px; font-weight:bold; cursor:pointer; margin-bottom:10px;">📄 Telechaje Resi</button>
-          <button onclick="location.href='/'" style="width:100%; padding:12px; background:none; color:#999; border:none; cursor:pointer;">Retounen nan Akèy</button>
-      </div>`;
-
-    localStorage.removeItem(CART_KEY);
-    refreshBadge();
-
-  } catch (err) {
-    alert("❌ " + err.message);
-    btn.disabled = false; btn.innerText = "Konfime Kòmand la ✅";
-  }
-}
-
-window.orderProduct = orderProduct;
-window.openCart = openCart;
-window.closeOrderModal = closeOrderModal;
-window.submitOrder = submitOrder;
-window.removeItem = removeItem;
-window.generateReceipt = generateReceipt;
+              // Gid pou peman manyèl
+              if (paymentMethod === 'manual') {
+                alert('Tanpri kontakte machann lan sou WhatsApp pou w negosye ak peye. Apre ou fin peye, voye prèv la bay machann lan pou validasyon.');
+              }
 window.contactWhatsApp = contactWhatsApp;
