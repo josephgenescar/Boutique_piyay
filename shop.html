@@ -93,27 +93,27 @@ permalink: /shop/
 </style>
 
 <div class="shop-hero">
-    <h1>Boutik Machann yo 🏪</h1>
-    <p>Tout pwodwi machann nou yo ap parèt isit la</p>
+    <h1>Boutique des Vendeurs 🏪</h1>
+    <p>Tous les produits de nos vendeurs s'affichent ici</p>
     <div class="search-box">
-        <input type="text" id="shopSearch" placeholder="Chèche yon pwodwi (eg: rad, telefon...)" oninput="filterLocal()">
+        <input type="text" id="shopSearch" placeholder="Rechercher un produit (ex : robe, téléphone...)" oninput="filterLocal()">
     </div>
 </div>
 
 <div class="shop-container">
     <aside class="sidebar">
-        <h3>Kategori</h3>
-        <button class="cat-btn active" onclick="filterCat('all', this)">Tout Pwodwi</button>
-        <button class="cat-btn" onclick="filterCat('electronique', this)">⚡ Elektwonik</button>
-        <button class="cat-btn" onclick="filterCat('habillement', this)">👗 Rad & Mòd</button>
-        <button class="cat-btn" onclick="filterCat('maison', this)">🏠 Kay & Biwo</button>
-        <button class="cat-btn" onclick="filterCat('beaute', this)">💄 Bote</button>
+        <h3>Catégories</h3>
+        <button class="cat-btn active" onclick="filterCat('all', this)">Tous les Produits</button>
+        <button class="cat-btn" onclick="filterCat('electronique', this)">⚡ Électronique</button>
+        <button class="cat-btn" onclick="filterCat('habillement', this)">👗 Vêtements & Mode</button>
+        <button class="cat-btn" onclick="filterCat('maison', this)">🏠 Maison & Bureau</button>
+        <button class="cat-btn" onclick="filterCat('beaute', this)">💄 Beauté</button>
     </aside>
 
     <main>
         <div id="productsGrid" class="products-grid">
             <div id="loadingStatus" class="loading-msg">
-                <p>⏳ Ap prepare koneksyon ak Supabase...</p>
+                <p>⏳ Préparation de la connexion à Supabase...</p>
                 <small id="debug-log" style="display:block; margin-top:10px; color:#94a3b8;"></small>
             </div>
         </div>
@@ -160,43 +160,43 @@ permalink: /shop/
         const status = document.getElementById('loadingStatus');
 
         try {
-            log("Y ap tcheke bibliyotèk Supabase...");
+            log("Vérification de la bibliothèque Supabase...");
 
             if (typeof window.supabase === 'undefined') {
-                log("ERÈ: SDK pa jwenn!");
-                status.innerHTML = "❌ Erè: Bibliyotèk Supabase la pa chaje. Tanpri rafrechi paj la (F5).";
+                log("ERREUR : SDK non trouvé !");
+                status.innerHTML = "❌ Erreur : La bibliothèque Supabase n'est pas chargée. Veuillez rafraîchir la page (F5).";
                 return;
             }
 
-            log("SDK jwenn. Y ap kreye kliyan...");
+            log("SDK trouvée. Création du client...");
             // Itilize nouvo non varyab yo
             const supabaseShop = window.supabase.createClient(SHOP_SUP_URL, SHOP_SUP_KEY);
 
-            log("Kliyan kreye. Y ap rekipere done nan tablo 'user_products'...");
+            log("Client créé. Récupération des données dans la table 'user_products'...");
             const { data, error } = await supabaseShop
                 .from('user_products')
                 .select('*')
                 .order('created_at', { ascending: false });
 
             if (error) {
-                log("ERÈ SUPABASE: " + error.message);
+                log("ERREUR SUPABASE : " + error.message);
                 throw error;
             }
 
-            log("Done rekipere! Kantite pwodwi: " + (data ? data.length : 0));
+            log("Données récupérées ! Nombre de produits : " + (data ? data.length : 0));
             allProducts = data || [];
 
             if (allProducts.length === 0) {
-                grid.innerHTML = `<div class="loading-msg">📭 Pa gen okenn pwodwi machann yo ajoute kounye a nan baz de done a.</div>`;
+                grid.innerHTML = `<div class="loading-msg">📭 Aucun produit n'a encore été ajouté par les vendeurs dans la base de données.</div>`;
             } else {
                 renderProducts(allProducts);
             }
 
         } catch (err) {
-            log("ERÈ KRITIK: " + err.message);
+            log("ERREUR CRITIQUE : " + err.message);
             grid.innerHTML = `<div class="loading-msg" style="color:red">
-                ❌ Erè: ${err.message || 'Koneksyon echwe'}.<br>
-                <small>Asire w ou gen entènèt epi tablo 'user_products' la egziste.</small>
+                ❌ Erreur : ${err.message || 'Connexion échouée'}.<br>
+                <small>Assurez-vous d'avoir une connexion internet et que la table 'user_products' existe.</small>
             </div>`;
         }
     }
@@ -206,14 +206,14 @@ permalink: /shop/
         grid.innerHTML = products.map(p => `
             <div class="product-card">
                 <div class="img-wrap">
-                    <img src="${p.image_url}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300?text=Imaj+pa+disponib'">
+                    <img src="${p.image_url}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300?text=Image+non+disponible'">
                 </div>
                 <div class="info">
-                    <div class="cat">${p.category || 'Boutik'}</div>
+                    <div class="cat">${p.category || 'Boutique'}</div>
                     <div class="title">${p.title}</div>
                     <div class="price">${p.price ? Number(p.price).toLocaleString() : 0} HTG</div>
                     <button class="btn-add" onclick="if(window.orderProduct) window.orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price || 0}', '${p.id}', '${p.image_url}')">
-                        🛒 Ajoute nan Panye
+                        🛒 Ajouter au Panier
                     </button>
                 </div>
             </div>

@@ -616,7 +616,7 @@ title: Akèy - Boutique Piyay
     <section id="boosted-section">
         <div class="section-hdr">
             <div class="section-hdr-left">
-                <h2>Pwodwi Vedèt 🔥</h2>
+                <h2>Produits Vedettes 🔥</h2>
                 <div class="section-hdr-bar"></div>
             </div>
             <div class="slider-nav">
@@ -630,65 +630,65 @@ title: Akèy - Boutique Piyay
         </div>
     </section>
 
-    <!-- 2. VANTE FLASH -->
+    <!-- 2. VENTE FLASH -->
     <section id="flash-sale">
-        <div class="flash-header">
-            <div class="flash-title-wrap">
-                <div class="flash-dot"></div>
-                <h2>⚡ Vante Flash</h2>
-            </div>
-            <div class="timer-wrap">
-                <div class="t-seg"><span id="hours">24</span><small>h</small></div>
-                <span class="t-div">:</span>
-                <div class="t-seg"><span id="minutes">00</span><small>m</small></div>
-                <span class="t-div">:</span>
-                <div class="t-seg"><span id="seconds">00</span><small>s</small></div>
-            </div>
+      <div class="flash-header">
+        <div class="flash-title-wrap">
+          <div class="flash-dot"></div>
+          <h2>⚡ Vente Flash</h2>
         </div>
-        <div class="flash-slider" id="flash-slider-inner"></div>
+        <div class="timer-wrap">
+          <div class="t-seg"><span id="hours">24</span><small>h</small></div>
+          <span class="t-div">:</span>
+          <div class="t-seg"><span id="minutes">00</span><small>m</small></div>
+          <span class="t-div">:</span>
+          <div class="t-seg"><span id="seconds">00</span><small>s</small></div>
+        </div>
+      </div>
+      <div class="flash-slider" id="flash-slider-inner"></div>
     </section>
 
-    <!-- 3. KATEGORIS -->
+    <!-- 3. CATÉGORIES -->
     <section id="categories-section">
-        <div class="section-hdr">
-            <div class="section-hdr-left">
-                <h2>Chwazi pa Kategori</h2>
-                <div class="section-hdr-bar" style="width:50px;"></div>
-            </div>
+      <div class="section-hdr">
+        <div class="section-hdr-left">
+          <h2>Choisissez par Catégorie</h2>
+          <div class="section-hdr-bar" style="width:50px;"></div>
         </div>
-        <div class="cat-scroll">
-            {% for cat in site.categories %}
-            <a href="{{ cat.url }}" class="cat-bubble">
-                <div class="cat-bubble-img">
-                    <img src="{{ cat.image }}" alt="{{ cat.title }}"
-                         onerror="this.src='https://ui-avatars.com/api/?name={{ cat.title }}&background=ff4747&color=fff'">
-                </div>
-                <span>{{ cat.display_name | default: cat.title }}</span>
-            </a>
-            {% endfor %}
-        </div>
+      </div>
+      <div class="cat-scroll">
+        {% for cat in site.categories %}
+        <a href="{{ cat.url }}" class="cat-bubble">
+          <div class="cat-bubble-img">
+            <img src="{{ cat.image }}" alt="{{ cat.title }}"
+               onerror="this.src='https://ui-avatars.com/api/?name={{ cat.title }}&background=ff4747&color=fff'">
+          </div>
+          <span>{{ cat.display_name | default: cat.title }}</span>
+        </a>
+        {% endfor %}
+      </div>
     </section>
 
-    <!-- 4. MARKETPLACE -->
+    <!-- 4. MARCHÉ -->
     <section id="user-market">
-        <div class="section-hdr">
-            <div class="section-hdr-left">
-                <h2>Marketplace 🚀</h2>
-                <div class="section-hdr-bar" style="width:60px;"></div>
-            </div>
+      <div class="section-hdr">
+        <div class="section-hdr-left">
+          <h2>Marché 🚀</h2>
+          <div class="section-hdr-bar" style="width:60px;"></div>
         </div>
+      </div>
 
-        <div class="market-tabs">
-            <button id="tab-sellers" class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Machann yo</button>
-            <button id="tab-products" class="market-tab" onclick="switchMarketTab('products')">🛍️ Tout Pwodwi</button>
-        </div>
+      <div class="market-tabs">
+        <button id="tab-sellers" class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Vendeurs</button>
+        <button id="tab-products" class="market-tab" onclick="switchMarketTab('products')">🛍️ Tous les Produits</button>
+      </div>
 
-        <div id="sellers-view">
-            <div class="sellers-grid" id="sellers-grid-home"></div>
-        </div>
-        <div id="products-view" style="display:none;">
-            <div class="mkt-prod-grid" id="supabase-products-grid"></div>
-        </div>
+      <div id="sellers-view">
+        <div class="sellers-grid" id="sellers-grid-home"></div>
+      </div>
+      <div id="products-view" style="display:none;">
+        <div class="mkt-prod-grid" id="supabase-products-grid"></div>
+      </div>
     </section>
 
 </div>

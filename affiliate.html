@@ -1,63 +1,22 @@
+<!--
+Tout kontni paj affiliate.html mete sou kòmantè pou inaktif.
+-->
+<!---->
 <!DOCTYPE html>
-<html lang="ht">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affilié Center - Boutique Piyay</title>
-
-    <!-- ✅ SEKIRITE: Redireksyon si pa konekte -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script>
-        (async function() {
-            const URL = "https://letyferfjpxmstohvgcj.supabase.co";
-            const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-            const sb = window.supabase.createClient(URL, KEY);
-            const { data: { session } } = await sb.auth.getSession();
-            if (!session) { window.location.href = "/login.html?redirect=/affiliate.html"; }
-        })();
-    </script>
-
+    <title>Affiliation - Boutique Piyay</title>
     <link rel="stylesheet" href="/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-    <style>
-        :root {
-            --primary: #ff4747; --primary-light: rgba(255,71,71,0.1);
-            --dark: #0f172a; --dark-2: #1e293b; --gray: #64748b;
-            --light: #f1f5f9; --green: #10b981; --blue: #3b82f6;
-            --gold: #f59e0b; --radius: 20px; --radius-sm: 12px;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; color: var(--dark); }
-        .page-wrap { max-width: 680px; margin: 0 auto; padding: 28px 20px 80px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-        .top-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .top-logo img { width: 38px; border-radius: 10px; }
-        .top-logo-text { font-size: 15px; font-weight: 900; color: var(--dark); }
-        .btn-home { display: flex; align-items: center; gap: 6px; background: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: 800; color: var(--dark); text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-
-        .hero-banner { background: linear-gradient(135deg, var(--dark) 0%, #1e293b 50%, #1a0f35 100%); border-radius: 24px; padding: 32px; color: white; margin-bottom: 24px; position: relative; overflow: hidden; }
-        .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,71,71,0.15); border: 1px solid rgba(255,71,71,0.3); color: #ff8080; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 50px; margin-bottom: 14px; text-transform: uppercase; }
-        .hero-title { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; margin-bottom: 6px; }
-        .hero-code { font-size: 32px; font-weight: 900; color: var(--primary); letter-spacing: 3px; font-family: 'Space Mono', monospace; }
-        .hero-link-box { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 16px; margin-top: 14px; }
-        .hero-link-text { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.5); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .btn-copy-hero { background: var(--primary); color: white; border: none; padding: 7px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; }
-
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-        .stat-card { background: white; border-radius: var(--radius); padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); text-align: center; position: relative; overflow: hidden; }
-        .stat-val { font-size: 22px; font-weight: 900; display: block; }
-        .stat-lbl { font-size: 10px; color: var(--gray); font-weight: 700; text-transform: uppercase; margin-top: 4px; display: block; }
-        .stat-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
-        .stat-bar.red { background: var(--primary); } .stat-bar.green { background: var(--green); } .stat-bar.gold { background: var(--gold); }
-
-        .withdraw-card { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; color: white; }
-        .w-balance { font-size: 38px; font-weight: 900; margin-bottom: 4px; }
-        .btn-withdraw { background: var(--primary); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-weight: 800; width: 100%; cursor: pointer; }
-        .btn-withdraw:disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; color: rgba(255,255,255,0.3); }
-
-        .section-title { font-size: 14px; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-        .tx-card { background: white; border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; margin-bottom: 20px; }
+</head>
+<body style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;min-height:100vh;">
+    <div style="background:white;padding:48px 32px;border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,0.08);text-align:center;max-width:400px;">
+        <h2 style="color:#ff4747;font-weight:900;margin-bottom:18px;">Affiliation</h2>
+        <p style="font-size:1.1rem;color:#444;">Ce service sera <b>bientôt disponible</b>.<br>Merci de votre patience !</p>
+    </div>
+</body>
+</html>
         .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid #f8fafc; }
         .tx-amount.earn { color: var(--green); font-weight: 900; }
         .tx-amount.withdraw { color: var(--primary); font-weight: 900; }

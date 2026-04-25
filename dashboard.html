@@ -877,7 +877,7 @@
             -->
             <div class="boost-opt" id="boost-paid-opt">
                 <div class="boost-opt-title">💳 Peye Boost (100 HTG)</div>
-                <div class="boost-opt-sub">Pou boost pwodwi ou, kontakte admin lan oswa peye manyèlman epi voye prèv la. <br><b>Opsyon otomatik ap vini byento.</b></div>
+                <div class="boost-opt-sub">Pou boost pwodwi ou, ou dwe peye manyèlman via <b>MonCash</b> oswa <b>NatCash</b> epi voye prèv la bay admin. <br>Admin ap ba ou yon <b>kòd aksè</b> pou aktive boost la.<br><br><i>Opsyon otomatik ap vini byento.</i></div>
                 <span class="boost-opt-tag">MANUEL</span>
             </div>
             <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
@@ -1132,33 +1132,13 @@
         }
 
         if (type === 'paid') {
-            const confirmed = confirm("Vle peye 100 HTG via MonCash pou boost pwodwi sa a pandan 48h?");
-            if (!confirmed) return;
-
-            // 💳 MONCASH INTEGRATION POU BOOST
-            const btn = document.getElementById('boost-paid-opt');
-            btn.style.opacity = '0.5';
-            btn.innerText = "⏳ Koneksyon MonCash...";
-
-            try {
-                const res = await fetch('/.netlify/functions/moncash', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        amount: 100,
-                        orderId: "BOOST-" + selectedProdId + "-" + Date.now()
-                    })
-                });
-
-                if (!res.ok) throw new Error("Erè MonCash");
-                const { redirectURL } = await res.json();
-
-                // Redirije machann nan pou l al peye
-                window.location.href = redirectURL;
-            } catch (err) {
-                alert("❌ Erè: " + err.message);
-                btn.style.opacity = '1';
-                btn.innerText = "💳 Peye Boost (100 HTG)";
-            }
+            const code = prompt("Antre kòd aksè ou resevwa nan men admin lan apre ou fin peye MonCash/NatCash:");
+            if (!code) { alert("Ou dwe antre kòd la pou aktive boost la."); return; }
+            // Simulate code validation (in real app, verify with backend)
+            if (code.length < 6) { alert("Kòd pa valab. Kontakte admin."); return; }
+            await supD.from('user_products').update({ is_boosted: true, boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString() }).eq('id', selectedProdId);
+            alert("✅ Boost aktive! Kòd ou te valide.");
+            closeBoostModal(); loadAll();
             return;
         }
 

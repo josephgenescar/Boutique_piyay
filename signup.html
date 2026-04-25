@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kreye Kont - Boutique Piyay</title>
+    <title>Créer un Compte - Boutique Piyay</title>
     <link rel="stylesheet" href="/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -91,59 +91,59 @@
 <div class="auth-wrap">
     <div class="auth-header">
         <a href="/"><img src="/assets/images/logo.png" alt="Logo"></a>
-        <h2>Kreye Kont ou 🚀</h2>
-        <p>Byenvini nan pi gwo rezo komès la</p>
+        <h2>Créer votre Compte 🚀</h2>
+        <p>Bienvenue sur le plus grand réseau de commerce</p>
     </div>
 
     <div class="auth-body">
-        <div class="role-label">Kijan ou vle patisipe?</div>
+        <div class="role-label">Comment souhaitez-vous participer ?</div>
         <div class="role-grid">
             <div id="opt-client" class="role-option active" onclick="setRole('client')">
                 <div class="role-icon">👤</div>
-                <div><div class="role-name">Kliyan</div><div class="role-sub">Achte sèlman</div></div>
+                <div><div class="role-name">Client</div><div class="role-sub">Acheter seulement</div></div>
             </div>
             <div id="opt-seller" class="role-option" onclick="setRole('seller')">
                 <div class="role-icon">🏪</div>
-                <div><div class="role-name">Machann</div><div class="role-sub">Vann pwodwi</div></div>
+                <div><div class="role-name">Vendeur</div><div class="role-sub">Vendre des produits</div></div>
             </div>
             <div id="opt-affiliate" class="role-option" onclick="setRole('affiliate')">
                 <div class="role-icon">🔗</div>
-                <div><div class="role-name">Afilye</div><div class="role-sub">Fè kòb</div></div>
+                <div><div class="role-name">Affilié</div><div class="role-sub">Gagner de l'argent</div></div>
             </div>
         </div>
 
         <form id="signupForm" onsubmit="handleSignup(event)">
             <div class="form-group">
-                <label class="form-label">Non konplet*</label>
-                <input type="text" id="fullName" class="form-input" placeholder="j.m.g" required>
+                <label class="form-label">Nom complet*</label>
+                <input type="text" id="fullName" class="form-input" placeholder="ex : Jean Dupont" required>
             </div>
             <div class="form-group">
                 <label class="form-label">WhatsApp *</label>
-                <input type="tel" id="whatsapp" class="form-input" placeholder="50944443333" required>
+                <input type="tel" id="whatsapp" class="form-input" placeholder="ex : 0612345678" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Email *</label>
-                <input type="email" id="email" class="form-input" placeholder="ou@email.com" required>
+                <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
             </div>
             <div class="form-group">
-                <label class="form-label">Modpas *</label>
-                <input type="password" id="password" class="form-input" placeholder="Min. 8 karaktè" required minlength="8">
+                <label class="form-label">Mot de passe *</label>
+                <input type="password" id="password" class="form-input" placeholder="Min. 8 caractères" required minlength="8">
             </div>
 
             <!-- SELLER FIELDS -->
             <div id="seller-fields" style="display:none;">
-                <div class="divider">Enfòmasyon Boutik</div>
+                <div class="divider">Informations Boutique</div>
                 <div class="form-group">
-                    <label class="form-label">Non Boutik *</label>
-                    <input type="text" id="shopName" class="form-input" placeholder="Eg: Boutik Bèl Afè">
+                    <label class="form-label">Nom de la Boutique *</label>
+                    <input type="text" id="shopName" class="form-input" placeholder="ex : Boutique Belle Affaire">
                 </div>
             </div>
 
-            <button type="submit" id="btnSignup" class="btn-submit">KREYE KONT MWEN</button>
+            <button type="submit" id="btnSignup" class="btn-submit">CRÉER MON COMPTE</button>
         </form>
 
         <div class="already-member">
-            Ou gen kont deja? <a href="/login.html">Konekte isit →</a>
+            Vous avez déjà un compte ? <a href="/login.html">Se connecter ici →</a>
         </div>
     </div>
 </div>
@@ -167,7 +167,7 @@
         e.preventDefault();
         const btn = document.getElementById('btnSignup');
         btn.disabled = true;
-        btn.innerHTML = "⏳ Tanpri tann...";
+        btn.innerHTML = "⏳ Veuillez patienter...";
 
         const email = document.getElementById('email').value.trim();
         const pass = document.getElementById('password').value;
@@ -194,13 +194,13 @@
                 };
 
                 await supS.from('profiles').upsert([profileData]);
-                alert("🎉 Kont kreye! Tanpri verifye email ou.");
+                alert("🎉 Compte créé ! Veuillez vérifier votre email.");
                 window.location.href = "/login.html";
             }
         } catch (err) {
             alert("❌ " + err.message);
             btn.disabled = false;
-            btn.innerHTML = "KREYE KONT MWEN";
+            btn.innerHTML = "CRÉER MON COMPTE";
         }
     }
 </script>
