@@ -876,9 +876,36 @@
             </div>
             -->
             <div class="boost-opt" id="boost-paid-opt">
-                <div class="boost-opt-title">💳 Peye Boost (100 HTG)</div>
-                <div class="boost-opt-sub">Pou boost pwodwi ou, ou dwe peye manyèlman via <b>MonCash</b> oswa <b>NatCash</b> epi voye prèv la bay admin. <br>Admin ap ba ou yon <b>kòd aksè</b> pou aktive boost la.<br><br><i>Opsyon otomatik ap vini byento.</i></div>
-                <span class="boost-opt-tag">MANUEL</span>
+                                <div class="boost-opt-title">💳 Peye Boost (100 HTG)</div>
+                                <div class="boost-opt-sub">Pou boost pwodwi ou, peye manyèlman epi voye prèv la bay admin.<br><br>
+                                    <b>MonCash:</b> 48868964<br>
+                                    <b>NatCash:</b> 40683108<br>
+                                    <span style="color:#64748b;font-size:13px;">Apre ou fin peye, voye prèv la epi antre kòd ou resevwa a pou aktive boost la.</span><br><br>
+                                    <i>Opsyon otomatik ap vini byento.</i>
+                                </div>
+                                <button onclick="openPaidBoostModal()" style="margin-top:10px;padding:10px 18px;border-radius:8px;background:#ff4747;color:white;font-weight:800;border:none;">Mwen peye, voye prèv & kòd</button>
+                                <span class="boost-opt-tag">MANUEL</span>
+            <!-- MODAL: Peman Manyèl Boost -->
+            <div id="paid-boost-modal" class="modal-overlay" style="display:none;z-index:10000;">
+                <div class="modal-card">
+                    <div class="modal-title">📤 Voye Prèv & Antre Kòd</div>
+                    <div class="modal-sub">1. Upload prèv peman an oswa voye sou WhatsApp admin.<br>2. Antre kòd ou resevwa a pou aktive boost la.</div>
+                    <input type="file" id="boost-proof" accept="image/*" style="margin-bottom:12px;">
+                    <button onclick="sendProofWhatsApp()" style="margin-bottom:16px;background:#25D366;color:white;padding:10px 18px;border-radius:8px;font-weight:800;border:none;">Voye prèv sou WhatsApp Admin</button>
+                    <input type="text" id="boost-code" placeholder="Antre kòd ou resevwa a" style="padding:10px;width:90%;border-radius:8px;border:1px solid #eee;margin-bottom:12px;">
+                    <button onclick="activateBoostWithCode()" style="background:#ff4747;color:white;padding:10px 18px;border-radius:8px;font-weight:800;border:none;">Aktive Boost</button>
+                    <button onclick="closePaidBoostModal()" style="margin-top:18px;background:none;border:none;color:#64748b;font-weight:700;cursor:pointer;">Anile</button>
+                </div>
+            </div>
+            <!-- ADMIN: Zòn pou jenere kòd boost (vizib sèlman pou admin, mete kòmantè pou devlopman) -->
+            <!--
+            <div style="background:#fffbe6;padding:24px;border-radius:16px;margin:32px 0 0 0;max-width:400px;">
+                <h3 style="color:#ff4747;">Générer un code Boost</h3>
+                <input type="text" id="admin-boost-code" value="" placeholder="Kòd aleatwa" style="padding:10px;width:70%;border-radius:8px;border:1px solid #eee;">
+                <button onclick="document.getElementById('admin-boost-code').value = Math.random().toString(36).substr(2,8).toUpperCase();" style="margin-left:10px;padding:10px 18px;border-radius:8px;background:#ff4747;color:white;font-weight:800;border:none;">Générer</button>
+                <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye kòd la epi voye bay machann lan apre verifikasyon peman.</div>
+            </div>
+            -->
             </div>
             <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
                 <div class="boost-opt-title">🏆 Nivo Rekonpans</div>
@@ -900,6 +927,28 @@
 </nav>
 
 <script>
+    // Modal pou peman manyèl boost
+    function openPaidBoostModal() {
+        document.getElementById('paid-boost-modal').style.display = 'flex';
+    }
+    function closePaidBoostModal() {
+        document.getElementById('paid-boost-modal').style.display = 'none';
+    }
+    function sendProofWhatsApp() {
+        // Ouvri WhatsApp admin ak mesaj default
+        const adminPhone = '50948868964';
+        const msg = 'Bonjou admin, men prèv peman boost mwen. Tanpri verifye epi voye kòd la ban mwen.';
+        window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`,'_blank');
+    }
+    async function activateBoostWithCode() {
+        const code = document.getElementById('boost-code').value.trim();
+        if (!code) { alert('Tanpri antre kòd ou resevwa a.'); return; }
+        if (code.length < 6) { alert('Kòd pa valab. Kontakte admin.'); return; }
+        // Simile aktivasyon boost (ou ka ajoute verifikasyon backend)
+        await supD.from('user_products').update({ is_boosted: true, boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString() }).eq('id', selectedProdId);
+        alert('✅ Boost aktive! Kòd ou te valide.');
+        closePaidBoostModal(); closeBoostModal(); loadAll();
+    }
     const supD = window.supabase.createClient(
         "https://letyferfjpxmstohvgcj.supabase.co",
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
