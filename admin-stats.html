@@ -225,6 +225,16 @@ title: Sant Kontwòl Total - Boutique Piyay
 <!-- ══ DASHBOARD ══ -->
 <div id="admin-dashboard">
   <div class="admin-wrap">
+    <!-- ADMIN: Zòn pou jenere kòd boost -->
+    <div class="admin-card" style="margin-bottom:28px;">
+      <div class="card-title">🔑 Jenere Kòd Boost pou Machann</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="boost-code-admin" class="form-input" style="max-width:200px;" placeholder="Kòd aleatwa" readonly>
+        <button onclick="document.getElementById('boost-code-admin').value = Math.random().toString(36).substr(2,8).toUpperCase();" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;">Jenere Kòd</button>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('boost-code-admin').value);showToast('Kòd kopye!','success');" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;background:#10b981;">Kopye</button>
+      </div>
+      <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye kòd la epi voye bay machann lan apre ou fin verifye prèv peman an.</div>
+    </div>
 
     <!-- TOP BAR -->
     <div class="admin-topbar">
