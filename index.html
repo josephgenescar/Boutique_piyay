@@ -15,18 +15,16 @@ title: Akèy - Boutique Piyay
       --light: #f1f5f9;
       --white: #ffffff;
       --green: #10b981;
-      --gold: #f59e0b;
       --radius: 20px;
       --radius-sm: 12px;
       --shadow: 0 4px 20px rgba(0,0,0,0.06);
       --shadow-md: 0 8px 30px rgba(0,0,0,0.1);
     }
-
     * { box-sizing: border-box; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: var(--dark); }
 
     /* ══════════════════════════════
-       MAIN BOX (PUB + VEDÈT)
+       MAIN BOX
     ══════════════════════════════ */
     .main-ads-box {
       background: white;
@@ -38,32 +36,42 @@ title: Akèy - Boutique Piyay
     }
 
     /* ══════════════════════════════
-       ADS HORIZONTAL SCROLL
+       AD SLIDER (youn pa youn, full width)
     ══════════════════════════════ */
-    .ads-scroll-wrap {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 16px;
-      scrollbar-width: none;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-    .ads-scroll-wrap::-webkit-scrollbar { display: none; }
-
-    .konektem-ad {
-      flex-shrink: 0;
-      width: 320px;
-      border-radius: 18px;
+    .ad-slider-container {
+      position: relative;
       overflow: hidden;
-      min-height: 110px;
+      width: 100%;
+    }
+    .ad-slider-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+      width: 100%;
+    }
+
+    /* Chak bannè pran tout lajè */
+    .ad-banner {
+      flex-shrink: 0;
+      width: 100%;
+      min-height: 130px;
       display: flex;
       align-items: center;
       position: relative;
-      scroll-snap-align: start;
+      overflow: hidden;
     }
-    .ad-green  { background: linear-gradient(135deg, #061a0e 0%, #0a2e16 40%, #072010 100%); }
-    .ad-blue   { background: linear-gradient(135deg, #0d2e6e 0%, #1a4fa0 40%, #0a5c1e 100%); }
+    .ad-green { background: linear-gradient(135deg, #061a0e 0%, #0a2e16 40%, #072010 100%); }
+    .ad-blue  { background: linear-gradient(135deg, #0d2e6e 0%, #1a4fa0 40%, #0a5c1e 100%); }
+
+    /* Blob animasyon */
+    .ad-banner::before {
+      content: '';
+      position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px; border-radius: 50%;
+      opacity: 0.1; animation: blob1 4s ease-in-out infinite alternate;
+    }
+    .ad-green::before { background: #22c55e; }
+    .ad-blue::before  { background: #f97316; }
+    @keyframes blob1 { to { transform: scale(1.3) translate(15px,-10px); } }
 
     .ad-scan-line {
       position: absolute; top: 0; left: -100%;
@@ -73,77 +81,110 @@ title: Akèy - Boutique Piyay
     }
     @keyframes scanLine { to { left: 150%; } }
 
-    .konektem-ad-inner {
+    .ad-inner {
       display: flex; align-items: center;
-      gap: 12px; padding: 16px 18px;
+      gap: 20px; padding: 24px 28px;
       width: 100%; position: relative; z-index: 2;
     }
 
-    .ad-logo-block { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    /* Logo */
     .ad-logo-icon {
-      width: 46px; height: 46px; border-radius: 13px;
+      width: 60px; height: 60px; border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; position: relative; overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
     .ad-logo-icon::after {
       content: '';
       position: absolute; inset: 0;
       background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
     }
-    .ad-logo-text { font-family: 'Sora', sans-serif; }
-    .ad-logo-name { font-size: 17px; font-weight: 900; color: white; letter-spacing: -0.5px; line-height: 1; }
-    .ad-logo-name span { color: #22c55e; }
-    .ad-logo-tagline { font-size: 9px; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+    .ad-logo-texts { flex-shrink: 0; }
+    .ad-logo-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px; font-weight: 900; color: white;
+      letter-spacing: -0.5px; line-height: 1;
+    }
+    .ad-logo-name .g { color: #22c55e; }
+    .ad-logo-sub {
+      font-size: 10px; color: rgba(255,255,255,0.45);
+      font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      margin-top: 3px;
+    }
 
-    .ad-text-block { flex: 1; min-width: 0; overflow: hidden; }
+    /* Divider */
+    .ad-divider {
+      width: 1px; height: 60px;
+      background: rgba(255,255,255,0.12); flex-shrink: 0;
+    }
+
+    /* Texte slider */
+    .ad-text-block { flex: 1; min-width: 0; }
     .ad-text-label {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
       color: #4ade80; font-size: 9px; font-weight: 800;
-      padding: 2px 9px; border-radius: 50px; margin-bottom: 6px;
+      padding: 3px 10px; border-radius: 50px; margin-bottom: 8px;
       text-transform: uppercase; letter-spacing: 1px;
     }
     .ad-text-label::before {
       content: ''; width: 5px; height: 5px; border-radius: 50%;
-      background: #22c55e; animation: pulse-dot 1.5s infinite;
+      background: #22c55e; animation: pdot 1.5s infinite;
     }
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.5);} }
+    @keyframes pdot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.5);} }
 
-    .ad-slider-wrap { height: 22px; overflow: hidden; }
-    .ad-slides { display: flex; flex-direction: column; animation: slideUp 8s ease-in-out infinite; }
-    .ad-slide {
-      height: 22px; display: flex; align-items: center;
-      font-size: 12px; font-weight: 800; color: white;
+    .ad-slide-wrap { height: 32px; overflow: hidden; }
+    .ad-slides-inner {
+      display: flex; flex-direction: column;
+      animation: slideUp 8s ease-in-out infinite;
+    }
+    .ad-slide-item {
+      height: 32px; display: flex; align-items: center;
+      font-family: 'Sora', sans-serif;
+      font-size: 16px; font-weight: 900; color: white;
       white-space: nowrap; flex-shrink: 0;
     }
-    .ad-slide .highlight { color: #22c55e; }
+    .ad-slide-item .hl  { color: #22c55e; }
+    .ad-slide-item .hlo { color: #fb923c; }
     @keyframes slideUp {
-      0%,20%   { transform: translateY(0); }
-      25%,45%  { transform: translateY(-22px); }
-      50%,70%  { transform: translateY(-44px); }
-      75%,95%  { transform: translateY(-66px); }
-      100%     { transform: translateY(0); }
+      0%,20%  { transform: translateY(0); }
+      25%,45% { transform: translateY(-32px); }
+      50%,70% { transform: translateY(-64px); }
+      75%,95% { transform: translateY(-96px); }
+      100%    { transform: translateY(0); }
     }
 
-    .ad-cta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .btn-ad-cta {
-      display: inline-flex; align-items: center; gap: 6px;
-      color: white; border: none; padding: 9px 14px;
-      border-radius: 10px; font-weight: 800; font-size: 11px;
-      cursor: pointer; font-family: inherit; text-decoration: none;
-      transition: 0.2s; white-space: nowrap;
+    /* CTA */
+    .ad-cta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-ad {
+      display: inline-flex; align-items: center;
+      padding: 12px 20px; border-radius: 12px;
+      font-weight: 800; font-size: 13px; color: white;
+      border: none; cursor: pointer; white-space: nowrap;
+      text-decoration: none; font-family: inherit; transition: 0.2s;
     }
-    .btn-ad-cta.green { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
-    .btn-ad-cta.orange { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 4px 12px rgba(249,115,22,0.3); }
-    .btn-ad-cta:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .btn-ad.green  { background: linear-gradient(135deg,#22c55e,#16a34a); box-shadow: 0 6px 16px rgba(34,197,94,0.3); }
+    .btn-ad.orange { background: linear-gradient(135deg,#f97316,#ea580c); box-shadow: 0 6px 16px rgba(249,115,22,0.3); }
+    .btn-ad:hover  { transform: translateY(-2px); filter: brightness(1.08); }
     .btn-ad-close {
-      width: 26px; height: 26px; border-radius: 7px;
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.5); font-size: 12px; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 9px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: 0.2s; font-weight: 700; flex-shrink: 0;
     }
-    .btn-ad-close:hover { background: rgba(255,255,255,0.15); color: white; }
+    .btn-ad-close:hover { background: rgba(255,255,255,0.2); color: white; }
+
+    /* Dots navigation */
+    .ad-dots {
+      display: flex; justify-content: center; gap: 6px;
+      padding: 10px 0 14px;
+    }
+    .ad-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #e2e8f0; transition: 0.3s; cursor: pointer; border: none;
+    }
+    .ad-dot.active { background: var(--primary); width: 20px; border-radius: 4px; }
 
     /* ══════════════════════════════
        SÉPARATEUR
@@ -156,23 +197,17 @@ title: Akèy - Boutique Piyay
     #boosted-section { display: none; }
 
     .vedette-scroll {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 14px 16px 16px;
-      scrollbar-width: none;
-      scroll-snap-type: x mandatory;
+      display: flex; gap: 12px;
+      overflow-x: auto; padding: 14px 16px 16px;
+      scrollbar-width: none; scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
     }
     .vedette-scroll::-webkit-scrollbar { display: none; }
 
     .boosted-card {
-      flex-shrink: 0;
-      width: 150px;
-      background: #f8fafc;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1.5px solid #f1f5f9;
+      flex-shrink: 0; width: 150px;
+      background: #f8fafc; border-radius: 14px;
+      overflow: hidden; border: 1.5px solid #f1f5f9;
       scroll-snap-align: start;
       display: flex; flex-direction: column;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -191,18 +226,23 @@ title: Akèy - Boutique Piyay
       -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4;
     }
     .boosted-price { color: var(--primary); font-weight: 900; font-size: 14px; margin-top: auto; }
-    .btn-add {
+    .btn-boosted-add {
       width: 100%; background: var(--dark); color: white; border: none;
       padding: 8px; border-radius: 8px; margin-top: 8px; font-weight: 800;
       cursor: pointer; font-size: 10px; font-family: inherit; transition: 0.2s;
       display: flex; align-items: center; justify-content: center; gap: 4px;
     }
-    .btn-add:hover { background: var(--primary); }
+    .btn-boosted-add:hover { background: var(--primary); }
 
     /* ══════════════════════════════
        HOME WRAP
     ══════════════════════════════ */
     .home-wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px 100px; }
+
+    .section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .section-hdr-left { display: flex; flex-direction: column; }
+    .section-hdr-left h2 { font-size: 20px; font-weight: 900; letter-spacing: -0.3px; margin: 0; }
+    .section-hdr-bar { width: 40px; height: 3px; background: var(--primary); border-radius: 10px; margin-top: 7px; }
 
     /* ══════════════════════════════
        FLASH SALE
@@ -212,17 +252,17 @@ title: Akèy - Boutique Piyay
     .flash-title-wrap { display: flex; align-items: center; gap: 10px; }
     .flash-title-wrap h2 { font-size: 20px; font-weight: 900; margin: 0; }
     .flash-dot { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; animation: pulse 1.2s infinite; }
-    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:0.5;} }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:.5;} }
     .timer-wrap { display: flex; align-items: center; gap: 6px; }
     .t-seg { background: var(--dark); color: white; padding: 7px 11px; border-radius: 10px; display: flex; align-items: baseline; gap: 3px; min-width: 44px; justify-content: center; }
     .t-seg span { font-size: 18px; font-weight: 900; font-variant-numeric: tabular-nums; }
-    .t-seg small { font-size: 9px; opacity: 0.55; font-weight: 700; }
+    .t-seg small { font-size: 9px; opacity: .55; font-weight: 700; }
     .t-div { font-weight: 900; color: var(--dark); font-size: 16px; }
     .flash-slider { display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px; scrollbar-width: none; scroll-behavior: smooth; }
     .flash-slider::-webkit-scrollbar { display: none; }
     .flash-card { min-width: 172px; max-width: 172px; background: white; border-radius: 22px; padding: 14px; box-shadow: var(--shadow); flex-shrink: 0; border: 1.5px solid #f1f5f9; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
     .flash-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-    .flash-pct { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; box-shadow: 0 4px 10px rgba(255,71,71,0.3); }
+    .flash-pct { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; }
     .flash-img-wrap { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; }
     .flash-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
     .flash-card:hover .flash-img { transform: scale(1.05); }
@@ -237,10 +277,6 @@ title: Akèy - Boutique Piyay
        KATEGORIS
     ══════════════════════════════ */
     #categories-section { margin: 36px 0; }
-    .section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .section-hdr-left { display: flex; flex-direction: column; }
-    .section-hdr-left h2 { font-size: 20px; font-weight: 900; letter-spacing: -0.3px; margin: 0; }
-    .section-hdr-bar { width: 40px; height: 3px; background: var(--primary); border-radius: 10px; margin-top: 7px; }
     .cat-scroll { display: flex; gap: 16px; overflow-x: auto; padding: 10px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
     .cat-scroll::-webkit-scrollbar { display: none; }
     .cat-bubble { display: flex; flex-direction: column; align-items: center; min-width: 88px; text-decoration: none; transition: 0.2s; gap: 10px; }
@@ -267,12 +303,12 @@ title: Akèy - Boutique Piyay
     .seller-info h4 { margin: 0; font-size: 17px; font-weight: 900; color: var(--dark); }
     .seller-info p { margin: 5px 0 0; font-size: 13px; color: var(--gray); font-weight: 600; }
     .seller-verified { display: inline-flex; align-items: center; gap: 4px; background: rgba(16,185,129,0.1); color: var(--green); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 50px; margin-top: 6px; }
-    .seller-previews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 0 20px; padding: 18px 0; border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; }
+    .seller-previews { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 0 0 20px; padding: 18px 0; border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; }
     .preview-img { aspect-ratio: 1; border-radius: 10px; background: var(--light); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .preview-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .btn-visit { display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; background: var(--dark); color: white; padding: 15px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.2s; box-shadow: 0 6px 16px rgba(15,23,42,0.15); }
+    .btn-visit { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--dark); color: white; padding: 15px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.2s; }
     .btn-visit:hover { background: var(--primary); transform: translateY(-1px); }
-    .mkt-prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
+    .mkt-prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 18px; }
     .mkt-prod-card { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); border: 1.5px solid #f1f5f9; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
     .mkt-prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .mkt-prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
@@ -281,113 +317,128 @@ title: Akèy - Boutique Piyay
     .btn-add-light { width: 100%; background: var(--light); color: var(--dark); border: none; padding: 12px; border-radius: var(--radius-sm); margin-top: 12px; font-weight: 800; cursor: pointer; font-size: 12px; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-add-light:hover { background: var(--dark); color: white; }
 
-    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 10px; }
-    @keyframes shimmer { to { background-position: -200% 0; } }
     .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--gray); }
     .empty-state .e-icon { font-size: 44px; margin-bottom: 14px; }
     .empty-state .e-title { font-size: 16px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
     .empty-state .e-sub { font-size: 13px; }
 
+    /* MOBILE */
     @media (max-width: 640px) {
-      .konektem-ad { width: 280px; min-height: 100px; }
-      .ad-logo-tagline { display: none; }
-      .ad-logo-name { font-size: 15px; }
-      .ad-logo-icon { width: 40px; height: 40px; border-radius: 11px; }
-      .ad-slide { font-size: 11px; }
-      .btn-ad-cta { padding: 8px 12px; font-size: 10px; }
-      .btn-ad-close { width: 24px; height: 24px; }
+      .ad-inner { padding: 18px 16px; gap: 14px; }
+      .ad-logo-icon { width: 48px; height: 48px; border-radius: 13px; }
+      .ad-logo-name { font-size: 18px; }
+      .ad-logo-sub { font-size: 9px; }
+      .ad-divider { height: 44px; }
+      .ad-slide-item { font-size: 13px; }
+      .ad-slide-wrap { height: 26px; }
+      .ad-slide-item { height: 26px; }
+      @keyframes slideUp {
+        0%,20%  { transform: translateY(0); }
+        25%,45% { transform: translateY(-26px); }
+        50%,70% { transform: translateY(-52px); }
+        75%,95% { transform: translateY(-78px); }
+        100%    { transform: translateY(0); }
+      }
+      .btn-ad { padding: 10px 14px; font-size: 12px; }
     }
 </style>
 
 <!-- ══════════════════════════════════════════════
-     BWAT PRENSIPAL: PUB + VEDÈT
+     BWAT PRENSIPAL: PUB SLIDER + VEDÈT
 ══════════════════════════════════════════════ -->
 <div class="main-ads-box">
 
-  <!-- PUB YO — defile horizontal -->
-  <div class="ads-scroll-wrap">
+  <!-- AD SLIDER — youn pa youn, full width -->
+  <div class="ad-slider-container">
+    <div class="ad-slider-track" id="adSliderTrack">
 
-    <!-- KONEKTEM -->
-    <div class="konektem-ad ad-green" id="konektem-ad">
-      <div class="ad-scan-line"></div>
-      <div class="konektem-ad-inner">
-        <div class="ad-logo-block">
+      <!-- BANNÈ 1 — KONEKTEM -->
+      <div class="ad-banner ad-green">
+        <div class="ad-scan-line"></div>
+        <div class="ad-inner">
           <div class="ad-logo-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;position:relative;z-index:1;">
+            <svg viewBox="0 0 48 48" fill="none" style="width:34px;height:34px;position:relative;z-index:1;">
               <circle cx="24" cy="24" r="20" stroke="white" stroke-width="3.5" fill="none"/>
               <circle cx="24" cy="24" r="5" fill="white"/>
-              <line x1="24" y1="4" x2="24" y2="19" stroke="white" stroke-width="3" stroke-linecap="round"/>
+              <line x1="24" y1="4"  x2="24" y2="19" stroke="white" stroke-width="3" stroke-linecap="round"/>
               <line x1="24" y1="29" x2="24" y2="44" stroke="white" stroke-width="3" stroke-linecap="round"/>
-              <line x1="4" y1="24" x2="19" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
+              <line x1="4"  y1="24" x2="19" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
               <line x1="29" y1="24" x2="44" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
             </svg>
           </div>
-          <div class="ad-logo-text">
-            <div class="ad-logo-name">Konek<span>tem</span></div>
-            <div class="ad-logo-tagline">Caisse intelligente haïtienne</div>
+          <div class="ad-logo-texts">
+            <div class="ad-logo-name">Konek<span class="g">tem</span></div>
+            <div class="ad-logo-sub">Caisse intelligente haïtienne</div>
           </div>
-        </div>
-        <div class="ad-text-block">
-          <div class="ad-text-label">Patnè Ofisyèl</div>
-          <div class="ad-slider-wrap">
-            <div class="ad-slides">
-              <div class="ad-slide">La caisse qui <span class="highlight">&nbsp;connecte&nbsp;</span> votre boutique</div>
-              <div class="ad-slide">Tout pour <span class="highlight">&nbsp;vendre mieux&nbsp;</span> en Haïti</div>
-              <div class="ad-slide">Caisse, stock &amp; clients en <span class="highlight">&nbsp;1 seule app&nbsp;</span></div>
-              <div class="ad-slide">La caisse qui <span class="highlight">&nbsp;connecte&nbsp;</span> votre boutique</div>
+          <div class="ad-divider"></div>
+          <div class="ad-text-block">
+            <div class="ad-text-label">Patnè Ofisyèl</div>
+            <div class="ad-slide-wrap">
+              <div class="ad-slides-inner">
+                <div class="ad-slide-item">La caisse qui <span class="hl">&nbsp;connecte&nbsp;</span> votre boutique</div>
+                <div class="ad-slide-item">Tout pour <span class="hl">&nbsp;vendre mieux&nbsp;</span> en Haïti</div>
+                <div class="ad-slide-item">Caisse, stock &amp; clients en <span class="hl">&nbsp;1 seule app&nbsp;</span></div>
+                <div class="ad-slide-item">La caisse qui <span class="hl">&nbsp;connecte&nbsp;</span> votre boutique</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="ad-cta">
-          <a href="https://konektem.netlify.app" target="_blank" class="btn-ad-cta green">Découvrir →</a>
-          <button class="btn-ad-close" onclick="document.getElementById('konektem-ad').style.display='none'">✕</button>
+          <div class="ad-cta">
+            <a href="https://konektem.netlify.app" target="_blank" class="btn-ad green">Découvrir →</a>
+            <button class="btn-ad-close" onclick="hideAd('konektem')">✕</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- KAYLAKOU -->
-    <div class="konektem-ad ad-blue" id="kaylakou-ad">
-      <div class="ad-scan-line" style="background:linear-gradient(90deg,transparent,rgba(249,115,22,0.08),transparent);"></div>
-      <div class="konektem-ad-inner">
-        <div class="ad-logo-block">
+      <!-- BANNÈ 2 — KAYLAKOU -->
+      <div class="ad-banner ad-blue">
+        <div class="ad-scan-line" style="background:linear-gradient(90deg,transparent,rgba(249,115,22,0.08),transparent);"></div>
+        <div class="ad-inner">
           <div class="ad-logo-icon" style="background:linear-gradient(135deg,#f97316,#ea580c);">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;position:relative;z-index:1;">
+            <svg viewBox="0 0 48 48" fill="none" style="width:34px;height:34px;position:relative;z-index:1;">
               <circle cx="24" cy="8" r="5" fill="white"/>
               <line x1="24" y1="13" x2="24" y2="18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               <polyline points="8,28 24,16 40,28" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
               <rect x="14" y="28" width="20" height="14" rx="1" stroke="white" stroke-width="2.5" fill="none"/>
-              <rect x="21" y="30" width="6" height="6" rx="0.5" stroke="white" stroke-width="2" fill="none"/>
+              <rect x="21" y="30" width="6"  height="6"  rx="0.5" stroke="white" stroke-width="2" fill="none"/>
             </svg>
           </div>
-          <div class="ad-logo-text">
+          <div class="ad-logo-texts">
             <div class="ad-logo-name"><span style="color:#4ade80;">KAY</span><span style="color:white;">LAKOU</span></div>
-            <div class="ad-logo-tagline">Kay, Té, Konfians — Tout Ayiti</div>
+            <div class="ad-logo-sub">Kay, Té, Konfians — Tout Ayiti</div>
           </div>
-        </div>
-        <div class="ad-text-block">
-          <div class="ad-text-label" style="background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.3);color:#fb923c;">🏠 Imobilye</div>
-          <div class="ad-slider-wrap">
-            <div class="ad-slides" style="animation-delay:-3s;">
-              <div class="ad-slide">Pi gwo <span style="color:#4ade80;">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
-              <div class="ad-slide">Kay, Té, <span style="color:#fb923c;">&nbsp;Konfians&nbsp;</span> — Tout peyi a</div>
-              <div class="ad-slide">Solisyon biznis <span style="color:#4ade80;">&nbsp;nimerik&nbsp;</span> pou ou</div>
-              <div class="ad-slide">Pi gwo <span style="color:#4ade80;">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
+          <div class="ad-divider"></div>
+          <div class="ad-text-block">
+            <div class="ad-text-label" style="background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.3);color:#fb923c;">🏠 Imobilye</div>
+            <div class="ad-slide-wrap">
+              <div class="ad-slides-inner" style="animation-delay:-3s;">
+                <div class="ad-slide-item">Pi gwo <span class="hl">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
+                <div class="ad-slide-item">Kay, Té, <span class="hlo">&nbsp;Konfians&nbsp;</span> — Tout peyi a</div>
+                <div class="ad-slide-item">Solisyon biznis <span class="hl">&nbsp;nimerik&nbsp;</span> pou ou</div>
+                <div class="ad-slide-item">Pi gwo <span class="hl">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="ad-cta">
-          <a href="https://kaylakou.netlify.app" target="_blank" class="btn-ad-cta orange">Vizite →</a>
-          <button class="btn-ad-close" onclick="document.getElementById('kaylakou-ad').style.display='none'">✕</button>
+          <div class="ad-cta">
+            <a href="https://kaylakou.netlify.app" target="_blank" class="btn-ad orange">Vizite →</a>
+            <button class="btn-ad-close" onclick="hideAd('kaylakou')">✕</button>
+          </div>
         </div>
       </div>
+
+    </div><!-- fin ad-slider-track -->
+
+    <!-- DOTS -->
+    <div class="ad-dots" id="adDots">
+      <button class="ad-dot active" onclick="adGoTo(0)"></button>
+      <button class="ad-dot"        onclick="adGoTo(1)"></button>
     </div>
 
-  </div><!-- fin ads-scroll-wrap -->
+  </div><!-- fin ad-slider-container -->
 
   <!-- SÉPARATEUR -->
-  <div class="box-sep"></div>
+  <div style="height:1px;background:#f1f5f9;margin:0 16px;"></div>
 
-  <!-- PWODWI VEDÈT — defile horizontal andedan bwat la -->
+  <!-- PWODWI VEDÈT — scroll horizontal andedan bwat la -->
   <section id="boosted-section">
     <div class="vedette-scroll" id="boosted-slider-track"></div>
   </section>
@@ -445,12 +496,10 @@ title: Akèy - Boutique Piyay
           <div class="section-hdr-bar" style="width:60px;"></div>
         </div>
       </div>
-
       <div class="market-tabs">
-        <button id="tab-sellers" class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Vendeurs</button>
-        <button id="tab-products" class="market-tab" onclick="switchMarketTab('products')">🛍️ Tous les Produits</button>
+        <button id="tab-sellers"  class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Vendeurs</button>
+        <button id="tab-products" class="market-tab"        onclick="switchMarketTab('products')">🛍️ Tous les Produits</button>
       </div>
-
       <div id="sellers-view">
         <div class="sellers-grid" id="sellers-grid-home"></div>
       </div>
@@ -459,171 +508,202 @@ title: Akèy - Boutique Piyay
       </div>
     </section>
 
-</div>
+</div><!-- fin home-wrap -->
 
 <script>
-    const supabaseHome = typeof window.supabase !== 'undefined'
-      ? window.supabase.createClient(
-          "https://letyferfjpxmstohvgcj.supabase.co",
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
-        )
-      : null;
+  /* ══ AD SLIDER ══ */
+  const adBanners   = ['konektem','kaylakou'];
+  const hiddenAds   = new Set();
+  let adCurrent     = 0;
+  let adAutoplay    = null;
 
-    let allSellers  = [];
-    let allProducts = [];
-    let sellerMap   = {};
+  function getVisibleAds() {
+    return adBanners.filter(id => !hiddenAds.has(id));
+  }
 
-    function buildSellerMap() {
-      sellerMap = {};
-      allSellers.forEach(s => {
-        sellerMap[s.id] = {
-          full_name: s.full_name || 'Boutique Piyay',
-          whatsapp_number: s.whatsapp_number || s.whatsapp || '50948868964'
-        };
-      });
+  function adGoTo(idx) {
+    const visible = getVisibleAds();
+    if (visible.length === 0) return;
+    adCurrent = (idx + visible.length) % visible.length;
+    const track = document.getElementById('adSliderTrack');
+    if (track) track.style.transform = `translateX(-${adCurrent * 100}%)`;
+    document.querySelectorAll('.ad-dot').forEach((d,i) => {
+      d.classList.toggle('active', i === adCurrent);
+    });
+  }
+
+  function hideAd(id) {
+    hiddenAds.add(id);
+    // Kache bannè fizikman
+    const slides = document.querySelectorAll('.ad-banner');
+    slides.forEach(s => {
+      if (s.querySelector(`[onclick*="${id}"]`)) s.style.display = 'none';
+    });
+    const visible = getVisibleAds();
+    // Mete ajou dots
+    const dotsEl = document.getElementById('adDots');
+    if (dotsEl) {
+      dotsEl.innerHTML = visible.map((_,i) =>
+        `<button class="ad-dot ${i===0?'active':''}" onclick="adGoTo(${i})"></button>`
+      ).join('');
     }
-
-    // ── TIMER ──
-    function startInfiniteFlashTimer() {
-      const hEl = document.getElementById('hours');
-      const mEl = document.getElementById('minutes');
-      const sEl = document.getElementById('seconds');
-      if (!hEl) return;
-      setInterval(() => {
-        const now = new Date();
-        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-        const diff = tomorrow - now;
-        hEl.innerText = String(Math.floor(diff / 3600000)).padStart(2, '0');
-        mEl.innerText = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-        sEl.innerText = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-      }, 1000);
+    if (visible.length === 0) {
+      document.getElementById('adSliderTrack').parentElement.style.display = 'none';
+      document.querySelector('.box-sep') && (document.querySelector('[style*="height:1px"]').style.display='none');
+    } else {
+      adGoTo(0);
     }
+  }
 
-    // ── LOAD ALL DATA ──
-    async function loadAllData() {
-      if (!supabaseHome) return;
-      try {
-        const { data: prods } = await supabaseHome
-          .from('user_products')
-          .select('id, title, price, image_url, seller_id, is_flash_sale, old_price, is_boosted, created_at, flash_start_at, is_approved')
-          .order('created_at', { ascending: false });
+  function startAdAutoplay() {
+    clearInterval(adAutoplay);
+    adAutoplay = setInterval(() => {
+      const visible = getVisibleAds();
+      if (visible.length > 1) adGoTo(adCurrent + 1);
+    }, 4000);
+  }
 
-        const { data: sellers } = await supabaseHome
-          .from('profiles')
-          .select('*');
+  /* ══ SUPABASE ══ */
+  const supabaseHome = typeof window.supabase !== 'undefined'
+    ? window.supabase.createClient(
+        "https://letyferfjpxmstohvgcj.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
+      )
+    : null;
 
-        allProducts = (prods || []).filter(p => p.image_url && p.title && p.price);
-        allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
+  let allSellers  = [];
+  let allProducts = [];
+  let sellerMap   = {};
 
-        buildSellerMap();
+  function buildSellerMap() {
+    sellerMap = {};
+    allSellers.forEach(s => {
+      sellerMap[s.id] = {
+        full_name:        s.full_name        || 'Boutique Piyay',
+        whatsapp_number:  s.whatsapp_number  || s.whatsapp || '50948868964'
+      };
+    });
+  }
 
-        renderBoosted(allProducts.filter(p => p.is_boosted === true));
-        renderSellers(allSellers);
-        renderProducts(allProducts);
+  function startInfiniteFlashTimer() {
+    const hEl = document.getElementById('hours');
+    const mEl = document.getElementById('minutes');
+    const sEl = document.getElementById('seconds');
+    if (!hEl) return;
+    setInterval(() => {
+      const now      = new Date();
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+      const diff     = tomorrow - now;
+      hEl.innerText  = String(Math.floor(diff/3600000)).padStart(2,'0');
+      mEl.innerText  = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+      sEl.innerText  = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    }, 1000);
+  }
 
-        const now = new Date();
-        const flashProds = allProducts.filter(p => {
-          if (p.is_flash_sale === true && p.flash_start_at) {
-            const start = new Date(p.flash_start_at);
-            const diffHours = (now - start) / (1000 * 60 * 60);
-            return diffHours < 24;
-          }
-          return false;
-        });
+  async function loadAllData() {
+    if (!supabaseHome) return;
+    try {
+      const { data: prods }   = await supabaseHome
+        .from('user_products')
+        .select('id,title,price,image_url,seller_id,is_flash_sale,old_price,is_boosted,created_at,flash_start_at,is_approved')
+        .order('created_at', { ascending: false });
 
-        if (flashProds.length > 0) {
-          document.getElementById('flash-sale').style.display = 'block';
-          renderFlashSlider(flashProds);
-        } else {
-          document.getElementById('flash-sale').style.display = 'none';
+      const { data: sellers } = await supabaseHome
+        .from('profiles')
+        .select('*');
+
+      allProducts = (prods   || []).filter(p => p.image_url && p.title && p.price);
+      allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
+      buildSellerMap();
+
+      renderBoosted(allProducts.filter(p => p.is_boosted === true));
+      renderSellers(allSellers);
+      renderProducts(allProducts);
+
+      const now       = new Date();
+      const flashProds = allProducts.filter(p => {
+        if (p.is_flash_sale === true && p.flash_start_at) {
+          const diffH = (now - new Date(p.flash_start_at)) / 3600000;
+          return diffH < 24;
         }
+        return false;
+      });
 
-        startInfiniteFlashTimer();
-      } catch(e) { console.error("Erè chajman:", e); }
-    }
-
-    // ── RENDER BOOSTED — horizontal scroll ──
-    function renderBoosted(list) {
-      const section = document.getElementById('boosted-section');
-      const track   = document.getElementById('boosted-slider-track');
-      if (!section || !track) return;
-
-      if (list.length === 0) {
-        section.style.display = 'none';
-        return;
+      if (flashProds.length > 0) {
+        document.getElementById('flash-sale').style.display = 'block';
+        renderFlashSlider(flashProds);
       }
+      startInfiniteFlashTimer();
+    } catch(e) { console.error('Erè chajman:', e); }
+  }
 
-      section.style.display = 'block';
+  function renderBoosted(list) {
+    const section = document.getElementById('boosted-section');
+    const track   = document.getElementById('boosted-slider-track');
+    if (!section || !track) return;
+    if (list.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    track.innerHTML = list.map(p => {
+      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+      return `
+        <div class="boosted-card">
+          <a href="/pwodwi-machann.html?id=${p.id}">
+            <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
+                 onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+          </a>
+          <div class="boosted-card-body">
+            <span class="boosted-badge">VEDÈT 🔥</span>
+            <div class="boosted-title">${p.title}</div>
+            <div class="boosted-price">${p.price} HTG</div>
+            <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
+              🛒 Ajoute
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
 
-      track.innerHTML = list.map(p => {
-        const seller = sellerMap[p.seller_id] || {};
-        const sellerPhone = (seller.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
-        return `
-          <div class="boosted-card">
-            <a href="/pwodwi-machann.html?id=${p.id}">
-              <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
-                   onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
-            </a>
-            <div class="boosted-card-body">
-              <span class="boosted-badge">VEDÈT 🔥</span>
-              <div class="boosted-title">${p.title}</div>
-              <div class="boosted-price">${p.price} HTG</div>
-              <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}')">
-                🛒 Ajoute
-              </button>
+  function renderSellers(list) {
+    const grid = document.getElementById('sellers-grid-home');
+    if (!grid) return;
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Pa gen machann toujou</div></div>`;
+      return;
+    }
+    grid.innerHTML = list.map(s => {
+      const sProds = allProducts.filter(p => String(p.seller_id) === String(s.id) && p.image_url).slice(0,4);
+      let previews = sProds.map(p => `<div class="preview-img"><img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📦'"></div>`).join('');
+      for (let i = sProds.length; i < 4; i++) previews += `<div class="preview-img">📦</div>`;
+      const initial       = (s.full_name || 'M').charAt(0).toUpperCase();
+      const avatarContent = s.avatar_url
+        ? `<img src="${s.avatar_url}" onerror="this.style.display='none';this.parentElement.innerText='${initial}'">`
+        : initial;
+      return `
+        <div class="seller-card">
+          <div class="seller-head">
+            <div class="seller-avatar">${avatarContent}</div>
+            <div class="seller-info">
+              <h4>${s.full_name || 'Boutik'}</h4>
+              <p>📍 ${s.address || 'Ayiti'}</p>
+              <span class="seller-verified">✅ Verifye</span>
             </div>
-          </div>`;
-      }).join('');
-    }
+          </div>
+          <div class="seller-previews">${previews}</div>
+          <a href="/boutik-machann.html?id=${s.id}" class="btn-visit">Vizite Boutik →</a>
+        </div>`;
+    }).join('');
+  }
 
-    // ── RENDER SELLERS ──
-    function renderSellers(list) {
-      const grid = document.getElementById('sellers-grid-home');
-      if (!grid) return;
-      if (list.length === 0) {
-        grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Pa gen machann toujou</div></div>`;
-        return;
-      }
-      grid.innerHTML = list.map(s => {
-        const sProds = allProducts
-          .filter(p => String(p.seller_id) === String(s.id) && p.image_url)
-          .slice(0, 4);
-        let previews = sProds.map(p => `
-          <div class="preview-img">
-            <img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;"
-                 onerror="this.parentElement.innerHTML='📦'">
-          </div>`).join('');
-        for (let i = sProds.length; i < 4; i++) previews += `<div class="preview-img">📦</div>`;
-        const initial = (s.full_name || 'M').charAt(0).toUpperCase();
-        const avatarContent = s.avatar_url
-          ? `<img src="${s.avatar_url}" onerror="this.style.display='none'; this.parentElement.innerText='${initial}'">`
-          : initial;
-        return `
-          <div class="seller-card">
-            <div class="seller-head">
-              <div class="seller-avatar">${avatarContent}</div>
-              <div class="seller-info">
-                <h4>${s.full_name || 'Boutik'}</h4>
-                <p>📍 ${s.address || 'Ayiti'}</p>
-                <span class="seller-verified">✅ Verifye</span>
-              </div>
-            </div>
-            <div class="seller-previews">${previews}</div>
-            <a href="/boutik-machann.html?id=${s.id}" class="btn-visit">Vizite Boutik →</a>
-          </div>`;
-      }).join('');
+  function renderProducts(list) {
+    const grid = document.getElementById('supabase-products-grid');
+    if (!grid) return;
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Pa gen pwodwi toujou</div><div class="e-sub">Machann yo ap ajoute byento!</div></div>`;
+      return;
     }
-
-    // ── RENDER PRODUCTS ──
-    function renderProducts(list) {
-      const grid = document.getElementById('supabase-products-grid');
-      if (!grid) return;
-      if (list.length === 0) {
-        grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Pa gen pwodwi toujou</div><div class="e-sub">Machann yo ap ajoute byento!</div></div>`;
-        return;
-      }
-      grid.innerHTML = list.map(p => {
-        return `
+    grid.innerHTML = list.map(p => {
+      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+      return `
         <div class="mkt-prod-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
             <img class="mkt-prod-img" src="${p.image_url}" alt="${p.title}"
@@ -631,51 +711,51 @@ title: Akèy - Boutique Piyay
           </a>
           <div class="mkt-prod-name">${p.title}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
-          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
             🛒 Ajoute
           </button>
         </div>`;
-      }).join('');
-    }
+    }).join('');
+  }
 
-    // ── RENDER FLASH ──
-    function renderFlashSlider(list) {
-      const slider = document.getElementById('flash-slider-inner');
-      if (!slider) return;
-      slider.innerHTML = list.map(p => {
-        const valOld = p.old_price ? parseFloat(p.old_price) : 0;
-        const valNew = parseFloat(p.price);
-        const disc   = (valOld > valNew) ? Math.round(((valOld - valNew) / valOld) * 100) : 0;
-        return `
-          <div class="flash-card">
-            ${disc > 0 ? `<span class="flash-pct">-${disc}%</span>` : ''}
-            <div class="flash-img-wrap">
-              <a href="/pwodwi-machann.html?id=${p.id}">
-                <img class="flash-img" src="${p.image_url}" alt="${p.title}"
-                     onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
-              </a>
-            </div>
-            <div class="flash-name">${p.title}</div>
-            <div class="flash-prices">
-              <span class="flash-new">${p.price} HTG</span>
-              ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
-            </div>
-            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
-              🛒 Ajoute
-            </button>
-          </div>`;
-      }).join('');
-    }
+  function renderFlashSlider(list) {
+    const slider = document.getElementById('flash-slider-inner');
+    if (!slider) return;
+    slider.innerHTML = list.map(p => {
+      const valOld = p.old_price ? parseFloat(p.old_price) : 0;
+      const valNew = parseFloat(p.price);
+      const disc   = (valOld > valNew) ? Math.round(((valOld-valNew)/valOld)*100) : 0;
+      const phone  = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+      return `
+        <div class="flash-card">
+          ${disc > 0 ? `<span class="flash-pct">-${disc}%</span>` : ''}
+          <div class="flash-img-wrap">
+            <a href="/pwodwi-machann.html?id=${p.id}">
+              <img class="flash-img" src="${p.image_url}" alt="${p.title}"
+                   onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+            </a>
+          </div>
+          <div class="flash-name">${p.title}</div>
+          <div class="flash-prices">
+            <span class="flash-new">${p.price} HTG</span>
+            ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
+          </div>
+          <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
+            🛒 Ajoute
+          </button>
+        </div>`;
+    }).join('');
+  }
 
-    // ── SWITCH TAB ──
-    function switchMarketTab(tab) {
-      document.getElementById('tab-sellers').classList.toggle('active', tab === 'sellers');
-      document.getElementById('tab-products').classList.toggle('active', tab === 'products');
-      document.getElementById('sellers-view').style.display  = tab === 'sellers'  ? 'block' : 'none';
-      document.getElementById('products-view').style.display = tab === 'products' ? 'block' : 'none';
-    }
+  function switchMarketTab(tab) {
+    document.getElementById('tab-sellers').classList.toggle('active',  tab==='sellers');
+    document.getElementById('tab-products').classList.toggle('active', tab==='products');
+    document.getElementById('sellers-view').style.display  = tab==='sellers'  ? 'block' : 'none';
+    document.getElementById('products-view').style.display = tab==='products' ? 'block' : 'none';
+  }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      loadAllData();
-    });
+  document.addEventListener('DOMContentLoaded', () => {
+    startAdAutoplay();
+    loadAllData();
+  });
 </script>
