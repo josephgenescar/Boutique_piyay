@@ -147,8 +147,10 @@ title: Boutik Machann - Boutique Piyay
         }
 
         const { data: products } = await supV.from('user_products').select('*').eq('seller_id', sellerId.trim()).order('created_at', { ascending: false });
-        if (products) {
+        if (products && prof) {
           document.getElementById('prodCount').innerText = products.length;
+          const sellerPhone = (prof.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
+          const sellerName = prof.full_name || 'Boutique Piyay';
           grid.innerHTML = products.map(p => {
             const safeT = (p.title || '').replace(/'/g, "\\'");
             const safeImg = (p.image_url || '').replace(/'/g, "\\'");
@@ -158,7 +160,7 @@ title: Boutik Machann - Boutique Piyay
                 <div class="bm-card-body">
                   <div style="font-size:13px; font-weight:700; margin-bottom:10px;">${p.title}</div>
                   <div class="bm-price">${p.price} HTG</div>
-                  <button class="btn-bm-add" onclick="if(window.orderProduct) window.orderProduct('${safeT}','${p.price}','${p.id}','${safeImg}')">🛒 Achte</button>
+                  <button class="btn-bm-add" onclick="if(window.orderProduct) window.orderProduct('${safeT}','${p.price}','${p.id}','${safeImg}','${sellerId}','${sellerPhone}','${sellerName}')">🛒 Achte</button>
                 </div>
               </div>`;
           }).join('');

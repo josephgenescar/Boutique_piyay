@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshBadge();
 });
 
-function orderProduct(title, price, id, image, sellerId, sellerPhone) {
+function orderProduct(title, price, id, image, sellerId, sellerPhone, sellerName) {
   let currentCart = getCart();
   let key = id || title.replace(/\s+/g,'-').toLowerCase();
   let found = false;
@@ -20,7 +20,7 @@ function orderProduct(title, price, id, image, sellerId, sellerPhone) {
   if (!found) {
     currentCart.push({
       id: key, title: title, price: parseFloat(price) || 0,
-      img: image || '', qty: 1, sellerId: sellerId || null, sellerPhone: sellerPhone || '50948868964'
+      img: image || '', qty: 1, sellerId: sellerId || null, sellerPhone: sellerPhone || '50948868964', sellerName: sellerName || 'Boutique Piyay'
     });
   }
 
@@ -60,7 +60,7 @@ function drawCart() {
   let bySeller = {};
   currentCart.forEach(it => {
     const sid = it.sellerId || 'boutique-piyay';
-    if (!bySeller[sid]) bySeller[sid] = { items: [], phone: it.sellerPhone };
+    if (!bySeller[sid]) bySeller[sid] = { items: [], phone: it.sellerPhone, sellerName: it.sellerName };
     bySeller[sid].items.push(it);
   });
 
@@ -68,6 +68,7 @@ function drawCart() {
   let html = `<style>
     .seller-group { background: #f8fafc; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ff4747; }
     .seller-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-weight: 800; color: #0f172a; padding-bottom: 10px; border-bottom: 2px solid #fbbf24; }
+    .seller-name { display: flex; align-items: center; gap: 8px; }
     .seller-wa { font-size: 12px; }
     .seller-wa a { color: #25d366; text-decoration: none; font-weight: 700; }
     .cart-item { display: flex; align-items: center; gap: 15px; padding: 10px 0; }
@@ -79,9 +80,10 @@ function drawCart() {
 
   Object.entries(bySeller).forEach(([sellerId, group]) => {
     const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
+    const sellerName = group.sellerName || 'Boutique Piyay';
     html += `<div class="seller-group">
       <div class="seller-header">
-        <span>🏪 Boutique Piyay</span>
+        <span class="seller-name">🏪 ${sellerName}</span>
         <div class="seller-wa">
           <a href="https://wa.me/${phone}" target="_blank">📱 WhatsApp</a>
         </div>

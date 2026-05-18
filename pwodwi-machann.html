@@ -441,12 +441,18 @@ title: Detay Pwodwi
 
         // Bouton aksyon
         document.getElementById('btnPanye').onclick = () => {
-          if (window.orderProduct) orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id);
+          if (window.orderProduct) {
+            const sellerPhone = (prof?.whatsapp_number || prof?.whatsapp || '50948868964').replace(/[^0-9]/g, '');
+            const sellerName = prof?.full_name || 'Boutique Piyay';
+            orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id, sellerPhone, sellerName);
+          }
           else alert("Fonksyon panye pa disponib.");
         };
         document.getElementById('btnAchte').onclick = () => {
           if (window.orderProduct) {
-            orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id);
+            const sellerPhone = (prof?.whatsapp_number || prof?.whatsapp || '50948868964').replace(/[^0-9]/g, '');
+            const sellerName = prof?.full_name || 'Boutique Piyay';
+            orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id, sellerPhone, sellerName);
             if (window.openCart) openCart();
           }
         };

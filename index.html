@@ -279,6 +279,165 @@ title: Akèy - Boutique Piyay
     .btn-add:hover { background: var(--primary); }
 
     /* ══════════════════════════════
+       PUBLISHERS BANNER SECTION
+    ══════════════════════════════ */
+    #publishers-section { margin: 36px 0; display: none; }
+    
+    .publishers-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--radius);
+      padding: 32px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
+      margin-bottom: 28px;
+    }
+
+    .publishers-banner::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      animation: publisherBlob 6s ease-in-out infinite alternate;
+    }
+
+    .publishers-banner::after {
+      content: '';
+      position: absolute; bottom: -60px; left: 20%;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      animation: publisherBlob2 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes publisherBlob { to { transform: scale(1.2) translate(20px, -10px); } }
+    @keyframes publisherBlob2 { to { transform: scale(1.15) translate(-15px, 15px); } }
+
+    .publishers-content {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      position: relative;
+      z-index: 2;
+      flex-wrap: wrap;
+    }
+
+    .publishers-text {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .publishers-label {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #e0e7ff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 50px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .publishers-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+      font-family: 'Sora', sans-serif;
+      line-height: 1.2;
+    }
+
+    .publishers-desc {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.6;
+      margin: 0 0 16px;
+    }
+
+    .publishers-cta-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-publishers-primary {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-publishers-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.2);
+    }
+
+    .btn-publishers-secondary {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-publishers-secondary:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.5);
+    }
+
+    .publishers-icon {
+      font-size: 64px;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .publishers-banner {
+        padding: 24px;
+      }
+      .publishers-content {
+        gap: 16px;
+      }
+      .publishers-title {
+        font-size: 22px;
+      }
+      .publishers-icon {
+        font-size: 48px;
+      }
+      .publishers-cta-group {
+        width: 100%;
+      }
+      .btn-publishers-primary,
+      .btn-publishers-secondary {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    /* ══════════════════════════════
        FLASH SALE
     ══════════════════════════════ */
     #flash-sale { margin: 36px 0; display: none; }
@@ -630,6 +789,24 @@ title: Akèy - Boutique Piyay
         </div>
     </section>
 
+    <!-- 1b. PUBLISHERS BANNER -->
+    <section id="publishers-section">
+        <div class="publishers-banner">
+            <div class="publishers-content">
+                <div class="publishers-text">
+                    <div class="publishers-label">🚀 Deklare Boutik ou</div>
+                    <h2 class="publishers-title">Vire Yon Publisye 📢</h2>
+                    <p class="publishers-desc">Montre pwodwi ou nan akèy la. Jwenn plis kliyan. Grandi biznis ou annen Boutique Piyay.</p>
+                    <div class="publishers-cta-group">
+                        <a href="/dashboard.html" class="btn-publishers-primary">📊 Vin Machann</a>
+                        <a href="#user-market" class="btn-publishers-secondary">Aprann Plis →</a>
+                    </div>
+                </div>
+                <div class="publishers-icon">📣</div>
+            </div>
+        </div>
+    </section>
+
     <!-- 2. VENTE FLASH -->
     <section id="flash-sale">
       <div class="flash-header">
@@ -805,6 +982,12 @@ title: Akèy - Boutique Piyay
           document.getElementById('flash-sale').style.display = 'none';
         }
 
+        // Show publishers section
+        const publishersSection = document.getElementById('publishers-section');
+        if (publishersSection) {
+          publishersSection.style.display = 'block';
+        }
+
         startInfiniteFlashTimer();
       } catch(e) { console.error("Erè chajman:", e); console.error(e); }
     }
@@ -842,7 +1025,7 @@ title: Akèy - Boutique Piyay
             </a>
             <div class="boosted-title">${p.title}</div>
             <div class="boosted-price">${p.price} HTG</div>
-            <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}')">
+            <button class="btn-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}','${sellerName}')">
               🛒 Ajoute
             </button>
           </div>`);
@@ -921,6 +1104,9 @@ title: Akèy - Boutique Piyay
         return;
       }
       grid.innerHTML = list.map(p => {
+        const seller = sellerMap[p.seller_id] || {};
+        const sellerName = seller.full_name || 'Boutique Piyay';
+        const sellerPhone = (seller.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
         return `
         <div class="mkt-prod-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
@@ -929,7 +1115,7 @@ title: Akèy - Boutique Piyay
           </a>
           <div class="mkt-prod-name">${p.title}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
-          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}','${sellerName}')">
             🛒 Ajoute
           </button>
         </div>`;
@@ -941,6 +1127,9 @@ title: Akèy - Boutique Piyay
       const slider = document.getElementById('flash-slider-inner');
       if (!slider) return;
       slider.innerHTML = list.map(p => {
+        const seller = sellerMap[p.seller_id] || {};
+        const sellerName = seller.full_name || 'Boutique Piyay';
+        const sellerPhone = (seller.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
         const valOld = p.old_price ? parseFloat(p.old_price) : 0;
         const valNew = parseFloat(p.price);
         const disc   = (valOld > valNew) ? Math.round(((valOld - valNew) / valOld) * 100) : 0;
@@ -958,7 +1147,7 @@ title: Akèy - Boutique Piyay
               <span class="flash-new">${p.price} HTG</span>
               ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
             </div>
-            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${(sellerMap[p.seller_id]?.whatsapp_number || '50948868964').replace(/[^0-9]/g, '')}')">
+            <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${sellerPhone}','${sellerName}')">
               🛒 Ajoute
             </button>
           </div>`;
