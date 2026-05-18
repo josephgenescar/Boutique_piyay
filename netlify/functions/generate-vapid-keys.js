@@ -24,9 +24,9 @@ exports.handler = async (event) => {
       VAPID_PUBLIC_KEY: vapidKeys.publicKey,
       VAPID_PRIVATE_KEY: vapidKeys.privateKey,
       instructions: {
-        step1: "Ajoute VAPID_PUBLIC_KEY nan Netlify → Site → Environment Variables",
-        step2: "Ajoute VAPID_PRIVATE_KEY nan Netlify → Site → Environment Variables",
-        step3: "Ajoute NEXT_PUBLIC_VAPID_PUBLIC_KEY = menm valè ak VAPID_PUBLIC_KEY",
+        step1: "Ajouter VAPID_PUBLIC_KEY nan Netlify → Site → Environment Variables",
+        step2: "Ajouter VAPID_PRIVATE_KEY nan Netlify → Site → Environment Variables",
+        step3: "Ajouter NEXT_PUBLIC_VAPID_PUBLIC_KEY = menm valè ak VAPID_PUBLIC_KEY",
         step4: "EFASE fonksyon generate-vapid-keys.js sa a apre!",
       },
     }, null, 2),

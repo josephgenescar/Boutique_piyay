@@ -29,7 +29,7 @@ Git Gateway Error: [object Object]
 1. Ale: **https://app.netlify.com/user/invitations**
 2. Kike: **Accept invitation** sou https://github.com/settings/connections/applications
 3. Autoriz Netlify pou aksè GitHub repo
-4. Konfime
+4. Confirmer
 
 ### ÉTAPE 4: Redeploy Site
 

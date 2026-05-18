@@ -12,14 +12,14 @@
 
         <div class="modal-footer" id="order-form-container" style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 15px;">
             <div class="order-form">
-                <p style="font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">Detay pou Livrezon</p>
+                <p style="font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">Détails de livraison</p>
 
-                <input type="text" id="customer-name" placeholder="Non konplè w *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                <input type="tel" id="customer-phone" placeholder="Nimewo WhatsApp ou *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <input type="text" id="customer-name" placeholder="Nom complet *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <input type="tel" id="customer-phone" placeholder="Numéro WhatsApp *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
 
                 <!-- LIS ZÒN KONPLÈ -->
                 <select id="delivery-zone" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
-                    <option value="">-- Chwazi Zòn Livrezon --</option>
+                    <option value="">-- Choisissez une zone de livraison --</option>
                     <option value="Pétion-Ville">Pétion-Ville</option>
                     <option value="Delmas">Delmas</option>
                     <option value="Port-au-Prince">Port-au-Prince</option>
@@ -31,26 +31,31 @@
                     <option value="Saint-Marc">Saint-Marc</option>
                     <option value="Jacmel">Jacmel</option>
                     <option value="Cayes">Cayes</option>
-                    <option value="Lòt Zòn">Lòt Zòn (Ekri l anba)</option>
+                    <option value="Lòt Zone">Lòt Zone (Ekri l anba)</option>
                 </select>
 
-                <input type="text" id="other-zone" placeholder="Presize zòn ou an la..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
+                <input type="text" id="other-zone" placeholder="Précisez votre zone ici..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
 
                 <!-- METÒD PEMAN KÒRÈK -->
-                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Chwazi Mwayen Peman</p></label>
+                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Choisir le moyen de paiement</p></label>
 
                                 <select id="payment-method-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-weight: 700;">
-                                        <option value="manual" selected>💵 Peye Manyèlman (Kontakte machann lan)</option>
-                                        <option value="NatCash">📲 Peye ak NatCash</option>
+                                        <option value="manual" selected>💵 Paiement manuel (contactez le vendeur)</option>
+                                        <option value="NatCash">📲 Payer avec NatCash</option>
                                         <option value="Cash">💵 Cash à la livraison</option>
                                 </select>
                                 <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
-                                    <b>Gid:</b> Chwazi "Peye Manyèlman" pou kontakte machann lan sou WhatsApp, negosye epi voye prèv peman an. Machann lan ap valide kòmand ou.
+                                    <b>Gid:</b> Choisissez « Paiement manuel » pour contacter le vendeur sur WhatsApp, négocier et envoyer la preuve de paiement. Le vendeur validera votre commande.
                                 </div>
 
-                <button id="submitOrderBtn" class="btn-confirm-order" onclick="submitOrder()" style="width: 100%; padding: 15px; background: #ff4747; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(255,71,71,0.3);">
-                    Konfime Kòmand la ✅
-                </button>
+                <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="contactSellersWhatsApp()" style="flex:1; min-width: 180px; padding: 14px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(37,211,102,0.3);">
+                        📱 WhatsApp Vendeur
+                    </button>
+                    <button id="submitOrderBtn" class="btn-confirm-order" onclick="submitOrder()" style="flex:1; min-width: 180px; padding: 15px; background: #ff4747; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(255,71,71,0.3);">
+                        Valider la commande ✅
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -59,7 +64,7 @@
 <script>
     document.getElementById('delivery-zone')?.addEventListener('change', function() {
         const otherInput = document.getElementById('other-zone');
-        if (this.value === 'Lòt Zòn') { otherInput.style.display = 'block'; }
+        if (this.value === 'Lòt Zone') { otherInput.style.display = 'block'; }
         else { otherInput.style.display = 'none'; }
     });
 </script>

@@ -98,7 +98,7 @@ Tout kontni paj affiliate.html mete sou kòmantè pou inaktif.
 
     function copyText(t, btn) { navigator.clipboard.writeText(t).then(() => { if (btn) { const o = btn.innerText; btn.innerText = '✅!'; setTimeout(() => btn.innerText = o, 2000); } }); }
     async function requestWithdrawal() {
-        const m = prompt("MonCash / NatCash?"); const n = prompt("Nimewo?");
+        const m = prompt("MonCash / NatCash?"); const n = prompt("Numéro?");
         if (m && n) { await supabaseA.from('affiliate_withdrawals').insert([{ affiliate_id: currentAff.id, amount: currentAff.balance, method: m, number: n, status: 'pending' }]); alert("Demann voye!"); }
     }
     initAffiliate();

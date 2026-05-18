@@ -41,7 +41,7 @@ function orderProduct(title, price, id, image, seller_id = null) {
     saveCart(); updateCartUI();
     const btn = event?.target?.closest('button');
     if (btn) {
-        const oldHTML = btn.innerHTML; btn.innerHTML = "✅ Ajoute!"; btn.disabled = true;
+        const oldHTML = btn.innerHTML; btn.innerHTML = "✅ Ajouter!"; btn.disabled = true;
         setTimeout(() => { btn.innerHTML = oldHTML; btn.disabled = false; }, 1500);
     }
     const modal = document.getElementById('order-modal');
@@ -59,7 +59,7 @@ function renderCart() {
     const footer  = document.getElementById('order-form-container');
     if (!summary) return;
     if (cartItems.length === 0) {
-        summary.innerHTML = `<div style="text-align:center; padding:50px 20px;"><div style="font-size:52px;">🛍️</div><div style="font-weight:800;">Panye w la vid</div></div>`;
+        summary.innerHTML = `<div style="text-align:center; padding:50px 20px;"><div style="font-size:52px;">🛍️</div><div style="font-weight:800;">Panier w la vid</div></div>`;
         if (footer) footer.style.display = 'none'; return;
     }
     if (footer) footer.style.display = 'block';

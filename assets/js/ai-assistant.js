@@ -21,7 +21,7 @@ async function loadSupabaseCatalogForAI() {
                 price: p.price + " HTG",
                 url: `${window.location.origin}/pwodwi-machann.html?id=${p.id}`,
                 image: p.image_url, // Nou pa mete logo isit la, n ap kite l vid si pa gen foto
-                seller: "Machann Boutique Piyay"
+                seller: "Vendeur Boutique Piyay"
             }));
             console.log("✅ Katalòg AI pare.");
         }
@@ -57,7 +57,7 @@ function addAIMessage(role, text) {
     let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
     // 🔥 DETEKTE AK DESINE KAD PWODWI (CARD)
-    // Fòma: [PRODUCT: Tit | Pri | Lyen | Imaj | Machann]
+    // Fòma: [PRODUCT: Tit | Pri | Lyen | Imaj | Vendeur]
     let htmlContent = formattedText.replace(/\[PRODUCT:(.*?)\]/g, (match, content) => {
         const parts = content.split('|').map(p => p.trim());
 
@@ -65,7 +65,7 @@ function addAIMessage(role, text) {
         const price  = parts[1] || '';
         const url    = parts[2] || '#';
         let   img    = parts[3] || '';
-        const seller = parts[4] || 'Machann Boutique Piyay';
+        const seller = parts[4] || 'Vendeur Boutique Piyay';
 
         // Si AI a mete logo a olye foto a, oswa si li vid
         if (!img || img.includes('logo.png') || img === 'null') {

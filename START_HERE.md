@@ -39,7 +39,7 @@ Mwen kreye pou ou yon sistèm konplè ak tout bagay ou bezwen pou amelyore sit J
 - Rezime kòmand
 - Entegrasyon WhatsApp
 
-### 6️⃣ **assets/js/cart.js** - Sistèm Panye Konplè
+### 6️⃣ **assets/js/cart.js** - Sistèm Panier Konplè
 - Klas JavaScript pwofesyonèl
 - LocalStorage pou pesistans
 - Notifikasyon elegann
@@ -62,7 +62,7 @@ Mwen kreye pou ou yon sistèm konplè ak tout bagay ou bezwen pou amelyore sit J
 ### 9️⃣ **CUSTOMIZATION.md** - Gid Personalizasyon
 - Chanje koulè/tèm
 - Modifye logo/fonts
-- Ajoute fonksyon
+- Ajouter fonksyon
 - Egzanp kod konplè
 
 ---
@@ -83,8 +83,8 @@ Mwen kreye pou ou yon sistèm konplè ak tout bagay ou bezwen pou amelyore sit J
 - ✅ Jesyon estok
 - ✅ Kategori ak ikòn
 
-### 🛒 Sistèm Panye
-- ✅ Ajoute/retire/modifye
+### 🛒 Sistèm Panier
+- ✅ Ajouter/retire/modifye
 - ✅ Pesistans (localStorage)
 - ✅ Kalkil frè livrezon
 - ✅ Sipò varyant
@@ -138,7 +138,7 @@ Li `CHECKLIST.md` pou detay konplè
 
 ### Etap 5: Teste
 - [ ] Admin panel fonksyone
-- [ ] Panye fonksyone
+- [ ] Panier fonksyone
 - [ ] Checkout fonksyone
 - [ ] Reviews fonksyone
 
@@ -153,9 +153,9 @@ Li `CHECKLIST.md` pou detay konplè
 
 ### Pou Personalizasyon:
 1. Li **CUSTOMIZATION.md**
-2. Chwazi tèm/koulè ou vle
+2. Choisissez tèm/koulè ou vle
 3. Modifye logo/fonts
-4. Ajoute fonksyon siplemantè
+4. Ajouter fonksyon siplemantè
 
 ### Pou Referans Konplè:
 1. Li **README.md**
@@ -170,7 +170,7 @@ Li `CHECKLIST.md` pou detay konplè
 ### Pou Itilizatè
 - ✨ Entèfas bèl ak modèn
 - 🔍 Rechèch rapid
-- 🛒 Panye senp epi klè
+- 🛒 Panier senp epi klè
 - 💳 Checkout rapid
 - ⭐ Wè rating pwodwi
 - 💬 Sipò WhatsApp
@@ -195,7 +195,7 @@ Li `CHECKLIST.md` pou detay konplè
 
 ## 💡 EKSANP ITILIZASYON
 
-### Ajoute Pwodwi
+### Ajouterr un produit
 ```yaml
 ---
 title: "T-shirt Premium"
@@ -220,7 +220,7 @@ Description pwodwi la...
 }
 ```
 
-### Ajoute Notifikasyon
+### Ajouter Notifikasyon
 ```javascript
 cart.showNotification('✅ Pwodwi ajoute!', 'success');
 ```
@@ -234,7 +234,7 @@ cart.showNotification('✅ Pwodwi ajoute!', 'success');
 - Natcash: 4068-3108
 - Kach: Disponib
 
-### Livrezon
+### Livraison
 - Port-au-Prince: Gratis
 - Lòt vil: 100 HTG
 - Gratis si > 1000 HTG
@@ -335,14 +335,14 @@ cart.showNotification('✅ Pwodwi ajoute!', 'success');
 
 2. **Apre Enstalasyon:**
    - [ ] Teste tout fonksyon
-   - [ ] Ajoute pwodwi ou yo
+   - [ ] Ajouter pwodwi ou yo
    - [ ] Personalize koulè/logo
    - [ ] Envite lòt admin
 
 3. **Apre 1 Semèn:**
    - [ ] Wè premye kòmand
    - [ ] Analiz pèfòmans
-   - [ ] Ajoute fonksyon siplemantè
+   - [ ] Ajouter fonksyon siplemantè
    - [ ] Bay feedback
 
 ---

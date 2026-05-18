@@ -53,7 +53,7 @@ Mettez à jour dans `index.html` les numéros Moncash/Natcash:
 <p>💳 <strong>Natcash:</strong> +509 48868964</p>
 ```
 
-### 3. **Ajouter des Produits**
+### 3. **Ajouterr des Produits**
 Créez un dossier `_products` et ajoutez des fichiers markdown:
 
 **Exemple: _products/t-shirt.md**

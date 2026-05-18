@@ -1,6 +1,6 @@
 // ============================================================
 //  PiyayChat — notify.js
-//  Voye notifikasyon an yon liy kòd depi nenpòt kote
+//  Voye notifikasyon an yon liy code depi nenpòt kote
 // ============================================================
 
 export async function sendNotification(userId, type, data = {}) {

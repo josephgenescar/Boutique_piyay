@@ -23,18 +23,18 @@ const supabase = createClient(
 // ── Modèl mesaj pa tip ──────────────────────────────────────
 const TEMPLATES = {
   new_order: (d) => ({
-    title: "🛍️ Nouvo Kòmand!",
-    body: `Kòmand #${d.order_id} — ${d.product_name} — ${d.amount} HTG`,
+    title: "🛍️ Nouvo Commande!",
+    body: `Commande #${d.order_id} — ${d.product_name} — ${d.amount} HTG`,
     click_url: `/dashboard/orders/${d.order_id}`,
   }),
   order_confirmed: (d) => ({
-    title: "✅ Kòmand Konfime!",
-    body: `Machann konfime. Livrezon nan ${d.delivery_time ?? "24h"}.`,
+    title: "✅ Commande Confirmer!",
+    body: `Vendeur konfime. Livraison nan ${d.delivery_time ?? "24h"}.`,
     click_url: `/orders/${d.order_id}`,
   }),
   order_delivered: (d) => ({
     title: "📦 Pwodwi Livre!",
-    body: `Kòmand #${d.order_id} livre. Konfime resepsyon.`,
+    body: `Commande #${d.order_id} livre. Confirmer resepsyon.`,
     click_url: `/orders/${d.order_id}`,
   }),
   delivery_coming: (d) => ({
@@ -74,7 +74,7 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  // Sekirite — sèlman kòd entèn ka rele fonksyon sa a
+  // Sekirite — sèlman code entèn ka rele fonksyon sa a
   if (event.headers["x-internal-secret"] !== process.env.INTERNAL_SECRET) {
     return { statusCode: 401, body: "Unauthorized" };
   }

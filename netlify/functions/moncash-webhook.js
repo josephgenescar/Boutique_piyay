@@ -18,7 +18,7 @@ exports.handler = async (event) => {
         const transactionId = payload.v || payload.transaction_id;
 
         if (orderId) {
-            console.log(`✅ Kòmand ${orderId} konfime pa Webhook. Tranzaksyon: ${transactionId}`);
+            console.log(`✅ Commande ${orderId} konfime pa Webhook. Tranzaksyon: ${transactionId}`);
 
             if (supabase) {
                 const { error } = await supabase

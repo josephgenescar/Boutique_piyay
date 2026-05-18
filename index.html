@@ -656,7 +656,7 @@ title: Akèy - Boutique Piyay
             <div class="boosted-title">${p.title}</div>
             <div class="boosted-price">${p.price} HTG</div>
             <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
-              🛒 Ajoute
+              🛒 Ajouterr
             </button>
           </div>
         </div>`;
@@ -667,7 +667,7 @@ title: Akèy - Boutique Piyay
     const grid = document.getElementById('sellers-grid-home');
     if (!grid) return;
     if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Pa gen machann toujou</div></div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Aucun vendeur pour le moment</div></div>`;
       return;
     }
     grid.innerHTML = list.map(s => {
@@ -689,7 +689,7 @@ title: Akèy - Boutique Piyay
             </div>
           </div>
           <div class="seller-previews">${previews}</div>
-          <a href="/boutik-machann.html?id=${s.id}" class="btn-visit">Vizite Boutik →</a>
+          <a href="/boutik-machann.html?id=${s.id}" class="btn-visit">Visiter la boutique →</a>
         </div>`;
     }).join('');
   }
@@ -698,7 +698,7 @@ title: Akèy - Boutique Piyay
     const grid = document.getElementById('supabase-products-grid');
     if (!grid) return;
     if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Pa gen pwodwi toujou</div><div class="e-sub">Machann yo ap ajoute byento!</div></div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Aucun produit pour le moment</div><div class="e-sub">Les vendeurs ajouteront bientôt leurs produits !</div></div>`;
       return;
     }
     grid.innerHTML = list.map(p => {
@@ -712,7 +712,7 @@ title: Akèy - Boutique Piyay
           <div class="mkt-prod-name">${p.title}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
           <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
-            🛒 Ajoute
+            🛒 Ajouterr
           </button>
         </div>`;
     }).join('');
@@ -741,7 +741,7 @@ title: Akèy - Boutique Piyay
             ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
           </div>
           <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
-            🛒 Ajoute
+            🛒 Ajouterr
           </button>
         </div>`;
     }).join('');

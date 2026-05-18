@@ -312,7 +312,7 @@ title: Detay Pwodwi
                 <div class="seller-info-card">
                     <div class="seller-avatar-sm" id="seller-avatar">M</div>
                     <div class="seller-details">
-                        <div id="seller">Machann: ...</div>
+                        <div id="seller">Vendeur: ...</div>
                         <div id="loc">📍 ...</div>
                         <div id="wa-link"></div>
                     </div>
@@ -320,7 +320,7 @@ title: Detay Pwodwi
 
                 <!-- ACTIONS -->
                 <div class="pd-actions">
-                    <button id="btnPanye" class="btn-panye">🛒 Mete nan Panye</button>
+                    <button id="btnPanier" class="btn-panye">🛒 Mete nan Panier</button>
                     <button id="btnAchte" class="btn-achte">⚡ Achte Kounye a</button>
                 </div>
             </div>
@@ -328,7 +328,7 @@ title: Detay Pwodwi
 
         <!-- REVIEWS -->
         <div class="reviews-section">
-            <div class="reviews-title">⭐ Avis Kliyan yo</div>
+            <div class="reviews-title">⭐ Avis Clients yo</div>
 
             <!-- REVIEW FORM -->
             <div id="feedback-form" class="review-form-card">
@@ -440,7 +440,7 @@ title: Detay Pwodwi
         }
 
         // Bouton aksyon
-        document.getElementById('btnPanye').onclick = () => {
+        document.getElementById('btnPanier').onclick = () => {
           if (window.orderProduct) {
             const sellerPhone = (prof?.whatsapp_number || prof?.whatsapp || '50948868964').replace(/[^0-9]/g, '');
             const sellerName = prof?.full_name || 'Boutique Piyay';
@@ -502,7 +502,7 @@ title: Detay Pwodwi
       }
 
       list.innerHTML = fbs.map(f => {
-        const name  = f.profiles?.full_name || 'Kliyan';
+        const name  = f.profiles?.full_name || 'Client';
         const stars = '⭐'.repeat(Math.min(f.rating || 0, 5));
         const date  = new Date(f.created_at).toLocaleDateString('fr-HT', { day:'numeric', month:'short', year:'numeric' });
         return `

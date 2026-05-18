@@ -98,7 +98,7 @@ votre-projet/
 
 ### Étape 2: Configuration Jekyll
 
-Ajoutez dans votre `_config.yml`:
+Ajouterz dans votre `_config.yml`:
 
 ```yaml
 # Collections
@@ -127,7 +127,7 @@ defaults:
 3. Activez Netlify Identity:
    - Site Settings → Identity → Enable Identity
    - Registration preferences → Invite only (recommandé)
-   - External providers → Ajoutez Google/GitHub si désiré
+   - External providers → Ajouterz Google/GitHub si désiré
 4. Activez Git Gateway:
    - Settings → Identity → Services → Git Gateway → Enable
 
@@ -237,7 +237,7 @@ _data/
 
 ## 💡 Utilisation
 
-### Ajouter un Produit
+### Ajouterr un Produit
 
 #### Via l'Admin (Recommandé):
 1. Allez sur `/admin`
@@ -248,7 +248,7 @@ _data/
    - Catégorie: Habillement
    - Image principale
    - Images additionnelles
-4. Ajoutez des variants si nécessaire:
+4. Ajouterz des variants si nécessaire:
    - Type: Taille
    - Options: S, M, L, XL
 5. Définissez le stock
@@ -377,7 +377,7 @@ let message = `🛍️ *NOUVELLE COMMANDE*
 `;
 ```
 
-### Ajouter des Sections Page d'Accueil
+### Ajouterr des Sections Page d'Accueil
 
 Dans Admin → Pages → Page d'accueil → Sections:
 - Vente Flash
@@ -401,7 +401,7 @@ Télécharge un fichier JSON avec toutes les commandes.
 
 ### Analytics des Produits
 
-Ajoutez Google Analytics ou créez votre système:
+Ajouterz Google Analytics ou créez votre système:
 
 ```javascript
 // Dans cart.js, après addItem()
@@ -456,7 +456,7 @@ bundle exec jekyll serve
 ### Test des Fonctionnalités
 
 **Panier:**
-1. Ajoutez produits
+1. Ajouterz produits
 2. Modifiez quantités
 3. Supprimez items
 4. Vérifiez persistance (rechargez page)
@@ -470,7 +470,7 @@ bundle exec jekyll serve
 **Admin:**
 1. Créez nouveau produit
 2. Uploadez images
-3. Ajoutez variants
+3. Ajouterz variants
 4. Publiez et vérifiez sur site
 
 ---
@@ -543,7 +543,7 @@ Créez des tutoriels pour votre équipe:
 
 ## 🎯 Prochaines Étapes
 
-### Fonctionnalités à Ajouter
+### Fonctionnalités à Ajouterr
 - [ ] Newsletter subscription
 - [ ] Blog intégré
 - [ ] Programme de fidélité

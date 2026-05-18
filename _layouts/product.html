@@ -75,21 +75,21 @@ layout: default
       <h1 class="p-title">{{ page.title }}</h1>
 
       <!-- DISPLAY ZONE DYNAMIK -->
-      <div id="zoneLoader" class="seller-zone-badge">📍 Zòn: Chaje...</div>
+      <div id="zoneLoader" class="seller-zone-badge">📍 Zone: Chaje...</div>
 
       <div class="p-price-box">
         <span class="p-current-price">{{ page.price }} HTG</span>
       </div>
 
       <div class="btn-grid">
-        <button class="btn-p btn-black" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}', '{{ page.image }}')">🛒 Nan Panye</button>
+        <button class="btn-p btn-black" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}', '{{ page.image }}')">🛒 Nan Panier</button>
         <button class="btn-p btn-primary" onclick="buyDirect()">⚡ Achte Kounye a</button>
       </div>
 
       <!-- ENFÒMASYON MACHANN LAN -->
       <div class="seller-info-card">
         <div id="sellerName" class="seller-name-title">Boutique Piyay</div>
-        <div id="sellerAddr" class="seller-location">📍 Zòn Livrezon: Chaje...</div>
+        <div id="sellerAddr" class="seller-location">📍 Zone Livraison: Chaje...</div>
 
         <div class="social-links">
           <a id="waLink" href="#" target="_blank" class="social-item btn-wa">💬 WhatsApp</a>
@@ -117,9 +117,9 @@ layout: default
 
     if (profile) {
       const zone = profile.address || "Ayiti";
-      document.getElementById('zoneLoader').innerText = "📍 Zòn: " + zone;
-      document.getElementById('sellerName').innerText = "Vandè: " + (profile.full_name || "Machann");
-      document.getElementById('sellerAddr').innerText = "📍 Zòn Livrezon: " + zone;
+      document.getElementById('zoneLoader').innerText = "📍 Zone: " + zone;
+      document.getElementById('sellerName').innerText = "Vandè: " + (profile.full_name || "Vendeur");
+      document.getElementById('sellerAddr').innerText = "📍 Zone Livraison: " + zone;
 
       if (profile.whatsapp) {
         document.getElementById('waLink').href = "https://wa.me/" + profile.whatsapp.replace(/\+/g, '');

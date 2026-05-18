@@ -34,7 +34,7 @@ https://app.netlify.com → Select your site → Site settings
 Search: "Environment variables"
 ```
 
-### Etap 3: Ajoute variables
+### Etap 3: Ajouter variables
 | Variable Name | Value |
 |---|---|
 | `MONCASH_CLIENT_ID` | [Your ID] |

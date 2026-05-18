@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Aktive Kont Machann ou - Boutique Piyay
+title: Aktive Kont Vendeur ou - Boutique Piyay
 ---
 
 <div class="container" style="max-width: 600px; padding: 60px 20px; text-align: center;">
@@ -19,8 +19,8 @@ title: Aktive Kont Machann ou - Boutique Piyay
         </div>
 
         <div style="text-align: left; margin-bottom: 30px;">
-            <h3 style="font-size: 16px; margin-bottom: 15px;">Kijan pou w aktive kont lan :</h3>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Klike sou bouton anba a pou w mande aktivasyon 3 mwa gratis ou a sou WhatsApp. Pa gen okenn frè pou kòmanse!</p>
+            <h3 style="font-size: 16px; margin-bottom: 15px;">Kijan pour vous aktive kont lan :</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Klike sou bouton anba a pour vous mande aktivasyon 3 mwa gratis ou a sou WhatsApp. Pa gen okenn frè pou kòmanse!</p>
         </div>
 
         <a id="whatsappConfirm" href="#" target="_blank" style="display: block; width: 100%; padding: 18px; background: #25d366; color: white; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 16px; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);">
@@ -48,7 +48,7 @@ title: Aktive Kont Machann ou - Boutique Piyay
     async function setupWA() {
         const { data: { user } } = await supabaseP.auth.getUser();
         if (user) {
-            const msg = encodeURIComponent(`Bonjou Boutique Piyay! Mwen vle pwofite de òf 3 MWA GRATIS la pou m kòmanse vann.\n\nEmail mwen: ${user.email}\nID Machann: ${user.id}`);
+            const msg = encodeURIComponent(`Bonjour Boutique Piyay! Mwen vle pwofite de òf 3 MWA GRATIS la pou m kòmanse vann.\n\nEmail mwen: ${user.email}\nID Vendeur: ${user.id}`);
             document.getElementById('whatsappConfirm').href = `https://wa.me/50948868964?text=${msg}`;
         }
     }

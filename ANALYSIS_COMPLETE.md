@@ -14,7 +14,7 @@
 ### Solisyon aplike:
 ✅ Enleve filtre `is_approved` - accept tout pwodwi
 ✅ Filtre sèlman pa `image_url`, `title`, `price` egziste
-✅ Ajoute console.log pou debug
+✅ Ajouter console.log pou debug
 
 ### Rezilta:
 ```javascript
@@ -40,11 +40,11 @@ allProducts = (prods || []).filter(p => p.image_url && p.title && p.price);
 
 ### Solisyon aplike:
 ✅ Fiks filtre - youn sèlman keep produits kon `is_flash_sale = true` + `flash_start_at < 24h`
-✅ Ajoute console.log: `⚡ Pwodwi flash sale: XX`
+✅ Ajouter console.log: `⚡ Pwodwi flash sale: XX`
 
 ### SQL requi (URGENT):
 ```sql
--- Ajoute kolòn nan table
+-- Ajouter kolòn nan table
 ALTER TABLE user_products 
 ADD COLUMN IF NOT EXISTS is_flash_sale BOOLEAN DEFAULT false;
 ADD COLUMN IF NOT EXISTS flash_start_at TIMESTAMP DEFAULT NULL;
@@ -64,7 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_order_group_id ON orders(order_group_id);
 
 ### Rezon yo:
 1. **Verifye pa bon**: Filtre count `is_flash_sale = true` MEN PAS verifye 24h expiry
-2. **Rezilta**: Machann p ka mete 100 flash sales, youn pou chak jou
+2. **Rezilta**: Vendeur p ka mete 100 flash sales, youn pou chak jou
 
 ### Solisyon requi:
 ```javascript
@@ -94,7 +94,7 @@ const { data: flashProds } = await supD.from('user_products')
 ### Rezon yo:
 1. Code UI sèlman filtre 24h - PAS suppression physik
 2. Vye flash sales rete `is_flash_sale = true` pou toujou
-3. Machann pa p ka mete lot produits apre 24h
+3. Vendeur pa p ka mete lot produits apre 24h
 
 ### Solisyon requi:
 **OPTION 1 - Via Supabase PL/pgSQL (Pi bon):**
@@ -153,7 +153,7 @@ ADD COLUMN IF NOT EXISTS order_group_id TEXT UNIQUE;
 CREATE INDEX IF NOT EXISTS idx_orders_order_group_id ON orders(order_group_id);
 
 -- Komantè: GroupID pou jwenn tout items nan yon kòmand
--- Eksanp: Kliyan achte 3 items, 2 item separe = 1 order_group_id, 3 rows nan table
+-- Eksanp: Client achte 3 items, 2 item separe = 1 order_group_id, 3 rows nan table
 ```
 
 ---
@@ -166,7 +166,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_order_group_id ON orders(order_group_id);
 2. Kopiey code anba:
 ```
 ```sql
--- Ajoute kolòn
+-- Ajouter kolòn
 ALTER TABLE user_products ADD COLUMN IF NOT EXISTS is_flash_sale BOOLEAN DEFAULT false;
 ALTER TABLE user_products ADD COLUMN IF NOT EXISTS flash_start_at TIMESTAMP DEFAULT NULL;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_group_id TEXT UNIQUE;

@@ -67,7 +67,7 @@ permalink: /account/
 
 <div id="authScreen">
   <div class="auth-card">
-    <h2 style="font-family: 'Sora', sans-serif; margin-bottom: 20px;">Kont Kliyan</h2>
+    <h2 style="font-family: 'Sora', sans-serif; margin-bottom: 20px;">Compte Client</h2>
     <div class="form-group">
       <label class="form-label">📧 Email</label>
       <input class="form-input" id="loginEmail" type="email" placeholder="ou@email.com">
@@ -93,14 +93,14 @@ permalink: /account/
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num" id="statOrders">0</div><div class="stat-label">Kòmand</div></div>
+      <div class="stat-card"><div class="stat-num" id="statOrders">0</div><div class="stat-label">Commande</div></div>
       <div class="stat-card"><div class="stat-num">⭐</div><div class="stat-label">Avis Mwen</div></div>
     </div>
 
     <div class="dash-panel">
-      <div class="panel-header">📦 Istwa Kòmand mwen yo</div>
+      <div class="panel-header">📦 Historique de mes commandes</div>
       <div id="ordersList">
-        <div style="padding: 30px; text-align: center; color: #888;">⏳ Chaje kòmand yo...</div>
+        <div style="padding: 30px; text-align: center; color: #888;">⏳ Chargement des commandes...</div>
       </div>
     </div>
   </div>
@@ -127,7 +127,7 @@ async function checkUser() {
   if (user) {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('welcomeName').innerText = "Bonjou " + (user.user_metadata.full_name || 'Kliyan') + "! 👋";
+    document.getElementById('welcomeName').innerText = "Bonjour " + (user.user_metadata.full_name || 'Client') + "! 👋";
     document.getElementById('userEmailLabel').innerText = user.email;
     document.getElementById('userAvatar').innerText = (user.email.charAt(0)).toUpperCase();
     loadOrders(user.id);
@@ -157,7 +157,7 @@ async function loadOrders(userId) {
     return `
       <div class="order-item">
         <div class="order-info">
-          <div class="order-title">Kòmand #${o.id.substring(0,8)}</div>
+          <div class="order-title">Commande #${o.id.substring(0,8)}</div>
           <div style="font-size:0.8rem; color:#666;">Pwodwi: ${o.product_name || 'N/A'} · <b>${o.amount} HTG</b></div>
           <div style="margin-top:5px;">
             <span class="order-status status-${status}">${status}</span>
@@ -172,7 +172,7 @@ async function loadOrders(userId) {
 }
 
 async function approveOrder(orderId, sellerId, amount) {
-  if (!confirm("Èske ou resevwa kòmand lan tout bon? Sa pral lage lajan an bay machann nan.")) return;
+  if (!confirm("Avez-vous bien reçu la commande ? Cela libérera les fonds au vendeur.")) return;
 
   // 1. Make kòmand lan konplè
   const { error: err1 } = await client.from('orders').update({ status: 'completed' }).eq('id', orderId);
@@ -187,7 +187,7 @@ async function approveOrder(orderId, sellerId, amount) {
 
   await client.from('profiles').update({ wallet_balance: newBal }).eq('id', sellerId);
 
-  alert("✅ Mèsi! Kòmand lan konplè epi lajan an transfere bay machann nan.");
+  alert("✅ Merci ! La commande est terminée et les fonds ont été transférés au vendeur.");
   loadOrders();
 }
 

@@ -29,7 +29,7 @@ Pou chanje modpas ou:
 1. Lonje soti (logout) 
 2. Ouvri **Developer Tools** (F12)
 3. Ale nan **Console tab**
-4. Kopi-kole kòd sa a:
+4. Kopi-kole code sa a:
 ```javascript
 const LOGIN_PASSWORD = 'YOUR_NEW_PASSWORD_HERE';
 console.log('Password updated. Reload /admin/login.html');
@@ -55,10 +55,10 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 - Onglet Konfigirasyon
 - Lyen rapid pou tout tool yo
 - **Rekit:** Login avèk modpas
-- **Lyen Rapid:** Products, CMS, Kategori, Kont Kliyan
+- **Lyen Rapid:** Products, CMS, Kategori, Compte Client
 
 ### Gestion Produits (`/admin/products.html`) 🔐 PROTEJE
-- ➕ **Ajoute pwodwi** (Fil form)
+- ➕ **Ajouter pwodwi** (Fil form)
 - 📦 **Lis pwodwi** (Sèch, efase)
 - 🔍 **Filtre Real-time search**
 - **Rekit:** Login avèk modpas
@@ -69,7 +69,7 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 - **Rekit:** Sèvi Netlify Identity
 - **Di Atansyon:** Ou ka aksè direktman san modpas boutik
 
-### Kont Kliyan (`/admin/account.html`) 🔓 LIBRE
+### Compte Client (`/admin/account.html`) 🔓 LIBRE
 - Enfòmasyon kont kliyan
 - Istorik komannd
 - Paramèt sekirite ak preferans
@@ -83,7 +83,7 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 - ✅ Admin Panel (`/admin/admin.html`) - Modpas oblije
 - ✅ Products (`/admin/products.html`) - Modpas oblije
 - ✅ CMS Netlify (`/admin/index.html`) - Sèvi Netlify Identity (pa modpas boutik)
-- ✅ Kont Kliyan (`/admin/account.html`) - Libre pou kliyan
+- ✅ Compte Client (`/admin/account.html`) - Libre pou kliyan
 
 **Mekanik Proteksyon:**
 - Modpas check dèk login  
@@ -134,8 +134,8 @@ Sistèm yo sèvi avèk **localStorage** pou rejis:
 | Admin Panel | ✅ Rekit | 🔐 Pwoteje |
 | Products | ✅ Rekit | 🔐 Pwoteje |
 | CMS Netlify | ❌ Pa | 🔓 Libre |
-| Kont Kliyan | ❌ Pa | 🔓 Libre (Kliyan) |
-| Kategori | ❌ Pa | 🔓 Libre (Kliyan) |
+| Compte Client | ❌ Pa | 🔓 Libre (Client) |
+| Kategori | ❌ Pa | 🔓 Libre (Client) |
 
 ---
 

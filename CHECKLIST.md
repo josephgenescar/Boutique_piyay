@@ -58,7 +58,7 @@ mkdir -p _data
 
 ### 3.1 Modifier `_config.yml`
 
-Ajoutez ou modifiez:
+Ajouterz ou modifiez:
 
 ```yaml
 # Collections
@@ -157,7 +157,7 @@ if (window.netlifyIdentity) {
 - [ ] Script cart.js inclus
 - [ ] Initialisation configurée
 
-### 4.2 Ajouter le Panier au Header
+### 4.2 Ajouterr le Panier au Header
 
 Dans votre header/navigation:
 
@@ -270,7 +270,7 @@ git push origin main
 1. Dans Admin: Produits → New Product
 2. Remplissez tous les champs
 3. Uploadez images
-4. Ajoutez variants
+4. Ajouterz variants
 5. Publiez
 
 - [ ] Produit créé
@@ -280,7 +280,7 @@ git push origin main
 
 ### 6.4 Test Système Panier
 
-1. Ajoutez produit au panier
+1. Ajouterz produit au panier
 2. Modifiez quantité
 3. Supprimez item
 4. Rechargez page (persistance)
@@ -293,7 +293,7 @@ git push origin main
 
 ### 6.5 Test Checkout
 
-1. Ajoutez plusieurs produits
+1. Ajouterz plusieurs produits
 2. Allez sur `/checkout`
 3. Remplissez formulaire
 4. Choisissez paiement
@@ -368,9 +368,9 @@ Créez ou mettez à jour:
 
 ### 8.2 SEO
 
-- [ ] Ajouter meta descriptions
+- [ ] Ajouterr meta descriptions
 - [ ] Configurer sitemap.xml
-- [ ] Ajouter robots.txt
+- [ ] Ajouterr robots.txt
 - [ ] Google Search Console
 - [ ] Google Analytics
 

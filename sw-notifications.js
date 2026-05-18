@@ -22,7 +22,7 @@ const TYPE_ICONS = {
 
 // ── Aksyon pa tip ────────────────────────────────────────────
 const TYPE_ACTIONS = {
-  new_order:       [{ action: "view",    title: "📋 Wè Kòmand" }, { action: "later", title: "Pita" }],
+  new_order:       [{ action: "view",    title: "📋 Wè Commande" }, { action: "later", title: "Pita" }],
   delivery_coming: [{ action: "track",   title: "🗺️ Swiv Livrè" }],
   new_message:     [{ action: "reply",   title: "💬 Reponn" }],
   flash_sale:      [{ action: "buy",     title: "⚡ Achte Kounye a" }],

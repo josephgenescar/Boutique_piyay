@@ -2,7 +2,7 @@
 
 ## 1. AJOUTE KOLÒN NAN TABLE `orders`
 ```sql
--- Ajoute order_group_id si pa egziste
+-- Ajouter order_group_id si pa egziste
 ALTER TABLE orders 
 ADD COLUMN IF NOT EXISTS order_group_id TEXT UNIQUE;
 
@@ -97,5 +97,5 @@ ORDER BY ordinal_position;
 1. Kopiey tout SQL anba
 2. Ale nan Supabase → SQL Editor
 3. Kolle epi exekite
-4. Konfime pa gen erè
+4. Confirmer pa gen erè
 5. Teste par ajoute 3 pwodwi flash sale - pa ta dwe permèt 4yèm

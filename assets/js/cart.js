@@ -26,7 +26,7 @@ function orderProduct(title, price, id, image, sellerId, sellerPhone, sellerName
 
   localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
   refreshBadge();
-  alert('✅ ' + title + ' ajoute nan panye!');
+  alert('✅ ' + title + ' ajouté au panier!');
 }
 
 function openCart() {
@@ -49,7 +49,7 @@ function drawCart() {
   let currentCart = getCart();
 
   if (currentCart.length === 0) {
-    box.innerHTML = `<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:50px;">🛒</div><p>Panye a vid</p></div>`;
+    box.innerHTML = `<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:50px;">🛒</div><p>Panier vide</p></div>`;
     document.getElementById('order-form-container').style.display = 'none';
     return;
   }
@@ -81,11 +81,12 @@ function drawCart() {
   Object.entries(bySeller).forEach(([sellerId, group]) => {
     const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
     const sellerName = group.sellerName || 'Boutique Piyay';
+    const sellerMessage = encodeURIComponent(`Bonjour ${sellerName}, je suis intéressé par ces produits :`);
     html += `<div class="seller-group">
       <div class="seller-header">
         <span class="seller-name">🏪 ${sellerName}</span>
         <div class="seller-wa">
-          <a href="https://wa.me/${phone}" target="_blank">📱 WhatsApp</a>
+          <a href="https://wa.me/${phone}?text=${sellerMessage}" target="_blank">📱 WhatsApp</a>
         </div>
       </div>`;
     
@@ -130,16 +131,67 @@ function generateReceipt(data) {
   });
 
   const win = window.open('', '_blank');
-  win.document.write(`<html><body style="font-family:Arial;padding:40px;"><div style="text-align:center;"><img src="/assets/images/logo.png" style="width:80px;"><h1 style="color:#ff4747;">BOUTIQUE PIYAY</h1><p>Resi Kòmand #${serial}</p></div><p>Kliyan: ${data.name}</p><p>Tèl: ${data.phone}</p><table style="width:100%;border-collapse:collapse;">${itemsHtml}</table><h2 style="text-align:right;">TOTAL: ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString()} HTG</h2><script>window.print();</script></body></html>`);
+  win.document.write(`<html><body style="font-family:Arial;padding:40px;"><div style="text-align:center;"><img src="/assets/images/logo.png" style="width:80px;"><h1 style="color:#ff4747;">BOUTIQUE PIYAY</h1><p>Resi Commande #${serial}</p></div><p>Client: ${data.name}</p><p>Tèl: ${data.phone}</p><table style="width:100%;border-collapse:collapse;">${itemsHtml}</table><h2 style="text-align:right;">TOTAL: ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString()} HTG</h2><script>window.print();</script></body></html>`);
   win.document.close();
 }
 
 function contactWhatsApp(data) {
   const sPhone = data.cart[0].sellerPhone || '50948868964';
-  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n👤 *Kliyan:* ${data.name}\n📞 *Tèl:* ${data.phone}\n📍 *Zòn:* ${data.zone}\n📝 *Peman:* ${data.payment || 'Non précisé'}\n🔑 *Trans ID:* ${data.transactionId || 'N/A'}\n\n*ATIK YO:*`;
+  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n👤 *Client:* ${data.name}\n📞 *Tèl:* ${data.phone}\n📍 *Zone:* ${data.zone}\n📝 *Peman:* ${data.payment || 'Non précisé'}\n🔑 *Trans ID:* ${data.transactionId || 'N/A'}\n\n*ATIK YO:*`;
   data.cart.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
   msg += `\n\n💰 *TOTAL:* ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0)} HTG`;
   window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function contactSellersWhatsApp() {
+  const cart = getCart();
+  if (!cart || cart.length === 0) {
+    alert('Le panier est vide. Ajouterz un produit avant de contacter un vendeur.');
+    return;
+  }
+
+  const sellers = {};
+  cart.forEach(item => {
+    const sellerId = item.sellerId || 'boutique-piyay';
+    if (!sellers[sellerId]) {
+      sellers[sellerId] = {
+        phone: item.sellerPhone || '50948868964',
+        sellerName: item.sellerName || 'Boutique Piyay',
+        items: []
+      };
+    }
+    sellers[sellerId].items.push(item);
+  });
+
+  const sellerKeys = Object.keys(sellers);
+  if (sellerKeys.length === 1) {
+    const group = sellers[sellerKeys[0]];
+    const phone = group.phone.toString().replace(/[^0-9]/g, '');
+    let msg = `Bonjour ${group.sellerName}, je suis intéressé par ces produits :`;
+    group.items.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    return;
+  }
+
+  let sellerList = 'Il y a plusieurs vendeurs dans le panier. Choisissez un vendeur à contacter :\n\n';
+  sellerKeys.forEach((key, index) => {
+    const group = sellers[key];
+    sellerList += `${index + 1}. ${group.sellerName} - ${group.phone}\n`;
+  });
+  sellerList += '\nEntrez le numéro du vendeur à contacter.';
+
+  const choice = prompt(sellerList, '1');
+  const selectedIndex = parseInt(choice, 10) - 1;
+  if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= sellerKeys.length) {
+    alert('Choix invalide. Action annulée.');
+    return;
+  }
+
+  const selectedGroup = sellers[sellerKeys[selectedIndex]];
+  const phone = selectedGroup.phone.toString().replace(/[^0-9]/g, '');
+  let msg = `Bonjour ${selectedGroup.sellerName}, je souhaite commander ces produits :`;
+  selectedGroup.items.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 async function submitOrder() {
@@ -149,7 +201,7 @@ async function submitOrder() {
   const paymentSelect = document.getElementById('payment-method-select');
 
   if (!nameInput || !phoneInput || !zoneInput || !paymentSelect) {
-    alert('⚠️ Erè: Fòm nan pa jwenn nan paj la.'); return;
+    alert('⚠️ Erreur : le formulaire est introuvable sur la page.'); return;
   }
 
   const name = nameInput.value.trim();
@@ -157,7 +209,7 @@ async function submitOrder() {
   const zone = zoneInput.value;
   const paymentMethod = paymentSelect.value;
 
-  if (!name || !phone || !zone) { alert('⚠️ Ranpli tout chan yo!'); return; }
+  if (!name || !phone || !zone) { alert('⚠️ Veuillez remplir tous les champs !'); return; }
 
   const cart = getCart();
   if (cart.length === 0) return;
@@ -222,13 +274,13 @@ async function submitOrder() {
               // Si ou vle reaktive MonCash pita, retire kòmantè sou blòk sa a:
               /*
               if (paymentMethod === 'MonCash') {
-                // ...kòd MonCash la...
+                // ...code MonCash la...
                 return;
               }
               */
 
               // Gid pou peman manyèl
               if (paymentMethod === 'manual') {
-                alert('Tanpri kontakte machann lan sou WhatsApp pou w negosye ak peye. Apre ou fin peye, voye prèv la bay machann lan pou validasyon.');
+                alert('Veuillez contacter le vendeur sur WhatsApp pour négocier et payer. Après paiement, envoyez la preuve au vendeur pour validation.');
               }
 window.contactWhatsApp = contactWhatsApp;

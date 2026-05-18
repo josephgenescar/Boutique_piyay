@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 function showSuccess(data) {
     document.getElementById('status-icon').innerText = "✅";
     document.getElementById('status-title').innerText = "Peman Reyisi!";
-    document.getElementById('status-desc').innerText = "Mèsi! Nou resevwa peman ou an. Machann nan pral prepare kòmand ou an kounye a.";
+    document.getElementById('status-desc').innerText = "Mèsi! Nou resevwa peman ou an. Vendeur nan pral prepare kòmand ou an kounye a.";
     document.getElementById('order-details').style.display = 'block';
-    document.getElementById('order-id-display').innerText = "ID: " + (data.orderId || "Konfime");
+    document.getElementById('order-id-display').innerText = "ID: " + (data.orderId || "Confirmer");
     document.getElementById('payment-status').innerText = "Status: PAID";
     document.getElementById('payment-amount').innerText = (data.amount || "") + " HTG";
 }

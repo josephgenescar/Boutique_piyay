@@ -481,7 +481,7 @@ CSS Footer:
 
 ---
 
-## 🎁 Ajouter un Système de Points/Fidélité
+## 🎁 Ajouterr un Système de Points/Fidélité
 
 Dans `assets/js/loyalty.js`:
 
@@ -683,7 +683,7 @@ updateTimer();
 
 ## 💬 Chat en Direct Simple
 
-Ajoutez avant `</body>`:
+Ajouterz avant `</body>`:
 
 ```html
 <div id="chatWidget" class="chat-widget">
