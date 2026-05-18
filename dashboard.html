@@ -1163,21 +1163,14 @@
     function openBoostModal(id) {
         selectedProdId = id;
         document.getElementById('boost-modal').style.display = 'flex';
-        const points = currentProfile ? (currentProfile.points || 0) : 0;
-        if (points < 100) {
-            document.getElementById('boost-free-opt').style.opacity = '0.5';
-            document.getElementById('boost-free-sub').innerText = "Ou bezwen omwen 100 pwen (Bronze) pou opsyon sa a.";
-        } else {
-            document.getElementById('boost-free-opt').style.opacity = '1';
-            document.getElementById('boost-free-sub').innerText = "Ou gen nivo nesesè! Sèvi ak pwen ou pou boost gratis.";
-        }
     }
 
     function closeBoostModal() { document.getElementById('boost-modal').style.display = 'none'; }
 
     async function processBoost(type) {
-        if (type === 'free' && (!currentProfile || (currentProfile.points || 0) < 100)) {
-            alert("❌ Ou poko gen ase pwen!"); return;
+        if (type === 'free') {
+            alert("Opsyon gratis pa disponib. Sèlman boost peye pral parèt kòm pwodwi vedèt.");
+            return;
         }
 
         if (type === 'paid') {

@@ -279,162 +279,95 @@ title: Akèy - Boutique Piyay
     .btn-add:hover { background: var(--primary); }
 
     /* ══════════════════════════════
-       PUBLISHERS BANNER SECTION
+       PUBLISHERS CARDS SECTION
     ══════════════════════════════ */
     #publishers-section { margin: 36px 0; display: none; }
-    
-    .publishers-banner {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: var(--radius);
-      padding: 32px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
-      margin-bottom: 28px;
-    }
-
-    .publishers-banner::before {
-      content: '';
-      position: absolute; top: -80px; right: -80px;
-      width: 280px; height: 280px; border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-      animation: publisherBlob 6s ease-in-out infinite alternate;
-    }
-
-    .publishers-banner::after {
-      content: '';
-      position: absolute; bottom: -60px; left: 20%;
-      width: 220px; height: 220px; border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      animation: publisherBlob2 7s ease-in-out infinite alternate;
-    }
-
-    @keyframes publisherBlob { to { transform: scale(1.2) translate(20px, -10px); } }
-    @keyframes publisherBlob2 { to { transform: scale(1.15) translate(-15px, 15px); } }
-
-    .publishers-content {
+    .section-note { color: var(--gray); font-size: 13px; margin-top: 8px; }
+    .publisher-grid {
       display: flex;
-      align-items: center;
-      gap: 32px;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #111827, #1e293b);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.18);
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .publisher-grid::-webkit-scrollbar { display: none; }
+    .publisher-card {
+      scroll-snap-align: start;
+      flex: 0 0 320px;
+      min-width: 320px;
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: 0 14px 36px rgba(15,23,42,0.18);
       position: relative;
-      z-index: 2;
-      flex-wrap: wrap;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
-
-    .publishers-text {
-      flex: 1;
-      min-width: 250px;
-    }
-
-    .publishers-label {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #e0e7ff;
+    .pub-badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: rgba(255,255,255,0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 6px 12px;
+      border-radius: 999px;
       font-size: 11px;
       font-weight: 800;
-      padding: 6px 14px;
-      border-radius: 50px;
-      margin-bottom: 12px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
     }
-
-    .publishers-title {
-      font-size: 28px;
+    .pub-card-head {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .pub-card-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
       font-weight: 900;
-      margin: 0 0 12px;
-      letter-spacing: -0.5px;
-      font-family: 'Sora', sans-serif;
-      line-height: 1.2;
-    }
-
-    .publishers-desc {
-      font-size: 14px;
-      color: rgba(255,255,255,0.85);
-      line-height: 1.6;
-      margin: 0 0 16px;
-    }
-
-    .publishers-cta-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn-publishers-primary {
-      background: white;
-      color: #667eea;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: 0.2s;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-    }
-
-    .btn-publishers-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(0,0,0,0.2);
-    }
-
-    .btn-publishers-secondary {
-      background: rgba(255,255,255,0.15);
       color: white;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      padding: 12px 24px;
-      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      flex-shrink: 0;
+    }
+    .pub-card-title { font-size: 18px; font-weight: 900; line-height: 1.1; }
+    .pub-card-meta { color: rgba(255,255,255,0.7); font-size: 12px; }
+    .pub-card-desc { color: rgba(255,255,255,0.78); font-size: 14px; line-height: 1.7; margin: 0; }
+    .pub-card-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 14px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
       font-weight: 800;
       font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
+      transition: transform 0.2s, background 0.2s;
     }
-
-    .btn-publishers-secondary:hover {
-      background: rgba(255,255,255,0.25);
-      border-color: rgba(255,255,255,0.5);
+    .pub-card-cta:hover { transform: translateY(-2px); background: #1d4ed8; }
+    @media (max-width: 900px) {
+      .publisher-grid { padding: 14px; gap: 12px; }
+      .publisher-card { min-width: 280px; flex: 0 0 280px; }
+      .pub-card-title { font-size: 16px; }
+      .pub-card-desc { font-size: 13px; }
     }
-
-    .publishers-icon {
-      font-size: 64px;
-      line-height: 1;
-      opacity: 0.9;
-    }
-
-    @media (max-width: 768px) {
-      .publishers-banner {
-        padding: 24px;
-      }
-      .publishers-content {
-        gap: 16px;
-      }
-      .publishers-title {
-        font-size: 22px;
-      }
-      .publishers-icon {
-        font-size: 48px;
-      }
-      .publishers-cta-group {
-        width: 100%;
-      }
-      .btn-publishers-primary,
-      .btn-publishers-secondary {
-        flex: 1;
-        justify-content: center;
-      }
+    @media (max-width: 640px) {
+      .publisher-grid { padding: 12px; }
+      .publisher-card { min-width: 240px; flex: 0 0 240px; }
     }
 
     /* ══════════════════════════════
@@ -772,6 +705,43 @@ title: Akèy - Boutique Piyay
 <div class="home-wrap">
 
     <!-- 1. PWODWI VEDÈT — SLIDER -->
+    <!-- 1b. PUBLISHERS CARDS -->
+    <section id="publishers-section">
+      <div class="section-hdr">
+        <div class="section-hdr-left">
+          <h2>Publisye yo</h2>
+          <div class="section-hdr-bar"></div>
+        </div>
+        <div class="section-note">Kat sa yo se sit ki ap parèt nan bwat anonse horizontalman.</div>
+      </div>
+      <div class="publisher-grid">
+        <article class="publisher-card">
+          <div class="pub-badge">Patnè Ofisyèl</div>
+          <div class="pub-card-head">
+            <div class="pub-card-logo" style="background:#0f766e;color:white;">K</div>
+            <div>
+              <div class="pub-card-title">Konektem</div>
+              <div class="pub-card-meta">Solisyon peman & koneksyon</div>
+            </div>
+          </div>
+          <p class="pub-card-desc">La caisse qui connecte w — yon sèvis vit, serye, epi ki fèt pou ti biznis Ayiti.</p>
+          <a href="https://kaylakou.netlify.app" target="_blank" class="pub-card-cta">Vizite Konektem</a>
+        </article>
+        <article class="publisher-card">
+          <div class="pub-badge">Imobilye</div>
+          <div class="pub-card-head">
+            <div class="pub-card-logo" style="background:#fb923c;color:white;">K</div>
+            <div>
+              <div class="pub-card-title">Kaylakou</div>
+              <div class="pub-card-meta">Kay, Té, Konfians</div>
+            </div>
+          </div>
+          <p class="pub-card-desc">Kay, Té, Konfians — Tout Ayiti. Piblikasyon sa a montre sit enpòtan nan platfòm lan.</p>
+          <a href="https://kaylakou.netlify.app" target="_blank" class="pub-card-cta">Vizite Kaylakou</a>
+        </article>
+      </div>
+    </section>
+
     <section id="boosted-section">
         <div class="section-hdr">
             <div class="section-hdr-left">
@@ -786,24 +756,6 @@ title: Akèy - Boutique Piyay
         </div>
         <div class="boosted-slider-wrap">
             <div class="boosted-slider-track" id="boosted-slider-track"></div>
-        </div>
-    </section>
-
-    <!-- 1b. PUBLISHERS BANNER -->
-    <section id="publishers-section">
-        <div class="publishers-banner">
-            <div class="publishers-content">
-                <div class="publishers-text">
-                    <div class="publishers-label">🚀 Deklare Boutik ou</div>
-                    <h2 class="publishers-title">Vire Yon Publisye 📢</h2>
-                    <p class="publishers-desc">Montre pwodwi ou nan akèy la. Jwenn plis kliyan. Grandi biznis ou annen Boutique Piyay.</p>
-                    <div class="publishers-cta-group">
-                        <a href="/dashboard.html" class="btn-publishers-primary">📊 Vin Machann</a>
-                        <a href="#user-market" class="btn-publishers-secondary">Aprann Plis →</a>
-                    </div>
-                </div>
-                <div class="publishers-icon">📣</div>
-            </div>
         </div>
     </section>
 
@@ -953,7 +905,8 @@ title: Akèy - Boutique Piyay
         console.log(`🏪 Total machann chaje: ${allSellers.length}`);
 
         // 1. Vedèt slider
-        renderBoosted(allProducts.filter(p => p.is_boosted === true)); // Pa filtre sou is_approved pou tout boosted parèt
+        const activeBoosts = (allProducts || []).filter(p => p.is_boosted === true && p.boost_expires_at && new Date(p.boost_expires_at) > now);
+        renderBoosted(activeBoosts); // Sèlman pwodwi boosted aktyèl parèt
 
         // 2. Marketplace
         renderSellers(allSellers);
