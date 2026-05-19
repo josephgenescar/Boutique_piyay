@@ -9,11 +9,11 @@
       "login": "Connexion",
       "signup": "Inscription",
       "cart": "Panier",
-      "all_products": "Tout Pwodwi",
-      "shop": "🛍️ BOUTIK",
-      "sell": "🚀 Vann pa w",
-      "affiliate": "💸 Afilyasyon",
-      "account": "👤 Mwen",
+      "all_products": "Tous les Produits",
+      "shop": "🛍️ BOUTIQUE",
+      "sell": "🚀 Vendez vos produits",
+      "affiliate": "💸 Affiliation",
+      "account": "👤 Mon Compte",
       "delivery": "🚀 Livraison rapide en Haïti 🇭🇹",
       "rules": "Règles"
     },
@@ -76,8 +76,8 @@
       "market_title": "Marché 🚀",
       "market_sellers": "🏪 Vendeurs",
       "market_products": "🛍️ Tous les Produits",
-      "boosted_label": "🚀 PWODWI VEDÈT",
-      "boosted_view": "Vwè →"
+      "boosted_label": "🚀 PRODUIT VEDETTE",
+      "boosted_view": "Voir →"
     },
     "dashboard": {
       "title": "Tableau de bord Vendeur",
