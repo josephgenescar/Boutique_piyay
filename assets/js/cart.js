@@ -152,7 +152,7 @@ function contactWhatsApp(data) {
   window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-function contactSellersWhatsApp() {
+window.contactSellersWhatsApp = function() {
   const cart = getCart();
   if (!cart || cart.length === 0) {
     alert('Le panier est vide. Ajouterz un produit avant de contacter un vendeur.');
@@ -203,7 +203,7 @@ function contactSellersWhatsApp() {
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-async function submitOrder() {
+window.submitOrder = async function() {
   const nameInput = document.getElementById('customer-name');
   const phoneInput = document.getElementById('customer-phone');
   const zoneInput = document.getElementById('delivery-zone');

@@ -1,5 +1,9 @@
-let aiCatalog = [];
-let currentLang = localStorage.getItem('bp_lang') || 'fr';
+if (typeof aiCatalog === 'undefined') {
+  window.aiCatalog = [];
+}
+if (typeof currentLang === 'undefined') {
+  window.currentLang = localStorage.getItem('bp_lang') || 'fr';
+}
 
 /**
  * ✅ LOAD SUPABASE CATALOG FOR AI

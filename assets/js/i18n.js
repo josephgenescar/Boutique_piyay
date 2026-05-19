@@ -1,32 +1,43 @@
 // Sistèm Tradiksyon Bilingue FR/KR
 
-let currentLang = localStorage.getItem('bp_lang') || 'fr';
-let translations = {};
+if (typeof currentLang === 'undefined') {
+  window.currentLang = localStorage.getItem('bp_lang') || 'fr';
+}
+if (typeof translations === 'undefined') {
+  window.translations = {};
+}
 
 // Chaje tradiksyon yo
-async function loadTranslations() {
+window.loadTranslations = async function() {
   try {
     const response = await fetch('/assets/js/translations.json');
-    translations = await response.json();
+    window.translations = await response.json();
+    console.log('✅ Tradiksyon chaje:', window.currentLang, window.translations[window.currentLang]);
     applyTranslations();
   } catch (error) {
-    console.error('Erè chajman tradiksyon:', error);
+    console.error('❌ Erè chajman tradiksyon:', error);
   }
 }
 
 // Chanje lang
-function changeLanguage(lang) {
-  currentLang = lang;
+window.changeLanguage = function(lang) {
+  window.currentLang = lang;
   localStorage.setItem('bp_lang', lang);
-  document.getElementById('lang-selector').value = lang;
+  const selector = document.getElementById('lang-selector');
+  if (selector) selector.value = lang;
+  console.log('🔄 Lang chanje nan:', lang);
   applyTranslations();
 }
 
 // Aplike tradiksyon yo
-function applyTranslations() {
-  if (!translations[currentLang]) return;
+window.applyTranslations = function() {
+  if (!window.translations[window.currentLang]) {
+    console.error('❌ Pa gen tradiksyon pou:', window.currentLang);
+    return;
+  }
 
-  const t = translations[currentLang];
+  const t = window.translations[window.currentLang];
+  console.log('📝 Aplike tradiksyon pou:', window.currentLang);
 
   // Tradwi eleman ak data-i18n
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -42,6 +53,8 @@ function applyTranslations() {
       } else {
         el.textContent = value;
       }
+    } else {
+      console.warn('⚠️ Pa jwè tradiksyon pou:', key);
     }
   });
 
@@ -59,6 +72,8 @@ function applyTranslations() {
 
 // Inisyalize
 document.addEventListener('DOMContentLoaded', () => {
-  loadTranslations();
-  document.getElementById('lang-selector').value = currentLang;
+  console.log('🚀 DOM pare, kòmanse chaj tradiksyon...');
+  window.loadTranslations();
+  const selector = document.getElementById('lang-selector');
+  if (selector) selector.value = window.currentLang;
 });
