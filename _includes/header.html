@@ -70,9 +70,9 @@
 <header class="main-header">
     <div class="top-bar">
         <div class="container">
-            <span>🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
+            <span data-i18n="nav.delivery">🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
             <div class="top-bar-links">
-                <a href="/kontak.html"><i class="fas fa-envelope"></i>  Kontak</a>
+                <a href="/kontak.html"><i class="fas fa-envelope"></i>  <span data-i18n="nav.contact">Kontak</span></a>
                 <a href="/regleman.html" style="color:#ff4747;"><i class="fas fa-file-alt"></i>  Regleman</a>
             </div>
         </div>
@@ -104,11 +104,11 @@
                 </select>
 
                 <div id="authLinks" style="display: flex; gap: 8px;">
-                    <a href="/login.html" class="btn-auth btn-login">🔑 Kont</a>
-                    <a href="/signup.html" class="btn-auth btn-signup">✨ Enskri</a>
+                    <a href="/login.html" class="btn-auth btn-login"><span data-i18n="nav.login">🔑 Kont</span></a>
+                    <a href="/signup.html" class="btn-auth btn-signup"><span data-i18n="nav.signup">✨ Enskri</span></a>
                 </div>
                 <div id="userInfo" style="display: none; gap: 8px;">
-                    <a id="btn-customer-account" href="/account/" class="btn-auth btn-login" style="background:#003F87; display:none;">👤 Mwen</a>
+                    <a id="btn-customer-account" href="/account/" class="btn-auth btn-login" style="background:#003F87; display:none;"><span data-i18n="nav.account">👤 Mwen</span></a>
                     <a id="btn-merchant-dash" href="/dashboard.html" class="btn-auth btn-login" style="background:#ff4747; display:none;">📊 Dashboard</a>
                     <button onclick="handleHeaderLogout()" class="btn-auth btn-login" style="background:#475569; border:none; cursor:pointer;">🚪</button>
                 </div>
@@ -126,10 +126,10 @@
 
     <nav class="site-nav">
         <div class="nav-scroll">
-            <a href="/" class="nav-lnk">Tout Pwodwi</a>
-            <a href="/shop/" class="nav-lnk" style="color:#ff4747; font-weight:900;">🛍️ BOUTIK</a>
-            <a href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900;">🚀 Vann pa w</a>
-            <a href="/affiliate.html" class="nav-lnk" style="color:#10b981; font-weight:900;">💸 Afilyasyon</a>
+            <a href="/" class="nav-lnk" data-i18n="nav.all_products">Tout Pwodwi</a>
+            <a href="/shop/" class="nav-lnk" style="color:#ff4747; font-weight:900;" data-i18n="nav.shop">🛍️ BOUTIK</a>
+            <a href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900;" data-i18n="nav.sell">🚀 Vann pa w</a>
+            <a href="/affiliate.html" class="nav-lnk" style="color:#10b981; font-weight:900;" data-i18n="nav.affiliate">💸 Afilyasyon</a>
             {% for cat in site.categories %}<a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>{% endfor %}
         </div>
     </nav>

@@ -8,7 +8,14 @@
       "contact": "Contact",
       "login": "Connexion",
       "signup": "Inscription",
-      "cart": "Panier"
+      "cart": "Panier",
+      "all_products": "Tout Pwodwi",
+      "shop": "🛍️ BOUTIK",
+      "sell": "🚀 Vann pa w",
+      "affiliate": "💸 Afilyasyon",
+      "account": "👤 Mwen",
+      "delivery": "🚀 Livraison rapide en Haïti 🇭🇹",
+      "rules": "Règles"
     },
     "hero": {
       "title": "Boutique Piyay",
@@ -51,7 +58,17 @@
       "terms": "Conditions",
       "privacy": "Politique de confidentialité",
       "contact": "Contact",
-      "rights": "Tous droits réservés"
+      "rights": "Tous droits réservés",
+      "description": "Le meilleur endroit pour trouver tout ce dont vous avez besoin aux meilleurs prix. Livraison rapide dans toute Haïti.",
+      "quick_links": "Liens Rapides",
+      "direct_contact": "Contact Direct",
+      "shop_link": "La Boutique",
+      "sell_yourself": "Vendre par vous-même",
+      "legal": "Légal",
+      "conditions": "Conditions",
+      "privacy_policy": "Politique de confidentialité",
+      "return_policy": "Politique de retour",
+      "powered_by": "Propulsé par Rivayo-tech Entreprise"
     },
     "index": {
       "flash_title": "⚡ Vente Flash",
@@ -114,7 +131,14 @@
       "contact": "Kontak",
       "login": "Koneksyon",
       "signup": "Enskripsyon",
-      "cart": "Panier"
+      "cart": "Panier",
+      "all_products": "Tout Pwodwi",
+      "shop": "🛍️ BOUTIK",
+      "sell": "🚀 Vann pa w",
+      "affiliate": "💸 Afilyasyon",
+      "account": "👤 Mwen",
+      "delivery": "🚀 Livraison rapid nan tout peyi a 🇭🇹",
+      "rules": "Regleman"
     },
     "hero": {
       "title": "Boutique Piyay",
@@ -157,7 +181,17 @@
       "terms": "Kondisyon",
       "privacy": "Politik konfidansyèl",
       "contact": "Kontak",
-      "rights": "Tout dwa rezève"
+      "rights": "Tout dwa rezève",
+      "description": "Pi bon kote pou jwenn tout sa w bezwen ak pi bon pri. Livraison rapid nan tout Ayiti.",
+      "quick_links": "Lyen Rapid",
+      "direct_contact": "Kontak Direct",
+      "shop_link": "Boutik la",
+      "sell_yourself": "Vann pa w",
+      "legal": "Legal",
+      "conditions": "Kondisyon",
+      "privacy_policy": "Privasite",
+      "return_policy": "Règleman Retou",
+      "powered_by": "Powered by Rivayo-tech Entreprise"
     },
     "index": {
       "flash_title": "⚡ Vante Flash",
