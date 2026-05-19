@@ -175,6 +175,79 @@ title: Akèy - Boutique Piyay
     }
     .btn-ad-close:hover { background: rgba(255,255,255,0.2); color: white; }
 
+    /* ══════════════════════════════
+       BOOSTED PRODUCT BANNER
+    ══════════════════════════════ */
+    .ad-banner.boosted-product {
+      background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 40%, #ff8787 100%);
+    }
+    .boosted-product::before {
+      background: #ffffff;
+    }
+    .boosted-product .ad-scan-line {
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    }
+    .boosted-product-inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 28px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+    .boosted-product-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      border: 3px solid rgba(255,255,255,0.3);
+    }
+    .boosted-product-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .boosted-product-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 50px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .boosted-product-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .boosted-product-price {
+      font-size: 20px;
+      font-weight: 900;
+      color: white;
+    }
+    .boosted-product-price span {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.8;
+    }
+    .boosted-product-cta {
+      flex-shrink: 0;
+    }
+
     /* Dots navigation */
     .ad-dots {
       display: flex; justify-content: center; gap: 6px;
@@ -425,6 +498,9 @@ title: Akèy - Boutique Piyay
         </div>
       </div>
 
+      <!-- PWODWI BOOST — Dynamic content -->
+      <div id="boosted-ads-container"></div>
+
     </div><!-- fin ad-slider-track -->
 
     <!-- DOTS -->
@@ -454,14 +530,14 @@ title: Akèy - Boutique Piyay
       <div class="flash-header">
         <div class="flash-title-wrap">
           <div class="flash-dot"></div>
-          <h2>⚡ Vente Flash</h2>
+          <h2 data-i18n="index.flash_title">⚡ Vente Flash</h2>
         </div>
         <div class="timer-wrap">
-          <div class="t-seg"><span id="hours">24</span><small>h</small></div>
+          <div class="t-seg"><span id="hours">24</span><small data-i18n="flash.hours">h</small></div>
           <span class="t-div">:</span>
-          <div class="t-seg"><span id="minutes">00</span><small>m</small></div>
+          <div class="t-seg"><span id="minutes">00</span><small data-i18n="flash.minutes">m</small></div>
           <span class="t-div">:</span>
-          <div class="t-seg"><span id="seconds">00</span><small>s</small></div>
+          <div class="t-seg"><span id="seconds">00</span><small data-i18n="flash.seconds">s</small></div>
         </div>
       </div>
       <div class="flash-slider" id="flash-slider-inner"></div>
@@ -471,7 +547,7 @@ title: Akèy - Boutique Piyay
     <section id="categories-section">
       <div class="section-hdr">
         <div class="section-hdr-left">
-          <h2>Choisissez par Catégorie</h2>
+          <h2 data-i18n="index.categories_title">Choisissez par Catégorie</h2>
           <div class="section-hdr-bar" style="width:50px;"></div>
         </div>
       </div>
@@ -492,13 +568,13 @@ title: Akèy - Boutique Piyay
     <section id="user-market">
       <div class="section-hdr">
         <div class="section-hdr-left">
-          <h2>Marché 🚀</h2>
+          <h2 data-i18n="index.market_title">Marché 🚀</h2>
           <div class="section-hdr-bar" style="width:60px;"></div>
         </div>
       </div>
       <div class="market-tabs">
-        <button id="tab-sellers"  class="market-tab active" onclick="switchMarketTab('sellers')">🏪 Vendeurs</button>
-        <button id="tab-products" class="market-tab"        onclick="switchMarketTab('products')">🛍️ Tous les Produits</button>
+        <button id="tab-sellers"  class="market-tab active" onclick="switchMarketTab('sellers')" data-i18n="index.market_sellers">🏪 Vendeurs</button>
+        <button id="tab-products" class="market-tab"        onclick="switchMarketTab('products')" data-i18n="index.market_products">🛍️ Tous les Produits</button>
       </div>
       <div id="sellers-view">
         <div class="sellers-grid" id="sellers-grid-home"></div>
@@ -617,6 +693,7 @@ title: Akèy - Boutique Piyay
       buildSellerMap();
 
       renderBoosted(allProducts.filter(p => p.is_boosted === true));
+      renderBoostedInBanner(allProducts.filter(p => p.is_boosted === true));
       renderSellers(allSellers);
       renderProducts(allProducts);
 
@@ -656,18 +733,67 @@ title: Akèy - Boutique Piyay
             <div class="boosted-title">${p.title}</div>
             <div class="boosted-price">${p.price} HTG</div>
             <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
-              🛒 Ajouterr
+              🛒 <span data-i18n="cart.add">Ajouter</span>
             </button>
           </div>
         </div>`;
     }).join('');
   }
 
+  function renderBoostedInBanner(list) {
+    const container = document.getElementById('boosted-ads-container');
+    if (!container) return;
+    if (list.length === 0) {
+      container.innerHTML = '';
+      updateAdDots();
+      return;
+    }
+
+    // Prendre max 3 produits boostés pour le banner
+    const boostedProducts = list.slice(0, 3);
+
+    container.innerHTML = boostedProducts.map(p => {
+      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+      return `
+        <div class="ad-banner boosted-product">
+          <div class="ad-scan-line"></div>
+          <div class="boosted-product-inner">
+            <img class="boosted-product-img" src="${p.image_url}" alt="${p.title}"
+                 onerror="this.src='https://ui-avatars.com/api/?name=P&background=ff4747&color=fff'">
+            <div class="boosted-product-info">
+              <span class="boosted-product-label" data-i18n="index.boosted_label">🚀 PWODWI VEDÈT</span>
+              <div class="boosted-product-title">${p.title}</div>
+              <div class="boosted-product-price">${p.price} <span>HTG</span></div>
+            </div>
+            <div class="boosted-product-cta">
+              <a href="/pwodwi-machann.html?id=${p.id}" class="btn-ad" style="background:white;color:#ff4747;">
+                <span data-i18n="index.boosted_view">Vwè →</span>
+              </a>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    updateAdDots();
+  }
+
+  function updateAdDots() {
+    const track = document.getElementById('adSliderTrack');
+    if (!track) return;
+    const totalSlides = track.children.length;
+    const dotsEl = document.getElementById('adDots');
+    if (!dotsEl) return;
+
+    dotsEl.innerHTML = Array.from({length: totalSlides}, (_, i) =>
+      `<button class="ad-dot ${i===0?'active':''}" onclick="adGoTo(${i})"></button>`
+    ).join('');
+  }
+
   function renderSellers(list) {
     const grid = document.getElementById('sellers-grid-home');
     if (!grid) return;
     if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title">Aucun vendeur pour le moment</div></div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="e-icon">🏪</div><div class="e-title" data-i18n="market.no_sellers">Aucun vendeur pour le moment</div></div>`;
       return;
     }
     grid.innerHTML = list.map(s => {
@@ -698,7 +824,7 @@ title: Akèy - Boutique Piyay
     const grid = document.getElementById('supabase-products-grid');
     if (!grid) return;
     if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title">Aucun produit pour le moment</div><div class="e-sub">Les vendeurs ajouteront bientôt leurs produits !</div></div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><div class="e-title" data-i18n="market.no_products">Aucun produit pour le moment</div><div class="e-sub" data-i18n="market.products_soon">Les vendeurs ajouteront bientôt leurs produits !</div></div>`;
       return;
     }
     grid.innerHTML = list.map(p => {
@@ -712,7 +838,7 @@ title: Akèy - Boutique Piyay
           <div class="mkt-prod-name">${p.title}</div>
           <div class="mkt-prod-price">${p.price} HTG</div>
           <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
-            🛒 Ajouterr
+            🛒 <span data-i18n="cart.add">Ajouter</span>
           </button>
         </div>`;
     }).join('');
@@ -741,7 +867,7 @@ title: Akèy - Boutique Piyay
             ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
           </div>
           <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
-            🛒 Ajouterr
+            🛒 <span data-i18n="cart.add">Ajouter</span>
           </button>
         </div>`;
     }).join('');

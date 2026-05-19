@@ -626,11 +626,11 @@
         <div id="tab-stat" class="tab-content active">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Tableau de bord 📊</h1>
-                    <p class="page-subtitle">Swiv pèfòmans boutik ou a</p>
+                    <h1 class="page-title" data-i18n="dashboard.stats_title">Tableau de bord 📊</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.stats_subtitle">Swiv pèfòmans boutik ou a</p>
                 </div>
                 <button class="btn-add" onclick="goToVendre()">
-                    ➕ Nouvo Pwodwi
+                    <span data-i18n="dashboard.add_product">➕ Nouvo Pwodwi</span>
                 </button>
             </div>
 
@@ -638,29 +638,29 @@
                 <div class="stat-card blue">
                     <div class="stat-icon blue">📦</div>
                     <div class="stat-val" id="stat-orders">0</div>
-                    <div class="stat-lbl">Total Vant</div>
+                    <div class="stat-lbl" data-i18n="dashboard.total_sales">Total Vant</div>
                     <span class="stat-change up">↑ Aktif</span>
                 </div>
                 <div class="stat-card gold">
                     <div class="stat-icon gold">💎</div>
                     <div class="stat-val" id="stat-points">0</div>
-                    <div class="stat-lbl">Pwen Total</div>
+                    <div class="stat-lbl" data-i18n="dashboard.total_points">Pwen Total</div>
                     <span class="stat-change up">↑ ap grandi</span>
                 </div>
                 <div class="stat-card green">
                     <div class="stat-icon green">🏆</div>
                     <div class="stat-val" id="stat-level">Bronze</div>
-                    <div class="stat-lbl">Nivo Kouran</div>
+                    <div class="stat-lbl" data-i18n="dashboard.current_level">Nivo Kouran</div>
                     <span class="stat-change up">↑ Nivo</span>
                 </div>
             </div>
 
             <!-- Reward Card -->
             <div class="reward-main">
-                <div class="reward-title">💎 Rekonpans ou</div>
+                <div class="reward-title" data-i18n="dashboard.reward_title">💎 Rekonpans ou</div>
                 <div class="reward-points">
                     <span id="p-count">0</span>
-                    <span>pwen</span>
+                    <span data-i18n="dashboard.reward_points">pwen</span>
                 </div>
                 <div class="progress-bar-wrap">
                     <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
@@ -675,7 +675,7 @@
 
             <!-- Chart -->
             <div class="chart-card">
-                <div class="chart-title">📈 Evòlisyon Vant yo</div>
+                <div class="chart-title" data-i18n="dashboard.sales_evolution">📈 Evòlisyon Vant yo</div>
                 <canvas id="salesChart" height="100"></canvas>
             </div>
         </div>
@@ -684,8 +684,8 @@
         <div id="tab-orders" class="tab-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Commandes 🛒</h1>
-                    <p class="page-subtitle">Gérez les livraisons de vos produits pour débloquer votre argent</p>
+                    <h1 class="page-title" data-i18n="dashboard.orders_title">Commandes 🛒</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.orders_subtitle">Gérez les livraisons de vos produits pour débloquer votre argent</p>
                 </div>
             </div>
             <div id="orders-list">
@@ -700,10 +700,10 @@
         <div id="tab-prod" class="tab-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Pwodwi m yo 📦</h1>
-                    <p class="page-subtitle">Jere tout pwodwi ou yo</p>
+                    <h1 class="page-title" data-i18n="dashboard.products_title">Pwodwi m yo 📦</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.products_subtitle">Jere tout pwodwi ou yo</p>
                 </div>
-                <button class="btn-add" onclick="goToVendre()">➕ Nouvo Pwodwi</button>
+                <button class="btn-add" onclick="goToVendre()"><span data-i18n="dashboard.add_product">➕ Nouvo Pwodwi</span></button>
             </div>
             <div class="prods-grid" id="prods-grid">
                 <div class="empty-state" style="grid-column: 1/-1;">
@@ -717,8 +717,8 @@
         <div id="tab-feedback" class="tab-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Avis Clients ⭐</h1>
-                    <p class="page-subtitle">Sa kliyan yo panse de pwodwi ou yo</p>
+                    <h1 class="page-title" data-i18n="dashboard.feedback_title">Avis Clients ⭐</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.feedback_subtitle">Sa kliyan yo panse de pwodwi ou yo</p>
                 </div>
             </div>
             <div id="feedback-list">
@@ -733,29 +733,29 @@
         <div id="tab-wallet" class="tab-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Lajan mwen 💰</h1>
-                    <p class="page-subtitle">Jere finansman boutik ou</p>
+                    <h1 class="page-title" data-i18n="dashboard.wallet_title">Lajan mwen 💰</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.wallet_subtitle">Jere finansman boutik ou</p>
                 </div>
             </div>
 
             <div class="wallet-stats">
                 <div class="wallet-stat-item">
                     <div class="ws-val" style="color: var(--green);">0 HTG</div>
-                    <div class="ws-lbl">💵 Total Rantre</div>
+                    <div class="ws-lbl" data-i18n="dashboard.total_income">💵 Total Rantre</div>
                 </div>
                 <div class="wallet-stat-item">
                     <div class="ws-val" style="color: var(--blue);">0</div>
-                    <div class="ws-lbl">📦 Commande terminée</div>
+                    <div class="ws-lbl" data-i18n="dashboard.completed_orders">📦 Commande terminée</div>
                 </div>
             </div>
 
             <div class="wallet-card">
-                <div class="wallet-label">Balans Disponib</div>
+                <div class="wallet-label" data-i18n="dashboard.available_balance">Balans Disponib</div>
                 <div class="wallet-bal" id="wall-balance">0 <span>HTG</span></div>
                 <div class="wallet-sub">Dènye mizajou: jodi a</div>
                 <div class="wallet-actions">
-                    <button class="wallet-btn primary">💸 Retire Lajan</button>
-                    <button class="wallet-btn secondary">📊 Istwa</button>
+                    <button class="wallet-btn primary" data-i18n="dashboard.withdraw">💸 Retire Lajan</button>
+                    <button class="wallet-btn secondary" data-i18n="dashboard.history">📊 Istwa</button>
                 </div>
             </div>
         </div>
@@ -764,8 +764,8 @@
         <div id="tab-profile" class="tab-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Boutik & Profil 🏪</h1>
-                    <p class="page-subtitle">Jere enfòmasyon boutik ou</p>
+                    <h1 class="page-title" data-i18n="dashboard.profile_title">Boutik & Profil 🏪</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.profile_subtitle">Jere enfòmasyon boutik ou</p>
                 </div>
             </div>
 
@@ -773,10 +773,10 @@
                 <!-- SHARE -->
                 <div>
                     <div class="share-card" style="margin-bottom: 20px;">
-                        <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 16px;">🔗 Lyen Boutik ou</h3>
+                        <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 16px;" data-i18n="dashboard.shop_link">🔗 Lyen Boutik ou</h3>
                         <div class="share-url-box">
                             <span class="share-url-text" id="shop-url-display">Chaje...</span>
-                            <button class="btn-copy" onclick="copyShopUrl()">KOPYE</button>
+                            <button class="btn-copy" onclick="copyShopUrl()" data-i18n="dashboard.copy">KOPYE</button>
                         </div>
                         <div class="social-btns">
                             <a id="share-wa" target="_blank" class="btn-social bg-wa">📱 WhatsApp</a>
@@ -788,20 +788,20 @@
 
                 <!-- FORM -->
                 <div class="share-card">
-                    <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 20px;">✏️ Edite Enfòmasyon</h3>
+                    <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 20px;" data-i18n="dashboard.edit_info">✏️ Edite Enfòmasyon</h3>
                     <div class="form-group">
-                        <label class="form-label">Non Boutik</label>
+                        <label class="form-label" data-i18n="dashboard.shop_name">Non Boutik</label>
                         <input type="text" class="form-input" id="prof-name" placeholder="Non boutik ou...">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">WhatsApp</label>
+                        <label class="form-label" data-i18n="dashboard.whatsapp">WhatsApp</label>
                         <input type="text" class="form-input" id="prof-whatsapp" placeholder="+509...">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Adrès</label>
+                        <label class="form-label" data-i18n="dashboard.address">Adrès</label>
                         <input type="text" class="form-input" id="prof-address" placeholder="Adrès ou...">
                     </div>
-                    <button class="btn-save" onclick="saveProfile()">✅ Sove Chanjman envi</button>
+                    <button class="btn-save" onclick="saveProfile()" data-i18n="dashboard.save_changes">✅ Sove Chanjman envi</button>
                 </div>
             </div>
         </div>
@@ -810,30 +810,30 @@
         <div id="tab-integration" class="tab-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Entegrasyon API 🛠️</h1>
-                    <p class="page-subtitle">Konekte boutik ou ak lòt sistèm</p>
+                    <h1 class="page-title" data-i18n="dashboard.api_title">Entegrasyon API 🛠️</h1>
+                    <p class="page-subtitle" data-i18n="dashboard.api_subtitle">Konekte boutik ou ak lòt sistèm</p>
                 </div>
             </div>
 
             <div class="api-header">
-                <h2>🔑 Kle API ou</h2>
-                <p>Itilize ID sa a pou konekte boutik ou ak nenpòt sèvis entènasyonal</p>
+                <h2 data-i18n="dashboard.api_key">🔑 Kle API ou</h2>
+                <p data-i18n="dashboard.api_description">Itilize ID sa a pou konekte boutik ou ak nenpòt sèvis entènasyonal</p>
             </div>
 
             <div class="api-key-card">
                 <div class="form-label">MERCHANT ID (API KEY)</div>
                 <div class="api-key-display" id="api-key-display">Chaje...</div>
-                <button onclick="copyApiKey()" class="btn-save" style="background: var(--dark); box-shadow: none;">
+                <button onclick="copyApiKey()" class="btn-save" style="background: var(--dark); box-shadow: none;" data-i18n="dashboard.copy_api_key">
                     📋 KOPYE KLE API
                 </button>
             </div>
             <!-- NOUVO: Bwat pou Lyen Done JSON - Menm style ak Claude AI -->
             <div class="api-key-card" style="margin-top: 20px;">
-                <div class="form-label">🛍️ Done Pwodwi yo (JSON)</div>
+                <div class="form-label" data-i18n="dashboard.json_data">🛍️ Done Pwodwi yo (JSON)</div>
                 <div class="api-key-display" id="json-link-display" style="color: #10b981; font-size: 11px;">
                     Loading...
                 </div>
-                <button onclick="copyJsonLink()" class="btn-save" style="background: var(--dark); box-shadow: none; margin-top: 10px;">
+                <button onclick="copyJsonLink()" class="btn-save" style="background: var(--dark); box-shadow: none; margin-top: 10px;" data-i18n="dashboard.copy_json_link">
                     📋 KOPYE LYEN JSON
                 </button>
             </div>

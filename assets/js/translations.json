@@ -1,0 +1,214 @@
+{
+  "fr": {
+    "nav": {
+      "home": "Accueil",
+      "market": "Marché",
+      "categories": "Catégories",
+      "about": "À propos",
+      "contact": "Contact",
+      "login": "Connexion",
+      "signup": "Inscription",
+      "cart": "Panier"
+    },
+    "hero": {
+      "title": "Boutique Piyay",
+      "subtitle": "Le marché haïtien en ligne",
+      "cta": "Découvrir →"
+    },
+    "market": {
+      "title": "Marché 🚀",
+      "sellers": "Vendeurs",
+      "products": "Tous les Produits",
+      "no_sellers": "Aucun vendeur pour le moment",
+      "no_products": "Aucun produit pour le moment",
+      "products_soon": "Les vendeurs ajouteront bientôt leurs produits !"
+    },
+    "categories": {
+      "title": "Choisissez par Catégorie"
+    },
+    "flash": {
+      "title": "⚡ Vente Flash",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s"
+    },
+    "cart": {
+      "title": "Panier",
+      "empty": "Panier vide",
+      "total": "💰 TOTAL",
+      "add": "Ajouter",
+      "remove": "Supprimer",
+      "added": "ajouté au panier!",
+      "whatsapp": "WhatsApp"
+    },
+    "product": {
+      "add_to_cart": "Ajouter au panier",
+      "view": "Voir",
+      "price": "Prix"
+    },
+    "footer": {
+      "about": "À propos",
+      "terms": "Conditions",
+      "privacy": "Politique de confidentialité",
+      "contact": "Contact",
+      "rights": "Tous droits réservés"
+    },
+    "index": {
+      "flash_title": "⚡ Vente Flash",
+      "categories_title": "Choisissez par Catégorie",
+      "market_title": "Marché 🚀",
+      "market_sellers": "🏪 Vendeurs",
+      "market_products": "🛍️ Tous les Produits",
+      "boosted_label": "🚀 PWODWI VEDÈT",
+      "boosted_view": "Vwè →"
+    },
+    "dashboard": {
+      "title": "Tableau de bord Vendeur",
+      "subtitle": "Suivez les performances de votre boutique",
+      "add_product": "➕ Nouveau Produit",
+      "stats_title": "Tableau de bord 📊",
+      "stats_subtitle": "Suivez les performances de votre boutique",
+      "total_sales": "Total Ventes",
+      "total_points": "Points Total",
+      "current_level": "Niveau Actuel",
+      "reward_title": "💎 Vos Récompenses",
+      "reward_points": "points",
+      "sales_evolution": "📈 Évolution des Ventes",
+      "orders_title": "Commandes 🛒",
+      "orders_subtitle": "Gérez les livraisons de vos produits",
+      "products_title": "Pwodwi m yo 📦",
+      "products_subtitle": "Gérez tous vos produits",
+      "feedback_title": "Avis Clients ⭐",
+      "feedback_subtitle": "Ce que les clients pensent de vos produits",
+      "wallet_title": "Lajan mwen 💰",
+      "wallet_subtitle": "Gérez le financement de votre boutique",
+      "total_income": "💵 Total Revenus",
+      "completed_orders": "📦 Commande terminée",
+      "available_balance": "Balans Disponib",
+      "withdraw": "💸 Retirer Lajan",
+      "history": "📊 Histoire",
+      "profile_title": "Boutik & Profil 🏪",
+      "profile_subtitle": "Gérez les informations de votre boutique",
+      "shop_link": "🔗 Lien de votre boutique",
+      "copy": "KOPYE",
+      "edit_info": "✏️ Modifier les informations",
+      "shop_name": "Nom de la boutique",
+      "whatsapp": "WhatsApp",
+      "address": "Adresse",
+      "save_changes": "✅ Enregistrer les modifications",
+      "api_title": "Intégration API 🛠️",
+      "api_subtitle": "Connectez votre boutique à d'autres systèmes",
+      "api_key": "🔑 Votre clé API",
+      "api_description": "Utilisez cet ID pour connecter votre boutique à n'importe quel service international",
+      "json_data": "🛍️ Données des produits (JSON)",
+      "copy_api_key": "📋 COPIER LA CLÉ API",
+      "copy_json_link": "📋 COPIER LE LIEN JSON"
+    }
+  },
+  "ht": {
+    "nav": {
+      "home": "Akèy",
+      "market": "Mache",
+      "categories": "Kategori",
+      "about": "Apropo",
+      "contact": "Kontak",
+      "login": "Koneksyon",
+      "signup": "Enskripsyon",
+      "cart": "Panier"
+    },
+    "hero": {
+      "title": "Boutique Piyay",
+      "subtitle": "Mache ayisyen an liy",
+      "cta": "Dekouvri →"
+    },
+    "market": {
+      "title": "Mache 🚀",
+      "sellers": "Vandè",
+      "products": "Tout Pwodwi yo",
+      "no_sellers": "Pa gen vandè pou kounye a",
+      "no_products": "Pa gen pwodwi pou kounye a",
+      "products_soon": "Vandè yo pral ajoute pwodwi yo byento!"
+    },
+    "categories": {
+      "title": "Chwazi pa Kategori"
+    },
+    "flash": {
+      "title": "⚡ Vante Flash",
+      "hours": "èdt",
+      "minutes": "minit",
+      "seconds": "segonn"
+    },
+    "cart": {
+      "title": "Panier",
+      "empty": "Panier vid",
+      "total": "💰 TOTAL",
+      "add": "Ajoute",
+      "remove": "Efase",
+      "added": "ajoute nan panier a!",
+      "whatsapp": "WhatsApp"
+    },
+    "product": {
+      "add_to_cart": "Ajoute nan panier a",
+      "view": "Vwè",
+      "price": "Pri"
+    },
+    "footer": {
+      "about": "Apropo",
+      "terms": "Kondisyon",
+      "privacy": "Politik konfidansyèl",
+      "contact": "Kontak",
+      "rights": "Tout dwa rezève"
+    },
+    "index": {
+      "flash_title": "⚡ Vante Flash",
+      "categories_title": "Chwazi pa Kategori",
+      "market_title": "Mache 🚀",
+      "market_sellers": "🏪 Vandè",
+      "market_products": "🛍️ Tout Pwodwi yo",
+      "boosted_label": "🚀 PWODWI VEDÈT",
+      "boosted_view": "Vwè →"
+    },
+    "dashboard": {
+      "title": "Tableau de bord Vendeur",
+      "subtitle": "Swiv pèfòmans boutik ou a",
+      "add_product": "➕ Nouvo Pwodwi",
+      "stats_title": "Tableau de bord 📊",
+      "stats_subtitle": "Swiv pèfòmans boutik ou a",
+      "total_sales": "Total Vant",
+      "total_points": "Pwen Total",
+      "current_level": "Nivo Kouran",
+      "reward_title": "💎 Rekonpans ou",
+      "reward_points": "pwen",
+      "sales_evolution": "📈 Evòlisyon Vant yo",
+      "orders_title": "Kòmand 🛒",
+      "orders_subtitle": "Jere livrezon pwodwi ou yo",
+      "products_title": "Pwodwi m yo 📦",
+      "products_subtitle": "Jere tout pwodwi ou yo",
+      "feedback_title": "Avis Clients ⭐",
+      "feedback_subtitle": "Sa kliyan yo panse de pwodwi ou yo",
+      "wallet_title": "Lajan mwen 💰",
+      "wallet_subtitle": "Jere finansman boutik ou",
+      "total_income": "💵 Total Rantre",
+      "completed_orders": "📦 Kòmand termine",
+      "available_balance": "Balans Disponib",
+      "withdraw": "💸 Retire Lajan",
+      "history": "📊 Istwa",
+      "profile_title": "Boutik & Profil 🏪",
+      "profile_subtitle": "Jere enfòmasyon boutik ou",
+      "shop_link": "🔗 Lyen Boutik ou",
+      "copy": "KOPYE",
+      "edit_info": "✏️ Edite Enfòmasyon",
+      "shop_name": "Non Boutik",
+      "whatsapp": "WhatsApp",
+      "address": "Adrès",
+      "save_changes": "✅ Sove Chanjman",
+      "api_title": "Entegrasyon API 🛠️",
+      "api_subtitle": "Konekte boutik ou ak lòt sistèm",
+      "api_key": "🔑 Kle API ou",
+      "api_description": "Itilize ID sa a pou konekte boutik ou ak nenpòt sèvis entènasyonal",
+      "json_data": "🛍️ Done Pwodwi yo (JSON)",
+      "copy_api_key": "📋 KOPYE KLE API",
+      "copy_json_link": "📋 KOPYE LYEN JSON"
+    }
+  }
+}

@@ -81,15 +81,24 @@ function drawCart() {
   Object.entries(bySeller).forEach(([sellerId, group]) => {
     const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
     const sellerName = group.sellerName || 'Boutique Piyay';
-    const sellerMessage = encodeURIComponent(`Bonjour ${sellerName}, je suis intéressé par ces produits :`);
+
+    // Kreye mesaj ak lis pwodwi yo
+    let sellerMessage = `Bonjour ${sellerName}, je suis intéressé par ces produits :\n\n`;
+    group.items.forEach(it => {
+      sellerMessage += `• ${it.title} (x${it.qty}) - ${it.price} HTG\n`;
+    });
+    const sellerTotal = group.items.reduce((sum, it) => sum + (it.price * it.qty), 0);
+    sellerMessage += `\n💰 Total: ${sellerTotal.toLocaleString()} HTG`;
+    const encodedMessage = encodeURIComponent(sellerMessage);
+
     html += `<div class="seller-group">
       <div class="seller-header">
         <span class="seller-name">🏪 ${sellerName}</span>
         <div class="seller-wa">
-          <a href="https://wa.me/${phone}?text=${sellerMessage}" target="_blank">📱 WhatsApp</a>
+          <a href="https://wa.me/${phone}?text=${encodedMessage}" target="_blank">📱 WhatsApp</a>
         </div>
       </div>`;
-    
+
     group.items.forEach(it => {
       let sub = it.price * it.qty;
       totalHTG += sub;
