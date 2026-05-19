@@ -1165,38 +1165,6 @@
         document.getElementById('boost-modal').style.display = 'flex';
     }
 
-    function closeBoostModal() { document.getElementById('boost-modal').style.display = 'none'; }
-
-    async function processBoost(type) {
-        if (type === 'free') {
-            alert("Option gratuite non disponible. Seuls les boosts payants figureront comme produits vedettes.");
-            return;
-        }
-
-        if (type === 'paid') {
-            const code = prompt("Entrez le code d’accès reçu de l’admin après avoir payé MonCash/NatCash :");
-            if (!code) { alert("Vous devez entrer le code pour activer le boost."); return; }
-            // Simulate code validation (in real app, verify with backend)
-            if (code.length < 6) { alert("Code invalide. Contactez l’administrateur."); return; }
-            await supD.from('user_products').update({ is_boosted: true, boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString() }).eq('id', selectedProdId);
-            alert("✅ Boost activé ! Votre code a été validé.");
-            closeBoostModal(); loadAll();
-            return;
-        }
-
-        // Si se gratis (via pwen)
-        const expiresAt = new Date();
-        expiresAt.setHours(expiresAt.getHours() + 48);
-        await supD.from('user_products').update({ is_boosted: true, boost_expires_at: expiresAt.toISOString() }).eq('id', selectedProdId);
-        alert("✅ Boost activé gratuitement !");
-        closeBoostModal(); loadAll();
-    }
-
-    async function toggleBoost(id, status) {
-        await supD.from('user_products').update({ is_boosted: status }).eq('id', id);
-        loadAll();
-    }
-
     async function toggleFlashSale(id, currentPrice) {
         if (currentPrice === null) {
             await supD.from('user_products').update({
