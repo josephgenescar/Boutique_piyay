@@ -681,7 +681,7 @@ title: Akèy - Boutique Piyay
     try {
       const { data: prods }   = await supabaseHome
         .from('user_products')
-        .select('id,title,price,image_url,seller_id,is_flash_sale,old_price,is_boosted,created_at,flash_start_at,is_approved')
+        .select('id,title,price,image_url,seller_id,is_flash_sale,old_price,is_boosted,created_at,flash_start_at,is_approved,boost_expires_at')
         .order('created_at', { ascending: false });
 
       const { data: sellers } = await supabaseHome
@@ -692,12 +692,19 @@ title: Akèy - Boutique Piyay
       allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
       buildSellerMap();
 
-      renderBoosted(allProducts.filter(p => p.is_boosted === true));
-      renderBoostedInBanner(allProducts.filter(p => p.is_boosted === true));
+      // Filte pwodwi boost ki pa eksperyé
+      const now = new Date();
+      const activeBoosted = allProducts.filter(p => {
+        if (!p.is_boosted) return false;
+        if (!p.boost_expires_at) return true; // Si pa gen dat, konsidere aktif
+        return new Date(p.boost_expires_at) > now;
+      });
+
+      renderBoosted(activeBoosted);
+      renderBoostedInBanner(activeBoosted);
       renderSellers(allSellers);
       renderProducts(allProducts);
 
-      const now       = new Date();
       const flashProds = allProducts.filter(p => {
         if (p.is_flash_sale === true && p.flash_start_at) {
           const diffH = (now - new Date(p.flash_start_at)) / 3600000;

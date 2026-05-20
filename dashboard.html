@@ -941,13 +941,33 @@
         window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`,'_blank');
     }
     async function activateBoostWithCode() {
+        console.log('🚀 activateBoostWithCode appelé');
         const code = document.getElementById('boost-code').value.trim();
+        console.log('📝 Code:', code);
+        console.log('🆔 selectedProdId:', selectedProdId);
+
         if (!code) { alert('Tanpri antre code ou resevwa a.'); return; }
         if (code.length < 6) { alert('Code invalide. Contactez l’administrateur.'); return; }
-        // Simile aktivasyon boost (ou ka ajoute verifikasyon backend)
-        await supD.from('user_products').update({ is_boosted: true, boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString() }).eq('id', selectedProdId);
-        alert('✅ Boost activé ! Votre code a été validé.');
-        closePaidBoostModal(); closeBoostModal(); loadAll();
+
+        const boostData = {
+            is_boosted: true,
+            boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString()
+        };
+        console.log('📦 Données boost:', boostData);
+
+        try {
+            const { error } = await supD.from('user_products').update(boostData).eq('id', selectedProdId);
+            if (error) {
+                console.error('❌ Erè Supabase:', error);
+                alert('❌ Erè lors de l\'activation: ' + error.message);
+                return;
+            }
+            alert('✅ Boost activé ! Votre code a été validé.');
+            closePaidBoostModal(); closeBoostModal(); loadAll();
+        } catch (err) {
+            console.error('❌ Erè catch:', err);
+            alert('❌ Erè: ' + err.message);
+        }
     }
     const supD = window.supabase.createClient(
         "https://letyferfjpxmstohvgcj.supabase.co",
@@ -1163,6 +1183,10 @@
     function openBoostModal(id) {
         selectedProdId = id;
         document.getElementById('boost-modal').style.display = 'flex';
+    }
+
+    function closeBoostModal() {
+        document.getElementById('boost-modal').style.display = 'none';
     }
 
     async function toggleFlashSale(id, currentPrice) {

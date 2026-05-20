@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshBadge();
 });
 
-function orderProduct(title, price, id, image, sellerId, sellerPhone, sellerName) {
+window.orderProduct = function(title, price, id, image, sellerId, sellerPhone, sellerName) {
   let currentCart = getCart();
   let key = id || title.replace(/\s+/g,'-').toLowerCase();
   let found = false;
@@ -29,7 +29,7 @@ function orderProduct(title, price, id, image, sellerId, sellerPhone, sellerName
   alert('✅ ' + title + ' ajouté au panier!');
 }
 
-function openCart() {
+window.openCart = function() {
   const m = document.getElementById('order-modal');
   if (m) {
     m.style.display = 'flex';
@@ -153,11 +153,13 @@ function contactWhatsApp(data) {
 }
 
 window.contactSellersWhatsApp = function() {
+  console.log('📱 contactSellersWhatsApp appelé');
   const cart = getCart();
   if (!cart || cart.length === 0) {
     alert('Le panier est vide. Ajouterz un produit avant de contacter un vendeur.');
     return;
   }
+  console.log('🛒 Panier:', cart);
 
   const sellers = {};
   cart.forEach(item => {
@@ -235,7 +237,7 @@ window.submitOrder = async function() {
 
     if (paymentMethod === 'MonCash') {
         console.log('📤 Sending to MonCash:', { amount: totalAmount, orderId: orderGroupId });
-        
+
         const moncashRes = await fetch('/.netlify/functions/moncash', {
             method: 'POST',
             headers: {
@@ -251,7 +253,6 @@ window.submitOrder = async function() {
             statusText: moncashRes.statusText
         });
 
-        // Pran body kòm text anvan
         const responseText = await moncashRes.text();
         console.log('📥 MonCash raw response:', responseText.substring(0, 200));
 
@@ -274,22 +275,34 @@ window.submitOrder = async function() {
             throw new Error('❌ MonCash pa retounen lyen redireksyon. Check Netlify logs.');
         }
 
-        // Sove nan DB anvan nou redireksyon
-        if (sup) {
-            try {
-              const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
+        window.location.href = data.redirectURL;
+        return;
+    }
 
-              // ---
-              // Si ou vle reaktive MonCash pita, retire kòmantè sou blòk sa a:
-              /*
-              if (paymentMethod === 'MonCash') {
-                // ...code MonCash la...
-                return;
-              }
-              */
+    // Gid pou peman manyèl
+    if (paymentMethod === 'manual') {
+      alert('Veuillez contacter le vendeur sur WhatsApp pour négocier et payer. Après paiement, envoyez la preuve au vendeur pour validation.');
+    }
 
-              // Gid pou peman manyèl
-              if (paymentMethod === 'manual') {
-                alert('Veuillez contacter le vendeur sur WhatsApp pour négocier et payer. Après paiement, envoyez la preuve au vendeur pour validation.');
-              }
+    if (paymentMethod === 'Cash') {
+      alert('Commande enregistrée! Vous paierez à la livraison.');
+    }
+
+    btn.disabled = false;
+    btn.innerText = "Valider la commande ✅";
+
+  } catch (err) {
+    console.error('❌ Erè submitOrder:', err);
+    alert('❌ Erè: ' + err.message);
+    const btn = document.getElementById('submitOrderBtn');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "Valider la commande ✅";
+    }
+  }
+}
 window.contactWhatsApp = contactWhatsApp;
+console.log('✅ cart.js chaje');
+console.log('✅ orderProduct disponib:', typeof window.orderProduct);
+console.log('✅ openCart disponib:', typeof window.openCart);
+console.log('✅ contactSellersWhatsApp disponib:', typeof window.contactSellersWhatsApp);
