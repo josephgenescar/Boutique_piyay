@@ -40,6 +40,7 @@
       <button onclick="showTab('tab-users')" id="btn-users">👥 Itilizatè</button>
       <button onclick="showTab('tab-products')" id="btn-products">📦 Pwodwi</button>
       <button onclick="showTab('tab-sellers')" id="btn-sellers">🏪 Machan + Pwodwi</button>
+      <button onclick="showTab('tab-new-shops')" id="btn-new-shops">🆕 Boutik Resan</button>
       <button onclick="handleLogout()" style="background: #ef4444;">🚪 Dekonekte</button>
     </div>
   </header>
@@ -83,6 +84,16 @@
       <div id="sellers-list"></div>
     </div>
   </div>
+
+  <div id="tab-new-shops" class="tab-body" style="display:none;">
+    <div class="card">
+      <div class="section-title">Boutik Resan (24 dernye èdtan)</div>
+      <table>
+        <thead><tr><th>Non / Email</th><th>WhatsApp</th><th>Kreye</th><th>Aksyon</th></tr></thead>
+        <tbody id="new-shops-table-body"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -121,6 +132,7 @@
     if(id === 'tab-users') fetchUsers();
     if(id === 'tab-products') fetchProducts();
     if(id === 'tab-sellers') fetchSellers();
+    if(id === 'tab-new-shops') fetchNewShops();
   }
 
   async function loadStats() {
@@ -219,6 +231,72 @@
 
       alert(`✅ Kont ${sellerName} efase definitivman!`);
       fetchSellers(); // Rafrechi lis la
+    } catch (error) {
+      alert('Erè: ' + error.message);
+    }
+  }
+
+  async function fetchNewShops() {
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const { data: newShops } = await sb.from('profiles')
+      .select('*')
+      .eq('is_active_seller', true)
+      .gte('created_at', twentyFourHoursAgo.toISOString())
+      .order('created_at', { ascending: false });
+
+    const tableBody = document.getElementById('new-shops-table-body');
+
+    if (!newShops || newShops.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Pa gen boutik resan nan 24 dernye èdtan.</td></tr>';
+      return;
+    }
+
+    tableBody.innerHTML = newShops.map(shop => {
+      const createdAt = new Date(shop.created_at);
+      const timeAgo = Math.floor((now - createdAt) / (1000 * 60 * 60)); // heures
+
+      return `
+        <tr>
+          <td>
+            <strong>${shop.full_name || 'Enkoni'}</strong><br>
+            <small style="color:#64748b;">${shop.email}</small>
+          </td>
+          <td>${shop.whatsapp_number || 'N/A'}</td>
+          <td><small style="color:#64748b;">${timeAgo} èdtan de sa</small></td>
+          <td>
+            <button class="btn btn-delete" onclick="deleteNewShop('${shop.id}', '${shop.full_name || 'ce vendeur'}')">
+              🗑️ Efase
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function deleteNewShop(shopId, shopName) {
+    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
+      return;
+    }
+
+    try {
+      // Efase tout pwodwi boutik nan
+      const { error: prodError } = await sb.from('user_products').delete().eq('seller_id', shopId);
+      if (prodError) {
+        alert('Erè efase pwodwi: ' + prodError.message);
+        return;
+      }
+
+      // Efase boutik nan nan profiles
+      const { error: shopError } = await sb.from('profiles').delete().eq('id', shopId);
+      if (shopError) {
+        alert('Erè efase boutik: ' + shopError.message);
+        return;
+      }
+
+      alert(`✅ Boutik ${shopName} efase!`);
+      fetchNewShops(); // Rafrechi lis la
     } catch (error) {
       alert('Erè: ' + error.message);
     }
