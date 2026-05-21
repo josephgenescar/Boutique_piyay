@@ -281,7 +281,7 @@ title: Sant Kontwòl Total - Boutique Piyay
       <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
       <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
       <button onclick="showTab('tab-orders')" class="tab-btn">🛒 Tout Commande</button>
-      <button onclick="showTab('tab-new-shops')" class="tab-btn">🆕 Boutik Resan</button>
+      <button onclick="showTab('tab-new-shops')" class="tab-btn">� Tout Boutik</button>
     </div>
 
     <!-- TAB: SELLERS -->
@@ -340,7 +340,7 @@ title: Sant Kontwòl Total - Boutique Piyay
     <!-- TAB: NEW SHOPS -->
     <div id="tab-new-shops" class="tab-content" style="display:none;">
       <div class="admin-card">
-        <div class="card-title">🆕 Boutik Resan (24 dernye èdtan)</div>
+        <div class="card-title">� Tout Boutik</div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
             <thead>
@@ -520,22 +520,20 @@ title: Sant Kontwòl Total - Boutique Piyay
 
   async function fetchNewShops() {
     const now = new Date();
-    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-    const { data: newShops } = await supA.from('profiles')
+    const { data: allShops } = await supA.from('profiles')
       .select('*')
       .eq('is_active_seller', true)
-      .gte('created_at', twentyFourHoursAgo.toISOString())
       .order('created_at', { ascending: false });
 
     const tableBody = document.getElementById('new-shops-list');
 
-    if (!newShops || newShops.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Pa gen boutik resan nan 24 dernye èdtan.</td></tr>';
+    if (!allShops || allShops.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Pa gen boutik.</td></tr>';
       return;
     }
 
-    tableBody.innerHTML = newShops.map(shop => {
+    tableBody.innerHTML = allShops.map(shop => {
       const createdAt = new Date(shop.created_at);
       const timeAgo = Math.floor((now - createdAt) / (1000 * 60 * 60)); // heures
 
