@@ -281,6 +281,7 @@ title: Sant Kontwòl Total - Boutique Piyay
       <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
       <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
       <button onclick="showTab('tab-orders')" class="tab-btn">🛒 Tout Commande</button>
+      <button onclick="showTab('tab-new-shops')" class="tab-btn">🆕 Boutik Resan</button>
     </div>
 
     <!-- TAB: SELLERS -->
@@ -331,6 +332,21 @@ title: Sant Kontwòl Total - Boutique Piyay
               <tr><th>ID</th><th>Client</th><th>Montan</th><th>Status</th></tr>
             </thead>
             <tbody id="orders-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: NEW SHOPS -->
+    <div id="tab-new-shops" class="tab-content" style="display:none;">
+      <div class="admin-card">
+        <div class="card-title">🆕 Boutik Resan (24 dernye èdtan)</div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Non / Email</th><th>WhatsApp</th><th>Kreye</th><th>Aksyon</th></tr>
+            </thead>
+            <tbody id="new-shops-list"></tbody>
           </table>
         </div>
       </div>
@@ -499,6 +515,73 @@ title: Sant Kontwòl Total - Boutique Piyay
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).style.display = 'block';
     if (event) event.currentTarget.classList.add('active');
+    if(id === 'tab-new-shops') fetchNewShops();
+  }
+
+  async function fetchNewShops() {
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const { data: newShops } = await supA.from('profiles')
+      .select('*')
+      .eq('is_active_seller', true)
+      .gte('created_at', twentyFourHoursAgo.toISOString())
+      .order('created_at', { ascending: false });
+
+    const tableBody = document.getElementById('new-shops-list');
+
+    if (!newShops || newShops.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Pa gen boutik resan nan 24 dernye èdtan.</td></tr>';
+      return;
+    }
+
+    tableBody.innerHTML = newShops.map(shop => {
+      const createdAt = new Date(shop.created_at);
+      const timeAgo = Math.floor((now - createdAt) / (1000 * 60 * 60)); // heures
+
+      return `
+        <tr>
+          <td>
+            <strong>${shop.full_name || 'Enkoni'}</strong><br>
+            <small style="color:#64748b;">${shop.email}</small>
+          </td>
+          <td>${shop.whatsapp_number || 'N/A'}</td>
+          <td><small style="color:#64748b;">${timeAgo} èdtan de sa</small></td>
+          <td>
+            <button onclick="deleteNewShop('${shop.id}', '${shop.full_name || 'ce vendeur'}')" class="btn-topbar" style="background:#ef4444; color:white; padding:6px 12px; font-size:12px;">
+              🗑️ Efase
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function deleteNewShop(shopId, shopName) {
+    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
+      return;
+    }
+
+    try {
+      // Efase tout pwodwi boutik nan
+      const { error: prodError } = await supA.from('user_products').delete().eq('seller_id', shopId);
+      if (prodError) {
+        showToast('Erè efase pwodwi: ' + prodError.message, 'error');
+        return;
+      }
+
+      // Efase boutik nan nan profiles
+      const { error: shopError } = await supA.from('profiles').delete().eq('id', shopId);
+      if (shopError) {
+        showToast('Erè efase boutik: ' + shopError.message, 'error');
+        return;
+      }
+
+      showToast(`✅ Boutik ${shopName} efase!`, 'success');
+      fetchNewShops(); // Rafrechi lis la
+    } catch (error) {
+      showToast('Erè: ' + error.message, 'error');
+    }
   }
 
   async function handleAdminLogout() {
