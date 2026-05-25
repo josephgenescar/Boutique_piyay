@@ -403,6 +403,54 @@ title: Akèy - Boutique Piyay
     }
     .btn-boosted-add:hover { background: #d94641; transform: translateY(-1px); }
 
+    .boosted-ad-card {
+      width: 220px;
+      min-width: 220px;
+      background: linear-gradient(180deg, #fff7f5 0%, #fff1ee 100%);
+      border: 1px solid rgba(255, 71, 71, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 14px;
+      text-align: center;
+      scroll-snap-align: center;
+    }
+    .adsterra-banner {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      color: #7f1d1d;
+    }
+    .adsterra-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #dc2626;
+    }
+    .adsterra-title {
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+    .adsterra-copy {
+      font-size: 12px;
+      color: #4b1d1d;
+      min-height: 36px;
+    }
+    .adsterra-cta {
+      border: none;
+      background: white;
+      color: #b91c1c;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.12);
+    }
+    .adsterra-cta:hover { background: #fee2e2; }
+
     #featured-sellers-section {
       margin-top: 18px;
       padding: 12px 0 0;
@@ -926,9 +974,10 @@ title: Akèy - Boutique Piyay
     if (!section || !track) return;
     if (list.length === 0) { section.style.display = 'none'; return; }
     section.style.display = 'block';
-    track.innerHTML = list.map(p => {
+    const slides = [];
+    list.forEach((p, index) => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
-      return `
+      slides.push(`
         <div class="boosted-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
             <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
@@ -941,8 +990,23 @@ title: Akèy - Boutique Piyay
               🛒 <span data-i18n="cart.add">Ajouter</span>
             </button>
           </div>
-        </div>`;
-    }).join('');
+        </div>`);
+
+      const insertAdAfter = Math.max(0, Math.floor(list.length / 2) - 1);
+      if (index === insertAdAfter) {
+        slides.push(`
+          <div class="boosted-card boosted-ad-card">
+            <div class="adsterra-banner">
+              <div class="adsterra-label">Publicité</div>
+              <div class="adsterra-title">Espace sponsorisé Adsterra</div>
+              <div class="adsterra-copy">Votre message publicitaire ici.</div>
+              <button class="adsterra-cta">En savoir plus</button>
+            </div>
+          </div>`);
+      }
+    });
+
+    track.innerHTML = slides.join('');
     boostedIndex = 0;
     setTimeout(() => {
       boostedMoveTo(0);
@@ -952,8 +1016,8 @@ title: Akèy - Boutique Piyay
 
     const boostedSection = document.getElementById('boosted-section');
     if (boostedSection) {
-      boostedSection.addEventListener('mouseenter', stopBoostedAutoplay);
-      boostedSection.addEventListener('mouseleave', startBoostedAutoplay);
+      boostedSection.onmouseenter = stopBoostedAutoplay;
+      boostedSection.onmouseleave = startBoostedAutoplay;
     }
   }
 
@@ -1013,7 +1077,9 @@ title: Akèy - Boutique Piyay
     if (!track) return;
     const cards = Array.from(track.querySelectorAll('.boosted-card'));
     if (!cards.length) return;
-    boostedIndex = Math.max(0, Math.min(index, cards.length - 1));
+    if (index < 0) boostedIndex = cards.length - 1;
+    else if (index >= cards.length) boostedIndex = 0;
+    else boostedIndex = index;
     const card = cards[boostedIndex];
     const offset = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
     track.scrollTo({ left: offset, behavior: 'smooth' });
