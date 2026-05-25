@@ -807,7 +807,8 @@ title: Akèy - Boutique Piyay
       const sProds = allProducts.filter(p => String(p.seller_id) === String(s.id) && p.image_url).slice(0,4);
       let previews = sProds.map(p => `<div class="preview-img"><img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📦'"></div>`).join('');
       for (let i = sProds.length; i < 4; i++) previews += `<div class="preview-img">📦</div>`;
-      const initial       = (s.full_name || 'M').charAt(0).toUpperCase();
+      const sellerDisplayName = s.shop_name || s.full_name || 'Boutik';
+      const initial       = (sellerDisplayName || 'M').charAt(0).toUpperCase();
       const avatarContent = s.avatar_url
         ? `<img src="${s.avatar_url}" onerror="this.style.display='none';this.parentElement.innerText='${initial}'">`
         : initial;
@@ -816,7 +817,7 @@ title: Akèy - Boutique Piyay
           <div class="seller-head">
             <div class="seller-avatar">${avatarContent}</div>
             <div class="seller-info">
-              <h4>${s.full_name || 'Boutik'}</h4>
+              <h4>${sellerDisplayName}</h4>
               <p>📍 ${s.address || 'Ayiti'}</p>
               <span class="seller-verified">✅ Verifye</span>
             </div>

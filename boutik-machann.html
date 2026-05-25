@@ -139,7 +139,8 @@ title: Boutik Vendeur - Boutique Piyay
       try {
         const { data: prof } = await supV.from('profiles').select('*').eq('id', sellerId.trim()).single();
         if (prof) {
-          document.getElementById('sellerName').innerText = prof.full_name || 'Boutik';
+          const sellerDisplayName = prof.shop_name || prof.full_name || 'Boutik';
+          document.getElementById('sellerName').innerText = sellerDisplayName;
           document.getElementById('sellerLoc').innerText  = "📍 " + (prof.address || 'Ayiti');
           if (prof.avatar_url) {
             document.getElementById('sellerInitialWrap').innerHTML = `<img src="${prof.avatar_url}">`;
@@ -150,7 +151,7 @@ title: Boutik Vendeur - Boutique Piyay
         if (products && prof) {
           document.getElementById('prodCount').innerText = products.length;
           const sellerPhone = (prof.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
-          const sellerName = prof.full_name || 'Boutique Piyay';
+          const sellerName = prof.shop_name || prof.full_name || 'Boutique Piyay';
           grid.innerHTML = products.map(p => {
             const safeT = (p.title || '').replace(/'/g, "\\'");
             const safeImg = (p.image_url || '').replace(/'/g, "\\'");

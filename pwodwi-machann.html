@@ -424,7 +424,7 @@ title: Detay Pwodwi
             .select('*').eq('id', p.seller_id).maybeSingle();
 
           if (prof) {
-            const name = prof.full_name || "Boutique Piyay";
+            const name = prof.shop_name || prof.full_name || "Boutique Piyay";
             document.getElementById('seller').innerText = "🏪 " + name;
             document.getElementById('loc').innerText    = "📍 " + (prof.address || "Ayiti");
 
@@ -443,7 +443,7 @@ title: Detay Pwodwi
         document.getElementById('btnPanier').onclick = () => {
           if (window.orderProduct) {
             const sellerPhone = (prof?.whatsapp_number || prof?.whatsapp || '50948868964').replace(/[^0-9]/g, '');
-            const sellerName = prof?.full_name || 'Boutique Piyay';
+            const sellerName = prof?.shop_name || prof?.full_name || 'Boutique Piyay';
             orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id, sellerPhone, sellerName);
           }
           else alert("Fonksyon panye pa disponib.");
@@ -451,7 +451,7 @@ title: Detay Pwodwi
         document.getElementById('btnAchte').onclick = () => {
           if (window.orderProduct) {
             const sellerPhone = (prof?.whatsapp_number || prof?.whatsapp || '50948868964').replace(/[^0-9]/g, '');
-            const sellerName = prof?.full_name || 'Boutique Piyay';
+            const sellerName = prof?.shop_name || prof?.full_name || 'Boutique Piyay';
             orderProduct(p.title, p.price, p.id, p.image_url, p.seller_id, sellerPhone, sellerName);
             if (window.openCart) openCart();
           }

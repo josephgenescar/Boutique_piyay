@@ -281,7 +281,8 @@ title: Sant Kontwòl Total - Boutique Piyay
       <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
       <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
       <button onclick="showTab('tab-orders')" class="tab-btn">🛒 Tout Commande</button>
-      <button onclick="showTab('tab-new-shops')" class="tab-btn">� Tout Boutik</button>
+      <button onclick="showTab('tab-new-shops')" class="tab-btn">🛒 Tout Boutik</button>
+      <button onclick="showTab('tab-traffic')" class="tab-btn">📊 Trafik</button>
     </div>
 
     <!-- TAB: SELLERS -->
@@ -340,13 +341,28 @@ title: Sant Kontwòl Total - Boutique Piyay
     <!-- TAB: NEW SHOPS -->
     <div id="tab-new-shops" class="tab-content" style="display:none;">
       <div class="admin-card">
-        <div class="card-title">� Tout Boutik</div>
+        <div class="card-title">🛒 Tout Boutik</div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
             <thead>
               <tr><th>Non / Email</th><th>WhatsApp</th><th>Kreye</th><th>Aksyon</th></tr>
             </thead>
             <tbody id="new-shops-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: TRAFFIC -->
+    <div id="tab-traffic" class="tab-content" style="display:none;">
+      <div class="admin-card">
+        <div class="card-title">📊 Trafik Chak Jou</div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Dat</th><th>Paj</th><th>Vizit</th><th>Machann</th></tr>
+            </thead>
+            <tbody id="traffic-list"></tbody>
           </table>
         </div>
       </div>
@@ -436,9 +452,9 @@ title: Sant Kontwòl Total - Boutique Piyay
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div class="seller-avatar">${(u.full_name||'M').charAt(0).toUpperCase()}</div>
+              <div class="seller-avatar">${(u.shop_name||u.full_name||'M').charAt(0).toUpperCase()}</div>
               <div class="seller-meta">
-                <b>${u.full_name || 'Boutik'}</b>
+                <b>${u.shop_name || u.full_name || 'Boutik'}</b>
                 <small>${u.email || ''}</small>
               </div>
             </div>
@@ -516,6 +532,40 @@ title: Sant Kontwòl Total - Boutique Piyay
     document.getElementById(id).style.display = 'block';
     if (event) event.currentTarget.classList.add('active');
     if(id === 'tab-new-shops') fetchNewShops();
+    if(id === 'tab-traffic') fetchTrafficData();
+  }
+
+  async function fetchTrafficData() {
+    const tableBody = document.getElementById('traffic-list');
+    try {
+      const { data, error } = await supA.from('site_traffic')
+        .select('date,page,visit_count,seller_id')
+        .order('date', { ascending: false })
+        .limit(100);
+
+      if (error) {
+        console.warn(error);
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Trafik pa configure. Kreye tablo Supabase `site_traffic` ak kolòn `date`, `page`, `visit_count`, `seller_id`.</td></tr>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Pa gen done trafik pou kounye a.</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = data.map(item => `
+        <tr>
+          <td>${new Date(item.date).toLocaleDateString('en-GB')}</td>
+          <td>${item.page || 'Tout paj'}</td>
+          <td>${item.visit_count || 0}</td>
+          <td>${item.seller_id || '-'}</td>
+        </tr>
+      `).join('');
+    } catch (error) {
+      console.error(error);
+      tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Erè rechaje trafik. Gade konsole a.</td></tr>';
+    }
   }
 
   async function fetchNewShops() {
@@ -540,13 +590,13 @@ title: Sant Kontwòl Total - Boutique Piyay
       return `
         <tr>
           <td>
-            <strong>${shop.full_name || 'Enkoni'}</strong><br>
+            <strong>${shop.shop_name || shop.full_name || 'Enkoni'}</strong><br>
             <small style="color:#64748b;">${shop.email}</small>
           </td>
           <td>${shop.whatsapp_number || 'N/A'}</td>
           <td><small style="color:#64748b;">${timeAgo} èdtan de sa</small></td>
           <td>
-            <button onclick="deleteNewShop('${shop.id}', '${shop.full_name || 'ce vendeur'}')" class="btn-topbar" style="background:#ef4444; color:white; padding:6px 12px; font-size:12px;">
+            <button onclick="deleteNewShop('${shop.id}')" class="btn-topbar" style="background:#ef4444; color:white; padding:6px 12px; font-size:12px;">
               🗑️ Efase
             </button>
           </td>
@@ -555,7 +605,16 @@ title: Sant Kontwòl Total - Boutique Piyay
     }).join('');
   }
 
-  async function deleteNewShop(shopId, shopName) {
+  async function deleteNewShop(shopId) {
+    let shopName = 'ce vendeur';
+    try {
+      const { data: shop, error: shopFetchErr } = await supA.from('profiles').select('shop_name,full_name').eq('id', shopId).single();
+      if (!shopFetchErr && shop) {
+        shopName = shop.shop_name || shop.full_name || shopName;
+      }
+    } catch (e) {
+      console.warn('Unable to fetch shop name for delete confirmation.', e);
+    }
     if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
       return;
     }

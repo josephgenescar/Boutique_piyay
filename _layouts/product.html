@@ -117,10 +117,9 @@ layout: default
 
     if (profile) {
       const zone = profile.address || "Ayiti";
+      const sellerDisplayName = profile.shop_name || profile.full_name || "Vendeur";
       document.getElementById('zoneLoader').innerText = "📍 Zone: " + zone;
-      document.getElementById('sellerName').innerText = "Vandè: " + (profile.full_name || "Vendeur");
-      document.getElementById('sellerAddr').innerText = "📍 Zone Livraison: " + zone;
-
+      document.getElementById('sellerName').innerText = "Vandè: " + sellerDisplayName;
       if (profile.whatsapp) {
         document.getElementById('waLink').href = "https://wa.me/" + profile.whatsapp.replace(/\+/g, '');
       }

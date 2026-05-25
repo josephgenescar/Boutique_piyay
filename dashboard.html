@@ -1171,7 +1171,7 @@
 
         const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
         if (prof) {
-            document.getElementById('prof-name').value = prof.full_name || '';
+            document.getElementById('prof-name').value = prof.shop_name || prof.full_name || '';
             document.getElementById('prof-whatsapp').value = prof.whatsapp_number || '';
             document.getElementById('prof-address').value = prof.address || '';
             document.getElementById('wall-balance').innerHTML = `${prof.wallet_balance || 0} <span>HTG</span>`;
@@ -1233,6 +1233,7 @@
 
     async function saveProfile() {
         await supD.from('profiles').update({
+            shop_name: document.getElementById('prof-name').value,
             full_name: document.getElementById('prof-name').value,
             whatsapp_number: document.getElementById('prof-whatsapp').value,
             address: document.getElementById('prof-address').value
