@@ -999,7 +999,6 @@ title: Akèy - Boutique Piyay
             <div class="adsterra-banner">
               <div class="adsterra-label">Publicité</div>
               <div class="adsterra-title">Espace sponsorisé Adsterra</div>
-              <script async="async" data-cfasync="false" src="https://pl29038232.profitablecpmratenetwork.com/2e8d42466e54761c90d32db5824eb06c/invoke.js"></script>
               <div id="container-2e8d42466e54761c90d32db5824eb06c"></div>
             </div>
           </div>`);
@@ -1007,6 +1006,7 @@ title: Akèy - Boutique Piyay
     });
 
     track.innerHTML = slides.join('');
+    insertBoostedAdsterraScript();
     boostedIndex = 0;
     setTimeout(() => {
       boostedMoveTo(0);
@@ -1100,6 +1100,22 @@ title: Akèy - Boutique Piyay
   function stopBoostedAutoplay() {
     clearInterval(boostedAutoplay);
     boostedAutoplay = null;
+  }
+
+  function insertBoostedAdsterraScript() {
+    const adCard = document.querySelector('.boosted-ad-card .adsterra-banner');
+    if (!adCard) return;
+    const existing = adCard.querySelector('script[src*="profitablecpmratenetwork.com"]');
+    if (existing) return;
+
+    const container = adCard.querySelector('#container-2e8d42466e54761c90d32db5824eb06c');
+    if (!container) return;
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.setAttribute('data-cfasync', 'false');
+    script.src = 'https://pl29038232.profitablecpmratenetwork.com/2e8d42466e54761c90d32db5824eb06c/invoke.js';
+    adCard.appendChild(script);
   }
 
   function updateBoostedControls() {
