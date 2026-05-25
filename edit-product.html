@@ -128,6 +128,12 @@ title: Modifye Pwodwi - Boutique Piyay
 
         if (error) { alert("Erè: " + error.message); btn.disabled = false; btn.innerText = "💾 Sove Chanjman yo"; }
         else {
+            if (window.sendProductBroadcast) {
+                window.sendProductBroadcast('product_updated', {
+                    product_id: prodId,
+                    product_name: updateData.title,
+                });
+            }
             const msg = document.getElementById('msg');
             msg.innerText = "✅ Pwodwi a modifye ak siksè!";
             msg.style.display = 'block'; msg.style.color = 'green';

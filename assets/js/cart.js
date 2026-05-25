@@ -1,7 +1,79 @@
-const CART_KEY = 'bp_cart';
+const CART_KEY = 'boutique_piyay_cart';
 
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+}
+
+function getSupabaseClient() {
+  if (typeof window === 'undefined') return null;
+  if (window.supabaseMain) return window.supabaseMain;
+  if (window.supabase) {
+    const url = window.SUPABASE_URL || window.S_URL || window.SUP_URL || window.SUPABASE_URL;
+    const key = window.SUPABASE_ANON_KEY || window.SUP_KEY || window.S_KEY || window.SUPABASE_KEY;
+    if (url && key) {
+      try {
+        return window.supabase.createClient(url, key);
+      } catch (err) {
+        console.warn('Supabase client creation failed:', err);
+      }
+    }
+  }
+  return null;
+}
+
+async function getCurrentCustomerEmail(sup) {
+  if (!sup || !sup.auth || typeof sup.auth.getUser !== 'function') return null;
+  try {
+    const { data } = await sup.auth.getUser();
+    return data?.user?.email || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zone, paymentMethod, orderGroupId) {
+  const grouped = {};
+  cart.forEach(item => {
+    const sellerId = item.sellerId || item.seller_id || 'boutique-piyay';
+    if (!grouped[sellerId]) {
+      grouped[sellerId] = {
+        sellerId,
+        sellerName: item.sellerName || item.seller_name || 'Boutique Piyay',
+        sellerPhone: item.sellerPhone || item.seller_phone || '50948868964',
+        items: [],
+        amount: 0
+      };
+    }
+    const qty = item.qty || item.quantity || 1;
+    const price = parseFloat(item.price) || 0;
+    grouped[sellerId].items.push({
+      product_id: item.id || null,
+      title: item.title || 'Produit',
+      quantity: qty,
+      price: price
+    });
+    grouped[sellerId].amount += price * qty;
+  });
+
+  const createdAt = new Date().toISOString();
+  return Object.values(grouped).map(group => ({
+    seller_id: group.sellerId,
+    seller_name: group.sellerName,
+    seller_phone: group.sellerPhone,
+    customer_name: customerName,
+    customer_phone: customerPhone,
+    customer_email: customerEmail,
+    delivery_zone: zone,
+    payment_method: paymentMethod,
+    order_group_id: orderGroupId,
+    order_items: JSON.stringify(group.items),
+    product_id: group.items.length === 1 ? group.items[0].product_id : null,
+    product_name: group.items.map(i => i.title).join(' | '),
+    amount: group.amount,
+    status: 'pending',
+    created_at: createdAt,
+    updated_at: createdAt
+  }));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -233,7 +305,19 @@ window.submitOrder = async function() {
   btn.innerText = "⏳ Anrejistreman...";
 
   try {
-    const sup = (typeof supabaseMain !== 'undefined') ? supabaseMain : null;
+    const sup = getSupabaseClient();
+    const customerEmail = await getCurrentCustomerEmail(sup);
+    const orders = buildOrderPayload(cart, customerEmail, name, phone, zone, paymentMethod, orderGroupId);
+
+    if (sup) {
+      const { error: insertError } = await sup.from('orders').insert(orders);
+      if (insertError) {
+        throw new Error('Erreur en sauvegardant la commande: ' + insertError.message);
+      }
+      console.log('✅ Commande enregistrée dans Supabase', orders);
+    } else {
+      console.warn('⚠️ Supabase client introuvable : la commande ne pourra pas être enregistrée dans la base de données.');
+    }
 
     if (paymentMethod === 'MonCash') {
         console.log('📤 Sending to MonCash:', { amount: totalAmount, orderId: orderGroupId });
@@ -279,14 +363,18 @@ window.submitOrder = async function() {
         return;
     }
 
-    // Gid pou peman manyèl
+    // Gid pou peman manyèl oswa cash
     if (paymentMethod === 'manual') {
-      alert('Veuillez contacter le vendeur sur WhatsApp pour négocier et payer. Après paiement, envoyez la preuve au vendeur pour validation.');
+      alert('Commande enregistrée! Contactez le vendeur sur WhatsApp pour finaliser le paiement.');
+    } else if (paymentMethod === 'Cash') {
+      alert('Commande enregistrée! Vous paierez à la livraison.');
+    } else {
+      alert('Commande enregistrée avec succès!');
     }
 
-    if (paymentMethod === 'Cash') {
-      alert('Commande enregistrée! Vous paierez à la livraison.');
-    }
+    localStorage.removeItem(CART_KEY);
+    refreshBadge();
+    drawCart();
 
     btn.disabled = false;
     btn.innerText = "Valider la commande ✅";

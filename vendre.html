@@ -383,7 +383,7 @@ title: Vann yon Pwodwi - Boutique Piyay
             const uploadData = await uploadRes.json();
 
             // Save to Supabase
-            const { error: dbErr } = await supV.from('user_products').insert([{
+            const { data: insertedProducts, error: dbErr } = await supV.from('user_products').insert([{
                 title,
                 price: parseFloat(price),
                 category: cat,
@@ -396,6 +396,15 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             if (dbErr) throw dbErr;
             alert("🎉 Pwodwi pibliye ak siksè!");
+
+            const productId = insertedProducts?.[0]?.id;
+            if (productId && window.sendProductBroadcast) {
+                window.sendProductBroadcast('new_product', {
+                    product_id: productId,
+                    product_name: title,
+                });
+            }
+
             window.location.href = "/dashboard.html";
         } catch (err) {
             alert("❌ Erè: " + err.message);
