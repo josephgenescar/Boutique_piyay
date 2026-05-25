@@ -146,7 +146,7 @@
     const { data: users } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
     document.getElementById('user-table-body').innerHTML = (users || []).map(u => `
       <tr>
-        <td><strong>${u.full_name || 'Enkoni'}</strong><br><small>${u.email}</small></td>
+        <td><strong>${u.shop_name || u.full_name || 'Enkoni'}</strong><br><small>${u.email}</small></td>
         <td>${u.role}</td>
         <td><span class="badge ${u.is_active_seller ? 'badge-active' : 'badge-blocked'}">${u.is_active_seller ? 'AKTIF' : 'BLOKE'}</span></td>
         <td><button class="btn btn-toggle" onclick="toggleU('${u.id}', ${u.is_active_seller})">Chanje</button></td>
@@ -194,11 +194,11 @@
         <div style="background:#f1f5f9; padding:20px; border-radius:12px; margin-bottom:20px; border-left:5px solid #ff4747;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <div>
-              <h3 style="font-size:18px; font-weight:800; margin-bottom:5px;">${seller.full_name || 'Enkoni'}</h3>
+              <h3 style="font-size:18px; font-weight:800; margin-bottom:5px;">${seller.shop_name || seller.full_name || 'Enkoni'}</h3>
               <div style="font-size:13px; color:#64748b;">${seller.email}</div>
               <div style="font-size:13px; color:#64748b;">📱 ${seller.whatsapp_number || 'N/A'}</div>
             </div>
-            <button class="btn btn-delete" onclick="deleteSellerAccount('${seller.id}', '${seller.full_name || 'ce vendeur'}')" style="padding:10px 15px;">
+            <button class="btn btn-delete" onclick="deleteSellerAccount('${seller.id}', '${seller.shop_name || seller.full_name || 'ce vendeur'}')" style="padding:10px 15px;">
               🗑️ Efase Kont Definitivman
             </button>
           </div>
@@ -260,13 +260,13 @@
       return `
         <tr>
           <td>
-            <strong>${shop.full_name || 'Enkoni'}</strong><br>
+            <strong>${shop.shop_name || shop.full_name || 'Enkoni'}</strong><br>
             <small style="color:#64748b;">${shop.email}</small>
           </td>
           <td>${shop.whatsapp_number || 'N/A'}</td>
           <td><small style="color:#64748b;">${timeAgo} èdtan de sa</small></td>
           <td>
-            <button class="btn btn-delete" onclick="deleteNewShop('${shop.id}', '${shop.full_name || 'ce vendeur'}')">
+            <button class="btn btn-delete" onclick="deleteNewShop('${shop.id}', '${shop.shop_name || shop.full_name || 'ce vendeur'}')">
               🗑️ Efase
             </button>
           </td>

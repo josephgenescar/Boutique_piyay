@@ -513,10 +513,23 @@ title: Sant Kontwòl Total - Boutique Piyay
   }
 
   async function deleteProduct(id) {
-    if (confirm("Efase pwodwi sa a definitivman?")) {
-      await supA.from('user_products').delete().eq('id', id);
-      showToast('🗑️ Pwodwi efase', 'success');
+    if (!confirm("Efase pwodwi sa a definitivman?")) return;
+
+    try {
+      const resp = await fetch('/.netlify/functions/admin-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_product', productId: id })
+      });
+
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error || 'Delete failed');
+
+      showToast(result.message || '🗑️ Pwodwi efase', 'success');
       loadAdminData();
+    } catch (error) {
+      console.error('Delete product error:', error);
+      showToast('❌ ' + error.message, 'error');
     }
   }
 
@@ -620,29 +633,22 @@ title: Sant Kontwòl Total - Boutique Piyay
     }
 
     try {
-      // Efase tout pwodwi boutik nan
-      const { error: prodError } = await supA.from('user_products').delete().eq('seller_id', shopId);
-      if (prodError) {
-        showToast('Erè efase pwodwi: ' + prodError.message, 'error');
-        return;
-      }
+      const resp = await fetch('/.netlify/functions/admin-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_shop', shopId })
+      });
 
-      // Efase boutik nan nan profiles
-      const { error: shopError } = await supA.from('profiles').delete().eq('id', shopId);
-      if (shopError) {
-        showToast('Erè efase boutik: ' + shopError.message, 'error');
-        return;
-      }
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error || 'Delete failed');
 
-      showToast(`✅ Boutik ${shopName} efase!`, 'success');
-      fetchNewShops(); // Rafrechi lis la
+      showToast(result.message || `✅ Boutik ${shopName} efase!`, 'success');
+      fetchNewShops();
+      loadAdminData();
     } catch (error) {
-      showToast('Erè: ' + error.message, 'error');
+      console.error('Delete shop error:', error);
+      showToast('❌ ' + error.message, 'error');
     }
-  }
-
-  async function handleAdminLogout() {
-    await supA.auth.signOut(); location.reload();
   }
 
   checkAccess();

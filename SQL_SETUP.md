@@ -29,7 +29,17 @@ CREATE INDEX IF NOT EXISTS idx_user_products_is_flash_sale ON user_products(is_f
 CREATE INDEX IF NOT EXISTS idx_user_products_seller_flash ON user_products(seller_id, is_flash_sale);
 ```
 
-## 3. FONCTION POU OTOMATIKMAN EFASE FLASH SALE APRE 24H
+## 3. RANPLI `shop_name` POU MACHANN AKTIF KI TE ANVAN
+```sql
+-- Si seller te anrejistre anvan nou te ajoute shop_name,
+-- ranpli kolòn sa a avèk ansyen full_name li te mete kòm non boutik.
+UPDATE profiles
+SET shop_name = full_name
+WHERE is_active_seller = true
+  AND (shop_name IS NULL OR shop_name = '');
+```
+
+## 4. FONCTION POU OTOMATIKMAN EFASE FLASH SALE APRE 24H
 ```sql
 -- Fonction PL/pgSQL pou cleanup
 CREATE OR REPLACE FUNCTION cleanup_expired_flash_sales()

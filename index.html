@@ -265,47 +265,223 @@ title: Akèy - Boutique Piyay
     .box-sep { height: 1px; background: #f1f5f9; margin: 0 16px; }
 
     /* ══════════════════════════════
-       VEDÈT HORIZONTAL SCROLL
+       VEDÈT AD STYLE
     ══════════════════════════════ */
-    #boosted-section { display: none; }
+    #boosted-section {
+      display: none;
+      padding: 16px 16px 18px;
+      background: linear-gradient(180deg, #fff5f5 0%, #fff3f2 100%);
+      border-top: 1px solid rgba(255,71,71,0.18);
+      border-bottom: 1px solid rgba(255,71,71,0.18);
+    }
+
+    .boosted-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .boosted-header h2 {
+      font-size: 17px;
+      margin: 0;
+      color: #111827;
+    }
+    .boosted-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #6b7280;
+      max-width: 320px;
+      line-height: 1.4;
+    }
+    .boosted-nav {
+      display: flex;
+      gap: 10px;
+    }
+    .boosted-nav-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 14px;
+      background: white;
+      color: #991b1b;
+      box-shadow: 0 12px 28px rgba(15,23,42,0.08);
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .boosted-nav-btn:hover { transform: translateY(-1px); background: #fee2e2; }
+    .boosted-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .boosted-carousel-wrapper {
+      overflow: hidden;
+      position: relative;
+      padding: 0 10px;
+    }
 
     .vedette-scroll {
-      display: flex; gap: 12px;
-      overflow-x: auto; padding: 14px 16px 16px;
-      scrollbar-width: none; scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
+      justify-content: center;
+      scroll-behavior: smooth;
     }
     .vedette-scroll::-webkit-scrollbar { display: none; }
 
     .boosted-card {
-      flex-shrink: 0; width: 150px;
-      background: #f8fafc; border-radius: 14px;
-      overflow: hidden; border: 1.5px solid #f1f5f9;
-      scroll-snap-align: start;
-      display: flex; flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s;
+      flex-shrink: 0;
+      width: 200px;
+      min-width: 200px;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(241, 226, 226, 0.95);
+      scroll-snap-align: center;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
-    .boosted-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-    .boosted-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
-    .boosted-card-body { padding: 10px; display: flex; flex-direction: column; flex: 1; }
-    .boosted-badge {
-      display: inline-block; background: var(--primary); color: white;
-      font-size: 7px; font-weight: 900; padding: 2px 7px; border-radius: 5px;
-      margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;
+    .boosted-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 34px rgba(15,23,42,0.14);
+      border-color: rgba(255,71,71,0.2);
+    }
+    .boosted-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      background: #f8fafc;
+    }
+    .boosted-card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
     .boosted-title {
-      font-size: 12px; font-weight: 700; color: var(--dark);
-      margin-bottom: 4px; overflow: hidden; display: -webkit-box;
-      -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4;
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--dark);
+      margin-bottom: 8px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.3;
+      min-height: 40px;
     }
-    .boosted-price { color: var(--primary); font-weight: 900; font-size: 14px; margin-top: auto; }
+    .boosted-price {
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 14px;
+      margin-top: auto;
+    }
     .btn-boosted-add {
-      width: 100%; background: var(--dark); color: white; border: none;
-      padding: 8px; border-radius: 8px; margin-top: 8px; font-weight: 800;
-      cursor: pointer; font-size: 10px; font-family: inherit; transition: 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 4px;
+      width: 100%;
+      background: #ff4747;
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 14px;
+      margin-top: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+      transition: transform 0.2s, background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
-    .btn-boosted-add:hover { background: var(--primary); }
+    .btn-boosted-add:hover { background: #d94641; transform: translateY(-1px); }
+
+    #featured-sellers-section {
+      margin-top: 18px;
+      padding: 12px 0 0;
+    }
+    .featured-sellers-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 0 10px;
+    }
+    .featured-sellers-header h3 {
+      font-size: 15px;
+      margin: 0;
+      color: #1f2937;
+    }
+    .featured-sellers-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-left: 10px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .featured-sellers-row::-webkit-scrollbar { display: none; }
+    .featured-seller-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 170px;
+      padding: 12px 14px;
+      background: white;
+      border-radius: 18px;
+      border: 1px solid #f1f5f9;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+      text-decoration: none;
+      color: inherit;
+    }
+    .seller-avatar-small {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: #fee2e2;
+      color: #991b1b;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 18px;
+    }
+    .seller-info-small span {
+      display: block;
+      font-weight: 800;
+      color: #111827;
+      font-size: 13px;
+    }
+    .seller-info-small small {
+      display: block;
+      color: #6b7280;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    @media (max-width: 780px) {
+      .boosted-card { width: 180px; min-width: 180px; }
+      .boosted-img { height: 150px; }
+      .boosted-nav-btn { width: 36px; height: 36px; }
+      .featured-seller-card { min-width: 150px; }
+    }
+    @media (max-width: 520px) {
+      .boosted-header { flex-direction: column; align-items: stretch; }
+      .boosted-card { width: 170px; min-width: 170px; }
+      .boosted-img { height: 140px; }
+      .featured-seller-card { min-width: 140px; }
+    }
+    @media (max-width: 520px) {
+      .boosted-header { flex-direction: column; align-items: stretch; }
+      .boosted-subtitle { margin-top: 8px; }
+      .boosted-card { width: 180px; min-width: 180px; }
+      .boosted-img { height: 150px; }
+    }
 
     /* ══════════════════════════════
        HOME WRAP
@@ -498,9 +674,6 @@ title: Akèy - Boutique Piyay
         </div>
       </div>
 
-      <!-- PWODWI BOOST — Dynamic content -->
-      <div id="boosted-ads-container"></div>
-
     </div><!-- fin ad-slider-track -->
 
     <!-- DOTS -->
@@ -514,9 +687,34 @@ title: Akèy - Boutique Piyay
   <!-- SÉPARATEUR -->
   <div style="height:1px;background:#f1f5f9;margin:0 16px;"></div>
 
-  <!-- PWODWI VEDÈT — scroll horizontal andedan bwat la -->
+  <!-- PWODWI VEDÈT — carousel featured products inside ad box -->
   <section id="boosted-section">
-    <div class="vedette-scroll" id="boosted-slider-track"></div>
+    <div class="boosted-header">
+      <div>
+        <div class="section-hdr-left">
+          <h2>Recommandé pour vous</h2>
+          <div class="section-hdr-bar" style="width:42px;"></div>
+        </div>
+        <div class="boosted-subtitle">Publiez jusqu'à 3 produits par jour pour préserver votre stock.</div>
+      </div>
+      <div class="boosted-nav">
+        <button id="boosted-prev" class="boosted-nav-btn" onclick="boostedPrev()" aria-label="Previous featured product">‹</button>
+        <button id="boosted-next" class="boosted-nav-btn" onclick="boostedNext()" aria-label="Next featured product">›</button>
+      </div>
+    </div>
+    <div class="boosted-carousel-wrapper">
+      <div class="vedette-scroll" id="boosted-slider-track"></div>
+    </div>
+
+    <div id="featured-sellers-section">
+      <div class="featured-sellers-header">
+        <div class="section-hdr-left">
+          <h3>Boutiques recommandées</h3>
+          <div class="section-hdr-bar" style="width:30px;"></div>
+        </div>
+      </div>
+      <div class="featured-sellers-row" id="featured-sellers-row"></div>
+    </div>
   </section>
 
 </div><!-- fin main-ads-box -->
@@ -650,6 +848,8 @@ title: Akèy - Boutique Piyay
   let allSellers  = [];
   let allProducts = [];
   let sellerMap   = {};
+  let boostedIndex = 0;
+  let boostedAutoplay = null;
 
   function buildSellerMap() {
     sellerMap = {};
@@ -701,7 +901,6 @@ title: Akèy - Boutique Piyay
       });
 
       renderBoosted(activeBoosted);
-      renderBoostedInBanner(activeBoosted);
       renderSellers(allSellers);
       renderProducts(allProducts);
 
@@ -736,7 +935,6 @@ title: Akèy - Boutique Piyay
                  onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
           </a>
           <div class="boosted-card-body">
-            <span class="boosted-badge">VEDÈT 🔥</span>
             <div class="boosted-title">${p.title}</div>
             <div class="boosted-price">${p.price} HTG</div>
             <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
@@ -745,6 +943,18 @@ title: Akèy - Boutique Piyay
           </div>
         </div>`;
     }).join('');
+    boostedIndex = 0;
+    setTimeout(() => {
+      boostedMoveTo(0);
+      updateBoostedControls();
+      startBoostedAutoplay();
+    }, 30);
+
+    const boostedSection = document.getElementById('boosted-section');
+    if (boostedSection) {
+      boostedSection.addEventListener('mouseenter', stopBoostedAutoplay);
+      boostedSection.addEventListener('mouseleave', startBoostedAutoplay);
+    }
   }
 
   function renderBoostedInBanner(list) {
@@ -752,9 +962,11 @@ title: Akèy - Boutique Piyay
     if (!container) return;
     if (list.length === 0) {
       container.innerHTML = '';
+      container.style.display = 'none';
       updateAdDots();
       return;
     }
+    container.style.display = 'block';
 
     // Prendre max 3 produits boostés pour le banner
     const boostedProducts = list.slice(0, 3);
@@ -794,6 +1006,69 @@ title: Akèy - Boutique Piyay
     dotsEl.innerHTML = Array.from({length: totalSlides}, (_, i) =>
       `<button class="ad-dot ${i===0?'active':''}" onclick="adGoTo(${i})"></button>`
     ).join('');
+  }
+
+  function boostedMoveTo(index) {
+    const track = document.getElementById('boosted-slider-track');
+    if (!track) return;
+    const cards = Array.from(track.querySelectorAll('.boosted-card'));
+    if (!cards.length) return;
+    boostedIndex = Math.max(0, Math.min(index, cards.length - 1));
+    const card = cards[boostedIndex];
+    const offset = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+    track.scrollTo({ left: offset, behavior: 'smooth' });
+    updateBoostedControls();
+  }
+
+  function startBoostedAutoplay() {
+    clearInterval(boostedAutoplay);
+    const track = document.getElementById('boosted-slider-track');
+    if (!track) return;
+    const cards = track.querySelectorAll('.boosted-card');
+    if (cards.length < 2) return;
+    boostedAutoplay = setInterval(() => {
+      boostedMoveTo(boostedIndex + 1);
+    }, 4500);
+  }
+
+  function stopBoostedAutoplay() {
+    clearInterval(boostedAutoplay);
+    boostedAutoplay = null;
+  }
+
+  function updateBoostedControls() {
+    const prev = document.getElementById('boosted-prev');
+    const next = document.getElementById('boosted-next');
+    const track = document.getElementById('boosted-slider-track');
+    if (!prev || !next || !track) return;
+    const cards = track.querySelectorAll('.boosted-card');
+    prev.disabled = boostedIndex <= 0;
+    next.disabled = boostedIndex >= cards.length - 1;
+  }
+
+  function boostedPrev() { boostedMoveTo(boostedIndex - 1); }
+  function boostedNext() { boostedMoveTo(boostedIndex + 1); }
+
+  function renderFeaturedSellers(list) {
+    const row = document.getElementById('featured-sellers-row');
+    if (!row) return;
+    if (list.length === 0) {
+      row.innerHTML = `<div class="empty-state"><div class="e-icon">🏬</div><div class="e-title">Aucune boutique recommandée pour le moment</div></div>`;
+      return;
+    }
+    const featured = list.slice(0, 4);
+    row.innerHTML = featured.map(s => {
+      const sellerDisplayName = s.shop_name || s.full_name || 'Boutik';
+      const initial = (sellerDisplayName || 'B').charAt(0).toUpperCase();
+      return `
+        <a class="featured-seller-card" href="/boutik-machann.html?id=${s.id}">
+          <div class="seller-avatar-small">${initial}</div>
+          <div class="seller-info-small">
+            <span>${sellerDisplayName}</span>
+            <small>📍 ${s.address || 'Ayiti'}</small>
+          </div>
+        </a>`;
+    }).join('');
   }
 
   function renderSellers(list) {

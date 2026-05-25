@@ -72,10 +72,7 @@
           h('div', { className: 'section' },
             h('h3', null, '👥 Dènye Vendeur'),
             sellers.slice(0, 5).map(s => h('div', { className: 'list-item' },
-              h('span', null, s.full_name || s.email),
-              h('span', { className: s.is_active_seller ? 'status-v' : 'status-j' }, s.is_active_seller ? 'AKTIF' : 'ATANN')
-            ))
-          ),
+              h('span', null, s.shop_name || s.full_name || s.email),
 
           h('div', { className: 'section' },
             h('h3', null, '📦 Dènye Pwodwi'),

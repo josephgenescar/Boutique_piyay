@@ -186,7 +186,7 @@
             if (authData.user) {
                 const profileData = {
                     id: authData.user.id,
-                    full_name: (currentRole === 'seller' && document.getElementById('shopName').value) ? document.getElementById('shopName').value.trim() : fullName,
+                    full_name: fullName,
                     shop_name: (currentRole === 'seller' && document.getElementById('shopName').value) ? document.getElementById('shopName').value.trim() : null,
                     email,
                     whatsapp: wa,

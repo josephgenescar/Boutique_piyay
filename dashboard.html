@@ -310,7 +310,30 @@
 
         .prod-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 8px; }
         .prod-actions-row2 { padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 0; }
-        .btn-sm { padding: 9px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; transition: 0.2s; display: block; width: 100%; }
+        .btn-sm { padding: 9px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; transition: 0.2s; display: block; width: 100%; position: relative; }
+        .btn-sm[data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            transform: translateX(-50%) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            background: rgba(15,23,42,0.95);
+            color: white;
+            padding: 7px 10px;
+            border-radius: 10px;
+            white-space: nowrap;
+            font-size: 11px;
+            z-index: 20;
+            min-width: max-content;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.16);
+        }
+        .btn-sm[data-tooltip]:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
         .btn-edit { background: #f1f5f9; color: var(--dark); }
         .btn-edit:hover { background: #e2e8f0; }
         .btn-delete { background: #fee2e2; color: #ef4444; }
@@ -934,6 +957,20 @@
     function closePaidBoostModal() {
         document.getElementById('paid-boost-modal').style.display = 'none';
     }
+    function processBoost(type) {
+        if (type === 'paid') {
+            openPaidBoostModal();
+            return;
+        }
+        alert('Opsyon boost gratis pa disponib kounye a. Sèvi ak boost peye oswa kontakte admin.');
+    }
+    function toggleBoost(id, turnOff) {
+        if (turnOff === false) {
+            supD.from('user_products').update({ is_boosted: false, boost_expires_at: null }).eq('id', id).then(() => loadAll());
+            return;
+        }
+        openBoostModal(id);
+    }
     function sendProofWhatsApp() {
         // Ouvri WhatsApp admin ak mesaj default
         const adminPhone = '50948868964';
@@ -948,6 +985,18 @@
 
         if (!code) { alert('Tanpri antre code ou resevwa a.'); return; }
         if (code.length < 6) { alert('Code invalide. Contactez l’administrateur.'); return; }
+
+        const nowISOString = new Date().toISOString();
+        const { data: activeBoosts } = await supD.from('user_products')
+            .select('id')
+            .eq('seller_id', currentUser.id)
+            .eq('is_boosted', true)
+            .gt('boost_expires_at', nowISOString);
+
+        if (activeBoosts && activeBoosts.length >= 3) {
+            alert('❌ Ou ka sèlman gen 3 pwodwi boosté an menm tan.');
+            return;
+        }
 
         const boostData = {
             is_boosted: true,
@@ -1108,26 +1157,44 @@
     async function clearExpiredFlashSales(prods) {
         if (!prods || !prods.length) return false;
         const now = new Date();
-        const expiredIds = prods
+        const expiredProducts = prods
             .filter(p => p.is_flash_sale === true && p.flash_start_at)
-            .filter(p => (now - new Date(p.flash_start_at)) / (1000 * 60 * 60) >= 24)
-            .map(p => p.id);
+            .filter(p => (now - new Date(p.flash_start_at)) / (1000 * 60 * 60) >= 24);
 
-        if (expiredIds.length === 0) return false;
+        if (expiredProducts.length === 0) return false;
 
-        await supD.from('user_products').update({
+        await Promise.all(expiredProducts.map(p => supD.from('user_products').update({
+            price: p.old_price || p.price,
             old_price: null,
             is_flash_sale: false,
             flash_start_at: null
-        }).in('id', expiredIds);
+        }).eq('id', p.id)));
+
+        return true;
+    }
+
+    async function clearExpiredBoosts(prods) {
+        if (!prods || !prods.length) return false;
+        const now = new Date();
+        const expiredBoosts = prods
+            .filter(p => p.is_boosted === true && p.boost_expires_at)
+            .filter(p => new Date(p.boost_expires_at) <= now);
+
+        if (expiredBoosts.length === 0) return false;
+
+        await Promise.all(expiredBoosts.map(p => supD.from('user_products').update({
+            is_boosted: false,
+            boost_expires_at: null
+        }).eq('id', p.id)));
 
         return true;
     }
 
     async function loadAll() {
         let { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
-        const hasExpired = await clearExpiredFlashSales(prods);
-        if (hasExpired) {
+        const flashExpired = await clearExpiredFlashSales(prods);
+        const boostExpired = await clearExpiredBoosts(prods);
+        if (flashExpired || boostExpired) {
             const refreshed = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
             prods = refreshed.data;
         }
@@ -1145,7 +1212,7 @@
                     if (diffFlash >= 24) isFlashActive = false;
                 }
 
-                let isBoosted = p.is_boosted === true;
+                let isBoosted = p.is_boosted === true && p.boost_expires_at && new Date(p.boost_expires_at) > now;
                 return `
                 <div class="prod-card">
                     <div class="prod-img-wrap">
@@ -1154,7 +1221,7 @@
                     </div>
                     <div class="prod-body">
                         <div class="prod-name">${p.title}</div>
-                        <div class="prod-price">${p.price} <span>HTG</span></div>
+                        <div class="prod-price">${p.price} <span>HTG</span> ${isFlashActive && p.old_price ? `<span style="text-decoration:line-through;color:#888;font-size:11px;margin-left:8px;">${p.old_price} HTG</span>` : ''}</div>
                         ${isFlashActive ? `<div style="font-size:9px; color:var(--primary); font-weight:700;">24h Flash Sale aktif</div>` : ''}
                     </div>
                     <div class="prod-actions">
@@ -1162,8 +1229,8 @@
                         <button onclick="deleteProduct('${p.id}')" class="btn-sm btn-delete">🗑️ Efase</button>
                     </div>
                     <div class="prod-actions-row2">
-                        ${isFlashActive ? `<button onclick="toggleFlashSale('${p.id}', null)" class="btn-sm btn-unflash">🚫 Retire Flash</button>` : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash">⚡ Mete Flash</button>`}
-                        ${isBoosted ? `<button onclick="toggleBoost('${p.id}', false)" class="btn-sm btn-boost-active">🚀 Boosted</button>` : `<button onclick="openBoostModal('${p.id}')" class="btn-sm btn-boost">🚀 Boost</button>`}
+                        ${isFlashActive ? `<button onclick="toggleFlashSale('${p.id}', null)" class="btn-sm btn-unflash" data-tooltip="Retire pwodwi sa a nan Flash Sale epi retabli pri originèl la">🚫 Retire Flash</button>` : `<button onclick="toggleFlashSale('${p.id}', ${p.price})" class="btn-sm btn-flash" data-tooltip="Mete pwodwi sa a nan Flash Sale ak yon pri rabè pou 24h">⚡ Mete Flash</button>`}
+                        ${isBoosted ? `<button onclick="toggleBoost('${p.id}', false)" class="btn-sm btn-boost-active" data-tooltip="Retire pwodwi sa a nan lis boost la imedyatman">🚫 Retire Boost</button>` : `<button onclick="openBoostModal('${p.id}')" class="btn-sm btn-boost" data-tooltip="Boost pwodwi sa a pou 48h sou paj vedèt ak plis vizibilite">🚀 Boost</button>`}
                     </div>
                 </div>`;
             }).join('');
@@ -1191,11 +1258,15 @@
 
     async function toggleFlashSale(id, currentPrice) {
         if (currentPrice === null) {
-            await supD.from('user_products').update({
+            const { data: prod } = await supD.from('user_products').select('old_price').eq('id', id).single();
+            const restoredPrice = prod && prod.old_price ? prod.old_price : null;
+            const updateData = {
                 old_price: null,
                 is_flash_sale: false,
                 flash_start_at: null
-            }).eq('id', id);
+            };
+            if (restoredPrice !== null) updateData.price = restoredPrice;
+            await supD.from('user_products').update(updateData).eq('id', id);
             loadAll(); return;
         }
 
@@ -1212,21 +1283,20 @@
             return;
         }
 
-        const oldP = prompt(`Mete ansyen pri a (dwe pi gwo pase ${currentPrice}):`);
-        if (!oldP) {
-            return;
-        }
+        const flashPrice = prompt(`Mete pri Flash la (dwe pi ba pase ${currentPrice} HTG):`);
+        if (!flashPrice) return;
 
-        const oldPriceValue = parseFloat(oldP);
-        if (isNaN(oldPriceValue) || oldPriceValue <= currentPrice) {
-            alert("❌ Pri flash la dwe yon nimewo ki pi gwo pase pri aktyèl la.");
+        const flashPriceValue = parseFloat(flashPrice);
+        if (isNaN(flashPriceValue) || flashPriceValue >= currentPrice || flashPriceValue <= 0) {
+            alert("❌ Pri Flash la dwe yon nimewo ki pi ba pase pri aktyèl la.");
             return;
         }
 
         await supD.from('user_products').update({
-            old_price: oldPriceValue,
+            old_price: currentPrice,
+            price: flashPriceValue,
             is_flash_sale: true,
-            flash_start_at: new Date().toISOString() // Sove lè flash la kòmanse
+            flash_start_at: new Date().toISOString()
         }).eq('id', id);
         loadAll();
     }
@@ -1234,7 +1304,6 @@
     async function saveProfile() {
         await supD.from('profiles').update({
             shop_name: document.getElementById('prof-name').value,
-            full_name: document.getElementById('prof-name').value,
             whatsapp_number: document.getElementById('prof-whatsapp').value,
             address: document.getElementById('prof-address').value
         }).eq('id', currentUser.id);
