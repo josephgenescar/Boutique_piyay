@@ -203,7 +203,11 @@ permalink: /shop/
 
     function renderProducts(products) {
         const grid = document.getElementById('productsGrid');
-        grid.innerHTML = products.map(p => `
+        grid.innerHTML = products.map(p => {
+            const sellerId = p.seller_id || '';
+            const sellerPhone = (p.whatsapp_number || p.whatsapp || '').toString().replace(/[^0-9]/g, '');
+            const sellerName = (p.seller_name || p.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
+            return `
             <div class="product-card">
                 <div class="img-wrap">
                     <img src="${p.image_url}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300?text=Image+non+disponible'">
@@ -212,12 +216,13 @@ permalink: /shop/
                     <div class="cat">${p.category || 'Boutique'}</div>
                     <div class="title">${p.title}</div>
                     <div class="price">${p.price ? Number(p.price).toLocaleString() : 0} HTG</div>
-                    <button class="btn-add" onclick="if(window.orderProduct) window.orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price || 0}', '${p.id}', '${p.image_url}')">
+                    <button class="btn-add" onclick="if(window.orderProduct) window.orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price || 0}', '${p.id}', '${p.image_url}', '${sellerId}', '${sellerPhone}', '${sellerName}')">
                         🛒 Ajouterrr au Panier
                     </button>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function filterLocal() {

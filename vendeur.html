@@ -49,6 +49,10 @@ title: Boutik Vendeur - Boutique Piyay
             const { data: products, error } = await supabaseV.from('user_products').select('*').eq('seller_id', sellerId).order('created_at', { ascending: false });
             if (error) throw error;
 
+            const { data: prof } = await supabaseV.from('profiles').select('*').eq('id', sellerId).single();
+            const sellerPhone = (prof?.whatsapp_number || prof?.whatsapp || '50948868964').toString().replace(/[^0-9]/g, '');
+            const sellerName = (prof?.shop_name || prof?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+
             const flashGrid = document.getElementById('flashGrid');
             const mainGrid = document.getElementById('seller-products-grid');
 
@@ -71,7 +75,7 @@ title: Boutik Vendeur - Boutique Piyay
                                 <span style="color:#ff4747; font-weight:900; font-size:18px;">${p.flash_price} HTG</span>
                                 <span style="text-decoration:line-through; color:#aaa; font-size:13px;">${p.price} HTG</span>
                             </div>
-                            <button class="add-to-cart" onclick="orderProduct('${p.title}', '${p.flash_price}', '${p.id}', '${p.image_url}')">Ajouterr</button>
+                            <button class="add-to-cart" onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.flash_price}', '${p.id}', '${p.image_url}', '${sellerId}', '${sellerPhone}', '${sellerName}')">Ajouterr</button>
                         </div>
                     </div>
                 `).join('');
@@ -89,7 +93,7 @@ title: Boutik Vendeur - Boutique Piyay
                         <div class="card-info">
                             <h3>${p.title}</h3>
                             <div class="price">${p.price} HTG</div>
-                            <button class="add-to-cart" onclick="orderProduct('${p.title}', '${p.price}', '${p.id}', '${p.image_url}')">Ajouterr au panier</button>
+                            <button class="add-to-cart" onclick="orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.id}', '${p.image_url}', '${sellerId}', '${sellerPhone}', '${sellerName}')">Ajouterr au panier</button>
                         </div>
                     </div>
                 `).join('');

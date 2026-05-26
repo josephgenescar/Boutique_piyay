@@ -82,7 +82,7 @@ layout: default
       </div>
 
       <div class="btn-grid">
-        <button class="btn-p btn-black" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}', '{{ page.image }}')">🛒 Nan Panier</button>
+        <button class="btn-p btn-black" onclick="orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}', '{{ page.image }}', '{{ page.seller_id }}', '', '{{ page.shop_name | default: page.seller_name | default: "Boutique Piyay" }}')">🛒 Nan Panier</button>
         <button class="btn-p btn-primary" onclick="buyDirect()">⚡ Achte Kounye a</button>
       </div>
 
@@ -131,7 +131,7 @@ layout: default
   }
 
   function buyDirect() {
-    orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}', '{{ page.image }}');
+    orderProduct('{{ page.title }}', '{{ page.price }}', '{{ page.id }}', '{{ page.image }}', '{{ page.seller_id }}', '', '{{ page.shop_name | default: page.seller_name | default: "Boutique Piyay" }}');
     openOrderModal();
   }
 
