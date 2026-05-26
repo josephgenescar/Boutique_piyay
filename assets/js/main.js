@@ -33,10 +33,10 @@ function updateCartUI() {
     if (badge) { badge.innerText = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
 }
 
-function orderProduct(title, price, id, image, seller_id = null) {
+function orderProduct(title, price, id, image, seller_id = null, sellerPhone = null, sellerName = null) {
     const existing = cartItems.find(i => i.id === id);
     if (existing) { existing.quantity++; } else {
-        cartItems.push({ id, title, price: parseFloat(price), quantity: 1, image: image || '/assets/images/logo.png', seller_id: seller_id });
+        cartItems.push({ id, title, price: parseFloat(price), quantity: 1, image: image || '/assets/images/logo.png', sellerId: seller_id, sellerPhone: sellerPhone || null, sellerName: sellerName || null });
     }
     saveCart(); updateCartUI();
     const btn = event?.target?.closest('button');

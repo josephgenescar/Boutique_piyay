@@ -219,14 +219,29 @@ function generateReceipt(data) {
     itemsHtml += `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${it.title}</td><td style="padding:10px; border-bottom:1px solid #eee; text-align:center;">${it.qty}</td><td style="padding:10px; border-bottom:1px solid #eee; text-align:right;">${(it.price * it.qty).toLocaleString()} HTG</td></tr>`;
   });
 
+  const zone = data.zone || '—';
+  const total = data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString();
   const win = window.open('', '_blank');
-  win.document.write(`<html><body style="font-family:Arial;padding:40px;"><div style="text-align:center;"><img src="/assets/images/logo.png" style="width:80px;"><h1 style="color:#ff4747;">BOUTIQUE PIYAY</h1><p>Resi Commande #${serial}</p></div><p>Client: ${data.name}</p><p>Tèl: ${data.phone}</p><table style="width:100%;border-collapse:collapse;">${itemsHtml}</table><h2 style="text-align:right;">TOTAL: ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString()} HTG</h2><script>window.print();</script></body></html>`);
+  win.document.write(`<html><body style="font-family:Arial;padding:40px;"><div style="text-align:center;"><img src="/assets/images/logo.png" style="width:80px;"><h1 style="color:#ff4747;">BOUTIQUE PIYAY</h1><p>Resi Commande #${serial}</p></div><p><strong>Client:</strong> ${data.name || '—'}</p><p><strong>Tèl:</strong> ${data.phone || '—'}</p><p><strong>Zone:</strong> ${zone}</p><table style="width:100%;border-collapse:collapse;">${itemsHtml}</table><h2 style="text-align:right;">TOTAL: ${total} HTG</h2><script>window.print();</script></body></html>`);
   win.document.close();
 }
 
+function getCustomerDetailsFromModal() {
+  const name = document.getElementById('customer-name')?.value.trim() || '';
+  const phone = document.getElementById('customer-phone')?.value.trim() || '';
+  const zoneSelect = document.getElementById('delivery-zone');
+  const otherZone = document.getElementById('other-zone')?.value.trim() || '';
+  let zone = zoneSelect?.value || '';
+  if (zone === 'Lòt Zone' && otherZone) zone = otherZone;
+  return { name, phone, zone };
+}
+
 function contactWhatsApp(data) {
-  const sPhone = data.cart[0].sellerPhone || '50948868964';
-  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n👤 *Client:* ${data.name}\n📞 *Tèl:* ${data.phone}\n📍 *Zone:* ${data.zone}\n📝 *Peman:* ${data.payment || 'Non précisé'}\n🔑 *Trans ID:* ${data.transactionId || 'N/A'}\n\n*ATIK YO:*`;
+  const sPhone = data.cart[0]?.sellerPhone || '50948868964';
+  const customerName = data.name || 'N/A';
+  const customerPhone = data.phone || 'N/A';
+  const customerZone = data.zone || 'N/A';
+  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n👤 *Client:* ${customerName}\n📞 *Tèl:* ${customerPhone}\n📍 *Zone:* ${customerZone}\n📝 *Peman:* ${data.payment || 'Non précisé'}\n🔑 *Trans ID:* ${data.transactionId || 'N/A'}\n\n*ATIK YO:*`;
   data.cart.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
   msg += `\n\n💰 *TOTAL:* ${data.cart.reduce((s,i)=>s+(i.price*i.qty),0)} HTG`;
   window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -236,9 +251,16 @@ window.contactSellersWhatsApp = function() {
   console.log('📱 contactSellersWhatsApp appelé');
   const cart = getCart();
   if (!cart || cart.length === 0) {
-    alert('Le panier est vide. Ajouterz un produit avant de contacter un vendeur.');
+    alert('Panier la vid. Ajoute yon pwodwi avan ou kontakte vandè a.');
     return;
   }
+
+  const { name, phone, zone } = getCustomerDetailsFromModal();
+  if (!name || !phone || !zone) {
+    alert('Tanpri ranpli non, telefòn ak zòn livrezon avan ou kontakte vandè a.');
+    return;
+  }
+
   console.log('🛒 Panier:', cart);
 
   const sellers = {};
@@ -254,13 +276,15 @@ window.contactSellersWhatsApp = function() {
     sellers[sellerId].items.push(item);
   });
 
+  const detailsHeader = `🛍️ *NOUVO KÒMAND*\n\n👤 *Client:* ${name}\n📞 *Tèl:* ${phone}\n📍 *Zone:* ${zone}\n\n*ATIK YO:*`;
+
   const sellerKeys = Object.keys(sellers);
   if (sellerKeys.length === 1) {
     const group = sellers[sellerKeys[0]];
-    const phone = group.phone.toString().replace(/[^0-9]/g, '');
-    let msg = `Bonjour ${group.sellerName}, je suis intéressé par ces produits :`;
+    const phoneNumber = group.phone.toString().replace(/[^0-9]/g, '');
+    let msg = `${detailsHeader}`;
     group.items.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`, '_blank');
     return;
   }
 
@@ -279,10 +303,10 @@ window.contactSellersWhatsApp = function() {
   }
 
   const selectedGroup = sellers[sellerKeys[selectedIndex]];
-  const phone = selectedGroup.phone.toString().replace(/[^0-9]/g, '');
-  let msg = `Bonjour ${selectedGroup.sellerName}, je souhaite commander ces produits :`;
+  const phoneNumber = selectedGroup.phone.toString().replace(/[^0-9]/g, '');
+  let msg = `${detailsHeader}`;
   selectedGroup.items.forEach(it => msg += `\n• ${it.title} (x${it.qty})`);
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 window.submitOrder = async function() {
@@ -297,7 +321,9 @@ window.submitOrder = async function() {
 
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
-  const zone = zoneInput.value;
+  const rawZone = zoneInput.value;
+  const otherZone = document.getElementById('other-zone')?.value.trim() || '';
+  const zone = rawZone === 'Lòt Zone' && otherZone ? otherZone : rawZone;
   const paymentMethod = paymentSelect.value;
 
   if (!name || !phone || !zone) { alert('⚠️ Veuillez remplir tous les champs !'); return; }
