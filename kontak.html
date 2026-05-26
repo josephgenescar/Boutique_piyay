@@ -78,8 +78,8 @@ title: Kontakte Nou - Boutique Piyay
 
 <div class="kontak-wrap">
   <div class="kontak-hero">
-    <h1>Kontakte Nou</h1>
-    <p>Ekri nou — n ap reponn ou rapid!</p>
+    <h1 data-i18n="pages.contact.hero_title">Kontakte Nou</h1>
+    <p data-i18n="pages.contact.hero_subtitle">Ekri nou — n ap reponn ou rapid!</p>
   </div>
 
   <div class="kontak-grid">
@@ -102,16 +102,16 @@ title: Kontakte Nou - Boutique Piyay
 
     <div class="form-card">
       <form id="contactForm" action="https://formspree.io/f/mykbdnjp" method="POST">
-        <label class="form-label">Non ou</label>
-        <input type="text" name="name" id="cName" class="form-input" placeholder="Jan Batis" required>
+        <label class="form-label" data-i18n="pages.contact.label_name">Non ou</label>
+        <input type="text" name="name" id="cName" class="form-input" data-i18n-placeholder="pages.contact.placeholder_name" placeholder="Jan Batis" required>
 
-        <label class="form-label">Email ou</label>
-        <input type="email" name="email" id="cEmail" class="form-input" placeholder="ou@email.com" required>
+        <label class="form-label" data-i18n="pages.contact.label_email">Email ou</label>
+        <input type="email" name="email" id="cEmail" class="form-input" data-i18n-placeholder="pages.contact.placeholder_email" placeholder="ou@email.com" required>
 
-        <label class="form-label">Mesaj ou</label>
-        <textarea name="message" id="cMessage" class="form-textarea" placeholder="Ki keksyon ou genyen?" required></textarea>
+        <label class="form-label" data-i18n="pages.contact.label_message">Mesaj ou</label>
+        <textarea name="message" id="cMessage" class="form-textarea" data-i18n-placeholder="pages.contact.placeholder_message" placeholder="Ki keksyon ou genyen?" required></textarea>
 
-        <button type="submit" id="sendBtn" class="btn-send">Voye Mesaj la</button>
+        <button type="submit" id="sendBtn" class="btn-send" data-i18n="pages.contact.send_button">Voye Mesaj la</button>
       </form>
     </div>
   </div>
@@ -156,13 +156,13 @@ title: Kontakte Nou - Boutique Piyay
       }]);
 
       if (response.ok) {
-        showToast('✅ Mèsi! Mesaj ou a voye nan email nou.', 'success');
+        showToast(window.translations?.[window.currentLang]?.pages?.contact?.toast_success || '✅ Mèsi! Mesaj ou a voye nan email nou.', 'success');
         form.reset();
       } else {
-        showToast('❌ Gen yon pwoblèm. Eseye WhatsApp pito.', 'error');
+        showToast(window.translations?.[window.currentLang]?.pages?.contact?.toast_error || '❌ Gen yon pwoblèm. Eseye WhatsApp pito.', 'error');
       }
     } catch (err) {
-      showToast('❌ Erè rezo. Eseye ankò.', 'error');
+      showToast(window.translations?.[window.currentLang]?.pages?.contact?.toast_error || '❌ Erè rezo. Eseye ankò.', 'error');
     } finally {
       btn.disabled = false;
       btn.innerText = 'Voye Mesaj la';

@@ -73,7 +73,7 @@
             <span data-i18n="nav.delivery">🚀 Livraison rapid nan tout peyi a 🇭🇹</span>
             <div class="top-bar-links">
                 <a href="/kontak.html"><i class="fas fa-envelope"></i>  <span data-i18n="nav.contact">Kontak</span></a>
-                <a href="/regleman.html" style="color:#ff4747;"><i class="fas fa-file-alt"></i>  Regleman</a>
+                <a href="/regleman.html" style="color:#ff4747;"><i class="fas fa-file-alt"></i>  <span data-i18n="nav.rules">Regleman</span></a>
             </div>
         </div>
     </div>
@@ -88,10 +88,10 @@
             <!-- SEARCH -->
             <div class="search-wrap">
                 <form class="search-form" onsubmit="return false;">
-                    <input type="text" id="search-input" placeholder="Chèche yon pwodwi..."
+                    <input type="text" id="search-input" data-i18n-placeholder="nav.search_placeholder" placeholder="Chèche yon pwodwi..."
                            oninput="liveSearch()"
                            autocomplete="off">
-                    <button type="button" onclick="liveSearch()">OK</button>
+                    <button type="button" onclick="liveSearch()" data-i18n="nav.search_button">OK</button>
                 </form>
                 <div id="search-results"></div>
             </div>

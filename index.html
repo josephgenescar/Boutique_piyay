@@ -316,15 +316,22 @@ title: Akèy - Boutique Piyay
     .boosted-nav-btn:hover { transform: translateY(-1px); background: #fee2e2; }
     .boosted-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-    .boosted-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
+    .boosted-carousel-wrapper {
+      overflow: hidden;
       padding: 0 10px;
       margin-top: 16px;
     }
+    .boosted-track {
+      display: flex;
+      gap: 18px;
+      transition: transform 0.45s ease;
+      will-change: transform;
+      scroll-behavior: smooth;
+    }
 
     .boosted-card {
+      flex: 0 0 320px;
+      min-width: 320px;
       background: white;
       border-radius: 28px;
       overflow: hidden;
@@ -341,49 +348,30 @@ title: Akèy - Boutique Piyay
     .boosted-product-card {
       min-height: 420px;
     }
-    .boosted-ad-card {
-      min-height: 240px;
-      background: linear-gradient(180deg, #fff7f5 0%, #fff1ee 100%);
-      border: 1px solid rgba(255, 71, 71, 0.16);
+
+    .boosted-nav {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 20px;
       gap: 12px;
-    }
-    .boosted-ad-card .adsterra-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #dc2626;
-    }
-    .boosted-ad-card .adsterra-title {
-      font-size: 16px;
-      font-weight: 900;
-      line-height: 1.2;
-      color: #991b1b;
-    }
-    .boosted-ad-card .adsterra-copy {
-      font-size: 13px;
-      color: #4b1d1d;
-      min-height: 44px;
-    }
-    .boosted-ad-card .adsterra-cta {
-      border: none;
-      background: #ffffff;
-      color: #b91c1c;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.12);
-      text-decoration: none;
-      display: inline-flex;
       align-items: center;
+      margin-top: 12px;
     }
-    .boosted-ad-card .adsterra-cta:hover { background: #fee2e2; }
+    .boosted-nav-btn {
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 14px;
+      background: white;
+      color: #991b1b;
+      box-shadow: 0 12px 28px rgba(15,23,42,0.08);
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .boosted-nav-btn:hover { transform: translateY(-1px); background: #fee2e2; }
+    .boosted-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
 
     .boosted-img {
       width: 100%;
@@ -453,15 +441,15 @@ title: Akèy - Boutique Piyay
       margin-top: 6px;
     }
 
-    @media (max-width: 780px) {
-      .boosted-card { width: 100%; }
-      .boosted-img { height: 170px; }
+    @media (max-width: 1100px) {
+      .boosted-card { flex: 0 0 280px; min-width: 280px; }
     }
-
-    @media (max-width: 520px) {
-      .boosted-header { flex-direction: column; align-items: stretch; }
-      .boosted-subtitle { margin-top: 8px; }
-      .boosted-img { height: 150px; }
+    @media (max-width: 900px) {
+      .boosted-card { flex: 0 0 240px; min-width: 240px; }
+    }
+    @media (max-width: 720px) {
+      .boosted-card { flex: 0 0 100%; min-width: 100%; }
+      .boosted-nav { justify-content: center; }
     }
       flex-shrink: 0;
       width: 200px;
@@ -873,8 +861,14 @@ title: Akèy - Boutique Piyay
         </div>
         <div class="boosted-subtitle">Yon sèl espas pou kat pwodwi vedèt yo, ak konsepsyon achitekti òganize.</div>
       </div>
+      <div class="boosted-nav">
+        <button id="boosted-prev" class="boosted-nav-btn" onclick="boostedPrev()" aria-label="Previous featured product">‹</button>
+        <button id="boosted-next" class="boosted-nav-btn" onclick="boostedNext()" aria-label="Next featured product">›</button>
+      </div>
     </div>
-    <div class="boosted-grid" id="boosted-grid-container"></div>
+    <div class="boosted-carousel-wrapper">
+      <div class="boosted-track" id="boosted-slider-track"></div>
+    </div>
 
     <div id="featured-sellers-section">
       <div class="featured-sellers-header">
@@ -1092,16 +1086,15 @@ title: Akèy - Boutique Piyay
 
   function renderBoosted(list) {
     const section = document.getElementById('boosted-section');
-    const grid    = document.getElementById('boosted-grid-container');
-    if (!section || !grid) return;
+    const track   = document.getElementById('boosted-slider-track');
+    if (!section || !track) return;
     const featured = list.slice(0, 4);
     if (featured.length === 0) { section.style.display = 'none'; return; }
     section.style.display = 'block';
 
-    const items = [];
-    featured.forEach((p, index) => {
+    const items = featured.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g, '');
-      items.push(`
+      return `
         <div class="boosted-card boosted-product-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
             <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
@@ -1115,18 +1108,17 @@ title: Akèy - Boutique Piyay
               🛒 <span data-i18n="cart.add">Ajouter</span>
             </button>
           </div>
-        </div>`);
-
-      items.push(`
-        <div class="boosted-card boosted-ad-card">
-          <div class="adsterra-label">Publicité</div>
-          <div class="adsterra-title">Annonce mise en avant</div>
-          <div class="adsterra-copy">Imaj, mesaj et promos ka parèt la pou chaque produi vedèt.</div>
-          <a href="#" class="adsterra-cta">Voir l’offre</a>
-        </div>`);
+        </div>`;
     });
 
-    grid.innerHTML = items.join('');
+    track.innerHTML = items.join('');
+    track.scrollLeft = 0;
+    boostedIndex = 0;
+    updateBoostedControls();
+    startBoostedAutoplay();
+
+    track.addEventListener('mouseenter', stopBoostedAutoplay);
+    track.addEventListener('mouseleave', startBoostedAutoplay);
   }
 
   function renderBoostedInBanner(list) {
@@ -1189,7 +1181,8 @@ title: Akèy - Boutique Piyay
     else if (index >= cards.length) boostedIndex = 0;
     else boostedIndex = index;
     const card = cards[boostedIndex];
-    const offset = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+    if (!card) return;
+    const offset = card.offsetLeft;
     track.scrollTo({ left: offset, behavior: 'smooth' });
     updateBoostedControls();
   }

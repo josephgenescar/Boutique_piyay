@@ -140,41 +140,41 @@ title: Konekte - Boutique Piyay
               <img src="/assets/images/logo.png"
                  onerror="this.src='https://ui-avatars.com/api/?name=BP&background=ff4747&color=fff'">
             </a>
-            <h2>👋 Bienvenue !</h2>
-            <p>Connectez-vous à votre compte pour gérer votre boutique</p>
+            <h2 data-i18n="pages.login.header_title">👋 Bienvenue !</h2>
+            <p data-i18n="pages.login.header_subtitle">Connectez-vous à votre compte pour gérer votre boutique</p>
         </div>
 
         <div class="auth-body">
             <form id="loginForm">
 
                 <div class="form-group">
-                    <label class="form-label">Adresse Email</label>
+                    <label class="form-label" data-i18n="pages.login.label_email">Adresse Email</label>
                     <div class="input-wrap">
                         <span class="input-icon">✉️</span>
                         <input type="email" id="email" class="form-input"
-                               placeholder="ou@email.com" required autocomplete="email">
+                               data-i18n-placeholder="pages.login.placeholder_email" placeholder="ou@email.com" required autocomplete="email">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Mot de passe</label>
+                    <label class="form-label" data-i18n="pages.login.label_password">Mot de passe</label>
                     <div class="input-wrap">
                         <span class="input-icon">🔒</span>
                         <input type="password" id="password" class="form-input has-toggle"
-                               placeholder="••••••••" required autocomplete="current-password">
+                               data-i18n-placeholder="pages.login.placeholder_password" placeholder="••••••••" required autocomplete="current-password">
                         <span class="toggle-pass" onclick="togglePassword(this)">👁️</span>
                     </div>
                 </div>
 
-                <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+                <a href="#" class="forgot-link" data-i18n="pages.login.forgot_link">Mot de passe oublié ?</a>
 
-                <button type="submit" id="loginBtn" class="btn-login">
+                <button type="submit" id="loginBtn" class="btn-login" data-i18n="pages.login.login_button">
                   Se connecter 🚀
                 </button>
             </form>
 
             <div class="signup-link">
-              Pas encore de compte ? <a href="/signup.html">Créer un compte gratuit →</a>
+              <span data-i18n="pages.login.signup_text">Pas encore de compte ?</span> <a href="/signup.html" data-i18n="pages.login.signup_link">Créer un compte gratuit →</a>
             </div>
         </div>
 
