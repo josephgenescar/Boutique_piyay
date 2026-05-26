@@ -17,6 +17,7 @@ layout: none
       "seller_name": {{ item.boutik_nom | default: item.vendeur | default: "Boutique Piyay" | jsonify }},
       "url": {{ item.url | absolute_url | jsonify }},
       "image": {{ item.image | default: item.image_url | default: "/assets/images/logo.png" | absolute_url | jsonify }},
+      "category": {{ item.category | default: item.categories | default: item.product_category | default: item.product_categories | default: "" | jsonify }},
       "desc": {{ item.content | strip_html | truncate: 150 | jsonify }}
     }
     {% assign first = false %}

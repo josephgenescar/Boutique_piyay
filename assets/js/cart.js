@@ -139,6 +139,10 @@ function drawCart() {
   let totalHTG = 0;
   let html = `<style>
     .seller-group { background: #f8fafc; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ff4747; }
+    .cart-heading { font-size: 18px; font-weight: 900; margin-bottom: 12px; color: #111827; }
+    .cart-summary { margin-bottom: 20px; padding: 16px; background: #fff7ed; border: 1px solid #fcd34d; border-radius: 14px; }
+    .cart-summary p { margin: 5px 0; }
+    .cart-summary strong { color: #b91c1c; }
     .seller-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-weight: 800; color: #0f172a; padding-bottom: 10px; border-bottom: 2px solid #fbbf24; }
     .seller-name { display: flex; align-items: center; gap: 8px; }
     .seller-wa { font-size: 12px; }
@@ -148,7 +152,11 @@ function drawCart() {
     .cart-info { flex: 1; }
     .cart-title { font-weight: 700; font-size: 14px; }
     .cart-price { color: #ff4747; font-weight: 800; }
-  </style>`;
+  </style>
+  <div class="cart-summary">
+    <div class="cart-heading">Pwodwi nan panie ou</div>
+    <p>Verifye lis pwodwi yo anvan ou kontinye ak kòmand lan.</p>
+  </div>`;
 
   Object.entries(bySeller).forEach(([sellerId, group]) => {
     const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');

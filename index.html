@@ -316,25 +316,153 @@ title: Akèy - Boutique Piyay
     .boosted-nav-btn:hover { transform: translateY(-1px); background: #fee2e2; }
     .boosted-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-    .boosted-carousel-wrapper {
-      overflow: hidden;
-      position: relative;
+    .boosted-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
       padding: 0 10px;
+      margin-top: 16px;
     }
-
-    .vedette-scroll {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      justify-content: center;
-      scroll-behavior: smooth;
-    }
-    .vedette-scroll::-webkit-scrollbar { display: none; }
 
     .boosted-card {
+      background: white;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(241, 226, 226, 0.95);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .boosted-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 34px rgba(15,23,42,0.14);
+      border-color: rgba(255,71,71,0.2);
+    }
+    .boosted-product-card {
+      min-height: 420px;
+    }
+    .boosted-ad-card {
+      min-height: 240px;
+      background: linear-gradient(180deg, #fff7f5 0%, #fff1ee 100%);
+      border: 1px solid rgba(255, 71, 71, 0.16);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      gap: 12px;
+    }
+    .boosted-ad-card .adsterra-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dc2626;
+    }
+    .boosted-ad-card .adsterra-title {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.2;
+      color: #991b1b;
+    }
+    .boosted-ad-card .adsterra-copy {
+      font-size: 13px;
+      color: #4b1d1d;
+      min-height: 44px;
+    }
+    .boosted-ad-card .adsterra-cta {
+      border: none;
+      background: #ffffff;
+      color: #b91c1c;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.12);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .boosted-ad-card .adsterra-cta:hover { background: #fee2e2; }
+
+    .boosted-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: #f8fafc;
+    }
+    .boosted-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 10px;
+    }
+    .boosted-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--dark);
+      margin-bottom: 8px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.3;
+      min-height: 44px;
+    }
+    .boosted-meta {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .boosted-price {
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 16px;
+      margin-top: auto;
+    }
+    .btn-boosted-add {
+      width: 100%;
+      background: #ff4747;
+      color: white;
+      border: none;
+      padding: 12px 14px;
+      border-radius: 16px;
+      margin-top: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: transform 0.2s, background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-boosted-add:hover { background: #d94641; transform: translateY(-1px); }
+
+    .boosted-header-modern {
+      padding: 0 10px;
+      margin-bottom: 8px;
+    }
+    .boosted-header-modern .boosted-subtitle {
+      max-width: 680px;
+      color: #475569;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 780px) {
+      .boosted-card { width: 100%; }
+      .boosted-img { height: 170px; }
+    }
+
+    @media (max-width: 520px) {
+      .boosted-header { flex-direction: column; align-items: stretch; }
+      .boosted-subtitle { margin-top: 8px; }
+      .boosted-img { height: 150px; }
+    }
       flex-shrink: 0;
       width: 200px;
       min-width: 200px;
@@ -735,24 +863,18 @@ title: Akèy - Boutique Piyay
   <!-- SÉPARATEUR -->
   <div style="height:1px;background:#f1f5f9;margin:0 16px;"></div>
 
-  <!-- PWODWI VEDÈT — carousel featured products inside ad box -->
+  <!-- PWODWI VEDÈT — featured products section with inline ad cards -->
   <section id="boosted-section">
-    <div class="boosted-header">
+    <div class="boosted-header boosted-header-modern">
       <div>
         <div class="section-hdr-left">
-          <h2>Recommandé pour vous</h2>
+          <h2>Pwodwi Vedèt</h2>
           <div class="section-hdr-bar" style="width:42px;"></div>
         </div>
-        <div class="boosted-subtitle">Publiez jusqu'à 3 produits par jour pour préserver votre stock.</div>
-      </div>
-      <div class="boosted-nav">
-        <button id="boosted-prev" class="boosted-nav-btn" onclick="boostedPrev()" aria-label="Previous featured product">‹</button>
-        <button id="boosted-next" class="boosted-nav-btn" onclick="boostedNext()" aria-label="Next featured product">›</button>
+        <div class="boosted-subtitle">Yon sèl espas pou kat pwodwi vedèt yo, ak konsepsyon achitekti òganize.</div>
       </div>
     </div>
-    <div class="boosted-carousel-wrapper">
-      <div class="vedette-scroll" id="boosted-slider-track"></div>
-    </div>
+    <div class="boosted-grid" id="boosted-grid-container"></div>
 
     <div id="featured-sellers-section">
       <div class="featured-sellers-header">
@@ -970,21 +1092,24 @@ title: Akèy - Boutique Piyay
 
   function renderBoosted(list) {
     const section = document.getElementById('boosted-section');
-    const track   = document.getElementById('boosted-slider-track');
-    if (!section || !track) return;
-    if (list.length === 0) { section.style.display = 'none'; return; }
+    const grid    = document.getElementById('boosted-grid-container');
+    if (!section || !grid) return;
+    const featured = list.slice(0, 4);
+    if (featured.length === 0) { section.style.display = 'none'; return; }
     section.style.display = 'block';
-    const slides = [];
-    list.forEach((p, index) => {
-      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
-      slides.push(`
-        <div class="boosted-card">
+
+    const items = [];
+    featured.forEach((p, index) => {
+      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g, '');
+      items.push(`
+        <div class="boosted-card boosted-product-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
             <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
                  onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
           </a>
           <div class="boosted-card-body">
             <div class="boosted-title">${p.title}</div>
+            <div class="boosted-meta">Pwodwi vedèt yo chwazi espesyalman pou ou. Klike pou wè detay epi ajoute nan panier.</div>
             <div class="boosted-price">${p.price} HTG</div>
             <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
               🛒 <span data-i18n="cart.add">Ajouter</span>
@@ -992,33 +1117,16 @@ title: Akèy - Boutique Piyay
           </div>
         </div>`);
 
-      const insertAdAfter = Math.max(0, Math.floor(list.length / 2) - 1);
-      if (index === insertAdAfter) {
-        slides.push(`
-          <div class="boosted-card boosted-ad-card">
-            <div class="adsterra-banner">
-              <div class="adsterra-label">Publicité</div>
-              <div class="adsterra-title">Espace sponsorisé Adsterra</div>
-              <div id="container-2e8d42466e54761c90d32db5824eb06c"></div>
-            </div>
-          </div>`);
-      }
+      items.push(`
+        <div class="boosted-card boosted-ad-card">
+          <div class="adsterra-label">Publicité</div>
+          <div class="adsterra-title">Annonce mise en avant</div>
+          <div class="adsterra-copy">Imaj, mesaj et promos ka parèt la pou chaque produi vedèt.</div>
+          <a href="#" class="adsterra-cta">Voir l’offre</a>
+        </div>`);
     });
 
-    track.innerHTML = slides.join('');
-    insertBoostedAdsterraScript();
-    boostedIndex = 0;
-    setTimeout(() => {
-      boostedMoveTo(0);
-      updateBoostedControls();
-      startBoostedAutoplay();
-    }, 30);
-
-    const boostedSection = document.getElementById('boosted-section');
-    if (boostedSection) {
-      boostedSection.onmouseenter = stopBoostedAutoplay;
-      boostedSection.onmouseleave = startBoostedAutoplay;
-    }
+    grid.innerHTML = items.join('');
   }
 
   function renderBoostedInBanner(list) {

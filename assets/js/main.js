@@ -93,25 +93,34 @@ window.liveSearch = async function() {
     if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
 
     // Matches from Static JSON
-    let matches = staticSearchData.filter(p => p.title.toLowerCase().includes(query));
+    let matches = staticSearchData.filter(p => {
+        const titleMatch = p.title && p.title.toLowerCase().includes(query);
+        const categoryValue = Array.isArray(p.category) ? p.category.join(' ') : (p.category || '');
+        const categoryMatch = categoryValue.toLowerCase().includes(query);
+        const descMatch = p.desc && p.desc.toLowerCase().includes(query);
+        return titleMatch || categoryMatch || descMatch;
+    });
 
     // Matches from Supabase
     if (window.supabaseMain) {
         try {
-            const { data: dbMatches } = await window.supabaseMain
-                .from('user_products')
-                .select('id, title, price, image_url')
-                .ilike('title', `%${query}%`)
-                .limit(5);
+            const fields = ['title', 'category', 'description'];
+            for (const field of fields) {
+                const { data: dbMatches } = await window.supabaseMain
+                    .from('user_products')
+                    .select('id, title, price, image_url, category')
+                    .ilike(field, `%${query}%`)
+                    .limit(5);
 
-            if (dbMatches) {
+                if (!dbMatches) continue;
                 dbMatches.forEach(dm => {
                     if (!matches.find(m => m.url && m.url.includes(dm.id))) {
                         matches.push({
                             title: dm.title,
                             url: `/pwodwi-machann.html?id=${dm.id}`,
                             price: dm.price,
-                            image: dm.image_url
+                            image: dm.image_url,
+                            category: dm.category
                         });
                     }
                 });
@@ -122,15 +131,19 @@ window.liveSearch = async function() {
     if (matches.length === 0) {
         resultsDiv.innerHTML = `<div style="padding:15px; text-align:center; color:#64748b; font-size:13px;">😔 Okenn rezilta</div>`;
     } else {
-        resultsDiv.innerHTML = matches.slice(0, 8).map(p => `
+        resultsDiv.innerHTML = matches.slice(0, 8).map(p => {
+            const categoryValue = Array.isArray(p.category) ? p.category.join(', ') : (p.category || '');
+            return `
             <a href="${p.url}" style="display:flex; align-items:center; gap:10px; padding:10px; text-decoration:none; border-bottom:1px solid #f1f5f9;">
                 <img src="${p.image || '/assets/images/logo.png'}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
                 <div style="flex:1;">
                     <div style="font-weight:700; color:#111; font-size:13px;">${p.title}</div>
-                    <div style="color:#ff4747; font-weight:800; font-size:12px;">${p.price} HTG</div>
+                    ${categoryValue ? `<div style="color:#64748b; font-size:12px; margin-top:2px;">Catégorie: ${categoryValue}</div>` : ''}
+                    <div style="color:#ff4747; font-weight:800; font-size:12px; margin-top:4px;">${p.price} HTG</div>
                 </div>
             </a>
-        `).join('');
+        `;
+        }).join('');
     }
     resultsDiv.style.display = 'block';
 };
