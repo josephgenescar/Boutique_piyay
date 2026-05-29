@@ -236,6 +236,15 @@ title: Sant Kontwòl Total - Boutique Piyay
       <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye code la epi voye bay machann lan apre ou fin verifye prèv peman an.</div>
     </div>
 
+    <div class="admin-card" style="margin-bottom:28px;">
+      <div class="card-title">💳 Modèl Peman Platfòm</div>
+      <div style="display:flex;flex-direction:column;gap:10px;color:#475569;line-height:1.5;"> 
+        <div><strong>3% komisyon platfòm</strong> : platfòm nan pran 3% sou chak vant fè.</div>
+        <div><strong>Peman machann</strong> : machann yo peye/ranmase selon sistèm platfòm an, epi yo resevwa kantite lòt la pou kont yo.</div>
+        <div><strong>Objektif</strong> : tout peman sou dashboard la dwe swiv kondisyon platfòm sa a pou evite konfizyon.</div>
+      </div>
+    </div>
+
     <!-- TOP BAR -->
     <div class="admin-topbar">
       <div class="topbar-left">
@@ -360,7 +369,7 @@ title: Sant Kontwòl Total - Boutique Piyay
         <div style="overflow-x:auto;">
           <table class="admin-table">
             <thead>
-              <tr><th>Dat</th><th>Paj</th><th>Vizit</th><th>Machann</th></tr>
+              <tr><th>Dat</th><th>Total vizitè</th><th>Paj dominant</th></tr>
             </thead>
             <tbody id="traffic-list"></tbody>
           </table>
@@ -554,30 +563,58 @@ title: Sant Kontwòl Total - Boutique Piyay
       const { data, error } = await supA.from('site_traffic')
         .select('date,page,visit_count,seller_id')
         .order('date', { ascending: false })
-        .limit(100);
+        .limit(1000);
 
       if (error) {
         console.warn(error);
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Trafik pa configure. Kreye tablo Supabase `site_traffic` ak kolòn `date`, `page`, `visit_count`, `seller_id`.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#64748b; padding:20px;">Trafik pa configure. Kreye tablo Supabase `site_traffic` ak kolòn `date`, `page`, `visit_count`, `seller_id`.</td></tr>';
         return;
       }
 
       if (!data || data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Pa gen done trafik pou kounye a.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#64748b; padding:20px;">Pa gen done trafik pou kounye a.</td></tr>';
         return;
       }
 
-      tableBody.innerHTML = data.map(item => `
-        <tr>
-          <td>${new Date(item.date).toLocaleDateString('en-GB')}</td>
-          <td>${item.page || 'Tout paj'}</td>
-          <td>${item.visit_count || 0}</td>
-          <td>${item.seller_id || '-'}</td>
-        </tr>
-      `).join('');
+      const dailyTraffic = new Map();
+
+      data.forEach(item => {
+        const dayKey = new Date(item.date).toLocaleDateString('en-CA');
+        if (!dailyTraffic.has(dayKey)) {
+          dailyTraffic.set(dayKey, {
+            totalVisits: 0,
+            pages: {}
+          });
+        }
+
+        const dayStats = dailyTraffic.get(dayKey);
+        const visitCount = Number(item.visit_count || 0);
+        dayStats.totalVisits += visitCount;
+
+        const page = item.page || 'Tout paj';
+        dayStats.pages[page] = (dayStats.pages[page] || 0) + visitCount;
+      });
+
+      const rows = Array.from(dailyTraffic.entries())
+        .sort((a, b) => b[0].localeCompare(a[0]))
+        .map(([dayKey, stats]) => {
+          const topPage = Object.entries(stats.pages).sort((a, b) => b[1] - a[1])[0];
+          const displayDate = new Date(dayKey + 'T00:00:00').toLocaleDateString('fr-FR');
+
+          return `
+            <tr>
+              <td>${displayDate}</td>
+              <td>${stats.totalVisits}</td>
+              <td>${topPage ? `${topPage[0]} (${topPage[1]})` : '—'}</td>
+            </tr>
+          `;
+        })
+        .join('');
+
+      tableBody.innerHTML = rows;
     } catch (error) {
       console.error(error);
-      tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Erè rechaje trafik. Gade konsole a.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#64748b; padding:20px;">Erè rechaje trafik. Gade konsole a.</td></tr>';
     }
   }
 

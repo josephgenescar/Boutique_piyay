@@ -133,6 +133,11 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method text;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_status text DEFAULT 'pending';
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS currency text DEFAULT 'HTG';
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_address text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS seller_name text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS seller_phone text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_zone text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_items jsonb;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS total_price numeric(12,2);
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now();
 

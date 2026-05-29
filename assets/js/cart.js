@@ -68,9 +68,10 @@ function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zon
     delivery_zone: zone,
     payment_method: paymentMethod,
     order_group_id: orderGroupId,
-    order_items: JSON.stringify(group.items),
+    order_items: group.items,
     product_id: group.items.length === 1 ? group.items[0].product_id : null,
     product_name: group.items.map(i => i.title).join(' | '),
+    quantity: group.items.reduce((sum, item) => sum + Number(item.quantity || 1), 0),
     amount: group.amount,
     status: 'pending',
     created_at: createdAt,
@@ -180,9 +181,6 @@ function drawCart() {
   let totalHTG = 0;
   let html = `<style>
     .seller-group { background: #ffffff; border-radius: 18px; padding: 20px; margin-bottom: 18px; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(15,23,42,0.06); }
-    .cart-heading { font-size: 20px; font-weight: 900; margin-bottom: 12px; color: #111827; }
-    .cart-summary { margin-bottom: 20px; padding: 18px; background: #f8fafc; border: 1px solid #dbeafe; border-radius: 18px; }
-    .cart-summary p { margin: 0; color: #475569; line-height: 1.6; }
     .seller-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; }
     .seller-name { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 900; color: #111827; }
     .seller-wa a { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; background: #25d366; color: white; border-radius: 12px; text-decoration: none; font-weight: 800; transition: transform .2s; }
@@ -197,11 +195,7 @@ function drawCart() {
     .remove-btn { background:none; border:none; color:#ef4444; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; }
     .group-total { display:flex; justify-content:space-between; align-items:center; margin-top: 16px; padding: 14px 16px; background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0; font-weight: 900; color: #111827; }
     .receipt-footer { margin-top:20px; text-align:right; font-size:18px; font-weight:900; padding: 16px; border-top: 2px solid #f1f5f9; color: #111827; }
-  </style>
-  <div class="cart-summary">
-    <div class="cart-heading">Resi Panie ou</div>
-    <p>Chwazi vandè ou a, verifye pwodwi yo, epi voye mesaj sou WhatsApp ak tout detay kòmand lan.</p>
-  </div>`;
+  </style>`;
 
   Object.entries(bySeller).forEach(([sellerId, group]) => {
     const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
@@ -269,161 +263,262 @@ function refreshBadge() {
 
 function generateReceipt(data) {
   const serial = "BP-" + Date.now().toString().slice(-6);
+  const now = new Date();
+  const formattedDate = now.toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  const storeLogo = '/assets/images/logo.png';
+
   let itemsHtml = "";
   data.cart.forEach(it => {
-    itemsHtml += `<tr><td style="padding:12px; border-bottom:1px solid #e5e7eb;">${it.title}</td><td style="padding:12px; border-bottom:1px solid #e5e7eb; text-align:center;">${it.qty}</td><td style="padding:12px; border-bottom:1px solid #e5e7eb; text-align:right;">${(it.price * it.qty).toLocaleString()} HTG</td></tr>`;
+    itemsHtml += `<tr><td style="padding:12px; border-bottom:1px solid #e5e7eb; font-weight:600;">${it.title}</td><td style="padding:12px; border-bottom:1px solid #e5e7eb; text-align:center;">${it.qty}</td><td style="padding:12px; border-bottom:1px solid #e5e7eb; text-align:right;">${(it.price * it.qty).toLocaleString()} HTG</td></tr>`;
   });
 
   const zone = data.zone || '—';
   const total = data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString();
-  const sellerName = data.cart[0]?.sellerName || 'Boutique Piyay';
+  const sellerName = data.sellerName || data.cart[0]?.sellerName || 'Boutique Piyay';
+  const storeLabel = sellerName || 'Boutique Piyay';
+  const initials = storeLabel.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'BP';
+  const paymentMethod = data.payment || '—';
+
   const win = window.open('', '_blank');
+  if (!win) {
+    alert('Le reçu s’ouvre dans une nouvelle fenêtre. Veuillez autoriser les popups pour l’imprimer.');
+    return;
+  }
+
   win.document.write(`
     <html>
     <head>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
         body {
           font-family: 'Inter', Arial, sans-serif;
-          padding: 40px;
-          background: #f8fafc;
+          padding: 24px;
+          background: #f1f5f9;
           margin: 0;
+          color: #1e293b;
         }
         .receipt-container {
-          max-width: 700px;
+          max-width: 780px;
           margin: 0 auto;
           background: white;
-          border-radius: 20px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+          border-radius: 24px;
+          box-shadow: 0 18px 50px rgba(15,23,42,0.14);
           overflow: hidden;
         }
         .receipt-header {
-          background: linear-gradient(135deg, #ff4747 0%, #ff8c42 100%);
-          padding: 40px;
-          text-align: center;
+          background: linear-gradient(135deg, #111827 0%, #1f2937 45%, #ff4747 100%);
+          padding: 30px 32px;
           color: white;
         }
-        .receipt-header h1 {
+        .top-row {
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:16px;
+          margin-bottom:18px;
+        }
+        .brand-badge {
+          width:54px;
+          height:54px;
+          border-radius:16px;
+          background: rgba(255,255,255,0.16);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          border:1px solid rgba(255,255,255,0.24);
+          backdrop-filter: blur(2px);
+          overflow:hidden;
+          padding:0;
+        }
+        .brand-badge img {
+          width:100%;
+          height:100%;
+          object-fit:contain;
+          padding:6px;
+          background:rgba(255,255,255,0.78);
+        }
+        .brand-copy h1 {
           margin: 0;
-          font-size: 32px;
-          font-weight: 800;
-          letter-spacing: -1px;
+          font-size: 30px;
+          line-height:1;
+          font-weight:800;
+          letter-spacing:-0.03em;
         }
-        .receipt-header .store-name {
-          font-size: 14px;
-          opacity: 0.9;
-          margin-top: 8px;
-          font-weight: 500;
+        .brand-copy p {
+          margin: 6px 0 0;
+          font-size: 13px;
+          color: rgba(255,255,255,0.78);
         }
-        .receipt-header .serial {
-          font-size: 12px;
-          opacity: 0.8;
-          margin-top: 12px;
-          font-weight: 600;
-          letter-spacing: 1px;
+        .receipt-meta {
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+          margin-top:18px;
+        }
+        .meta-chip {
+          background: rgba(255,255,255,0.12);
+          border:1px solid rgba(255,255,255,0.2);
+          border-radius:999px;
+          padding:8px 10px;
+          font-size:11px;
+          font-weight:700;
+          letter-spacing:0.08em;
+          text-transform:uppercase;
         }
         .receipt-body {
-          padding: 40px;
+          padding: 30px 32px 12px;
         }
-        .info-row {
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 0;
-          border-bottom: 1px solid #f1f5f9;
+        .section-title {
+          margin: 0 0 10px;
+          font-size: 15px;
+          font-weight:800;
+          color: #111827;
+          text-transform: uppercase;
+          letter-spacing:0.08em;
+        }
+        .info-grid {
+          display:grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap:12px;
+          margin-bottom:22px;
+        }
+        .info-card {
+          border:1px solid #e2e8f0;
+          border-radius:16px;
+          padding:14px 15px;
+          background:#fff;
         }
         .info-label {
-          color: #64748b;
-          font-weight: 500;
-          font-size: 13px;
+          display:block;
+          color:#64748b;
+          font-size:11px;
+          text-transform:uppercase;
+          letter-spacing:0.08em;
+          margin-bottom:6px;
+          font-weight:800;
         }
         .info-value {
-          color: #1e293b;
-          font-weight: 600;
-          font-size: 14px;
+          color:#1e293b;
+          font-weight:700;
+          font-size:15px;
         }
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-top: 24px;
+          margin-top: 10px;
         }
         th {
-          background: #f8fafc;
+          background:#f8fafc;
           padding: 12px;
           text-align: left;
-          font-weight: 600;
-          color: #64748b;
-          font-size: 12px;
+          font-weight: 800;
+          color:#64748b;
+          font-size:11px;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing:0.08em;
         }
         td {
           padding: 12px;
-          border-bottom: 1px solid #f1f5f9;
-          font-size: 14px;
-          color: #1e293b;
-        }
-        .receipt-footer {
-          background: #1e293b;
-          padding: 24px;
-          text-align: center;
-          color: white;
-        }
-        .receipt-footer p {
-          margin: 0;
-          font-size: 12px;
-          font-weight: 500;
-          opacity: 0.8;
-        }
-        .receipt-footer .brand {
-          font-weight: 700;
-          color: #ff4747;
+          border-bottom:1px solid #f1f5f9;
+          font-size:14px;
+          color:#1e293b;
         }
         .total-section {
-          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-          padding: 24px;
-          border-radius: 12px;
-          margin-top: 24px;
-          text-align: right;
+          margin: 18px 0 8px;
+          padding: 16px 18px;
+          border-radius:18px;
+          background: linear-gradient(135deg, #fff8f4 0%, #ffe7dc 100%);
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:12px;
+        }
+        .total-copy {
+          display:flex;
+          flex-direction:column;
+          gap:4px;
         }
         .total-label {
-          font-size: 14px;
-          color: #78350f;
-          font-weight: 600;
-          margin-bottom: 8px;
+          font-size:12px;
+          font-weight:800;
+          color:#9a3412;
+          text-transform:uppercase;
+          letter-spacing:0.08em;
         }
         .total-amount {
-          font-size: 36px;
-          font-weight: 800;
-          color: #ff4747;
+          font-size:30px;
+          font-weight:900;
+          color:#ff4747;
+        }
+        .receipt-footer {
+          padding: 18px 32px 28px;
+          border-top:1px solid #f1f5f9;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:12px;
+          color:#64748b;
+          font-size:12px;
+        }
+        .receipt-footer .brand {
+          color:#ff4747;
+          font-weight:800;
         }
       </style>
     </head>
     <body>
       <div class="receipt-container">
         <div class="receipt-header">
-          <h1>BOUTIQUE PIYAY</h1>
-          <div class="store-name">🏪 ${sellerName}</div>
-          <div class="serial">REÇU #${serial}</div>
+          <div class="top-row">
+            <div class="brand-copy">
+              <h1>REÇU DE COMMANDE</h1>
+              <p>Magasin · Détail de la commande</p>
+            </div>
+            <div class="brand-badge">
+              <img src="${storeLogo}" alt="${storeLabel}" onerror="this.style.display='none'; this.parentElement.innerHTML='${initials}'">
+            </div>
+          </div>
+          <div class="store-name" style="font-size:18px; font-weight:800; margin:8px 0 0;">${storeLabel}</div>
+          <div class="receipt-meta">
+            <div class="meta-chip">REÇU #${serial}</div>
+            <div class="meta-chip">${formattedDate}</div>
+            <div class="meta-chip">Paiement: ${paymentMethod}</div>
+          </div>
         </div>
         <div class="receipt-body">
-          <div class="info-row">
-            <span class="info-label">Client</span>
-            <span class="info-value">${data.name || '—'}</span>
+          <div class="section-title">Informations client</div>
+          <div class="info-grid">
+            <div class="info-card">
+              <span class="info-label">Client</span>
+              <div class="info-value">${data.name || '—'}</div>
+            </div>
+            <div class="info-card">
+              <span class="info-label">Téléphone</span>
+              <div class="info-value">${data.phone || '—'}</div>
+            </div>
+            <div class="info-card">
+              <span class="info-label">Zone</span>
+              <div class="info-value">${zone}</div>
+            </div>
+            <div class="info-card">
+              <span class="info-label">Commande</span>
+              <div class="info-value">${serial}</div>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="info-label">Téléphone</span>
-            <span class="info-value">${data.phone || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Zone</span>
-            <span class="info-value">${zone}</span>
-          </div>
+          <div class="section-title">Articles commandés</div>
           <table>
             <thead>
               <tr>
                 <th>Produit</th>
                 <th style="text-align:center;">Qté</th>
-                <th style="text-align:right;">Prix</th>
+                <th style="text-align:right;">Montant</th>
               </tr>
             </thead>
             <tbody>
@@ -431,12 +526,19 @@ function generateReceipt(data) {
             </tbody>
           </table>
           <div class="total-section">
-            <div class="total-label">TOTAL À PAYER</div>
+            <div class="total-copy">
+              <span class="total-label">Total à payer</span>
+              <span style="font-size:12px; color:#9a3412;">Paiement: ${paymentMethod}</span>
+            </div>
             <div class="total-amount">${total} HTG</div>
           </div>
         </div>
         <div class="receipt-footer">
-          <p>Propulsé par <span class="brand">Rivayo-techentreprise</span></p>
+          <div>
+            Merci pour votre commande. Vérifiez bien les articles avant livraison.
+            <div style="margin-top:6px;">Créé par <span class="brand">Rivayo-techentreprise</span></div>
+          </div>
+          <div style="text-align:right;">Droits réservés · Reçu officiel</div>
         </div>
       </div>
       <script>window.print();</script>
@@ -604,6 +706,17 @@ window.submitOrder = async function() {
     } else {
       console.warn('⚠️ Supabase client introuvable : la commande ne pourra pas être enregistrée dans la base de données.');
     }
+
+    const receiptData = {
+      cart,
+      name,
+      phone,
+      zone,
+      payment: paymentMethod,
+      sellerName: cart[0]?.sellerName || 'Boutique Piyay',
+      transactionId: orderGroupId
+    };
+    generateReceipt(receiptData);
 
     if (paymentMethod === 'MonCash') {
         console.log('📤 Sending to MonCash:', { amount: totalAmount, orderId: orderGroupId });

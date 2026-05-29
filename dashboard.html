@@ -268,6 +268,8 @@
         .status-pending { background: #fffbeb; color: #d97706; }
         .status-delivered { background: #eff6ff; color: #1d4ed8; }
         .status-completed { background: #ecfdf5; color: #059669; }
+        .order-items-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+        .order-line-item { display:flex; justify-content:space-between; gap:12px; padding: 8px 10px; border-radius: 10px; background:#fff7f7; border:1px solid rgba(255,71,71,0.08); font-size: 12px; color: #4b5563; }
         .btn-order-action { padding: 9px 16px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; background: var(--dark); color: white; transition: 0.2s; }
         .btn-order-action:hover { background: var(--primary); }
 
@@ -1111,23 +1113,54 @@
         document.getElementById('progress-label').innerText = progressLabel;
     }
 
+    function parseOrderItems(order) {
+        if (Array.isArray(order.order_items)) return order.order_items;
+        if (typeof order.order_items === 'string') {
+            try {
+                const parsed = JSON.parse(order.order_items);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (err) {
+                return [];
+            }
+        }
+        return [];
+    }
+
+    function getOrderTotal(order) {
+        return Number(order.amount ?? order.total_price ?? 0);
+    }
+
     async function loadOrders() {
         const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
         const list = document.getElementById('orders-list');
         if (orders && orders.length > 0) {
-            list.innerHTML = orders.map(o => `
+            list.innerHTML = orders.map(o => {
+                const orderItems = parseOrderItems(o);
+                const totalAmount = getOrderTotal(o);
+                const groupedQuantity = orderItems.reduce((sum, item) => sum + Number(item.quantity || 1), 0) || Number(o.quantity || 0) || 1;
+                const itemBreakdown = orderItems.length > 0 ? orderItems.map(item => {
+                    const qty = Number(item.quantity || 1);
+                    const unitPrice = Number(item.price || 0);
+                    const lineTotal = unitPrice * qty;
+                    return `<div class="order-line-item"><span>${qty} x ${item.title || 'Produit'}</span><span>${lineTotal.toLocaleString()} HTG</span></div>`;
+                }).join('') : `<div class="order-line-item"><span>${o.product_title || o.product_name || 'Produit'}</span><span>${Number(o.amount || 0).toLocaleString()} HTG</span></div>`;
+
+                return `
                 <div class="order-card ${o.status || 'pending'}">
                     <div class="order-info">
                         <div class="order-id">KÒMAND #${o.id.substring(0,8)}</div>
                         <div class="order-title">${o.product_title || o.product_name || 'Pwodwi'}</div>
-                        <div class="order-meta">Client: ${o.customer_name || o.customer_phone || o.customer_email || '—'} · <b>${o.total_price || o.amount || 0} HTG</b></div>
+                        <div class="order-meta">Client: ${o.customer_name || o.customer_phone || o.customer_email || '—'} · <b>${totalAmount.toLocaleString()} HTG</b></div>
+                        <div class="order-meta" style="margin-top:6px;">🛍️ ${groupedQuantity} article(s) commandé(s)</div>
+                        <div class="order-items-list" style="margin-top:10px;">${itemBreakdown}</div>
                         <div style="margin-top:8px;"><span class="order-status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
                     </div>
                     <div>
                         ${(o.status === 'pending' || !o.status) ? `<button class="btn-order-action" onclick="markAsDelivered('${o.id}')">🚚 Make kòm Livre</button>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         } else {
             list.innerHTML = `<div class="empty-state"><div class="empty-title">Aucune commande n’a encore été passée.</div></div>`;
         }
