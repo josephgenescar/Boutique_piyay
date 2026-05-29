@@ -1,5 +1,7 @@
 const CART_KEY = 'boutique_piyay_cart';
 
+console.log('🛒 cart.js chaje - fonksyon orderProduct disponib:', typeof window.orderProduct);
+
 function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 }
@@ -253,22 +255,194 @@ function removeItem(id) {
 
 function refreshBadge() {
   const b = document.getElementById('cart-count');
-  if (!b) return;
+  console.log('🔄 refreshBadge apèle - eleman cart-count:', b);
+  if (!b) {
+    console.log('❌ Eleman cart-count pa jwenn!');
+    return;
+  }
   let count = getCart().reduce((s, it) => s + it.qty, 0);
-  b.textContent = count; b.style.display = count > 0 ? 'flex' : 'none';
+  console.log('📊 Kantite panier:', count);
+  b.textContent = count;
+  b.style.display = count > 0 ? 'flex' : 'none';
+  console.log('✅ Badge mete ajou:', count);
 }
 
 function generateReceipt(data) {
   const serial = "BP-" + Date.now().toString().slice(-6);
   let itemsHtml = "";
   data.cart.forEach(it => {
-    itemsHtml += `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${it.title}</td><td style="padding:10px; border-bottom:1px solid #eee; text-align:center;">${it.qty}</td><td style="padding:10px; border-bottom:1px solid #eee; text-align:right;">${(it.price * it.qty).toLocaleString()} HTG</td></tr>`;
+    itemsHtml += `<tr><td style="padding:12px; border-bottom:1px solid #e5e7eb;">${it.title}</td><td style="padding:12px; border-bottom:1px solid #e5e7eb; text-align:center;">${it.qty}</td><td style="padding:12px; border-bottom:1px solid #e5e7eb; text-align:right;">${(it.price * it.qty).toLocaleString()} HTG</td></tr>`;
   });
 
   const zone = data.zone || '—';
   const total = data.cart.reduce((s,i)=>s+(i.price*i.qty),0).toLocaleString();
+  const sellerName = data.cart[0]?.sellerName || 'Boutique Piyay';
   const win = window.open('', '_blank');
-  win.document.write(`<html><body style="font-family:Arial;padding:40px;"><div style="text-align:center;"><img src="/assets/images/logo.png" style="width:80px;"><h1 style="color:#ff4747;">BOUTIQUE PIYAY</h1><p>Resi Commande #${serial}</p></div><p><strong>Client:</strong> ${data.name || '—'}</p><p><strong>Tèl:</strong> ${data.phone || '—'}</p><p><strong>Zone:</strong> ${zone}</p><table style="width:100%;border-collapse:collapse;">${itemsHtml}</table><h2 style="text-align:right;">TOTAL: ${total} HTG</h2><script>window.print();</script></body></html>`);
+  win.document.write(`
+    <html>
+    <head>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+          font-family: 'Inter', Arial, sans-serif;
+          padding: 40px;
+          background: #f8fafc;
+          margin: 0;
+        }
+        .receipt-container {
+          max-width: 700px;
+          margin: 0 auto;
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+          overflow: hidden;
+        }
+        .receipt-header {
+          background: linear-gradient(135deg, #ff4747 0%, #ff8c42 100%);
+          padding: 40px;
+          text-align: center;
+          color: white;
+        }
+        .receipt-header h1 {
+          margin: 0;
+          font-size: 32px;
+          font-weight: 800;
+          letter-spacing: -1px;
+        }
+        .receipt-header .store-name {
+          font-size: 14px;
+          opacity: 0.9;
+          margin-top: 8px;
+          font-weight: 500;
+        }
+        .receipt-header .serial {
+          font-size: 12px;
+          opacity: 0.8;
+          margin-top: 12px;
+          font-weight: 600;
+          letter-spacing: 1px;
+        }
+        .receipt-body {
+          padding: 40px;
+        }
+        .info-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 0;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .info-label {
+          color: #64748b;
+          font-weight: 500;
+          font-size: 13px;
+        }
+        .info-value {
+          color: #1e293b;
+          font-weight: 600;
+          font-size: 14px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 24px;
+        }
+        th {
+          background: #f8fafc;
+          padding: 12px;
+          text-align: left;
+          font-weight: 600;
+          color: #64748b;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        td {
+          padding: 12px;
+          border-bottom: 1px solid #f1f5f9;
+          font-size: 14px;
+          color: #1e293b;
+        }
+        .receipt-footer {
+          background: #1e293b;
+          padding: 24px;
+          text-align: center;
+          color: white;
+        }
+        .receipt-footer p {
+          margin: 0;
+          font-size: 12px;
+          font-weight: 500;
+          opacity: 0.8;
+        }
+        .receipt-footer .brand {
+          font-weight: 700;
+          color: #ff4747;
+        }
+        .total-section {
+          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+          padding: 24px;
+          border-radius: 12px;
+          margin-top: 24px;
+          text-align: right;
+        }
+        .total-label {
+          font-size: 14px;
+          color: #78350f;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+        .total-amount {
+          font-size: 36px;
+          font-weight: 800;
+          color: #ff4747;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt-container">
+        <div class="receipt-header">
+          <h1>BOUTIQUE PIYAY</h1>
+          <div class="store-name">🏪 ${sellerName}</div>
+          <div class="serial">REÇU #${serial}</div>
+        </div>
+        <div class="receipt-body">
+          <div class="info-row">
+            <span class="info-label">Client</span>
+            <span class="info-value">${data.name || '—'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Téléphone</span>
+            <span class="info-value">${data.phone || '—'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Zone</span>
+            <span class="info-value">${zone}</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th style="text-align:center;">Qté</th>
+                <th style="text-align:right;">Prix</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div class="total-section">
+            <div class="total-label">TOTAL À PAYER</div>
+            <div class="total-amount">${total} HTG</div>
+          </div>
+        </div>
+        <div class="receipt-footer">
+          <p>Propulsé par <span class="brand">Rivayo-techentreprise</span></p>
+        </div>
+      </div>
+      <script>window.print();</script>
+    </body>
+    </html>
+  `);
   win.document.close();
 }
 
