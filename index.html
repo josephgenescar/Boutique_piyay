@@ -1113,6 +1113,7 @@ title: Akèy - Boutique Piyay
         return new Date(p.boost_expires_at) > now;
       });
 
+      console.log('🚀 Pwodwi boost chaje:', activeBoosted.length, activeBoosted);
       renderBoostedInBanner(activeBoosted);
       renderSellers(allSellers);
       renderProducts(allProducts);
@@ -1170,18 +1171,25 @@ title: Akèy - Boutique Piyay
   }
 
   function renderBoostedInBanner(list) {
+    console.log('🎯 renderBoostedInBanner apele avek:', list.length, 'pwodwi');
     const container = document.getElementById('boosted-ads-container');
-    if (!container) return;
+    console.log('📦 Container boosted-ads-container:', container);
+    if (!container) {
+      console.log('❌ Container boosted-ads-container pa trouve');
+      return;
+    }
     if (list.length === 0) {
       container.innerHTML = '';
       container.style.display = 'none';
       updateAdDots();
+      console.log('⚠️ Pa gen pwodwi boost');
       return;
     }
     container.style.display = 'block';
 
     // Prendre max 3 produits boostés pour le banner
     const boostedProducts = list.slice(0, 3);
+    console.log('✅ Pwodwi boost pou afiche:', boostedProducts);
 
     container.innerHTML = boostedProducts.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
@@ -1205,6 +1213,7 @@ title: Akèy - Boutique Piyay
         </div>`;
     }).join('');
 
+    console.log('🎨 Container HTML apres update:', container.innerHTML);
     updateAdDots();
   }
 
