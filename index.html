@@ -273,56 +273,44 @@ title: Akèy - Boutique Piyay
     .ad-banner.boosted-product {
       flex-shrink: 0;
       width: 100%;
-      min-height: 120px;
-      height: 120px;
+      min-height: 140px;
+      height: 140px;
       display: flex;
       align-items: center;
       position: relative;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
       background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 40%, #ff8787 100%);
+      gap: 12px;
+      padding: 12px 16px;
     }
-    .boosted-product::before {
-      background: #ffffff;
-    }
-    .boosted-product .ad-scan-line {
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    }
-    .boosted-product-inner {
+    .boosted-product-item {
+      flex-shrink: 0;
+      width: 200px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 12px;
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 20px 28px;
-      width: 100%;
-      position: relative;
-      z-index: 2;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .boosted-product-item:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
     }
     .boosted-product-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 16px;
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
       object-fit: cover;
       flex-shrink: 0;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      border: 3px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.4);
     }
     .boosted-product-info {
       flex: 1;
       min-width: 0;
-    }
-    .boosted-product-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: white;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 50px;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
     }
     .boosted-product-title {
       font-family: 'Sora', sans-serif;
@@ -1199,31 +1187,26 @@ title: Akèy - Boutique Piyay
     }
     container.style.display = 'block';
 
-    // Prendre max 3 produits boostés pour le banner
-    const boostedProducts = list.slice(0, 3);
+    // Prendre tous les produits boostés pour le banner horizontal
+    const boostedProducts = list;
     console.log('✅ Pwodwi boost pou afiche:', boostedProducts);
 
-    container.innerHTML = boostedProducts.map(p => {
-      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
-      return `
-        <div class="ad-banner boosted-product">
-          <div class="ad-scan-line"></div>
-          <div class="boosted-product-inner">
-            <img class="boosted-product-img" src="${p.image_url}" alt="${p.title}"
-                 onerror="this.src='https://ui-avatars.com/api/?name=P&background=ff4747&color=fff'">
-            <div class="boosted-product-info">
-              <span class="boosted-product-label" data-i18n="index.boosted_label">🚀 PWODWI VEDÈT</span>
-              <div class="boosted-product-title">${p.title}</div>
-              <div class="boosted-product-price">${p.price} <span>HTG</span></div>
-            </div>
-            <div class="boosted-product-cta">
-              <a href="/pwodwi-machann.html?id=${p.id}" class="btn-ad" style="background:white;color:#ff4747;">
-                <span data-i18n="index.boosted_view">Vwè →</span>
-              </a>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
+    container.innerHTML = `
+      <div class="ad-banner boosted-product">
+        <div class="ad-scan-line"></div>
+        ${boostedProducts.map(p => {
+          const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+          return `
+            <a href="/pwodwi-machann.html?id=${p.id}" class="boosted-product-item">
+              <img class="boosted-product-img" src="${p.image_url}" alt="${p.title}"
+                   onerror="this.src='https://ui-avatars.com/api/?name=P&background=ff4747&color=fff'">
+              <div class="boosted-product-info">
+                <div class="boosted-product-title" style="font-size:12px;font-weight:700;color:white;">${p.title}</div>
+                <div class="boosted-product-price" style="font-size:13px;font-weight:800;color:white;">${p.price} HTG</div>
+              </div>
+            </a>`;
+        }).join('')}
+      </div>`;
 
     console.log('🎨 Container HTML apres update:', container.innerHTML);
     updateAdDots();
