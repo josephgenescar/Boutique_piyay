@@ -254,7 +254,13 @@ function refreshBadge() {
     console.log('❌ Eleman cart-count pa jwenn!');
     return;
   }
-  let count = getCart().reduce((s, it) => s + it.qty, 0);
+  const cart = getCart();
+  console.log('🛒 Panier:', cart);
+  let count = 0;
+  cart.forEach(it => {
+    const qty = parseInt(it.qty) || parseInt(it.quantity) || 1;
+    count += qty;
+  });
   console.log('📊 Kantite panier:', count);
   b.textContent = count;
   b.style.display = count > 0 ? 'flex' : 'none';
