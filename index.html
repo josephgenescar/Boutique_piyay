@@ -917,6 +917,9 @@ title: Akèy - Boutique Piyay
         </div>
       </div>
 
+      <!-- PWODWI BOOST MACHANN YO -->
+      <div id="boosted-ads-container"></div>
+
     </div><!-- fin ad-slider-track -->
 
     <!-- DOTS -->
@@ -926,35 +929,6 @@ title: Akèy - Boutique Piyay
     </div>
 
   </div><!-- fin ad-slider-container -->
-
-  <!-- PWODWI VEDÈT — featured products section with inline ad cards -->
-  <section id="boosted-section">
-    <div class="boosted-header boosted-header-modern">
-      <div>
-        <div class="section-hdr-left">
-          <h2>Premium</h2>
-          <div class="section-hdr-bar" style="width:42px;"></div>
-        </div>
-      </div>
-      <div class="boosted-nav">
-        <button id="boosted-prev" class="boosted-nav-btn" onclick="boostedPrev()" aria-label="Previous featured product">‹</button>
-        <button id="boosted-next" class="boosted-nav-btn" onclick="boostedNext()" aria-label="Next featured product">›</button>
-      </div>
-    </div>
-    <div class="boosted-carousel-wrapper">
-      <div class="boosted-track" id="boosted-slider-track"></div>
-    </div>
-
-    <div id="featured-sellers-section">
-      <div class="featured-sellers-header">
-        <div class="section-hdr-left">
-          <h3>Boutiques recommandées</h3>
-          <div class="section-hdr-bar" style="width:30px;"></div>
-        </div>
-      </div>
-      <div class="featured-sellers-row" id="featured-sellers-row"></div>
-    </div>
-  </section>
 
 </div><!-- fin main-ads-box -->
 
@@ -1139,7 +1113,7 @@ title: Akèy - Boutique Piyay
         return new Date(p.boost_expires_at) > now;
       });
 
-      renderBoosted(activeBoosted);
+      renderBoostedInBanner(activeBoosted);
       renderSellers(allSellers);
       renderProducts(allProducts);
 
