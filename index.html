@@ -273,7 +273,8 @@ title: Akèy - Boutique Piyay
     .ad-banner.boosted-product {
       flex-shrink: 0;
       width: 100%;
-      min-height: 100px;
+      min-height: 120px;
+      height: 120px;
       display: flex;
       align-items: center;
       position: relative;
@@ -1231,12 +1232,14 @@ title: Akèy - Boutique Piyay
     const track = document.getElementById('adSliderTrack');
     if (!track) return;
     const totalSlides = track.children.length;
+    console.log('🔢 Total slides:', totalSlides);
     const dotsEl = document.getElementById('adDots');
     if (!dotsEl) return;
 
     dotsEl.innerHTML = Array.from({length: totalSlides}, (_, i) =>
       `<button class="ad-dot ${i===0?'active':''}" onclick="adGoTo(${i})"></button>`
     ).join('');
+    console.log('🔵 Dots mete ajou:', totalSlides, 'dots');
   }
 
   function boostedMoveTo(index) {
