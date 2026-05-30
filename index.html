@@ -1017,11 +1017,12 @@ title: Akèy - Boutique Piyay
   }
 
   function adGoTo(idx) {
-    const visible = getVisibleAds();
-    if (visible.length === 0) return;
-    adCurrent = (idx + visible.length) % visible.length;
     const track = document.getElementById('adSliderTrack');
-    if (track) track.style.transform = `translateX(-${adCurrent * 100}%)`;
+    if (!track) return;
+    const totalSlides = track.children.length;
+    if (totalSlides === 0) return;
+    adCurrent = (idx + totalSlides) % totalSlides;
+    track.style.transform = `translateX(-${adCurrent * 100}%)`;
     document.querySelectorAll('.ad-dot').forEach((d,i) => {
       d.classList.toggle('active', i === adCurrent);
     });
