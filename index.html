@@ -50,15 +50,15 @@ title: Akèy - Boutique Piyay
     }
 
     /* ══════════════════════════════
-       PUB VEDÈT - ALIEXPRESS/TEMU STYLE
+       PUB VEDÈT - COMPACT PRO STYLE
     ══════════════════════════════ */
     .main-ads-box {
       background: #ffffff;
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      border: 1px solid rgba(0,0,0,0.06);
-      margin: 16px 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.04);
+      margin: 12px 0;
       position: relative;
     }
 
@@ -69,14 +69,14 @@ title: Akèy - Boutique Piyay
 
     .ad-slider-track {
       display: flex;
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     /* Chak bannè pran tout lajè */
     .ad-banner {
       flex-shrink: 0;
       width: 100%;
-      min-height: 140px;
+      min-height: 100px;
       display: flex;
       align-items: center;
       position: relative;
@@ -95,78 +95,78 @@ title: Akèy - Boutique Piyay
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       background-image: 
-        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%);
       pointer-events: none;
     }
 
     .ad-inner {
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 24px 28px;
+      gap: 16px;
+      padding: 16px 20px;
       width: 100%;
       position: relative;
       z-index: 2;
     }
 
-    /* Modern Logo */
+    /* Compact Logo */
     .ad-logo-icon {
-      width: 56px; height: 56px;
-      border-radius: 12px;
+      width: 44px; height: 44px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.12);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.15);
     }
     .ad-logo-texts { flex-shrink: 0; }
     .ad-logo-name {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 700;
       color: white;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
       line-height: 1.2;
     }
     .ad-logo-name .g { color: #34d399; }
     .ad-logo-sub {
-      font-size: 11px;
-      color: rgba(255,255,255,0.7);
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
       font-weight: 500;
-      letter-spacing: 0.5px;
-      margin-top: 2px;
+      letter-spacing: 0.3px;
+      margin-top: 1px;
     }
 
-    /* Modern Divider */
+    /* Compact Divider */
     .ad-divider {
       width: 1px;
-      height: 50px;
-      background: rgba(255,255,255,0.15);
+      height: 40px;
+      background: rgba(255,255,255,0.12);
       flex-shrink: 0;
     }
 
-    /* Modern Texte slider */
+    /* Compact Texte slider */
     .ad-text-block { flex: 1; min-width: 0; }
     .ad-text-label {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(255,255,255,0.12);
+      gap: 3px;
+      background: rgba(255,255,255,0.1);
       color: #34d399;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      margin-bottom: 8px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
     }
     .ad-text-label::before {
       content: '';
-      width: 4px; height: 4px;
+      width: 3px; height: 3px;
       border-radius: 50%;
       background: #34d399;
       animation: pulse 2s ease-in-out infinite;
@@ -176,18 +176,18 @@ title: Akèy - Boutique Piyay
       50% { opacity: 0.5; }
     }
 
-    .ad-slide-wrap { height: 28px; overflow: hidden; }
+    .ad-slide-wrap { height: 22px; overflow: hidden; }
     .ad-slides-inner {
       display: flex;
       flex-direction: column;
       animation: slideUp 8s ease-in-out infinite;
     }
     .ad-slide-item {
-      height: 28px;
+      height: 22px;
       display: flex;
       align-items: center;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 600;
       color: white;
       white-space: nowrap;
@@ -197,26 +197,26 @@ title: Akèy - Boutique Piyay
     .ad-slide-item .hlo { color: #fbbf24; }
     @keyframes slideUp {
       0%,20%  { transform: translateY(0); }
-      25%,45% { transform: translateY(-28px); }
-      50%,70% { transform: translateY(-56px); }
-      75%,95% { transform: translateY(-84px); }
+      25%,45% { transform: translateY(-22px); }
+      50%,70% { transform: translateY(-44px); }
+      75%,95% { transform: translateY(-66px); }
       100%    { transform: translateY(0); }
     }
 
-    /* Modern CTA */
+    /* Compact CTA */
     .ad-cta {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
     .btn-ad {
       display: inline-flex;
       align-items: center;
-      padding: 10px 18px;
-      border-radius: 8px;
+      padding: 8px 14px;
+      border-radius: 6px;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
       color: white;
       border: none;
       cursor: pointer;
@@ -224,21 +224,21 @@ title: Akèy - Boutique Piyay
       text-decoration: none;
       font-family: inherit;
       transition: all 0.2s ease;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.12);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.2);
     }
     .btn-ad:hover {
-      background: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.2);
       transform: translateY(-1px);
     }
     .btn-ad-close {
-      width: 28px; height: 28px;
-      border-radius: 6px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.6);
-      font-size: 14px;
+      width: 24px; height: 24px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -248,8 +248,23 @@ title: Akèy - Boutique Piyay
       flex-shrink: 0;
     }
     .btn-ad-close:hover {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
       color: white;
+    }
+
+    /* Product Images in Ad */
+    .ad-product-images {
+      display: flex;
+      gap: 8px;
+      margin-left: 12px;
+    }
+    .ad-product-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
     }
 
     /* ══════════════════════════════
@@ -852,6 +867,11 @@ title: Akèy - Boutique Piyay
             <a href="https://konektem.netlify.app" target="_blank" class="btn-ad green">Découvrir →</a>
             <button class="btn-ad-close" onclick="hideAd('konektem')">✕</button>
           </div>
+          <div class="ad-product-images">
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
+            <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
+          </div>
         </div>
       </div>
 
@@ -887,6 +907,11 @@ title: Akèy - Boutique Piyay
           <div class="ad-cta">
             <a href="https://kaylakou.netlify.app" target="_blank" class="btn-ad orange">Vizite →</a>
             <button class="btn-ad-close" onclick="hideAd('kaylakou')">✕</button>
+          </div>
+          <div class="ad-product-images">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
+            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
           </div>
         </div>
       </div>
