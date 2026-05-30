@@ -1112,6 +1112,9 @@ title: Akèy - Boutique Piyay
       allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
       buildSellerMap();
 
+      console.log('📦 Total pwodwi chaje:', allProducts.length);
+      console.log('🔍 Pwodwi avek is_boosted:', allProducts.filter(p => p.is_boosted));
+
       // Filte pwodwi boost ki pa eksperyé
       const now = new Date();
       const activeBoosted = allProducts.filter(p => {

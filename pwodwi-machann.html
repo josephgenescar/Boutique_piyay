@@ -474,14 +474,8 @@ title: Detay Pwodwi
     async function checkOrderToAllowFeedback() {
       const { data: { user } } = await client.auth.getUser();
       if (!user) return;
-      const { data: orders } = await client.from('orders')
-        .select('id, status')
-        .eq('customer_email', user.email)
-        .eq('product_id', currentProdId)
-        .in('status', ['delivered', 'completed']);
-      if (orders && orders.length > 0) {
-        document.getElementById('feedback-form').style.display = 'block';
-      }
+      // Toujou montre formulaire avis la
+      document.getElementById('feedback-form').style.display = 'block';
     }
 
     async function loadFeedbacks() {
