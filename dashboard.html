@@ -1059,6 +1059,29 @@
         if (!code) { alert('Tanpri antre code ou resevwa a.'); return; }
         if (code.length < 6) { alert('Code invalide. Contactez l’administrateur.'); return; }
 
+        // Vérifier si le code existe et appartient au vendeur
+        const { data: boostCode, error: codeError } = await supD
+            .from('boost_codes')
+            .select('*')
+            .eq('code', code)
+            .eq('seller_id', currentUser.id)
+            .single();
+
+        if (codeError || !boostCode) {
+            alert('Code invalide ou pa jwenn. Tanpri verifye code ou a oswa kontakte admin.');
+            return;
+        }
+
+        if (boostCode.status !== 'active') {
+            alert('Code sa a deja ekspire oswa itilize. Tanpri jwenn yon nouvo code.');
+            return;
+        }
+
+        if (boostCode.remaining_uses <= 0) {
+            alert('Code sa a deja itilize 3 fwa. Tanpri jwenn yon nouvo code.');
+            return;
+        }
+
         const nowISOString = new Date().toISOString();
         const { data: activeBoosts } = await supD.from('user_products')
             .select('id')
@@ -1073,18 +1096,38 @@
 
         const boostData = {
             is_boosted: true,
-            boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString()
+            boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString(),
+            boost_code_id: boostCode.id
         };
         console.log('📦 Données boost:', boostData);
 
         try {
+            // Décrémenter les utilisations restantes du code
+            const { error: updateCodeError } = await supD
+                .from('boost_codes')
+                .update({ 
+                    remaining_uses: boostCode.remaining_uses - 1,
+                    status: boostCode.remaining_uses - 1 <= 0 ? 'used' : 'active',
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', boostCode.id);
+
+            if (updateCodeError) {
+                console.error('❌ Erè maj kòd boost:', updateCodeError);
+                alert('❌ Erè lors de la mise à jour du code: ' + updateCodeError.message);
+                return;
+            }
+
+            // Mettre à jour le produit avec le boost
             const { error } = await supD.from('user_products').update(boostData).eq('id', selectedProdId);
             if (error) {
                 console.error('❌ Erè Supabase:', error);
                 alert('❌ Erè lors de l\'activation: ' + error.message);
                 return;
             }
-            alert('✅ Boost activé ! Votre code a été validé.');
+            
+            const remaining = boostCode.remaining_uses - 1;
+            alert(`✅ Boost activé ! Code validé. Il reste ${remaining} utilisation(s) pour ce code.`);
             closePaidBoostModal(); closeBoostModal(); loadAll();
         } catch (err) {
             console.error('❌ Erè catch:', err);
