@@ -123,6 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.orderProduct = function(title, price, id, image, sellerId, sellerPhone, sellerName) {
+  // Evite double appel
+  if (window.orderProduct._adding) {
+    console.log('⚠️ orderProduct deja ap ajoute, anile');
+    return;
+  }
+  window.orderProduct._adding = true;
+  setTimeout(() => window.orderProduct._adding = false, 500);
+
   let currentCart = getCart();
   let key = id || title.replace(/\s+/g,'-').toLowerCase();
   let found = false;
@@ -722,6 +730,8 @@ window.submitOrder = async function() {
       sellerName: cart[0]?.sellerName || 'Boutique Piyay',
       transactionId: orderGroupId
     };
+    
+    console.log('📄 Jeneren recu pou kòmand:', orderGroupId);
     generateReceipt(receiptData);
 
     if (paymentMethod === 'MonCash') {
