@@ -187,6 +187,72 @@ async function approveOrder(orderId, sellerId, amount) {
 
   await client.from('profiles').update({ wallet_balance: newBal }).eq('id', sellerId);
 
+  // 3. Envoi email au vendeur
+  try {
+    const { data: seller } = await client.from('profiles').select('email, full_name').eq('id', sellerId).single();
+    const { data: order } = await client.from('orders').select('order_group_id, total_price').eq('id', orderId).single();
+    
+    if (seller?.email) {
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .order-info { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .order-id { font-size: 18px; font-weight: bold; color: #3b82f6; }
+            .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>💰 Kòmand Konplèt!</h1>
+              <p>Mèsi ${seller.full_name || 'Machann'}!</p>
+            </div>
+            <div class="content">
+              <p>Kliyan an konfime li resevwa kòmand lan. Fond yo te transfere nan balans ou.</p>
+              
+              <div class="order-info">
+                <div class="order-id">ID Kòmand: ${order?.order_group_id || 'N/A'}</div>
+                <div style="margin-top: 10px;">Montan: ${order?.total_price || amount} HTG</div>
+              </div>
+              
+              <p style="margin-top: 20px;">
+                <a href="https://boutique-piyay.netlify.app/dashboard.html" style="background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Wè Balans Mwen</a>
+              </p>
+            </div>
+            <div class="footer">
+              <p>Rivayo Boutique - © 2026</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      await fetch('https://letyferfjpxmstohvgcj.supabase.co/functions/v1/send-email', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'order_completed',
+          to: seller.email,
+          subject: '💰 Kòmand Konplèt - Fond transfere',
+          html: html,
+          data: { order_id: order?.order_group_id, seller_id: sellerId },
+        }),
+      });
+    }
+  } catch (err) {
+    console.error('Erè voye email:', err);
+  }
+
   alert("✅ Merci ! La commande est terminée et les fonds ont été transférés au vendeur.");
   loadOrders();
 }
