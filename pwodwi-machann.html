@@ -485,7 +485,15 @@ title: Detay Pwodwi
         .eq('product_id', currentProdId)
         .order('created_at', { ascending: false });
 
-      console.log('📊 Avis chaje:', fbs);
+      console.log('📊 Avis chaje pou product_id:', fbs);
+
+      // Si pa gen avis pou product_id sa, tcheke tout avis
+      if (!fbs || fbs.length === 0) {
+        console.log('⚠️ Pa gen avis pou product_id, tcheke tout avis...');
+        const { data: allFbs } = await client.from('feedback').select('*');
+        console.log('📊 Tout avis nan tab feedback:', allFbs);
+      }
+
       const list = document.getElementById('feedback-list');
       if (!fbs || fbs.length === 0) {
         list.innerHTML = `
