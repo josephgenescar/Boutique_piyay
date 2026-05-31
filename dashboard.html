@@ -285,6 +285,57 @@
         .fb-comment { font-size: 13px; line-height: 1.5; color: var(--dark-3); margin-top: 8px; }
         .fb-prod { font-size: 11px; font-weight: 700; color: var(--primary); margin-top: 10px; text-transform: uppercase; }
 
+        /* NOTIFICATIONS */
+        .notification-item {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            margin-bottom: 16px;
+            border-left: 5px solid var(--primary);
+            transition: all 0.2s;
+        }
+        .notification-item.unread {
+            background: #fff7f7;
+            border-left-color: var(--primary);
+        }
+        .notification-item.read {
+            background: white;
+            border-left-color: var(--gray);
+            opacity: 0.7;
+        }
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .notif-type {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: var(--primary-glow);
+            color: var(--primary);
+        }
+        .notif-date {
+            font-size: 11px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        .notif-title {
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        .notif-message {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--dark-3);
+        }
+
         /* PRODUCTS */
         .prods-grid {
             display: grid;
@@ -617,6 +668,9 @@
         <button class="nav-item" onclick="switchTab('feedback', this)">
             <span class="icon">⭐</span> Avis Clients
         </button>
+        <button class="nav-item" onclick="switchTab('notifications', this)">
+            <span class="icon">🔔</span> Notifikasyon
+        </button>
         <button class="nav-item" onclick="switchTab('wallet', this)">
             <span class="icon">💰</span> Lajan
         </button>
@@ -734,6 +788,23 @@
                 <div class="empty-state" style="grid-column: 1/-1;">
                     <div class="empty-icon">📦</div>
                     <div class="empty-title">Chaje pwodwi yo...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: NOTIFICATIONS ===== -->
+        <div id="tab-notifications" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Notifikasyon 🔔</h1>
+                    <p class="page-subtitle">Tout notifikasyon ou</p>
+                </div>
+                <button class="btn-add" onclick="markAllAsRead()">✅ Mark tout kòm li</button>
+            </div>
+            <div id="notifications-list">
+                <div class="empty-state">
+                    <div class="empty-icon">🔔</div>
+                    <div class="empty-title">Pa gen notifikasyon pou kounya</div>
                 </div>
             </div>
         </div>
@@ -1042,6 +1113,7 @@
         loadAll();
         loadOrders();
         loadFeedbacks();
+        loadNotifications();
         syncPointsWithSales();
         initChart();
     }
@@ -1185,6 +1257,35 @@
                 </div>
             `).join('');
         }
+    }
+
+    async function loadNotifications() {
+        const { data: notifs } = await supD.from('notifications').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
+        const list = document.getElementById('notifications-list');
+        if (notifs && notifs.length > 0) {
+            list.innerHTML = notifs.map(n => `
+                <div class="notification-item ${n.is_read ? 'read' : 'unread'}">
+                    <div class="notif-header">
+                        <span class="notif-type">${n.type}</span>
+                        <span class="notif-date">${new Date(n.created_at).toLocaleDateString('fr-HT', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}</span>
+                    </div>
+                    <div class="notif-title">${n.title}</div>
+                    <div class="notif-message">${n.message}</div>
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔔</div>
+                    <div class="empty-title">Pa gen notifikasyon pou kounya</div>
+                </div>
+            `;
+        }
+    }
+
+    async function markAllAsRead() {
+        await supD.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('seller_id', currentUser.id).eq('is_read', false);
+        loadNotifications();
     }
 
     async function clearExpiredFlashSales(prods) {

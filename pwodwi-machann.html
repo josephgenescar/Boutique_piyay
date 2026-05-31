@@ -553,7 +553,77 @@ title: Detay Pwodwi
       } else {
         btn.innerText = "✅ Mèsi!";
         document.getElementById('feedback-form').style.display = 'none';
+        
+        // Envoi notification au marchand
+        try {
+          const sellerEmail = await fetchSellerEmail(sellerId);
+          if (sellerEmail) {
+            const html = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .header { background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                  .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                  .rating { font-size: 48px; color: #ff6b35; text-align: center; }
+                  .comment { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #ff6b35; }
+                  .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>🎉 Nouvo Avis!</h1>
+                    <p>Yon kliyan kite yon avis sou pwodwi ou</p>
+                  </div>
+                  <div class="content">
+                    <div class="rating">${'⭐'.repeat(rating)}</div>
+                    ${comment ? `<div class="comment"><strong>Komantè:</strong> ${comment}</div>` : ''}
+                    <p style="margin-top: 20px;">
+                      <a href="https://boutique-piyay.netlify.app/pwodwi-machann.html?id=${currentProdId}" style="background: #ff6b35; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Wè Pwodwi a</a>
+                    </p>
+                  </div>
+                  <div class="footer">
+                    <p>Rivayo Boutique - © 2026</p>
+                  </div>
+                </div>
+              </body>
+              </html>
+            `;
+            
+            await fetch('https://letyferfjpxmstohvgcj.supabase.co/functions/v1/send-email', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAzMDI2NjYsImV4cCI6MjA0NTg4ODY2Nn0.M3M3ZjBjNjYxZGZlNjE2ZjE2ZjE2ZjE2ZjE2ZjE2',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'new_review',
+                to: sellerEmail,
+                subject: '🎉 Nouvo Avis - Yon kliyan kite yon avis',
+                html: html,
+                data: { seller_id: sellerId, user_id: user.id },
+              }),
+            });
+          }
+        } catch (err) {
+          console.error('Erè voye notifikasyon:', err);
+        }
+        
         loadFeedbacks();
+      }
+    }
+
+    async function fetchSellerEmail(sellerId) {
+      try {
+        const { data: seller } = await client.from('profiles').select('email').eq('id', sellerId).single();
+        return seller?.email;
+      } catch (err) {
+        console.error('Erè chaje email machann:', err);
+        return null;
       }
     }
 

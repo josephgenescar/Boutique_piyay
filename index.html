@@ -273,40 +273,45 @@ title: Akèy - Boutique Piyay
     .ad-banner.boosted-product {
       flex-shrink: 0;
       width: 100%;
-      min-height: 140px;
-      height: 140px;
+      min-height: 160px;
+      height: 160px;
       display: flex;
       align-items: center;
       position: relative;
       overflow-x: auto;
       overflow-y: hidden;
-      background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 40%, #ff8787 100%);
-      gap: 12px;
-      padding: 12px 16px;
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 30%, #ffb347 60%, #ffcc70 100%);
+      gap: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
     }
     .boosted-product-item {
       flex-shrink: 0;
-      width: 200px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 12px;
-      padding: 12px;
+      width: 240px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      border: 1px solid rgba(255,255,255,0.3);
-      transition: transform 0.2s, background 0.2s;
+      gap: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     .boosted-product-item:hover {
-      background: rgba(255,255,255,0.25);
-      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      border-color: #ff6b35;
     }
     .boosted-product-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
       object-fit: cover;
       flex-shrink: 0;
-      border: 2px solid rgba(255,255,255,0.4);
+      border: 3px solid #ff6b35;
+      box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
     }
     .boosted-product-info {
       flex: 1;
@@ -314,18 +319,19 @@ title: Akèy - Boutique Piyay
     }
     .boosted-product-title {
       font-family: 'Sora', sans-serif;
-      font-size: 18px;
-      font-weight: 900;
-      color: white;
-      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 6px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      line-height: 1.3;
     }
     .boosted-product-price {
-      font-size: 20px;
-      font-weight: 900;
-      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      color: #ff6b35;
     }
     .boosted-product-price span {
       font-size: 12px;
