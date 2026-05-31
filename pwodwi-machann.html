@@ -479,11 +479,13 @@ title: Detay Pwodwi
     }
 
     async function loadFeedbacks() {
+      console.log('🔍 Chaje avis pou product_id:', currentProdId);
       const { data: fbs } = await client.from('feedback')
-        .select('*, profiles(full_name)')
+        .select('*')
         .eq('product_id', currentProdId)
         .order('created_at', { ascending: false });
 
+      console.log('📊 Avis chaje:', fbs);
       const list = document.getElementById('feedback-list');
       if (!fbs || fbs.length === 0) {
         list.innerHTML = `
@@ -496,7 +498,7 @@ title: Detay Pwodwi
       }
 
       list.innerHTML = fbs.map(f => {
-        const name  = f.profiles?.full_name || 'Client';
+        const name  = 'Client';
         const stars = '⭐'.repeat(Math.min(f.rating || 0, 5));
         const date  = new Date(f.created_at).toLocaleDateString('fr-HT', { day:'numeric', month:'short', year:'numeric' });
         return `
@@ -524,7 +526,9 @@ title: Detay Pwodwi
 
       btn.disabled = true; btn.innerText = "⏳ Ap voye...";
 
-      const { error } = await client.from('feedback').insert([{
+      console.log('📝 Voye avis:', { product_id: currentProdId, user_id: user.id, rating, comment, seller_id: sellerId });
+
+      const { error, data } = await client.from('feedback').insert([{
         product_id: currentProdId,
         user_id:    user.id,
         rating:     rating,
@@ -532,6 +536,8 @@ title: Detay Pwodwi
         seller_id:  sellerId,
         created_at: new Date().toISOString()
       }]);
+
+      console.log('📊 Rezilta enskripsyon:', { error, data });
 
       if (error) {
         alert("Erè: " + error.message);
