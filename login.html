@@ -231,6 +231,26 @@ title: Konekte - Boutique Piyay
         console.log('Profile:', profile);
         console.log('Profile error:', profileError);
 
+        // Si profile pa egziste, kreye li otomatikman
+        if (profileError || !profile) {
+          console.log('Profile pa egziste, kreye li otomatikman');
+          const { error: insertError } = await supabaseClient
+            .from('profiles')
+            .insert([{
+              id: data.user.id,
+              email: data.user.email,
+              full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Utilisateur',
+              role: 'client',
+              is_active_seller: false
+            }]);
+
+          if (insertError) {
+            console.error('Erè nan kreyasyon profile:', insertError);
+          } else {
+            console.log('Profile kreye avèk siksè');
+          }
+        }
+
         const redirect = new URLSearchParams(window.location.search).get('redirect');
 
         setTimeout(() => {
@@ -239,7 +259,7 @@ title: Konekte - Boutique Piyay
             console.log('Redirection vers dashboard.html');
             window.location.href = redirect || '/dashboard.html';
           }
-          // Si c'est un client, rediriger vers la page d'accueil
+          // Si c'est un client ou profile pa egziste, rediriger vers la page d'accueil
           else {
             console.log('Redirection vers page accueil');
             window.location.href = redirect || '/';
