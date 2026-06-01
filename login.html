@@ -222,21 +222,26 @@ title: Konekte - Boutique Piyay
         showToast('✅ Succès ! Redirection...', 'success');
 
         // Vérifier le rôle de l'utilisateur
-        const { data: profile } = await supabaseClient
+        const { data: profile, error: profileError } = await supabaseClient
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
           .single();
+
+        console.log('Profile:', profile);
+        console.log('Profile error:', profileError);
 
         const redirect = new URLSearchParams(window.location.search).get('redirect');
 
         setTimeout(() => {
           // Si c'est un vendeur, rediriger vers dashboard
           if (profile && profile.role === 'seller') {
+            console.log('Redirection vers dashboard.html');
             window.location.href = redirect || '/dashboard.html';
           }
           // Si c'est un client, rediriger vers la page d'accueil
           else {
+            console.log('Redirection vers page accueil');
             window.location.href = redirect || '/';
           }
         }, 1200);
