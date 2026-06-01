@@ -18,10 +18,10 @@ title: Vann yon Pwodwi - Boutique Piyay
             return;
         }
 
-        // Vérifier si l'utilisateur est un vendeur actif
-        const { data: profile } = await sb.from('profiles').select('role, is_active_seller').eq('id', session.user.id).single();
-        if (!profile || profile.role !== 'seller' || !profile.is_active_seller) {
-            alert("⚠️ Ou dwe yon vandè aktif pou aksede paj sa a!");
+        // Vérifier si l'utilisateur est un vendeur
+        const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
+        if (!profile || profile.role !== 'seller') {
+            alert("⚠️ Se sèlman vandè yo ka aksede paj sa a!");
             window.location.href = "/";
             document.documentElement.innerHTML = "<html><body style='background:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;'><h2>Oup! Se sèlman vandè yo ka aksede paj sa a...</h2></body></html>";
         }

@@ -89,9 +89,11 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((res) => {
-        // Si entènèt mache, nou sere yon kopi nan kach la
-        const resClone = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+        // Si entènèt mache, nou sere yon kopi nan kach la (sèlman pou GET)
+        if (event.request.method === 'GET') {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+        }
         return res;
       })
       .catch(() => caches.match(event.request)) // Si pa gen entènèt, pran nan kach

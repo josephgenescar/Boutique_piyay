@@ -448,7 +448,7 @@ title: Sant Kontwòl Total - Boutique Piyay
   async function loadAdminData() {
     try {
       const { data: users }  = await supA.from('profiles').select('*');
-      const { data: prods }  = await supA.from('user_products').select('*, profiles(full_name)');
+      const { data: prods }  = await supA.from('user_products').select('*, profiles!inner(full_name)');
       const { data: orders } = await supA.from('orders').select('*');
       const { data: withdrawals } = await supA.from('affiliate_withdrawals').select('*').order('created_at', { ascending: false });
 

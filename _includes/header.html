@@ -128,7 +128,7 @@
         <div class="nav-scroll">
             <a href="/" class="nav-lnk" data-i18n="nav.all_products">Tout Pwodwi</a>
             <a href="/shop/" class="nav-lnk" style="color:#ff4747; font-weight:900;" data-i18n="nav.shop">🛍️ BOUTIK</a>
-            <a href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900;" data-i18n="nav.sell">🚀 Vann pa w</a>
+            <a id="nav-sell-link" href="/vendre.html" class="nav-lnk" style="color:#2563eb; font-weight:900; display:none;" data-i18n="nav.sell">🚀 Vann pa w</a>
             <a href="/affiliate.html" class="nav-lnk" style="color:#10b981; font-weight:900;" data-i18n="nav.affiliate">💸 Afilyasyon</a>
             {% for cat in site.categories %}<a href="{{ cat.url }}" class="nav-lnk">{{ cat.display_name | default: cat.title }}</a>{% endfor %}
         </div>
