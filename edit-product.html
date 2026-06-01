@@ -65,6 +65,14 @@ title: Modifye Pwodwi - Boutique Piyay
         const { data: { user } } = await supE.auth.getUser();
         if (!user) { window.location.href = "/login.html"; return; }
 
+        // Vérifier si l'utilisateur est un vendeur actif
+        const { data: profile } = await supE.from('profiles').select('role, is_active_seller').eq('id', user.id).single();
+        if (!profile || profile.role !== 'seller' || !profile.is_active_seller) {
+            alert("⚠️ Ou dwe yon vandè aktif pou aksede paj sa a!");
+            window.location.href = "/";
+            return;
+        }
+
         const { data: p, error } = await supE.from('user_products').select('*').eq('id', prodId).single();
         if (error || p.seller_id !== user.id) { alert("Ou pa gen dwa modifye pwodwi sa a."); window.location.href = "/dashboard.html"; return; }
 

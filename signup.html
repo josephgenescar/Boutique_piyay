@@ -135,7 +135,15 @@
                 <div class="divider">Informations Boutique</div>
                 <div class="form-group">
                     <label class="form-label">Nom de la Boutique *</label>
-                    <input type="text" id="shopName" class="form-input" placeholder="ex : Boutique Belle Affaire">
+                    <input type="text" id="shopName" class="form-input" placeholder="ex : Boutique Belle Affaire" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp (avec code pays) *</label>
+                    <input type="tel" id="whatsappNumber" class="form-input" placeholder="ex : 50948868964">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Adresse</label>
+                    <input type="text" id="address" class="form-input" placeholder="ex : Port-au-Prince, Haïti">
                 </div>
             </div>
 
@@ -174,6 +182,17 @@
         const fullName = document.getElementById('fullName').value.trim();
         const wa = document.getElementById('whatsapp').value.trim();
 
+        // Validate seller fields
+        if (currentRole === 'seller') {
+            const shopName = document.getElementById('shopName').value.trim();
+            if (!shopName) {
+                alert("⚠️ Tanpri ranpli non boutik la!");
+                btn.disabled = false;
+                btn.innerHTML = "CRÉER MON COMPTE";
+                return;
+            }
+        }
+
         try {
             const { data: authData, error: authErr } = await supS.auth.signUp({
                 email,
@@ -187,9 +206,11 @@
                 const profileData = {
                     id: authData.user.id,
                     full_name: fullName,
-                    shop_name: (currentRole === 'seller' && document.getElementById('shopName').value) ? document.getElementById('shopName').value.trim() : null,
-                    email,
+                    shop_name: (currentRole === 'seller') ? document.getElementById('shopName').value.trim() : null,
                     whatsapp: wa,
+                    whatsapp_number: (currentRole === 'seller') ? document.getElementById('whatsappNumber').value.trim() : null,
+                    address: (currentRole === 'seller') ? document.getElementById('address').value.trim() : null,
+                    email,
                     role: currentRole,
                     is_active_seller: currentRole === 'seller'
                 };

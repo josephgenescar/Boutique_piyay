@@ -1152,6 +1152,14 @@
         } else {
             currentUser = session.user;
         }
+
+        // Vérifier si l'utilisateur est un vendeur actif
+        const { data: profile } = await supD.from('profiles').select('role, is_active_seller').eq('id', currentUser.id).single();
+        if (!profile || profile.role !== 'seller' || !profile.is_active_seller) {
+            alert("⚠️ Ou dwe yon vandè aktif pou aksede paj sa a!");
+            return window.location.assign('/');
+        }
+
         document.getElementById('loading-overlay').style.display = 'none';
         loadAll();
         loadOrders();
