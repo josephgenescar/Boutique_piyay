@@ -220,9 +220,25 @@ title: Konekte - Boutique Piyay
         btn.innerHTML = 'Se connecter 🚀';
       } else {
         showToast('✅ Succès ! Redirection...', 'success');
+
+        // Vérifier le rôle de l'utilisateur
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
         const redirect = new URLSearchParams(window.location.search).get('redirect');
+
         setTimeout(() => {
-          window.location.href = redirect || '/dashboard.html';
+          // Si c'est un vendeur, rediriger vers dashboard
+          if (profile && profile.role === 'seller') {
+            window.location.href = redirect || '/dashboard.html';
+          }
+          // Si c'est un client, rediriger vers la page d'accueil
+          else {
+            window.location.href = redirect || '/';
+          }
         }, 1200);
       }
     };
