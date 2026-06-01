@@ -1144,29 +1144,34 @@
     let selectedProdId = null;
 
     async function init() {
-        const { data: { session } } = await supD.auth.getSession();
-        if (!session) {
-            const { data: { user } } = await supD.auth.getUser();
-            if (!user) return window.location.assign('login.html');
-            currentUser = user;
-        } else {
-            currentUser = session.user;
-        }
+        try {
+            const { data: { session } } = await supD.auth.getSession();
+            if (!session) {
+                const { data: { user } } = await supD.auth.getUser();
+                if (!user) return window.location.assign('login.html');
+                currentUser = user;
+            } else {
+                currentUser = session.user;
+            }
 
-        // Vérifier si l'utilisateur est un vendeur
-        const { data: profile } = await supD.from('profiles').select('role').eq('id', currentUser.id).single();
-        if (!profile || profile.role !== 'seller') {
-            alert("⚠️ Se sèlman vandè yo ka aksede dashboard sa a!");
-            return window.location.assign('/');
-        }
+            // Vérifier si l'utilisateur est un vendeur
+            const { data: profile } = await supD.from('profiles').select('role').eq('id', currentUser.id).single();
+            if (!profile || profile.role !== 'seller') {
+                alert("⚠️ Se sèlman vandè yo ka aksede dashboard sa a!");
+                return window.location.assign('/');
+            }
 
-        document.getElementById('loading-overlay').style.display = 'none';
-        loadAll();
-        loadOrders();
-        loadFeedbacks();
-        loadNotifications();
-        syncPointsWithSales();
-        initChart();
+            document.getElementById('loading-overlay').style.display = 'none';
+            loadAll();
+            loadOrders();
+            loadFeedbacks();
+            loadNotifications();
+            syncPointsWithSales();
+            initChart();
+        } catch (error) {
+            console.error('Erè nan init():', error);
+            alert("❌ Erè nan chajman dashboard: " + error.message);
+        }
     }
 
     function initChart() {
@@ -1254,38 +1259,42 @@
     }
 
     async function loadOrders() {
-        const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
-        const list = document.getElementById('orders-list');
-        if (orders && orders.length > 0) {
-            list.innerHTML = orders.map(o => {
-                const orderItems = parseOrderItems(o);
-                const totalAmount = getOrderTotal(o);
-                const groupedQuantity = orderItems.reduce((sum, item) => sum + Number(item.quantity || 1), 0) || Number(o.quantity || 0) || 1;
-                const itemBreakdown = orderItems.length > 0 ? orderItems.map(item => {
-                    const qty = Number(item.quantity || 1);
-                    const unitPrice = Number(item.price || 0);
-                    const lineTotal = unitPrice * qty;
-                    return `<div class="order-line-item"><span>${qty} x ${item.title || 'Produit'}</span><span>${lineTotal.toLocaleString()} HTG</span></div>`;
-                }).join('') : `<div class="order-line-item"><span>${o.product_title || o.product_name || 'Produit'}</span><span>${Number(o.amount || 0).toLocaleString()} HTG</span></div>`;
+        try {
+            const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
+            const list = document.getElementById('orders-list');
+            if (orders && orders.length > 0) {
+                list.innerHTML = orders.map(o => {
+                    const orderItems = parseOrderItems(o);
+                    const totalAmount = getOrderTotal(o);
+                    const groupedQuantity = orderItems.reduce((sum, item) => sum + Number(item.quantity || 1), 0) || Number(o.quantity || 0) || 1;
+                    const itemBreakdown = orderItems.length > 0 ? orderItems.map(item => {
+                        const qty = Number(item.quantity || 1);
+                        const unitPrice = Number(item.price || 0);
+                        const lineTotal = unitPrice * qty;
+                        return `<div class="order-line-item"><span>${qty} x ${item.title || 'Produit'}</span><span>${lineTotal.toLocaleString()} HTG</span></div>`;
+                    }).join('') : `<div class="order-line-item"><span>${o.product_title || o.product_name || 'Produit'}</span><span>${Number(o.amount || 0).toLocaleString()} HTG</span></div>`;
 
-                return `
-                <div class="order-card ${o.status || 'pending'}">
-                    <div class="order-info">
-                        <div class="order-id">KÒMAND #${o.id.substring(0,8)}</div>
-                        <div class="order-title">${o.product_title || o.product_name || 'Pwodwi'}</div>
-                        <div class="order-meta">Client: ${o.customer_name || o.customer_phone || o.customer_email || '—'} · <b>${totalAmount.toLocaleString()} HTG</b></div>
-                        <div class="order-meta" style="margin-top:6px;">🛍️ ${groupedQuantity} article(s) commandé(s)</div>
-                        <div class="order-items-list" style="margin-top:10px;">${itemBreakdown}</div>
-                        <div style="margin-top:8px;"><span class="order-status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
+                    return `
+                    <div class="order-card ${o.status || 'pending'}">
+                        <div class="order-info">
+                            <div class="order-id">KÒMAND #${o.id.substring(0,8)}</div>
+                            <div class="order-title">${o.product_title || o.product_name || 'Pwodwi'}</div>
+                            <div class="order-meta">Client: ${o.customer_name || o.customer_phone || o.customer_email || '—'} · <b>${totalAmount.toLocaleString()} HTG</b></div>
+                            <div class="order-meta" style="margin-top:6px;">🛍️ ${groupedQuantity} article(s) commandé(s)</div>
+                            <div class="order-items-list" style="margin-top:10px;">${itemBreakdown}</div>
+                            <div style="margin-top:8px;"><span class="order-status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
+                        </div>
+                        <div>
+                            ${(o.status === 'pending' || !o.status) ? `<button class="btn-order-action" onclick="markAsDelivered('${o.id}')">🚚 Make kòm Livre</button>` : ''}
+                        </div>
                     </div>
-                    <div>
-                        ${(o.status === 'pending' || !o.status) ? `<button class="btn-order-action" onclick="markAsDelivered('${o.id}')">🚚 Make kòm Livre</button>` : ''}
-                    </div>
-                </div>
-            `;
-            }).join('');
-        } else {
-            list.innerHTML = `<div class="empty-state"><div class="empty-title">Aucune commande n’a encore été passée.</div></div>`;
+                `;
+                }).join('');
+            } else {
+                list.innerHTML = `<div class="empty-state"><div class="empty-title">Aucune commande n'a encore été passée.</div></div>`;
+            }
+        } catch (error) {
+            console.error('Erè nan loadOrders():', error);
         }
     }
 
@@ -1361,41 +1370,49 @@
     }
 
     async function loadFeedbacks() {
-        const { data: fbs } = await supD.from('feedback').select('*, user_products(title), profiles(full_name)').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
-        const list = document.getElementById('feedback-list');
-        if (fbs && fbs.length > 0) {
-            list.innerHTML = fbs.map(f => `
-                <div class="feedback-item">
-                    <div class="fb-user"><span>👤 ${f.profiles ? f.profiles.full_name : 'Client'}</span><span class="fb-date">${new Date(f.created_at).toLocaleDateString()}</span></div>
-                    <div class="fb-rating">${'⭐'.repeat(f.rating)}</div>
-                    <div class="fb-comment">${f.comment || 'Pa gen kòmantè.'}</div>
-                    <div class="fb-prod">📦 Pwodwi: ${f.user_products ? f.user_products.title : 'N/A'}</div>
-                </div>
-            `).join('');
+        try {
+            const { data: fbs } = await supD.from('feedback').select('*, user_products(title), profiles(full_name)').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
+            const list = document.getElementById('feedback-list');
+            if (fbs && fbs.length > 0) {
+                list.innerHTML = fbs.map(f => `
+                    <div class="feedback-item">
+                        <div class="fb-user"><span>👤 ${f.profiles ? f.profiles.full_name : 'Client'}</span><span class="fb-date">${new Date(f.created_at).toLocaleDateString()}</span></div>
+                        <div class="fb-rating">${'⭐'.repeat(f.rating)}</div>
+                        <div class="fb-comment">${f.comment || 'Pa gen kòmantè.'}</div>
+                        <div class="fb-prod">📦 Pwodwi: ${f.user_products ? f.user_products.title : 'N/A'}</div>
+                    </div>
+                `).join('');
+            }
+        } catch (error) {
+            console.error('Erè nan loadFeedbacks():', error);
         }
     }
 
     async function loadNotifications() {
-        const { data: notifs } = await supD.from('notifications').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
-        const list = document.getElementById('notifications-list');
-        if (notifs && notifs.length > 0) {
-            list.innerHTML = notifs.map(n => `
-                <div class="notification-item ${n.is_read ? 'read' : 'unread'}">
-                    <div class="notif-header">
-                        <span class="notif-type">${n.type}</span>
-                        <span class="notif-date">${new Date(n.created_at).toLocaleDateString('fr-HT', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}</span>
+        try {
+            const { data: notifs } = await supD.from('notifications').select('*').eq('seller_id', currentUser.id).order('created_at', { ascending: false });
+            const list = document.getElementById('notifications-list');
+            if (notifs && notifs.length > 0) {
+                list.innerHTML = notifs.map(n => `
+                    <div class="notification-item ${n.is_read ? 'read' : 'unread'}">
+                        <div class="notif-header">
+                            <span class="notif-type">${n.type}</span>
+                            <span class="notif-date">${new Date(n.created_at).toLocaleDateString('fr-HT', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}</span>
+                        </div>
+                        <div class="notif-title">${n.title}</div>
+                        <div class="notif-message">${n.message}</div>
                     </div>
-                    <div class="notif-title">${n.title}</div>
-                    <div class="notif-message">${n.message}</div>
-                </div>
-            `).join('');
-        } else {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">🔔</div>
-                    <div class="empty-title">Pa gen notifikasyon pou kounya</div>
-                </div>
-            `;
+                `).join('');
+            } else {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔔</div>
+                        <div class="empty-title">Pa gen notifikasyon pou kounya</div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Erè nan loadNotifications():', error);
         }
     }
 
