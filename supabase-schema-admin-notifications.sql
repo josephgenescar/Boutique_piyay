@@ -115,7 +115,6 @@ BEGIN
       'category', NEW.category,
       'price', NEW.price,
       'old_price', NEW.old_price,
-      'stock', NEW.stock,
       'image_url', NEW.image_url,
       'is_approved', NEW.is_approved,
       'created_at', NEW.created_at
