@@ -222,11 +222,20 @@ title: Konekte - Boutique Piyay
         showToast('✅ Succès ! Redirection...', 'success');
 
         // Vérifier le rôle de l'utilisateur
-        const { data: profile, error: profileError } = await supabaseClient
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
+        let profile = null;
+        let profileError = null;
+
+        try {
+          const result = await supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+          profile = result.data;
+          profileError = result.error;
+        } catch (e) {
+          profileError = e;
+        }
 
         console.log('Profile:', profile);
         console.log('Profile error:', profileError);
@@ -248,6 +257,14 @@ title: Konekte - Boutique Piyay
             console.error('Erè nan kreyasyon profile:', insertError);
           } else {
             console.log('Profile kreye avèk siksè');
+            // Rekipere profile a ankou apre kreyasyon
+            const { data: newProfile } = await supabaseClient
+              .from('profiles')
+              .select('role')
+              .eq('id', data.user.id)
+              .single();
+            profile = newProfile;
+            console.log('Profile apre kreyasyon:', profile);
           }
         }
 

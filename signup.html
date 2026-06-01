@@ -214,7 +214,20 @@
                     is_active_seller: currentRole === 'seller'
                 };
 
-                await supS.from('profiles').upsert([profileData]);
+                console.log('ProfileData:', profileData);
+                console.log('CurrentRole:', currentRole);
+
+                const { error: upsertError } = await supS.from('profiles').upsert([profileData]);
+
+                if (upsertError) {
+                    console.error('Erè nan upsert:', upsertError);
+                    alert("❌ Erè nan kreyasyon profile: " + upsertError.message);
+                    btn.disabled = false;
+                    btn.innerHTML = "CRÉER MON COMPTE";
+                    return;
+                }
+
+                console.log('Profile kreye avèk siksè');
                 alert("🎉 Compte créé ! Veuillez vérifier votre email.");
                 window.location.href = "/login.html";
             }
