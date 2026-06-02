@@ -760,6 +760,95 @@ window.submitOrder = async function() {
       } catch (notifError) {
         console.error('⚠️ Erè nan kreye notifikasyon:', notifError);
       }
+
+      // Voye email bay vandè a lè l sèvi Supabase Edge Function
+      try {
+        const sellerId = cart[0]?.sellerId || null;
+        if (sellerId) {
+          // Jwenn email vandè a nan Supabase
+          const { data: sellerProfile } = await sup.from('profiles').select('email, whatsapp').eq('id', sellerId).single();
+          const sellerEmail = sellerProfile?.email;
+          const sellerPhone = sellerProfile?.whatsapp || cart[0]?.sellerPhone || '';
+          
+          if (sellerEmail) {
+            const emailHtml = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .header { background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                  .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                  .info-box { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #ff4747; }
+                  .btn { background: #ff4747; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; }
+                  .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>🛒 Nouvo Komand</h1>
+                  </div>
+                  <div class="content">
+                    <p><strong>Kliyan:</strong> ${name}</p>
+                    <p><strong>Telefòn:</strong> ${phone}</p>
+                    <p><strong>Zon:</strong> ${zone}</p>
+                    <p><strong>Metòd Peman:</strong> ${paymentMethod}</p>
+                    <p><strong>Total:</strong> ${totalAmount} HTG</p>
+                    
+                    <div class="info-box">
+                      <p><strong>Artik:</strong></p>
+                      ${cart.map(item => `<p>• ${item.title} (${item.qty} x ${item.price} HTG)</p>`).join('')}
+                    </div>
+
+                    <p style="margin-top: 20px;">
+                      <a href="https://wa.me/${sellerPhone}?text=Salut, mwen te fè yon komand sou Boutique Piyay. Komand #${orderGroupId}" class="btn">Kontakte Kliyan sou WhatsApp</a>
+                    </p>
+                  </div>
+                  <div class="footer">
+                    <p>Boutique Piyay - © 2026</p>
+                  </div>
+                </div>
+              </body>
+              </html>
+            `;
+
+            // Voye email lè l sèvi Supabase Edge Function
+            const supabaseUrl = 'https://letyferfjpxmstohvgcj.supabase.co';
+            const response = await fetch(`${supabaseUrl}/functions/v1/admin-notification`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'new_order',
+                to: sellerEmail,
+                data: {
+                  order_id: orderGroupId,
+                  customer_name: name,
+                  customer_phone: phone,
+                  delivery_zone: zone,
+                  payment_method: paymentMethod,
+                  total_amount: totalAmount,
+                  items_count: cart.length,
+                  seller_email: sellerEmail
+                }
+              })
+            });
+
+            if (response.ok) {
+              console.log('✅ Email voye bay vandè via Supabase Edge Function');
+            } else {
+              console.error('⚠️ Erè nan voye email:', await response.text());
+            }
+          }
+        }
+      } catch (emailError) {
+        console.error('⚠️ Erè nan voye email:', emailError);
+      }
     } else {
       console.warn('⚠️ Supabase client introuvable : la commande ne pourra pas être enregistrée dans la base de données.');
     }

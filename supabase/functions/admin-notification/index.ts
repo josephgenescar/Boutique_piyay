@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { type, data } = await req.json()
+    const { type, data, to } = await req.json()
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -22,6 +22,7 @@ serve(async (req) => {
 
     let subject = ''
     let html = ''
+    let recipientEmail = to || ADMIN_EMAIL
 
     switch (type) {
       case 'new_order':
@@ -68,7 +69,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         type: 'admin_notification',
-        to: ADMIN_EMAIL,
+        to: recipientEmail,
         subject: subject,
         html: html,
         data: { type, ...data },

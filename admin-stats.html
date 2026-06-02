@@ -286,12 +286,28 @@ title: Sant Kontwòl Total - Boutique Piyay
 
     <!-- TABS -->
     <div class="tabs-bar">
-      <button onclick="showTab('tab-sellers')" class="tab-btn active">👥 Vendeur & Disiplin</button>
+      <button onclick="showTab('tab-notifications')" class="tab-btn">🔔 Notifikasyon</button>
+      <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Vendeur & Disiplin</button>
       <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
       <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
       <button onclick="showTab('tab-orders')" class="tab-btn">🛒 Tout Commande</button>
       <button onclick="showTab('tab-new-shops')" class="tab-btn">🛒 Tout Boutik</button>
       <button onclick="showTab('tab-traffic')" class="tab-btn">📊 Trafik</button>
+    </div>
+
+    <!-- TAB: NOTIFICATIONS -->
+    <div id="tab-notifications" class="tab-content" style="display:none;">
+      <div class="admin-card">
+        <div class="card-title">🔔 Notifikasyon</div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Tip</th><th>Tit</th><th>Mesaj</th><th>Dat</th><th>Aksyon</th></tr>
+            </thead>
+            <tbody id="notifications-list"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- TAB: SELLERS -->
@@ -451,11 +467,25 @@ title: Sant Kontwòl Total - Boutique Piyay
       const { data: prods }  = await supA.from('user_products').select('*, profiles!inner(full_name)');
       const { data: orders } = await supA.from('orders').select('*');
       const { data: withdrawals } = await supA.from('affiliate_withdrawals').select('*').order('created_at', { ascending: false });
+      const { data: notifications } = await supA.from('admin_notifications').select('*').order('created_at', { ascending: false });
 
       document.getElementById('stat-sellers').innerText    = users ? users.length : 0;
       document.getElementById('stat-products').innerText   = prods ? prods.length : 0;
       document.getElementById('stat-withdrawals').innerText = (withdrawals || []).filter(w => w.status === 'pending').length;
       document.getElementById('stat-revenue').innerText    = (orders || []).reduce((a, o) => a + (o.total_price || 0), 0) + " HTG";
+
+      // Chaje notifikasyon yo
+      document.getElementById('notifications-list').innerHTML = (notifications || []).map(n => `
+        <tr>
+          <td><span class="badge ${n.is_read ? 'pending' : 'active'}">${n.type}</span></td>
+          <td>${n.title}</td>
+          <td>${n.message}</td>
+          <td>${new Date(n.created_at).toLocaleDateString('fr-FR')}</td>
+          <td>
+            ${!n.is_read ? `<button onclick="markAsRead('${n.id}')" class="btn-action btn-unblock">Mark as Read</button>` : ''}
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;">Pa gen notifikasyon</td></tr>';
 
       document.getElementById('sellers-list').innerHTML = (users || []).map(u => `
         <tr>
@@ -544,6 +574,12 @@ title: Sant Kontwòl Total - Boutique Piyay
   async function handleWithdrawal(id, status) {
     await supA.from('affiliate_withdrawals').update({ status }).eq('id', id);
     showToast(status === 'approved' ? '✅ Retrè apwouve' : '❌ Retrè refize', 'success');
+    loadAdminData();
+  }
+
+  async function markAsRead(id) {
+    await supA.from('admin_notifications').update({ is_read: true }).eq('id', id);
+    showToast('✅ Notifikasyon make kòm li', 'success');
     loadAdminData();
   }
 
