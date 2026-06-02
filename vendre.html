@@ -18,9 +18,9 @@ title: Vann yon Pwodwi - Boutique Piyay
             return;
         }
 
-        // Vérifier si l'utilisateur est un vendeur
+        // Vérifier si l'utilisateur est un vendeur ou admin
         const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
-        if (!profile || profile.role !== 'seller') {
+        if (!profile || (profile.role !== 'seller' && profile.role !== 'admin')) {
             alert("⚠️ Se sèlman vandè yo ka aksede paj sa a!");
             window.location.href = "/";
             document.documentElement.innerHTML = "<html><body style='background:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;'><h2>Oup! Se sèlman vandè yo ka aksede paj sa a...</h2></body></html>";
@@ -252,6 +252,8 @@ title: Vann yon Pwodwi - Boutique Piyay
                     <option value="maison">🏠 Maison & Bureau</option>
                     <option value="beaute">💄 Beauté & Cosmétiques</option>
                     <option value="epicerie">🛒 Épicerie & Supermarché</option>
+                    <option value="fleurs">💐 Fleurs</option>
+                    <option value="artisanat">🎨 Produits Artisanaux</option>
                 </select>
             </div>
         </div>

@@ -525,16 +525,15 @@ title: Sant Kontwòl Total - Boutique Piyay
     if (!confirm("Efase pwodwi sa a definitivman?")) return;
 
     try {
-      const resp = await fetch('/.netlify/functions/admin-delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_product', productId: id })
-      });
+      console.log('Deleting product:', id);
+      const { error } = await supA.from('user_products').delete().eq('id', id);
+      if (error) {
+        console.error('Error deleting product:', error);
+        throw new Error(error.message || 'Failed to delete product');
+      }
 
-      const result = await resp.json();
-      if (!resp.ok) throw new Error(result.error || 'Delete failed');
-
-      showToast(result.message || '🗑️ Pwodwi efase', 'success');
+      console.log('Product deleted successfully');
+      showToast('🗑️ Pwodwi efase', 'success');
       loadAdminData();
     } catch (error) {
       console.error('Delete product error:', error);
@@ -670,16 +669,22 @@ title: Sant Kontwòl Total - Boutique Piyay
     }
 
     try {
-      const resp = await fetch('/.netlify/functions/admin-delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_shop', shopId })
-      });
+      console.log('Deleting shop products for shop:', shopId);
+      const { error: prodError } = await supA.from('user_products').delete().eq('seller_id', shopId);
+      if (prodError) {
+        console.error('Error deleting shop products:', prodError);
+        throw new Error(prodError.message || 'Failed to delete shop products');
+      }
 
-      const result = await resp.json();
-      if (!resp.ok) throw new Error(result.error || 'Delete failed');
+      console.log('Deleting shop profile for shop:', shopId);
+      const { error: shopError } = await supA.from('profiles').delete().eq('id', shopId);
+      if (shopError) {
+        console.error('Error deleting shop profile:', shopError);
+        throw new Error(shopError.message || 'Failed to delete shop profile');
+      }
 
-      showToast(result.message || `✅ Boutik ${shopName} efase!`, 'success');
+      console.log('Shop deleted successfully');
+      showToast(`✅ Boutik ${shopName} efase!`, 'success');
       fetchNewShops();
       loadAdminData();
     } catch (error) {

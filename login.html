@@ -212,10 +212,18 @@ title: Konekte - Boutique Piyay
       const email    = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
+      console.log('Tentative de connexion avec email:', email);
+      console.log('Password length:', password.length);
+
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
+      console.log('Auth response data:', data);
+      console.log('Auth response error:', error);
+
       if (error) {
-        showToast('❌ ' + error.message, 'error');
+        console.error('Erreur de connexion:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        showToast('❌ ' + error.message + ' (Code: ' + error.status + ')', 'error');
         btn.disabled = false;
         btn.innerHTML = 'Se connecter 🚀';
       } else {
@@ -243,13 +251,19 @@ title: Konekte - Boutique Piyay
         // Si profile pa egziste, kreye li otomatikman
         if (profileError || !profile) {
           console.log('Profile pa egziste, kreye li otomatikman');
+          // Tcheke si itilizatè a se yon vendeur (nan user_metadata oswa URL parameter)
+          const isSeller = data.user.user_metadata?.role === 'seller' || 
+                          new URLSearchParams(window.location.search).get('role') === 'seller';
+          
+          console.log('Is seller:', isSeller);
+          
           const { error: insertError } = await supabaseClient
             .from('profiles')
             .insert([{
               id: data.user.id,
               email: data.user.email,
               full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Utilisateur',
-              role: 'client',
+              role: isSeller ? 'seller' : 'client',
               is_active_seller: false
             }]);
 
@@ -271,8 +285,8 @@ title: Konekte - Boutique Piyay
         const redirect = new URLSearchParams(window.location.search).get('redirect');
 
         setTimeout(() => {
-          // Si c'est un vendeur, rediriger vers dashboard
-          if (profile && profile.role === 'seller') {
+          // Si c'est un vendeur ou admin, rediriger vers dashboard
+          if (profile && (profile.role === 'seller' || profile.role === 'admin')) {
             console.log('Redirection vers dashboard.html');
             window.location.href = redirect || '/dashboard.html';
           }

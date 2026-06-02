@@ -964,13 +964,14 @@
         <p class="modal-sub">Choisissez comment vous souhaitez mettre ce produit en avant sur la page d’accueil.</p>
         <div class="boost-opts">
 
-            <!--
-            <div class="boost-opt" id="boost-paid-opt" onclick="processBoost('paid')">
-                <div class="boost-opt-title">💳 Boost payant (100 HTG)</div>
-                <div class="boost-opt-sub">Boostez votre produit pendant 48h pour seulement 100 HTG via MonCash.</div>
+            <!-- Boost avec Points -->
+            <div class="boost-opt" id="boost-points-opt" onclick="processBoost('points')">
+                <div class="boost-opt-title">� Boost avec Points (50 points)</div>
+                <div class="boost-opt-sub">Utilisez vos points pour booster votre produit pendant 48h.<br>Vous avez <span id="user-points-display">0</span> points.</div>
                 <span class="boost-opt-tag">48 ÈDTAN</span>
             </div>
-            -->
+
+            <!-- Boost Payant -->
             <div class="boost-opt" id="boost-paid-opt">
                                 <div class="boost-opt-title">💳 Boost payant (100 HTG)</div>
                                 <div class="boost-opt-sub">Pour booster votre produit, payez manuellement et envoyez la preuve à l’admin.<br><br>
@@ -1030,9 +1031,28 @@
     function closePaidBoostModal() {
         document.getElementById('paid-boost-modal').style.display = 'none';
     }
-    function processBoost(type) {
+    async function processBoost(type) {
         if (type === 'paid') {
             openPaidBoostModal();
+            return;
+        }
+        if (type === 'points') {
+            const { data: prof } = await supD.from('profiles').select('points').eq('id', currentUser.id).single();
+            const points = prof?.points || 0;
+            if (points < 50) {
+                alert('Ou pa gen ase points. Ou bezwen 50 points pou boost yon pwodwi.');
+                return;
+            }
+            // Dedwi 50 points epi aktive boost
+            const newPoints = points - 50;
+            const boostExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+            await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
+            await supD.from('user_products').update({ is_boosted: true, boost_expires_at: boostExpiresAt }).eq('id', selectedProdId);
+            document.getElementById('stat-points').innerText = newPoints;
+            document.getElementById('p-count').innerText = newPoints;
+            closeBoostModal();
+            loadAll();
+            alert('✅ Pwodwi a booste ak siksè! 50 points retire.');
             return;
         }
         alert('Opsyon boost gratis pa disponib kounye a. Sèvi ak boost peye oswa kontakte admin.');
@@ -1154,9 +1174,9 @@
                 currentUser = session.user;
             }
 
-            // Vérifier si l'utilisateur est un vendeur
+            // Vérifier si l'utilisateur est un vendeur ou admin
             const { data: profile } = await supD.from('profiles').select('role').eq('id', currentUser.id).single();
-            if (!profile || profile.role !== 'seller') {
+            if (!profile || (profile.role !== 'seller' && profile.role !== 'admin')) {
                 alert("⚠️ Se sèlman vandè yo ka aksede dashboard sa a!");
                 return window.location.assign('/');
             }
@@ -1205,7 +1225,7 @@
 
     async function syncPointsWithSales() {
         try {
-            const { data: orders } = await supD.from('orders').select('total_price, amount').eq('seller_id', currentUser.id);
+            const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id);
             const { data: prof, error: profErr } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
 
             if (profErr || !prof) {
@@ -1216,8 +1236,8 @@
             }
 
             if (orders && currentProfile) {
-                const totalSales = orders.reduce((sum, o) => sum + parseFloat(o.total_price || o.amount || 0), 0);
-                const newPoints = Math.floor(totalSales);
+                // Bay 5 points pa kòmand
+                const newPoints = orders.length * 5;
                 await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
                 document.getElementById('stat-points').innerText = newPoints;
                 document.getElementById('p-count').innerText = newPoints;
@@ -1504,18 +1524,55 @@
         }
 
         const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
+        console.log('Profile:', prof);
+        let { data: wallet, error: walletError } = await supD.from('wallets').select('*').eq('seller_id', currentUser.id).maybeSingle();
+        console.log('Wallet:', wallet);
+        console.log('Wallet Error:', walletError);
+        
+        // Si wallet pa egziste, kreye yon
+        if (!wallet && !walletError) {
+            console.log('Wallet pa egziste, kreye yon nouvo...');
+            const { data: newWallet, error: createError } = await supD.from('wallets').insert([{ seller_id: currentUser.id, balance: 0 }]).select().single();
+            if (createError) {
+                console.error('Erè nan kreye wallet:', createError);
+            } else {
+                wallet = newWallet;
+                console.log('Nouvo wallet kreye:', wallet);
+            }
+        }
+        
+        if (walletError) {
+            console.error('Erè nan chaje wallet:', walletError);
+        }
+        
         if (prof) {
             document.getElementById('prof-name').value = prof.shop_name || prof.full_name || '';
             document.getElementById('prof-whatsapp').value = prof.whatsapp_number || '';
             document.getElementById('prof-address').value = prof.address || '';
-            document.getElementById('wall-balance').innerHTML = `${prof.wallet_balance || 0} <span>HTG</span>`;
+            const balance = wallet ? wallet.balance : 0;
+            console.log('Balance:', balance);
+            document.getElementById('wall-balance').innerHTML = `${balance} <span>HTG</span>`;
             document.getElementById('api-key-display').innerText = currentUser.id;
-            document.getElementById('shop-url-display').innerText = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
+            const shopUrl = `${window.location.origin}/boutik-machann.html?id=${currentUser.id}`;
+            document.getElementById('shop-url-display').innerText = shopUrl;
+            
+            // Defini lyen sosyal yo
+            const shopName = prof.shop_name || prof.full_name || 'Boutique Piyay';
+            const shareText = `Vann tout sa ou bezwen nan ${shopName}! ${shopUrl}`;
+            
+            document.getElementById('share-wa').href = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+            document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shopUrl)}`;
+            document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(shopUrl)}&text=${encodeURIComponent(shareText)}`;
         }
     }
 
     function openBoostModal(id) {
         selectedProdId = id;
+        // Afiche point vendeur a nan modal
+        const { data: prof } = supD.from('profiles').select('points').eq('id', currentUser.id).single();
+        if (prof) {
+            document.getElementById('user-points-display').innerText = prof.points || 0;
+        }
         document.getElementById('boost-modal').style.display = 'flex';
     }
 
@@ -1578,7 +1635,49 @@
     }
 
     async function deleteProduct(id) {
-        if (confirm("Efase?")) { await supD.from('user_products').delete().eq('id', id); loadAll(); }
+        if (confirm("Efase?")) {
+            console.log('Tentative de suppression produit:', id);
+            try {
+                const { error } = await supD.from('user_products').delete().eq('id', id);
+                if (error) {
+                    console.error('Erreur suppression produit:', error);
+                    alert('❌ Erè nan efasman: ' + error.message);
+                } else {
+                    console.log('Produit supprimé avec succès');
+                    loadAll();
+                }
+            } catch (err) {
+                console.error('Erreur catch:', err);
+                alert('❌ Erè: ' + err.message);
+            }
+        }
+    }
+
+    async function deleteShop(sellerId) {
+        if (confirm("Ou sèten ou vle efase boutik sa a? Tout pwodwi yo pral efase tou.")) {
+            console.log('Tentative de suppression boutique:', sellerId);
+            try {
+                // Efase tout pwodwi boutik la
+                const { error: productsError } = await supD.from('user_products').delete().eq('seller_id', sellerId);
+                if (productsError) {
+                    console.error('Erreur suppression produits:', productsError);
+                }
+                
+                // Efase profile boutik la
+                const { error: profileError } = await supD.from('profiles').delete().eq('id', sellerId);
+                if (profileError) {
+                    console.error('Erreur suppression profile:', profileError);
+                    alert('❌ Erè nan efasman: ' + profileError.message);
+                } else {
+                    console.log('Boutique supprimée avec succès');
+                    alert('✅ Boutik efase avèk siksè!');
+                    loadAll();
+                }
+            } catch (err) {
+                console.error('Erreur catch:', err);
+                alert('❌ Erè: ' + err.message);
+            }
+        }
     }
 
     function switchTab(tab, el) {

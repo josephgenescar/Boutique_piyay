@@ -488,6 +488,12 @@ title: Akèy - Boutique Piyay
       flex: 1;
       gap: 6px;
     }
+    .boosted-rating {
+      font-size: 11px;
+      font-weight: 700;
+      color: #f59e0b;
+      margin-bottom: 2px;
+    }
     .boosted-title {
       font-size: 12px;
       font-weight: 800;
@@ -751,6 +757,7 @@ title: Akèy - Boutique Piyay
     .flash-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
     .flash-card:hover .flash-img { transform: scale(1.05); }
     .flash-name { font-size: 13px; font-weight: 700; margin: 10px 0 5px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 36px; }
+    .flash-rating { font-size: 11px; font-weight: 700; color: #f59e0b; margin-bottom: 4px; }
     .flash-prices { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
     .flash-new { color: var(--primary); font-weight: 900; font-size: 15px; }
     .flash-old { color: var(--gray); font-size: 11px; text-decoration: line-through; font-weight: 600; }
@@ -797,6 +804,7 @@ title: Akèy - Boutique Piyay
     .mkt-prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .mkt-prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
     .mkt-prod-name { font-size: 14px; font-weight: 700; color: var(--dark); margin: 12px 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 38px; }
+    .mkt-prod-rating { font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 4px; }
     .mkt-prod-price { color: var(--primary); font-weight: 900; font-size: 18px; margin-top: auto; }
     .btn-add-light { width: 100%; background: var(--light); color: var(--dark); border: none; padding: 12px; border-radius: var(--radius-sm); margin-top: 12px; font-weight: 800; cursor: pointer; font-size: 12px; font-family: inherit; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-add-light:hover { background: var(--dark); color: white; }
@@ -1104,8 +1112,37 @@ title: Akèy - Boutique Piyay
         .from('profiles')
         .select('*');
 
+      const { data: feedbacks } = await supabaseHome
+        .from('feedback')
+        .select('product_id, rating');
+
       allProducts = (prods   || []).filter(p => p.image_url && p.title && p.price);
       allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
+      
+      // Kalkile mwayèn rating pou chak pwodwi
+      const ratingsMap = {};
+      if (feedbacks) {
+        feedbacks.forEach(f => {
+          if (!ratingsMap[f.product_id]) {
+            ratingsMap[f.product_id] = { total: 0, count: 0 };
+          }
+          ratingsMap[f.product_id].total += f.rating;
+          ratingsMap[f.product_id].count += 1;
+        });
+      }
+      
+      // Ajoute mwayèn rating nan chak pwodwi
+      allProducts.forEach(p => {
+        const ratingData = ratingsMap[p.id];
+        if (ratingData && ratingData.count > 0) {
+          p.avgRating = ratingData.total / ratingData.count;
+          p.ratingCount = ratingData.count;
+        } else {
+          p.avgRating = 0;
+          p.ratingCount = 0;
+        }
+      });
+      
       buildSellerMap();
 
       console.log('📦 Total pwodwi chaje:', allProducts.length);
@@ -1150,6 +1187,15 @@ title: Akèy - Boutique Piyay
 
     const items = featured.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g, '');
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      
+      // Genere etoile rating
+      let ratingHTML = '';
+      if (p.avgRating > 0) {
+        const stars = Math.round(p.avgRating);
+        ratingHTML = `<div class="boosted-rating">⭐ ${p.avgRating.toFixed(1)} (${p.ratingCount})</div>`;
+      }
+      
       return `
         <div class="boosted-card boosted-product-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
@@ -1158,8 +1204,9 @@ title: Akèy - Boutique Piyay
           </a>
           <div class="boosted-card-body">
             <div class="boosted-title">${p.title}</div>
+            ${ratingHTML}
             <div class="boosted-price">${p.price} HTG</div>
-            <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
+            <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
               🛒 <span data-i18n="cart.add">Ajouter</span>
             </button>
           </div>
@@ -1355,6 +1402,14 @@ title: Akèy - Boutique Piyay
     }
     grid.innerHTML = list.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      
+      // Genere etoile rating
+      let ratingHTML = '';
+      if (p.avgRating > 0) {
+        ratingHTML = `<div class="mkt-prod-rating">⭐ ${p.avgRating.toFixed(1)} (${p.ratingCount})</div>`;
+      }
+      
       return `
         <div class="mkt-prod-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
@@ -1362,8 +1417,9 @@ title: Akèy - Boutique Piyay
                  onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
           </a>
           <div class="mkt-prod-name">${p.title}</div>
+          ${ratingHTML}
           <div class="mkt-prod-price">${p.price} HTG</div>
-          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\"")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
             🛒 <span data-i18n="cart.add">Ajouter</span>
           </button>
         </div>`;
@@ -1378,6 +1434,14 @@ title: Akèy - Boutique Piyay
       const valNew = parseFloat(p.price);
       const disc   = (valOld > valNew) ? Math.round(((valOld-valNew)/valOld)*100) : 0;
       const phone  = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      
+      // Genere etoile rating
+      let ratingHTML = '';
+      if (p.avgRating > 0) {
+        ratingHTML = `<div class="flash-rating">⭐ ${p.avgRating.toFixed(1)} (${p.ratingCount})</div>`;
+      }
+      
       return `
         <div class="flash-card">
           ${disc > 0 ? `<span class="flash-pct">-${disc}%</span>` : ''}
@@ -1388,11 +1452,12 @@ title: Akèy - Boutique Piyay
             </a>
           </div>
           <div class="flash-name">${p.title}</div>
+          ${ratingHTML}
           <div class="flash-prices">
             <span class="flash-new">${p.price} HTG</span>
             ${valOld > valNew ? `<span class="flash-old">${p.old_price} HTG</span>` : ''}
           </div>
-          <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}')">
+          <button class="btn-flash" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
             🛒 <span data-i18n="cart.add">Ajouter</span>
           </button>
         </div>`;

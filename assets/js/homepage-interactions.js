@@ -54,7 +54,7 @@ function scrollCategories(direction) {
 }
 
 // Add product to cart from homepage
-function addToCartHome(productTitle, productPrice, productImage) {
+function addToCartHome(productTitle, productPrice, productImage, sellerId, sellerName, sellerPhone) {
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
   const existingItem = cart.find(item => item.title === productTitle);
@@ -65,7 +65,10 @@ function addToCartHome(productTitle, productPrice, productImage) {
       title: productTitle,
       price: productPrice,
       image: productImage,
-      quantity: 1
+      quantity: 1,
+      sellerId: sellerId || null,
+      sellerName: sellerName || 'Boutique Piyay',
+      sellerPhone: sellerPhone || null
     });
   }
 

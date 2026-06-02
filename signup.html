@@ -98,11 +98,7 @@
     <div class="auth-body">
         <div class="role-label">Comment souhaitez-vous participer ?</div>
         <div class="role-grid">
-            <div id="opt-client" class="role-option active" onclick="setRole('client')">
-                <div class="role-icon">👤</div>
-                <div><div class="role-name">Client</div><div class="role-sub">Acheter seulement</div></div>
-            </div>
-            <div id="opt-seller" class="role-option" onclick="setRole('seller')">
+            <div id="opt-seller" class="role-option active" onclick="setRole('seller')">
                 <div class="role-icon">🏪</div>
                 <div><div class="role-name">Vendeur</div><div class="role-sub">Vendre des produits</div></div>
             </div>
@@ -118,10 +114,6 @@
                 <input type="text" id="fullName" class="form-input" placeholder="ex : Jean Dupont" required>
             </div>
             <div class="form-group">
-                <label class="form-label">WhatsApp *</label>
-                <input type="tel" id="whatsapp" class="form-input" placeholder="ex : 0612345678" required>
-            </div>
-            <div class="form-group">
                 <label class="form-label">Email *</label>
                 <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
             </div>
@@ -131,7 +123,7 @@
             </div>
 
             <!-- SELLER FIELDS -->
-            <div id="seller-fields" style="display:none;">
+            <div id="seller-fields" style="display:block;">
                 <div class="divider">Informations Boutique</div>
                 <div class="form-group">
                     <label class="form-label">Nom de la Boutique *</label>
@@ -162,7 +154,7 @@
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
     );
 
-    let currentRole = 'client';
+    let currentRole = 'seller';
 
     function setRole(role) {
         currentRole = role;
@@ -180,7 +172,6 @@
         const email = document.getElementById('email').value.trim();
         const pass = document.getElementById('password').value;
         const fullName = document.getElementById('fullName').value.trim();
-        const wa = document.getElementById('whatsapp').value.trim();
 
         // Validate seller fields
         if (currentRole === 'seller') {
@@ -197,7 +188,10 @@
             const { data: authData, error: authErr } = await supS.auth.signUp({
                 email,
                 password: pass,
-                options: { data: { full_name: fullName } }
+                options: { 
+                    data: { full_name: fullName, role: currentRole },
+                    emailConfirmTo: false
+                }
             });
 
             if (authErr) throw authErr;
@@ -207,7 +201,7 @@
                     id: authData.user.id,
                     full_name: fullName,
                     shop_name: (currentRole === 'seller') ? document.getElementById('shopName').value.trim() : null,
-                    whatsapp: (currentRole === 'seller') ? document.getElementById('whatsappNumber').value.trim() : wa,
+                    whatsapp: (currentRole === 'seller') ? document.getElementById('whatsappNumber').value.trim() : null,
                     address: (currentRole === 'seller') ? document.getElementById('address').value.trim() : null,
                     email,
                     role: currentRole,

@@ -250,7 +250,7 @@ title: Kategori Pwodwi
 </div>
 
 <script>
-  var allProducts = JSON.parse(localStorage.getItem('bp_products') || '[]');
+  var allProducts = [];
   var currentCategory = new URLSearchParams(window.location.search).get('cat') || 'habillement';
   var currentSort = 'all';
 
@@ -260,8 +260,25 @@ title: Kategori Pwodwi
     'maison':        '🏠 Maison & Bureau',
     'beaute':        '💄 Beauté & Cosmétiques',
     'epicerie':      '🛒 Épicerie & Supermarché',
+    'fleurs':        '💐 Fleurs',
+    'artisanat':     '🎨 Produits Artisanaux',
     'accessoires-electronique': '⚡ Électronique'
   };
+
+  // Chaje pwodwi yo nan Supabase
+  async function loadProducts() {
+    try {
+      const supabaseUrl = 'https://letyferfjpxmstohvgcj.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      
+      const { data: products } = await supabase.from('user_products').select('*').eq('is_approved', true);
+      allProducts = products || [];
+      displayProducts();
+    } catch (error) {
+      console.error('Erè nan chaje pwodwi:', error);
+    }
+  }
 
   function displayProducts() {
     var filtered = allProducts.filter(function(p) { return p.category === currentCategory; });
@@ -287,8 +304,8 @@ title: Kategori Pwodwi
     }
 
     list.innerHTML = filtered.map(function(p) {
-      var imgHTML = p.image
-        ? '<img src="' + p.image + '" alt="' + p.title + '" onerror="this.parentElement.innerHTML=\'<div class=\\\"prod-img-placeholder\\\">🛍️</div>\'">'
+      var imgHTML = p.image_url
+        ? '<img src="' + p.image_url + '" alt="' + p.title + '" onerror="this.parentElement.innerHTML=\'<div class=\\\"prod-img-placeholder\\\">🛍️</div>\'">'
         : '<div class="prod-img-placeholder">🛍️</div>';
 
       var inStock = p.stock > 0;
@@ -323,5 +340,6 @@ title: Kategori Pwodwi
     displayProducts();
   }
 
-  displayProducts();
+  // Chaje pwodwi yo lè paj la kòmanse
+  loadProducts();
 </script>

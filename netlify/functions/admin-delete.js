@@ -33,17 +33,24 @@ exports.handler = async (event) => {
   }
 
   try {
+    console.log('Admin delete function called with action:', action);
+    console.log('Body:', body);
+
     if (action === 'delete_product') {
       const productId = body.productId;
       if (!productId) {
+        console.error('Missing productId');
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing productId' }) };
       }
 
+      console.log('Deleting product:', productId);
       const { error } = await supabase.from('user_products').delete().eq('id', productId);
       if (error) {
+        console.error('Error deleting product:', error);
         return { statusCode: 500, headers, body: JSON.stringify({ error: error.message || 'Failed to delete product' }) };
       }
 
+      console.log('Product deleted successfully');
       return {
         statusCode: 200,
         headers,
@@ -54,19 +61,25 @@ exports.handler = async (event) => {
     if (action === 'delete_shop') {
       const shopId = body.shopId;
       if (!shopId) {
+        console.error('Missing shopId');
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing shopId' }) };
       }
 
+      console.log('Deleting shop products for shop:', shopId);
       const { error: prodError } = await supabase.from('user_products').delete().eq('seller_id', shopId);
       if (prodError) {
+        console.error('Error deleting shop products:', prodError);
         return { statusCode: 500, headers, body: JSON.stringify({ error: prodError.message || 'Failed to delete shop products' }) };
       }
 
+      console.log('Deleting shop profile for shop:', shopId);
       const { error: shopError } = await supabase.from('profiles').delete().eq('id', shopId);
       if (shopError) {
+        console.error('Error deleting shop profile:', shopError);
         return { statusCode: 500, headers, body: JSON.stringify({ error: shopError.message || 'Failed to delete shop profile' }) };
       }
 
+      console.log('Shop deleted successfully');
       return {
         statusCode: 200,
         headers,
@@ -74,8 +87,10 @@ exports.handler = async (event) => {
       };
     }
 
+    console.error('Unknown action:', action);
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Unknown action' }) };
   } catch (error) {
+    console.error('Internal server error:', error);
     return { statusCode: 500, headers, body: JSON.stringify({ error: error.message || 'Internal server error' }) };
   }
 };

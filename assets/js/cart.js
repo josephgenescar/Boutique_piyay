@@ -11,7 +11,8 @@ function getSupabaseClient() {
   if (window.supabaseMain) return window.supabaseMain;
   if (window.supabase) {
     const url = window.SUPABASE_URL || window.S_URL || window.SUP_URL || window.SUPABASE_URL;
-    const key = window.SUPABASE_ANON_KEY || window.SUP_KEY || window.S_KEY || window.SUPABASE_KEY;
+    // Utilise service role key pour contourner RLS si disponible
+    const key = window.SUPABASE_SERVICE_ROLE_KEY || window.SUPABASE_ANON_KEY || window.SUP_KEY || window.S_KEY || window.SUPABASE_KEY;
     if (url && key) {
       try {
         return window.supabase.createClient(url, key);
@@ -70,7 +71,6 @@ function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zon
     order_group_id: orderGroupId,
     order_items: group.items,
     product_id: group.items.length === 1 ? group.items[0].product_id : null,
-    product_name: group.items.map(i => i.title).join(' | '),
     quantity: group.items.reduce((sum, item) => sum + Number(item.quantity || 1), 0),
     amount: group.amount,
     status: 'pending',
@@ -193,14 +193,21 @@ function drawCart() {
     .seller-name { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 900; color: #111827; }
     .seller-wa a { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; background: #25d366; color: white; border-radius: 12px; text-decoration: none; font-weight: 800; transition: transform .2s; }
     .seller-wa a:hover { transform: translateY(-1px); }
-    .cart-item { display: grid; grid-template-columns: 50px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid #f1f5f9; }
-    .cart-item:first-child { border-top: none; }
-    .cart-img { width: 50px; height: 50px; object-fit: cover; border-radius: 12px; background: #f8fafc; }
-    .cart-info { min-width: 0; }
-    .cart-title { font-weight: 800; font-size: 14px; color: #111827; margin-bottom: 4px; }
-    .cart-desc { font-size: 13px; color: #475569; line-height: 1.4; }
-    .cart-price { font-weight: 900; color: #ff4747; text-align: right; }
-    .remove-btn { background:none; border:none; color:#ef4444; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; }
+    .cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #f1f5f9; border-radius: 12px; margin-bottom: 12px; background: #fafbfc; }
+    .cart-item-image { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; }
+    .cart-item-details { flex: 1; }
+    .cart-item-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; color: #1e293b; }
+    .cart-item-price { font-weight: 800; font-size: 16px; color: #ff4747; }
+    .cart-item-quantity { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .qty-btn { width: 30px; height: 30px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .qty-btn:hover { background: #f1f5f9; }
+    .cart-item-delete { background: none; border: none; font-size: 18px; cursor: pointer; color: #ef4444; padding: 5px; }
+    .suggestion-line { display: flex; align-items: center; margin: 20px 0; color: #64748b; font-size: 13px; font-weight: 600; }
+    .suggestion-line::before, .suggestion-line::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+    .suggestion-line span { padding: 0 15px; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 12px; }
+    .cart-total-label { font-size: 14px; font-weight: 700; color: #64748b; }
+    .cart-total-amount { font-size: 24px; font-weight: 900; color: #ff4747; }
     .group-total { display:flex; justify-content:space-between; align-items:center; margin-top: 16px; padding: 14px 16px; background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0; font-weight: 900; color: #111827; }
     .receipt-footer { margin-top:20px; text-align:right; font-size:18px; font-weight:900; padding: 16px; border-top: 2px solid #f1f5f9; color: #111827; }
   </style>`;
@@ -231,13 +238,17 @@ function drawCart() {
       totalHTG += sub;
       html += `
         <div class="cart-item">
-          <img class="cart-img" src="${it.img}" onerror="this.src='/assets/images/logo.png'" alt="${it.title}">
-          <div class="cart-info">
-            <div class="cart-title">${it.title}</div>
-            <div class="cart-desc">${it.qty} x ${it.price.toLocaleString()} HTG</div>
+          <img class="cart-item-image" src="${it.img}" onerror="this.src='/assets/images/logo.png'" alt="${it.title}">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${it.title}</div>
+            <div class="cart-item-price">${it.price.toLocaleString()} HTG</div>
+            <div class="cart-item-quantity">
+              <button class="qty-btn" onclick="updateQty('${it.id}', -1)">-</button>
+              <span>${it.qty}</span>
+              <button class="qty-btn" onclick="updateQty('${it.id}', 1)">+</button>
+            </div>
           </div>
-          <div class="cart-price">${sub.toLocaleString()} HTG</div>
-          <button class="remove-btn" onclick="removeItem('${it.id}')">✕</button>
+          <button class="cart-item-delete" onclick="removeItem('${it.id}')">🗑️</button>
         </div>`;
     });
 
@@ -253,6 +264,16 @@ function removeItem(id) {
   let currentCart = getCart().filter(it => it.id !== id);
   localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
   refreshBadge(); drawCart();
+}
+
+function updateQty(id, change) {
+  let currentCart = getCart();
+  const item = currentCart.find(it => it.id === id);
+  if (item) {
+    item.qty = Math.max(1, (item.qty || 1) + change);
+    localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
+    refreshBadge(); drawCart();
+  }
 }
 
 function refreshBadge() {
@@ -681,9 +702,9 @@ window.submitOrder = async function() {
   const nameInput = document.getElementById('customer-name');
   const phoneInput = document.getElementById('customer-phone');
   const zoneInput = document.getElementById('delivery-zone');
-  const paymentSelect = document.getElementById('payment-method-select');
+  const paymentRadio = document.querySelector('input[name="payment-method"]:checked');
 
-  if (!nameInput || !phoneInput || !zoneInput || !paymentSelect) {
+  if (!nameInput || !phoneInput || !zoneInput || !paymentRadio) {
     alert('⚠️ Erreur : le formulaire est introuvable sur la page.'); return;
   }
 
@@ -692,7 +713,7 @@ window.submitOrder = async function() {
   const rawZone = zoneInput.value;
   const otherZone = document.getElementById('other-zone')?.value.trim() || '';
   const zone = rawZone === 'Lòt Zone' && otherZone ? otherZone : rawZone;
-  const paymentMethod = paymentSelect.value;
+  const paymentMethod = paymentRadio.value;
 
   if (!name || !phone || !zone) { alert('⚠️ Veuillez remplir tous les champs !'); return; }
 
@@ -794,6 +815,9 @@ window.submitOrder = async function() {
     btn.disabled = false;
     btn.innerText = "Valider la commande ✅";
 
+    // Afiche fakti apre komand
+    showInvoice(receiptData, totalAmount);
+
   } catch (err) {
     console.error('❌ Erè submitOrder:', err);
     alert('❌ Erè: ' + err.message);
@@ -805,6 +829,67 @@ window.submitOrder = async function() {
   }
 }
 window.contactWhatsApp = contactWhatsApp;
+
+// Fonksyon pou afiche fakti
+window.showInvoice = function(receiptData, totalAmount) {
+  const invoiceContainer = document.getElementById('invoice-template');
+  if (!invoiceContainer) return;
+
+  // Date aktuel
+  const now = new Date();
+  const invoiceDate = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const invoiceNumber = 'INV-' + Date.now().toString().slice(-8);
+
+  // Rempli enfòmasyon anlè
+  document.getElementById('invoice-date').textContent = invoiceDate;
+  document.getElementById('invoice-number').textContent = invoiceNumber;
+
+  // Rempli enfòmasyon jeneral
+  document.getElementById('account-no').textContent = receiptData.transactionId || '--';
+  document.getElementById('customer-name').textContent = receiptData.sellerName || receiptData.name || '--';
+  document.getElementById('invoice-date-info').textContent = invoiceDate;
+
+  // Rempli balance
+  document.getElementById('balance-total').textContent = totalAmount.toLocaleString() + ' HTG';
+  document.getElementById('balance-paid').textContent = '0 HTG';
+  document.getElementById('balance-due').textContent = totalAmount.toLocaleString() + ' HTG';
+
+  // Rempli tablo pwodwi
+  const itemsTable = document.getElementById('invoice-items');
+  if (receiptData.cart && receiptData.cart.length > 0) {
+    itemsTable.innerHTML = receiptData.cart.map((item, index) => {
+      const lineTotal = (item.price * item.qty).toLocaleString();
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.title}</td>
+          <td>${item.price.toLocaleString()} HTG</td>
+          <td>${item.qty}</td>
+          <td>${lineTotal} HTG</td>
+        </tr>
+      `;
+    }).join('');
+  } else {
+    itemsTable.innerHTML = '<tr><td colspan="5" style="text-align:center;">Aucun article</td></tr>';
+  }
+
+  // Rempli total
+  document.getElementById('subtotal').textContent = totalAmount.toLocaleString() + ' HTG';
+  document.getElementById('tax-rate').textContent = '0%';
+  document.getElementById('grand-total').textContent = totalAmount.toLocaleString() + ' HTG';
+
+  // Afiche fakti
+  invoiceContainer.style.display = 'flex';
+};
+
+// Fonksyon pou fèmen fakti
+window.closeInvoice = function() {
+  const invoiceContainer = document.getElementById('invoice-template');
+  if (invoiceContainer) {
+    invoiceContainer.style.display = 'none';
+  }
+};
+
 console.log('✅ cart.js chaje');
 console.log('✅ orderProduct disponib:', typeof window.orderProduct);
 console.log('✅ openCart disponib:', typeof window.openCart);

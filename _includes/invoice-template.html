@@ -1,0 +1,434 @@
+<!-- INVOICE / RECEIPT TEMPLATE -->
+<div id="invoice-template" class="invoice-container" style="display:none;">
+  <div class="invoice-paper">
+    <!-- HEADER -->
+    <div class="invoice-header">
+      <div class="header-left">
+        <div class="invoice-label">INVOICE DATE</div>
+        <div class="invoice-date" id="invoice-date">--</div>
+      </div>
+      <div class="header-center">
+        <div class="logo-wrapper">
+          <img src="/assets/images/logo.png" alt="Boutique Piyay" class="invoice-logo">
+          <div class="ribbon-bg"></div>
+        </div>
+        <div class="company-name">Boutique Piyay</div>
+      </div>
+      <div class="header-right">
+        <div class="invoice-label">INVOICE #</div>
+        <div class="invoice-number" id="invoice-number">--</div>
+      </div>
+    </div>
+
+    <!-- GENERAL INFORMATION -->
+    <div class="invoice-info">
+      <div class="info-left">
+        <div class="info-title">INVOICE</div>
+        <div class="info-item">
+          <span class="info-label">Account No:</span>
+          <span class="info-value" id="account-no">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Name:</span>
+          <span class="info-value" id="customer-name">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Date:</span>
+          <span class="info-value" id="invoice-date-info">--</span>
+        </div>
+      </div>
+      <div class="info-right">
+        <div class="info-title">BALANCE</div>
+        <div class="info-item">
+          <span class="info-label">Total:</span>
+          <span class="info-value" id="balance-total">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Paid:</span>
+          <span class="info-value" id="balance-paid">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Due:</span>
+          <span class="info-value" id="balance-due">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT TABLE -->
+    <div class="invoice-table">
+      <table>
+        <thead>
+          <tr>
+            <th>SL</th>
+            <th>Item Description</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="invoice-items">
+          <!-- Items will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TOTAL CALCULATION -->
+    <div class="invoice-totals">
+      <div class="total-row">
+        <span class="total-label">Subtotal:</span>
+        <span class="total-value" id="subtotal">--</span>
+      </div>
+      <div class="total-row">
+        <span class="total-label">Tax Rate:</span>
+        <span class="total-value" id="tax-rate">0%</span>
+      </div>
+      <div class="total-row total-highlight">
+        <span class="total-label">TOTAL:</span>
+        <span class="total-value" id="grand-total">--</span>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="invoice-footer">
+      <div class="footer-section">
+        <div class="footer-title">Payment Info</div>
+        <div class="footer-content">
+          <div>MonCash: +509 4886-8964</div>
+          <div>NatCash: +509 4068-3108</div>
+          <div>Cash on Delivery</div>
+        </div>
+      </div>
+      <div class="footer-section">
+        <div class="footer-title">Terms & Conditions</div>
+        <div class="footer-content">
+          <div>Payment required within 24 hours</div>
+          <div>Delivery within 2-3 business days</div>
+          <div>Returns accepted within 7 days</div>
+        </div>
+      </div>
+      <div class="footer-section">
+        <div class="footer-title">Manager Signature</div>
+        <div class="signature-line">_____________________</div>
+        <div class="signature-name">Joseph Genescar</div>
+      </div>
+      <div class="footer-section">
+        <div class="footer-title">Contact</div>
+        <div class="footer-content">
+          <div>📞 +509 4886-8964</div>
+          <div>📧 josephgenescar@gmail.com</div>
+          <div>🌐 boutique-piyay.netlify.app</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.invoice-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 10001;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.invoice-paper {
+  background: white;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.invoice-header {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.header-left, .header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invoice-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.invoice-date, .invoice-number {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.header-center {
+  text-align: center;
+  position: relative;
+}
+
+.logo-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.invoice-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+}
+
+.ribbon-bg {
+  position: absolute;
+  top: -10px;
+  left: -20px;
+  right: -20px;
+  bottom: -10px;
+  background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 100%);
+  border-radius: 20px;
+  transform: rotate(-5deg);
+  z-index: 1;
+  opacity: 0.1;
+}
+
+.company-name {
+  font-size: 24px;
+  font-weight: 900;
+  color: #1e293b;
+  letter-spacing: -1px;
+}
+
+.invoice-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.info-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ff4747;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.info-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.invoice-table {
+  margin-bottom: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.invoice-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-table thead {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.invoice-table th {
+  padding: 15px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 800;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.invoice-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.invoice-table th:last-child {
+  border-top-right-radius: 8px;
+  text-align: right;
+}
+
+.invoice-table td {
+  padding: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.invoice-table tbody tr:nth-child(odd) {
+  background: #f8fafc;
+}
+
+.invoice-table tbody tr:nth-child(even) {
+  background: white;
+}
+
+.invoice-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.invoice-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.invoice-table td:last-child {
+  text-align: right;
+  font-weight: 800;
+  color: #ff4747;
+}
+
+.invoice-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 250px;
+}
+
+.total-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.total-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.total-highlight {
+  background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 100%);
+  padding: 15px 25px;
+  border-radius: 8px;
+  margin-top: 10px;
+  min-width: 280px;
+}
+
+.total-highlight .total-label {
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.total-highlight .total-value {
+  color: white;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.invoice-footer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding-top: 30px;
+  border-top: 2px solid #f1f5f9;
+}
+
+.footer-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.footer-content {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.footer-content div {
+  margin-bottom: 6px;
+}
+
+.signature-line {
+  border-bottom: 1px solid #1e293b;
+  margin-bottom: 5px;
+}
+
+.signature-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .invoice-paper {
+    padding: 20px;
+  }
+  
+  .invoice-header {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .invoice-info {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .invoice-footer {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .invoice-table {
+    font-size: 12px;
+  }
+  
+  .invoice-table th, .invoice-table td {
+    padding: 10px 8px;
+  }
+}
+</style>

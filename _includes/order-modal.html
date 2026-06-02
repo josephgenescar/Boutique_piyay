@@ -36,24 +36,49 @@
 
                 <input type="text" id="other-zone" placeholder="Précisez votre zone ici..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
 
-                <!-- METÒD PEMAN KÒRÈK -->
-                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Choisir le moyen de paiement</p></label>
-
-                                <select id="payment-method-select" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-weight: 700;">
-                                        <option value="manual" selected>💵 Paiement manuel (contactez le vendeur)</option>
-                                        <option value="MonCash">📲 Payer avec MonCash</option>
-                                        <option value="NatCash">📲 Payer avec NatCash</option>
-                                        <option value="Cash">💵 Cash à la livraison</option>
-                                </select>
-                                <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
-                                    <b>Gid:</b> Choisissez « Paiement manuel » pour contacter le vendeur sur WhatsApp, négocier et envoyer la preuve de paiement. Le vendeur validera votre commande.
-                                </div>
-
-                <div style="display:flex; gap: 10px; flex-wrap: wrap;">
-                    <button id="submitOrderBtn" class="btn-confirm-order" onclick="submitOrder()" style="flex:1; min-width: 180px; padding: 15px; background: #ff4747; color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(255,71,71,0.3);">
-                        Valider la commande ✅
-                    </button>
+                <!-- METÒD PEMAN AVEC RADIO BUTTONS -->
+                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Mode de paiement</label>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                        <input type="radio" name="payment-method" value="manual" checked style="margin-right: 10px;">
+                        <span>💵 Paiement manuel (contactez le vendeur)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                        <input type="radio" name="payment-method" value="MonCash" style="margin-right: 10px;">
+                        <span>📲 Payer avec MonCash</span>
+                    </label>
+                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                        <input type="radio" name="payment-method" value="NatCash" style="margin-right: 10px;">
+                        <span>📲 Payer avec NatCash</span>
+                    </label>
+                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+                        <input type="radio" name="payment-method" value="Cash" style="margin-right: 10px;">
+                        <span>💵 Cash à la livraison</span>
+                    </label>
                 </div>
+                <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
+                    <b>Gid:</b> Choisissez « Paiement manuel » pour contacter le vendeur sur WhatsApp, négocier et envoyer la preuve de paiement. Le vendeur validera votre commande.
+                </div>
+
+                <!-- ZÒN POU PREV PEMAN -->
+                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Preuve de paiement</label>
+                <div style="margin-bottom: 15px;">
+                    <button type="button" onclick="document.getElementById('payment-proof').click()" style="width: 100%; padding: 12px; border: 2px dashed #ddd; border-radius: 8px; background: #f9fafb; color: #64748b; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        📎 Choisir une preuve
+                    </button>
+                    <input type="file" id="payment-proof" accept="image/*" style="display: none;">
+                    <div id="proof-preview" style="margin-top: 10px; display: none;">
+                        <img id="proof-image" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                    </div>
+                </div>
+
+                <!-- GWO BOUTON WHATSAPP -->
+                <button id="submitOrderBtn" class="btn-whatsapp-order" onclick="submitOrder()" style="width: 100%; padding: 18px; background: #25D366; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.246 2.76.689 4.012L.068 16l8.02-2.104a7.9 7.9 0 0 0 3.906 1.02A7.854 7.854 0 0 0 15.94 7.926c0-4.366-3.558-7.934-7.933-7.934-.578 0-1.17.074-1.765.216a7.854 7.854 0 0 0-7.934 7.934c0 1.399.246 2.76.689 4.012L.068 16l8.02-2.104a7.9 7.9 0 0 0 3.906 1.02A7.854 7.854 0 0 0 15.94 7.926c0-4.366-3.558-7.934-7.933-7.934-.578 0-1.17.074-1.765.216z"/>
+                    </svg>
+                    Commander sur WhatsApp
+                </button>
             </div>
         </div>
     </div>
@@ -65,6 +90,26 @@
         if (this.value === 'Lòt Zone') { otherInput.style.display = 'block'; }
         else { otherInput.style.display = 'none'; }
     });
+
+    // Gestion des radio buttons pour paiement
+    document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('payment-method-select').value = this.value;
+        });
+    });
+
+    // Preview de la preuve de paiement
+    document.getElementById('payment-proof')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('proof-image').src = e.target.result;
+                document.getElementById('proof-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 </script>
 
 <style>
@@ -72,4 +117,32 @@
 .modal-content { background: white; width: 95%; max-width: 550px; border-radius: 25px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-close { background: #f3f4f6; border: none; font-size: 20px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* Carte produit */
+.cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #f1f5f9; border-radius: 12px; margin-bottom: 12px; background: #fafbfc; }
+.cart-item-image { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; }
+.cart-item-details { flex: 1; }
+.cart-item-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; color: #1e293b; }
+.cart-item-price { font-weight: 800; font-size: 16px; color: #ff4747; }
+.cart-item-quantity { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.qty-btn { width: 30px; height: 30px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.qty-btn:hover { background: #f1f5f9; }
+.cart-item-delete { background: none; border: none; font-size: 18px; cursor: pointer; color: #ef4444; padding: 5px; }
+
+/* Ligne horizontale suggestion */
+.suggestion-line { display: flex; align-items: center; margin: 20px 0; color: #64748b; font-size: 13px; font-weight: 600; }
+.suggestion-line::before, .suggestion-line::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+.suggestion-line span { padding: 0 15px; }
+
+/* Total */
+.cart-total { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 12px; }
+.cart-total-label { font-size: 14px; font-weight: 700; color: #64748b; }
+.cart-total-amount { font-size: 24px; font-weight: 900; color: #ff4747; }
+
+/* Radio buttons */
+input[type="radio"] { accent-color: #ff4747; width: 18px; height: 18px; }
+
+/* Bouton WhatsApp */
+.btn-whatsapp-order:hover { background: #128C7E; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5); }
+.btn-whatsapp-order:active { transform: translateY(0); }
 </style>

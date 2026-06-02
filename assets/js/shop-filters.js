@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Add to cart function
-function addToCartShop(productTitle, productPrice, productImage) {
+function addToCartShop(productTitle, productPrice, productImage, sellerId, sellerName, sellerPhone) {
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
   const existingItem = cart.find(item => item.title === productTitle);
@@ -335,7 +335,10 @@ function addToCartShop(productTitle, productPrice, productImage) {
       title: productTitle,
       price: productPrice,
       image: productImage,
-      quantity: 1
+      quantity: 1,
+      sellerId: sellerId || null,
+      sellerName: sellerName || 'Boutique Piyay',
+      sellerPhone: sellerPhone || null
     });
   }
 
