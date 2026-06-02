@@ -761,6 +761,30 @@ window.submitOrder = async function() {
         console.error('⚠️ Erè nan kreye notifikasyon:', notifError);
       }
 
+      // Voye notifikasyon push bay vandè a
+      try {
+        const sellerId = cart[0]?.sellerId || null;
+        if (sellerId) {
+          await fetch('/.netlify/functions/send-notification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: sellerId,
+              type: 'new_order',
+              data: {
+                order_id: orderGroupId,
+                customer_name: name,
+                customer_phone: phone,
+                total_amount: totalAmount
+              }
+            })
+          });
+          console.log('✅ Notifikasyon push voye bay vandè');
+        }
+      } catch (pushError) {
+        console.error('⚠️ Erè nan voye notifikasyon push:', pushError);
+      }
+
       // Voye email bay vandè a lè l sèvi Supabase Edge Function
       try {
         const sellerId = cart[0]?.sellerId || null;
