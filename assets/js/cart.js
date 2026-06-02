@@ -738,6 +738,28 @@ window.submitOrder = async function() {
         throw new Error('Erreur en sauvegardant la commande: ' + insertError.message);
       }
       console.log('✅ Commande enregistrée dans Supabase', orders);
+
+      // Kreye notifikasyon pou admin
+      try {
+        await sup.from('admin_notifications').insert({
+          type: 'new_order',
+          title: '🛒 Nouvo Komand',
+          message: `Yon nouvo komand fet pa ${name}`,
+          data: {
+            order_id: orderGroupId,
+            customer_name: name,
+            customer_phone: phone,
+            delivery_zone: zone,
+            payment_method: paymentMethod,
+            total_amount: totalAmount,
+            items_count: cart.length
+          },
+          is_read: false
+        });
+        console.log('✅ Notifikasyon kreye');
+      } catch (notifError) {
+        console.error('⚠️ Erè nan kreye notifikasyon:', notifError);
+      }
     } else {
       console.warn('⚠️ Supabase client introuvable : la commande ne pourra pas être enregistrée dans la base de données.');
     }
