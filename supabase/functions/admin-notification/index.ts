@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const ADMIN_EMAIL = 'josephgenescar@gmail.com'
+const ADMIN_EMAIL = 'genescarmike@gmail.com'
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -104,6 +104,11 @@ serve(async (req) => {
 })
 
 function generateNewOrderEmail(data: any): string {
+  const customerPhone = data.customer_phone || data.phone || 'N/A'
+  const totalAmount = data.total_amount ?? data.amount ?? '0'
+  const deliveryAddress = data.shipping_address || data.delivery_zone || 'N/A'
+  const items = Array.isArray(data.items) ? data.items : []
+
   return `
     <!DOCTYPE html>
     <html>
@@ -129,16 +134,16 @@ function generateNewOrderEmail(data: any): string {
           
           <div class="info-box">
             <strong>Kliyan:</strong> ${data.customer_name || 'N/A'}<br>
-            <strong>Telefòn:</strong> ${data.phone || 'N/A'}<br>
-            <strong>Montan:</strong> ${data.amount || '0'} HTG<br>
-            <strong>Metò Peman:</strong> ${data.payment_method || 'N/A'}<br>
-            <strong>Adrès Livrezon:</strong> ${data.shipping_address || 'N/A'}
+            <strong>Telefòn:</strong> ${customerPhone}<br>
+            <strong>Montan:</strong> ${totalAmount} HTG<br>
+            <strong>Metòd Peman:</strong> ${data.payment_method || 'N/A'}<br>
+            <strong>Adrès Livrezon:</strong> ${deliveryAddress}
           </div>
 
-          ${data.items ? `
+          ${items.length ? `
           <h3>Atik yo:</h3>
           <ul>
-            ${data.items.map((item: any) => `<li>${item.title} - ${item.quantity} x ${item.price} HTG</li>`).join('')}
+            ${items.map((item: any) => `<li>${item.title} - ${item.quantity} x ${item.price} HTG</li>`).join('')}
           </ul>
           ` : ''}
 

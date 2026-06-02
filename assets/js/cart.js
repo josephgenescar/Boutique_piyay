@@ -828,7 +828,7 @@ window.submitOrder = async function() {
                     </div>
 
                     <p style="margin-top: 20px;">
-                      <a href="https://wa.me/${sellerPhone}?text=Salut, mwen te fè yon komand sou Boutique Piyay. Komand #${orderGroupId}" class="btn">Kontakte Kliyan sou WhatsApp</a>
+                      <a href="https://wa.me/${sellerPhone.replace(/[^0-9+]/g, '')}?text=Salut,%20mwen%20gen%20yon%20nouvo%20komand%20#${orderGroupId}" class="btn">Kontakte Kliyan sou WhatsApp</a>
                     </p>
                   </div>
                   <div class="footer">
@@ -839,17 +839,17 @@ window.submitOrder = async function() {
               </html>
             `;
 
-            // Voye email lè l sèvi Supabase Edge Function
-            const supabaseUrl = 'https://letyferfjpxmstohvgcj.supabase.co';
-            const response = await fetch(`${supabaseUrl}/functions/v1/admin-notification`, {
+            // Voye email bay vandè a via server-side Netlify function
+            const response = await fetch('/.netlify/functions/send-email', {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                type: 'new_order',
                 to: sellerEmail,
+                subject: `🛒 Nouvo Komand #${orderGroupId}`,
+                html: emailHtml,
+                type: 'seller_new_order',
                 data: {
                   order_id: orderGroupId,
                   customer_name: name,
@@ -857,14 +857,13 @@ window.submitOrder = async function() {
                   delivery_zone: zone,
                   payment_method: paymentMethod,
                   total_amount: totalAmount,
-                  items_count: cart.length,
-                  seller_email: sellerEmail
+                  items: cart.map(item => ({ title: item.title, qty: item.qty, price: item.price })),
                 }
               })
             });
 
             if (response.ok) {
-              console.log('✅ Email voye bay vandè via Supabase Edge Function');
+              console.log('✅ Email voye bay vandè via send-email function');
             } else {
               console.error('⚠️ Erè nan voye email:', await response.text());
             }

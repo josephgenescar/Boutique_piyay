@@ -10,7 +10,7 @@ const { createClient } = require("@supabase/supabase-js");
 
 // Konfigirasyon VAPID
 webpush.setVapidDetails(
-  "mailto:josephgenescar@gmail.com",
+  "mailto:genescarmike@gmail.com",
   process.env.VAPID_PUBLIC_KEY,
   process.env.VAPID_PRIVATE_KEY
 );

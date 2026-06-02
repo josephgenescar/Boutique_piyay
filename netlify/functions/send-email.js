@@ -1,7 +1,7 @@
 // ============================================================
 //  Netlify Function: send-email.js
 //  Voye email notifikasyon lè yon komand fet
-//  Itilize: Supabase Auth Email API
+//  Itilize: Resend API pou voye email bay admin oswa vandè
 // ============================================================
 
 const { createClient } = require("@supabase/supabase-js");
@@ -10,6 +10,9 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const FROM_EMAIL = process.env.EMAIL_FROM || "Rivayo Boutique <noreply@boutique-piyay.net>";
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -24,33 +27,56 @@ exports.handler = async (event) => {
   }
 
   const { to, subject, html, type, data } = body;
-  
+
   if (!to || !subject || !html) {
     return { statusCode: 400, body: "to, subject, et html obligatwa" };
   }
 
+  if (!RESEND_API_KEY) {
+    console.error("Missing RESEND_API_KEY environment variable");
+    return { statusCode: 500, body: "Missing RESEND_API_KEY environment variable" };
+  }
+
   try {
-    // Itilize Supabase Auth pou voye email
-    const { error } = await supabase.auth.admin.inviteUserByEmail({
-      email: to,
-      data: {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to,
         subject,
-        html
-      }
+        html,
+      }),
     });
 
-    if (error) {
-      console.error("Supabase Auth error:", error);
-      // Si Auth API pa mache, eseye yon lòt apwòch
-      // Voye email dirèkteman lè l sèvi
-      return { statusCode: 500, body: `Erè Supabase Auth: ${error.message}` };
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Resend API error:", errorText);
+      return { statusCode: 500, body: `Resend API error: ${errorText}` };
     }
 
-    console.log("Email envoye via Supabase Auth");
-    
+    const result = await response.json();
+    console.log("Email sent successfully via Resend:", result);
+
+    // Optional: save a notification record for seller/admin if data includes seller_id
+    if (data?.seller_id) {
+      await supabase.from("notifications").insert({
+        seller_id: data.seller_id,
+        user_id: data.user_id || null,
+        type: type || "email",
+        title: subject,
+        message: html,
+        data: data,
+        is_read: false,
+      });
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true }),
+      body: JSON.stringify({ success: true, data: result }),
     };
   } catch (err) {
     console.error("Erè voye email:", err);
