@@ -37,7 +37,10 @@ async function getCurrentCustomerEmail(sup) {
 function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zone, paymentMethod, orderGroupId) {
   const grouped = {};
   cart.forEach(item => {
-    const sellerId = item.sellerId || item.seller_id || 'boutique-piyay';
+    const sellerId = item.sellerId || item.seller_id;
+    if (!sellerId) {
+      throw new Error(`Cart item is missing sellerId: ${item.title || item.id || 'unknown item'}`);
+    }
     if (!grouped[sellerId]) {
       grouped[sellerId] = {
         sellerId,

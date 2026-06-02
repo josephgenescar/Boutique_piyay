@@ -323,7 +323,7 @@ title: Kategori Pwodwi
           '<div class="prod-footer">' +
             '<div class="prod-price">' + p.price + ' <small>HTG</small></div>' +
             '<button class="btn-ajoute" ' +
-              (inStock ? 'onclick="orderProduct(\'' + p.title.replace(/'/g, "\\'") + '\', ' + p.price + ', \\' + p.id + '\\')"' : 'disabled') +
+              (inStock ? 'onclick="orderProduct(\'' + p.title.replace(/'/g, "\\'") + '\', ' + p.price + ', \'' + p.id + '\', \'' + (p.seller_id || '') + '\')"' : 'disabled') +
             '>' +
               (inStock ? '🛒 Ajouterr' : 'Piwasa') +
             '</button>' +
