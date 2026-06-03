@@ -1072,10 +1072,11 @@
     }
     async function activateBoostWithCode() {
         console.log('🚀 activateBoostWithCode appelé');
-        const code = document.getElementById('boost-code').value.trim();
+        const code = document.getElementById('boost-code').value.trim().toUpperCase();
         console.log('📝 Code:', code);
         console.log('🆔 selectedProdId:', selectedProdId);
 
+        if (!selectedProdId) { alert('Opsyon boost la pa chwazi pwodwi a. Rekòmanse paj la epi eseye ankò.'); return; }
         if (!code) { alert('Tanpri antre code ou resevwa a.'); return; }
         if (code.length < 6) { alert('Code invalide. Contactez l’administrateur.'); return; }
 
