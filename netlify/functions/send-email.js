@@ -12,7 +12,14 @@ const supabase = createClient(
 );
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.EMAIL_FROM || "Rivayo Boutique <noreply@boutique-piyay.net>";
+const DEFAULT_FROM_EMAIL = "Rivayo Boutique <noreply@boutique-piyay.net>";
+const FROM_EMAIL = (process.env.EMAIL_FROM && process.env.EMAIL_FROM.includes('@'))
+  ? process.env.EMAIL_FROM.trim()
+  : DEFAULT_FROM_EMAIL;
+
+if (!process.env.EMAIL_FROM || !process.env.EMAIL_FROM.includes('@')) {
+  console.warn('EMAIL_FROM is missing or invalid; using default from address:', DEFAULT_FROM_EMAIL);
+}
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
