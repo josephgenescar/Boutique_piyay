@@ -1081,7 +1081,7 @@
         if (code.length < 6) { alert('Code invalide. Contactez l’administrateur.'); return; }
 
         // Vérifier si le code existe et appartient au vendeur
-        const { data: boostCode, error: codeError } = await supD
+        let { data: boostCode, error: codeError } = await supD
             .from('boost_codes')
             .select('*')
             .eq('code', code)
@@ -1089,8 +1089,19 @@
             .single();
 
         if (codeError || !boostCode) {
-            alert('Code invalide ou pa jwenn. Tanpri verifye code ou a oswa kontakte admin.');
-            return;
+            // Fallback: chercher le code global si le seller_id ne correspond pas encore
+            const { data: fallbackCode, error: fallbackError } = await supD
+                .from('boost_codes')
+                .select('*')
+                .eq('code', code)
+                .single();
+
+            if (fallbackError || !fallbackCode) {
+                alert('Code invalide ou pa jwenn. Tanpri verifye code ou a oswa kontakte admin.');
+                return;
+            }
+
+            boostCode = fallbackCode;
         }
 
         if (boostCode.status !== 'active') {

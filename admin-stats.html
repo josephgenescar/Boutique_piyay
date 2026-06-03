@@ -232,17 +232,17 @@ title: Sant Kontwòl Total - Boutique Piyay
         <input type="text" id="boost-code-admin" class="form-input" style="max-width:200px;" placeholder="Kòd aleatwa" readonly>
         <button onclick="document.getElementById('boost-code-admin').value = Math.random().toString(36).substr(2,8).toUpperCase();" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;">Jenere Kòd</button>
         <button onclick="navigator.clipboard.writeText(document.getElementById('boost-code-admin').value);showToast('Kòd kopye!','success');" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;background:#10b981;">Kopye</button>
+        <button onclick="saveBoostCodeToDb()" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;background:#2563eb;color:white;">Sove Kòd</button>
       </div>
-      <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye code la epi voye bay machann lan apre ou fin verifye prèv peman an.</div>
-    </div>
-
-    <div class="admin-card" style="margin-bottom:28px;">
-      <div class="card-title">💳 Modèl Peman Platfòm</div>
-      <div style="display:flex;flex-direction:column;gap:10px;color:#475569;line-height:1.5;"> 
-        <div><strong>3% komisyon platfòm</strong> : platfòm nan pran 3% sou chak vant fè.</div>
-        <div><strong>Peman machann</strong> : machann yo peye/ranmase selon sistèm platfòm an, epi yo resevwa kantite lòt la pou kont yo.</div>
-        <div><strong>Objektif</strong> : tout peman sou dashboard la dwe swiv kondisyon platfòm sa a pou evite konfizyon.</div>
+      <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye code la epi voye bay machann lan apre ou fin verifye prèv peman an. Oswa sove kòd la dirèkteman pou vannè a.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;">
+        <label for="boost-seller-select" style="font-size:13px;font-weight:700;margin:0;">Chwazi Vendeur</label>
+        <select id="boost-seller-select" class="form-input" style="max-width:280px;min-width:220px;">
+          <option value="">Chwazi vendeur...</option>
+        </select>
       </div>
+      <div style="margin-top:10px;color:#64748b;font-size:13px;"><strong>Peman machann</strong> : machann yo peye/ranmase selon sistèm platfòm an, epi yo resevwa kantite lòt la pou kont yo.</div>
+      <div style="color:#64748b;font-size:13px;"><strong>Objektif</strong> : tout peman sou dashboard la dwe swiv kondisyon platfòm sa a pou evite konfizyon.</div>
     </div>
 
     <!-- TOP BAR -->
@@ -508,6 +508,8 @@ title: Sant Kontwòl Total - Boutique Piyay
           </td>
         </tr>`).join('');
 
+      populateBoostSellerSelect(users);
+
       document.getElementById('all-products-grid').innerHTML = (prods || []).map(p => `
         <div class="prod-admin-card">
           <img class="prod-admin-img" src="${p.image_url}" alt="Pwodwi"
@@ -651,6 +653,53 @@ title: Sant Kontwòl Total - Boutique Piyay
       console.error(error);
       tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#64748b; padding:20px;">Erè rechaje trafik. Gade konsole a.</td></tr>';
     }
+  }
+
+  async function saveBoostCodeToDb() {
+    const codeInput = document.getElementById('boost-code-admin');
+    const sellerSelect = document.getElementById('boost-seller-select');
+    const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
+    const sellerId = sellerSelect ? sellerSelect.value : '';
+
+    if (!code) {
+      showToast('❌ Tanpri jenere yon kòd anvan ou sove li.', 'error');
+      return;
+    }
+    if (!sellerId) {
+      showToast('❌ Tanpri chwazi yon vendeur anvan ou sove kòd la.', 'error');
+      return;
+    }
+
+    try {
+      const { error: insertError } = await supA.from('boost_codes').insert([{
+        code,
+        seller_id: sellerId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }]);
+
+      if (insertError) {
+        console.error('Boost code insert error:', insertError);
+        showToast('❌ Erè pandan sove kòd la: ' + insertError.message, 'error');
+        return;
+      }
+
+      showToast('✅ Kòd boost la sove avèk siksè pou vendeur la.', 'success');
+    } catch (error) {
+      console.error('Save boost code exception:', error);
+      showToast('❌ Erè entèvenan pandan sove kòd la.', 'error');
+    }
+  }
+
+  function populateBoostSellerSelect(users) {
+    const selector = document.getElementById('boost-seller-select');
+    if (!selector) return;
+
+    const sellers = (users || []).filter(u => u.role === 'seller' || u.is_active_seller === true);
+    selector.innerHTML = '<option value="">Chwazi vendeur...</option>' + sellers.map(u => {
+      const label = `${u.shop_name || u.full_name || u.email || u.id}`;
+      return `<option value="${u.id}">${label}</option>`;
+    }).join('');
   }
 
   async function fetchNewShops() {
