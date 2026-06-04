@@ -736,11 +736,17 @@ window.submitOrder = async function() {
     const orders = buildOrderPayload(cart, customerEmail, name, phone, zone, paymentMethod, orderGroupId);
 
     if (sup) {
-      const { error: insertError } = await sup.from('orders').insert(orders);
-      if (insertError) {
-        throw new Error('Erreur en sauvegardant la commande: ' + insertError.message);
+      const response = await fetch('/.netlify/functions/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orders })
+      });
+
+      const result = await response.json();
+      if (!response.ok || result.error) {
+        throw new Error('Erreur en sauvegardant la commande: ' + (result.error || 'commande non enregistrée'));
       }
-      console.log('✅ Commande enregistrée dans Supabase', orders);
+      console.log('✅ Commande enregistrée dans Supabase', result.data || orders);
 
       // Kreye notifikasyon pou admin
       try {
