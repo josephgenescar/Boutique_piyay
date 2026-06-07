@@ -1086,17 +1086,29 @@
             .select('*')
             .eq('code', code)
             .eq('seller_id', currentUser.id)
-            .single();
+            .maybeSingle();
 
-        if (codeError || !boostCode) {
+        if (codeError) {
+            console.error('Boost code query failed:', codeError);
+            alert('❌ Erè rezo pandan verifye code boost la. Tanpri eseye ankò.');
+            return;
+        }
+
+        if (!boostCode) {
             // Fallback: chercher le code global si le seller_id ne correspond pas encore
             const { data: fallbackCode, error: fallbackError } = await supD
                 .from('boost_codes')
                 .select('*')
                 .eq('code', code)
-                .single();
+                .maybeSingle();
 
-            if (fallbackError || !fallbackCode) {
+            if (fallbackError) {
+                console.error('Boost fallback query failed:', fallbackError);
+                alert('❌ Erè rezo pandan verifye code boost la. Tanpri eseye ankò.');
+                return;
+            }
+
+            if (!fallbackCode) {
                 alert('Code invalide ou pa jwenn. Tanpri verifye code ou a oswa kontakte admin.');
                 return;
             }

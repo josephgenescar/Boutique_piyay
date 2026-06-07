@@ -30,163 +30,30 @@
     .status-used { background: #fee2e2; color: #b91c1c; }
     .top-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #2563eb; text-decoration: none; font-weight: 700; }
     .top-link:hover { text-decoration: underline; }
-    @media (max-width: 720px) { .field-row { grid-template-columns: 1fr; } }
+    .page-wrap { max-width: 760px; margin: 0 auto; padding: 32px 24px; }
+    .card { background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08); padding: 28px; margin-top: 40px; }
+    .card h1 { font-size: 2rem; margin-bottom: 16px; }
+    .card p { color: #475569; line-height: 1.8; margin-bottom: 16px; }
+    .card a { color: #2563eb; font-weight: 700; text-decoration: none; }
+    .card a:hover { text-decoration: underline; }
+    .redirect-note { display: inline-flex; align-items: center; gap: 8px; background: #dbeafe; color: #1d4ed8; padding: 14px 18px; border-radius: 16px; margin-top: 12px; }
+    @media (max-width: 720px) { .page-wrap { padding: 24px 18px; } }
   </style>
 </head>
 <body>
   <div class="page-wrap">
-    <a class="top-link" href="/admin/dashboard.html">← Tounen nan Dashboard</a>
-    <div class="hero">
-      <h1>Jere Kòd Referans</h1>
-      <p>Jenere kòd inik pou nouvo moun enskri. Chak kòd itilize yon sèl fwa epi li make otomatikman apre premye itilizasyon.</p>
-    </div>
-
-    <div class="alert">
-      Atansyon: Kòd sa yo se <strong>kòd referans pou signup</strong> sèlman. Kòd boost pwodwi yo se yon lòt kalite kòd epi yo pa valab sou paj enskripsyon an.
-    </div>
-
     <div class="card">
-      <div class="grid">
-        <div class="field-row">
-          <input id="newReferralCode" type="text" placeholder="Antre yon kòd oswa klike jenere" />
-          <button type="button" id="generateReferralBtn" class="btn btn-generate" onclick="(function(){const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let code='PIYAY-';for(let i=0;i<8;i++){code+=chars.charAt(Math.floor(Math.random()*chars.length));}document.getElementById('newReferralCode').value=code;})();">Jenere</button>
-          <button type="button" id="copyReferralBtn" class="btn btn-secondary">Kopye</button>
-        </div>
-        <div style="display:flex; gap:12px; flex-wrap: wrap;">
-          <button type="button" id="saveReferralBtn" class="btn btn-primary">Sove kòd</button>
-          <button type="button" id="refreshReferralBtn" class="btn btn-secondary">Refrechi lis</button>
-        </div>
-        <div id="referralMessage" class="message"></div>
-        <p class="note">Se sèlman kòd ki nan tablo <strong>referral_keys</strong> ki valab pou paj <strong>signup.html</strong>. Kòd boost pwodwi yo pa dwe itilize pou enskripsyon. Si w ap fè yon nouvo kont, kopye epi kole kòd referans sa a sou paj signup la.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="margin-top:0;">Lis Kòd Referans</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Kòd</th>
-            <th>Estati</th>
-            <th>Itlije pa</th>
-            <th>Dat itilizasyon</th>
-            <th>Aksyon</th>
-          </tr>
-        </thead>
-        <tbody id="referralKeysTableBody">
-          <tr><td colspan="5" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>
-        </tbody>
-      </table>
+      <h1>Page Referans Retire</h1>
+      <p>Kòd referans yo kounye a jere dirèkteman nan <strong>admin-stats.html</strong>. Paj sa a pa itilize ankò.</p>
+      <p>Paj sa a ap redireksyonnen ou otomatikman nan admin stats nan kèk segond.</p>
+      <div class="redirect-note">Si redireksyon an pa mache, klike <a href="/admin-stats.html">isit la pou ale nan Admin Stats</a>.</div>
     </div>
   </div>
 
   <script>
-    const SUP_URL = 'https://letyferfjpxmstohvgcj.supabase.co';
-    const SUP_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg';
-    const supabase = window.supabase.createClient(SUP_URL, SUP_KEY);
-
-    function randomReferralCode() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let code = 'PIYAY-';
-      for (let i = 0; i < 8; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    }
-
-    async function fetchReferralKeys() {
-      const body = document.getElementById('referralKeysTableBody');
-      body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>';
-
-      const { data, error } = await supabase.from('referral_keys').select('*').order('created_at', { ascending: false });
-      if (error) {
-        body.innerHTML = `<tr><td colspan="5" style="color:#dc2626; padding: 20px;">Erè: ${error.message}</td></tr>`;
-        return;
-      }
-      if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding: 20px;">Okenn kòd pa defini ankò.</td></tr>';
-        return;
-      }
-
-      body.innerHTML = data.map(key => {
-        const status = key.used_at ? 'Itilize' : 'Pa itilize';
-        const statusClass = key.used_at ? 'status-used' : 'status-unused';
-        const usedBy = key.used_by || '-';
-        const usedAt = key.used_at ? new Date(key.used_at).toLocaleString() : '-';
-        return `
-          <tr>
-            <td style="font-weight:700;">${key.code}</td>
-            <td><span class="status-pill ${statusClass}">${status}</span></td>
-            <td>${usedBy}</td>
-            <td>${usedAt}</td>
-            <td><button class="btn btn-secondary copy-row-btn" data-code="${key.code}">Kopye</button></td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    async function saveReferralKey(code) {
-      const message = document.getElementById('referralMessage');
-      message.style.color = '#334155';
-      if (!code) {
-        message.style.color = '#dc2626';
-        message.innerText = 'Tanpri antre oswa jenere yon kòd pou sove.';
-        return;
-      }
-
-      const { data, error } = await supabase.from('referral_keys').insert([{ code: code.toUpperCase() }]);
-      if (error) {
-        if (error.code === '23505') {
-          message.style.color = '#dc2626';
-          message.innerText = 'Kòd la deja egziste. Chwazi yon lòt kòd.';
-        } else {
-          message.style.color = '#dc2626';
-          message.innerText = 'Erè: ' + error.message;
-        }
-        return;
-      }
-      message.style.color = '#16a34a';
-      message.innerText = 'Kòd la te sove avèk siksè.';
-      document.getElementById('newReferralCode').value = '';
-      fetchReferralKeys();
-    }
-
-    function initReferralPage() {
-      document.getElementById('generateReferralBtn').addEventListener('click', function () {
-        document.getElementById('newReferralCode').value = randomReferralCode();
-      });
-      document.getElementById('copyReferralBtn').addEventListener('click', function () {
-        const code = document.getElementById('newReferralCode').value.trim();
-        if (!code) {
-          document.getElementById('referralMessage').style.color = '#dc2626';
-          document.getElementById('referralMessage').innerText = 'Tanpri jenere oswa antre yon kòd avan pou kopye li.';
-          return;
-        }
-        navigator.clipboard.writeText(code);
-        document.getElementById('referralMessage').style.color = '#16a34a';
-        document.getElementById('referralMessage').innerText = 'Kòd la kopye nan clipboard!';
-      });
-      document.getElementById('saveReferralBtn').addEventListener('click', function () {
-        saveReferralKey(document.getElementById('newReferralCode').value.trim());
-      });
-      document.getElementById('refreshReferralBtn').addEventListener('click', fetchReferralKeys);
-      document.addEventListener('click', function (event) {
-        if (!event.target.matches('.copy-row-btn')) return;
-        const code = event.target.dataset.code;
-        if (code) {
-          navigator.clipboard.writeText(code);
-          document.getElementById('referralMessage').style.color = '#16a34a';
-          document.getElementById('referralMessage').innerText = `Kòd referans ${code} te kopye! Mete li sou paj signup.html.`;
-        }
-      });
-      fetchReferralKeys();
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initReferralPage);
-    } else {
-      initReferralPage();
-    }
+    setTimeout(() => {
+      window.location.href = '/admin-stats.html';
+    }, 2500);
   </script>
 </body>
 </html>

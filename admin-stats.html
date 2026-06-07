@@ -193,6 +193,30 @@ title: Sant Kontwòl Total - Boutique Piyay
     .stat-grid { grid-template-columns: 1fr 1fr; }
     .prod-admin-grid { grid-template-columns: 1fr 1fr; }
   }
+
+  .referral-card {
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .referral-heading { font-size: 18px; font-weight: 900; margin-bottom: 18px; color: #0f172a; }
+  .referral-note { color: #475569; font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
+  .referral-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; }
+  .referral-input { width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 16px; font-size: 14px; }
+  .referral-btn { border: none; border-radius: 16px; padding: 14px 18px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; }
+  .referral-btn.btn-primary { background: #2563eb; color: white; }
+  .referral-btn.btn-secondary { background: #f8fafc; color: #111827; border: 1px solid #cbd5e1; }
+  .referral-message { min-height: 24px; margin-top: 14px; font-size: 14px; color: #334155; }
+  .referral-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  .referral-table th,
+  .referral-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; }
+  .referral-table th { font-weight: 700; color: #334155; }
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .status-unused { background: #dcfce7; color: #166534; }
+  .status-used { background: #fee2e2; color: #b91c1c; }
+  @media (max-width: 760px) { .referral-grid { grid-template-columns: 1fr; } }
 </style>
 
 <!-- ══ LOGIN ══ -->
@@ -228,7 +252,7 @@ title: Sant Kontwòl Total - Boutique Piyay
     <!-- ADMIN: Zone pou jenere code boost -->
     <div class="admin-card" style="margin-bottom:28px;">
       <div class="card-title">🔑 Jenere Kòd Boost pou Vendeur</div>
-      <div style="margin-top:10px;color:#b91c1c;font-size:13px;font-weight:700;">Remak: sa a se yon <strong>kòd boost</strong>, li pa sèvi pou enskripsyon. Pou kòd signup, sèvi ak paj "Kòd Referans" sèlman.</div>
+      <div style="margin-top:10px;color:#b91c1c;font-size:13px;font-weight:700;">Remak: sa a se yon <strong>kòd boost</strong>, li pa sèvi pou enskripsyon. Pou kòd signup, sèvi ak seksyon Kòd Referans anba an nan menm paj sa a.</div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap; margin-top:12px;">
         <input type="text" id="boost-code-admin" class="form-input" style="max-width:200px;" placeholder="Kòd aleatwa" readonly>
         <button onclick="document.getElementById('boost-code-admin').value = Math.random().toString(36).substr(2,8).toUpperCase();" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;">Jenere Kòd</button>
@@ -237,8 +261,7 @@ title: Sant Kontwòl Total - Boutique Piyay
       </div>
       <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye kòd boost la epi voye bay machann lan apre ou fin verifye peman li. Kòd sa yo sèvi pou pouse pwodwi yo, pa pou kreye kont.</div>
       <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-        <a href="/admin/referral-codes.html" class="btn-login" style="padding:10px 18px;font-size:13px;background:#2563eb;color:white; text-decoration:none;">Ale nan Kòd Referans (signup)</a>
-        <span style="color:#475569;font-size:13px;">Sa a se paj espesyal pou kòd signup / referans. Pa itilize li ak kòd boost yo.</span>
+        <span style="color:#475569;font-size:13px;">Kòd referans signup yo kounye a anba seksyon estatistik yo sou menm paj sa a.</span>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;">
         <label for="boost-seller-select" style="font-size:13px;font-weight:700;margin:0;">Chwazi Vendeur</label>
@@ -286,6 +309,37 @@ title: Sant Kontwòl Total - Boutique Piyay
         <span class="stat-icon">📈</span>
         <span class="stat-val" id="stat-revenue">0</span>
         <div class="stat-lbl">Revni (HTG)</div>
+      </div>
+    </div>
+
+    <div class="referral-card">
+      <div class="referral-heading">🔑 Jere Kòd Referans Signup</div>
+      <p class="referral-note">Jenere, sove, epi jere kòd referans pou nouvo enskripsyon sou paj <strong>signup.html</strong>. Kòd sa yo valab sèlman pou signup; yo pa dwe itilize kòm kòd boost pwodwi.</p>
+      <div class="referral-grid">
+        <input id="newReferralCode" class="referral-input" type="text" placeholder="Antre kòd oswa klike jenere">
+        <button id="generateReferralBtn" class="referral-btn btn-primary">Jenere</button>
+        <button id="copyReferralBtn" class="referral-btn btn-secondary">Kopye</button>
+      </div>
+      <div class="referral-grid" style="margin-top:16px; grid-template-columns: auto auto;">
+        <button id="saveReferralBtn" class="referral-btn btn-primary">Sove kòd</button>
+        <button id="refreshReferralBtn" class="referral-btn btn-secondary">Refrechi lis</button>
+      </div>
+      <div id="referralMessage" class="referral-message"></div>
+      <div style="overflow-x:auto;">
+        <table class="referral-table">
+          <thead>
+            <tr>
+              <th>Kòd</th>
+              <th>Estati</th>
+              <th>Itilize pa</th>
+              <th>Dat Itilizasyon</th>
+              <th>Aksyon</th>
+            </tr>
+          </thead>
+          <tbody id="referralKeysTableBody">
+            <tr><td colspan="5" style="color:#475569; padding:20px;">Chaje kòd...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -694,6 +748,137 @@ title: Sant Kontwòl Total - Boutique Piyay
       console.error('Save boost code exception:', error);
       showToast('❌ Erè entèvenan pandan sove kòd la.', 'error');
     }
+  }
+
+  async function fetchReferralKeys() {
+    const body = document.getElementById('referralKeysTableBody');
+    if (!body) return;
+    body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding:20px;">Chaje kòd...</td></tr>';
+
+    const { data, error } = await supA.from('referral_keys').select('*').order('created_at', { ascending: false });
+    if (error) {
+      body.innerHTML = `<tr><td colspan="5" style="color:#dc2626; padding:20px;">Erè: ${error.message}</td></tr>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding:20px;">Okenn kòd pa defini ankò.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = data.map(key => {
+      const status = key.used_at ? 'Itilize' : 'Pa itilize';
+      const statusClass = key.used_at ? 'status-used' : 'status-unused';
+      const usedBy = key.used_by || '-';
+      const usedAt = key.used_at ? new Date(key.used_at).toLocaleString() : '-';
+      return `
+        <tr>
+          <td style="font-weight:700;">${key.code}</td>
+          <td><span class="status-pill ${statusClass}">${status}</span></td>
+          <td>${usedBy}</td>
+          <td>${usedAt}</td>
+          <td><button class="referral-btn btn-secondary copy-row-btn" data-code="${key.code}">Kopye</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function saveReferralKey(code) {
+    const message = document.getElementById('referralMessage');
+    if (!message) return;
+    message.style.color = '#334155';
+
+    if (!code) {
+      message.style.color = '#dc2626';
+      message.innerText = 'Tanpri antre oswa jenere yon kòd pou sove.';
+      return;
+    }
+
+    const { error } = await supA.from('referral_keys').insert([{ code: code.toUpperCase() }]);
+    if (error) {
+      message.style.color = '#dc2626';
+      message.innerText = error.code === '23505'
+        ? 'Kòd la deja egziste. Chwazi yon lòt kòd.'
+        : 'Erè: ' + error.message;
+      return;
+    }
+
+    message.style.color = '#16a34a';
+    message.innerText = 'Kòd la te sove avèk siksè.';
+    document.getElementById('newReferralCode').value = '';
+    fetchReferralKeys();
+  }
+
+  function initReferralSection() {
+    const generateBtn = document.getElementById('generateReferralBtn');
+    const copyBtn = document.getElementById('copyReferralBtn');
+    const saveBtn = document.getElementById('saveReferralBtn');
+    const refreshBtn = document.getElementById('refreshReferralBtn');
+
+    if (generateBtn) {
+      generateBtn.addEventListener('click', () => {
+        document.getElementById('newReferralCode').value = randomReferralCode();
+      });
+    }
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const code = document.getElementById('newReferralCode').value.trim();
+        const message = document.getElementById('referralMessage');
+        if (!code) {
+          if (message) {
+            message.style.color = '#dc2626';
+            message.innerText = 'Tanpri jenere oswa antre yon kòd avan pou kopye li.';
+          }
+          return;
+        }
+        navigator.clipboard.writeText(code);
+        if (message) {
+          message.style.color = '#16a34a';
+          message.innerText = 'Kòd la kopye nan clipboard!';
+        }
+      });
+    }
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        saveReferralKey(document.getElementById('newReferralCode').value.trim());
+      });
+    }
+
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', fetchReferralKeys);
+    }
+
+    document.addEventListener('click', function (event) {
+      if (!event.target.matches('.copy-row-btn')) return;
+      const code = event.target.dataset.code;
+      if (code) {
+        navigator.clipboard.writeText(code);
+        const message = document.getElementById('referralMessage');
+        if (message) {
+          message.style.color = '#16a34a';
+          message.innerText = `Kòd referans ${code} te kopye!`;
+        }
+      }
+    });
+
+    fetchReferralKeys();
+  }
+
+  function randomReferralCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = 'PIYAY-';
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReferralSection);
+  } else {
+    initReferralSection();
   }
 
   function populateBoostSellerSelect(users) {
