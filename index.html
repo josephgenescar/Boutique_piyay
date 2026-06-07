@@ -276,41 +276,41 @@ title: Akèy - Boutique Piyay
     }
     .boosted-product-item {
       flex-shrink: 0;
-      min-width: 260px;
-      max-width: 280px;
+      min-width: 320px;
+      max-width: 360px;
       scroll-snap-align: start;
       background: rgba(255, 255, 255, 0.98);
-      border-radius: 22px;
-      padding: 18px 18px 16px;
+      border-radius: 24px;
+      padding: 20px 22px 18px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.65);
+      gap: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.75);
       transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      backdrop-filter: blur(6px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(8px);
     }
     .boosted-product-item:hover {
       background: rgba(255, 255, 255, 1);
       transform: translateY(-6px);
-      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.14);
+      box-shadow: 0 20px 38px rgba(15, 23, 42, 0.16);
       border-color: rgba(255, 71, 71, 0.35);
     }
     .boosted-product-img {
-      width: 82px;
-      height: 82px;
-      border-radius: 18px;
+      width: 120px;
+      height: 120px;
+      border-radius: 22px;
       object-fit: cover;
       flex-shrink: 0;
       border: 3px solid rgba(255, 71, 71, 0.18);
-      box-shadow: 0 10px 24px rgba(255, 107, 53, 0.18);
+      box-shadow: 0 12px 28px rgba(255, 107, 53, 0.18);
     }
     .boosted-product-info {
       flex: 1;
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
     .boosted-product-title {
       font-family: 'Sora', sans-serif;
@@ -460,11 +460,11 @@ title: Akèy - Boutique Piyay
     .boosted-track { -ms-overflow-style: none; scrollbar-width: none; }
 
     .boosted-card {
-      flex: 0 0 180px;
-      min-width: 180px;
-      max-width: 180px;
+      flex: 0 0 240px;
+      min-width: 240px;
+      max-width: 240px;
       background: white;
-      border-radius: 12px;
+      border-radius: 18px;
       overflow: hidden;
       border: 1px solid rgba(241, 226, 226, 0.95);
       display: flex;
@@ -473,9 +473,9 @@ title: Akèy - Boutique Piyay
       scroll-snap-align: center;
     }
     .boosted-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(15,23,42,0.1);
-      border-color: rgba(255,71,71,0.15);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(15,23,42,0.12);
+      border-color: rgba(255,71,71,0.18);
     }
 
     .boosted-nav {
@@ -509,16 +509,17 @@ title: Akèy - Boutique Piyay
       object-position: center center;
       display: block;
       background: #f8fafc;
+      min-height: 240px;
     }
     .boosted-card-body {
-      padding: 10px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       flex: 1;
-      gap: 6px;
+      gap: 10px;
     }
     .boosted-rating {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: #f59e0b;
       margin-bottom: 2px;
@@ -572,20 +573,23 @@ title: Akèy - Boutique Piyay
     }
 
     @media (max-width: 1100px) {
-      .boosted-card { flex: 0 0 280px; min-width: 280px; }
+      .boosted-card { flex: 0 0 300px; min-width: 300px; }
     }
     @media (max-width: 900px) {
-      .boosted-card { flex: 0 0 240px; min-width: 240px; }
+      .boosted-card { flex: 0 0 260px; min-width: 260px; }
+      .boosted-img { min-height: 220px; }
     }
     @media (max-width: 720px) {
       .boosted-card { flex: 0 0 100%; min-width: 100%; }
+      .boosted-img { min-height: 220px; }
       .boosted-nav { justify-content: center; }
     }
     .boosted-card-body {
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       flex: 1;
+      gap: 10px;
     }
     .boosted-title {
       font-size: 14px;
