@@ -49,7 +49,7 @@
       <div class="grid">
         <div class="field-row">
           <input id="newReferralCode" type="text" placeholder="Antre yon kòd oswa klike jenere" />
-          <button type="button" id="generateReferralBtn" class="btn btn-generate" onclick="document.getElementById('newReferralCode').value = randomReferralCode();">Jenere</button>
+          <button type="button" id="generateReferralBtn" class="btn btn-generate" onclick="(function(){const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let code='PIYAY-';for(let i=0;i<8;i++){code+=chars.charAt(Math.floor(Math.random()*chars.length));}document.getElementById('newReferralCode').value=code;})();">Jenere</button>
           <button type="button" id="copyReferralBtn" class="btn btn-secondary">Kopye</button>
         </div>
         <div style="display:flex; gap:12px; flex-wrap: wrap;">
