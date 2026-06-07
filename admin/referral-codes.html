@@ -49,7 +49,7 @@
       <div class="grid">
         <div class="field-row">
           <input id="newReferralCode" type="text" placeholder="Antre yon kòd oswa klike jenere" />
-          <button type="button" id="generateReferralBtn" class="btn btn-generate">Jenere</button>
+          <button type="button" id="generateReferralBtn" class="btn btn-generate" onclick="document.getElementById('newReferralCode').value = randomReferralCode();">Jenere</button>
           <button type="button" id="copyReferralBtn" class="btn btn-secondary">Kopye</button>
         </div>
         <div style="display:flex; gap:12px; flex-wrap: wrap;">
