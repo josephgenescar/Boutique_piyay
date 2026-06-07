@@ -803,6 +803,182 @@ title: Akèy - Boutique Piyay
     .cat-bubble:hover { transform: translateY(-3px); }
     .cat-bubble-img { width: 76px; height: 76px; border-radius: 50%; border: 3px solid var(--primary); overflow: hidden; background: var(--light); box-shadow: 0 6px 16px rgba(255,71,71,0.15); transition: 0.2s; }
     .cat-bubble:hover .cat-bubble-img { box-shadow: 0 10px 24px rgba(255,71,71,0.25); border-width: 4px; }
+    .cat-preview-container {
+      display: none;
+      margin-top: 18px;
+      padding: 0 4px;
+    }
+    .cat-preview-container.active { display: block; }
+    .cat-preview-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 22px;
+      border-radius: 24px;
+      background: white;
+      box-shadow: 0 18px 50px rgba(15,23,42,0.08);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .cat-preview-container.active .cat-preview-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .cat-preview-image-wrap {
+      width: 130px;
+      min-width: 130px;
+      height: 130px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+    }
+    .cat-preview-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cat-preview-info { flex: 1; min-width: 0; }
+    .cat-preview-info .cat-preview-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    .cat-preview-info h3 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--dark-2);
+      line-height: 1.2;
+    }
+    .cat-preview-info p {
+      margin: 0 0 12px;
+      color: var(--gray);
+      line-height: 1.65;
+      max-height: 72px;
+      overflow: hidden;
+    }
+    .cat-preview-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      color: var(--dark-2);
+    }
+    .cat-preview-meta span {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #344054;
+    }
+    .cat-preview-product {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      margin-bottom: 14px;
+    }
+    .cat-preview-product-thumb {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      min-width: 72px;
+    }
+    .cat-preview-product-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      display: block;
+    }
+    .cat-preview-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f97316;
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .cat-preview-product-text span {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+    .cat-preview-product-text strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.3;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cat-preview-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-preview-cta,
+    .btn-preview-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .btn-preview-cta {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-preview-secondary {
+      background: #f8fafc;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
+    .btn-preview-cta:hover {
+      transform: translateY(-1px);
+      background: #d43c3c;
+    }
+    .btn-preview-secondary:hover {
+      transform: translateY(-1px);
+      background: #e2e8f0;
+    }
+    .btn-preview-cta:hover {
+      transform: translateY(-1px);
+      background: #d43c3c;
+    }
     .cat-bubble-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .cat-bubble span { font-size: 12px; font-weight: 700; color: var(--dark-2); text-align: center; line-height: 1.3; }
 
@@ -1003,7 +1179,12 @@ title: Akèy - Boutique Piyay
       </div>
       <div class="cat-scroll">
         {% for cat in site.categories %}
-        <a href="{{ cat.url }}" class="cat-bubble">
+        <a href="{{ cat.url }}" class="cat-bubble"
+           data-cat-slug="{{ cat.title | escape }}"
+           data-cat-title="{{ cat.display_name | default: cat.title | escape }}"
+           data-cat-desc="{{ cat.description | strip_newlines | escape }}"
+           data-cat-image="{{ cat.image | default: '/assets/images/logo.png' | escape }}"
+           data-preview-panel="cat-preview-panel">
           <div class="cat-bubble-img">
             <img src="{{ cat.image }}" alt="{{ cat.title }}"
                onerror="this.src='https://ui-avatars.com/api/?name={{ cat.title }}&background=ff4747&color=fff'">
@@ -1011,6 +1192,38 @@ title: Akèy - Boutique Piyay
           <span>{{ cat.display_name | default: cat.title }}</span>
         </a>
         {% endfor %}
+      </div>
+
+      <div class="cat-preview-container" id="cat-preview-panel" aria-hidden="true">
+        <div class="cat-preview-card">
+          <div class="cat-preview-image-wrap">
+            <img class="cat-preview-image" src="" alt="Preview catégorie">
+          </div>
+          <div class="cat-preview-info">
+            <span class="cat-preview-label">Aperçu catégorie</span>
+            <h3 class="cat-preview-title">Passez sou yon kategori</h3>
+            <p class="cat-preview-desc">Survolez yon kategori pou wè plis detay san kite paj la.</p>
+            <div class="cat-preview-meta">
+              <span class="cat-preview-count">0 pwodwi disponib</span>
+              <span class="cat-preview-price">Pri indisponib</span>
+              <span class="cat-preview-sample">Egzanp: dekouvri of!</span>
+            </div>
+            <div class="cat-preview-product">
+              <div class="cat-preview-product-thumb">
+                <img class="cat-preview-product-image" src="" alt="Pwodwi resan">
+                <span class="cat-preview-badge">Nouveau</span>
+              </div>
+              <div class="cat-preview-product-text">
+                <span>Pwodwi dènye</span>
+                <strong class="cat-preview-product-name">Aucun pwodwi</strong>
+              </div>
+            </div>
+            <div class="cat-preview-actions">
+              <a class="cat-preview-link btn-preview-cta" href="#">Wè kategori</a>
+              <a class="cat-preview-buy btn-preview-secondary" href="#" style="display:none;">Achte kounye a</a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1135,7 +1348,7 @@ title: Akèy - Boutique Piyay
     try {
       const { data: prods }   = await supabaseHome
         .from('user_products')
-        .select('id,title,price,image_url,seller_id,is_flash_sale,old_price,is_boosted,created_at,flash_start_at,is_approved,boost_expires_at')
+        .select('id,title,price,image_url,seller_id,category,is_flash_sale,old_price,is_boosted,created_at,flash_start_at,is_approved,boost_expires_at')
         .order('created_at', { ascending: false });
 
       const { data: sellers } = await supabaseHome
@@ -1534,8 +1747,141 @@ title: Akèy - Boutique Piyay
     document.getElementById('products-view').style.display = tab==='products' ? 'block' : 'none';
   }
 
+  let catPreviewTimeout = null;
+
+  function showCategoryPreview(target) {
+    if (!target) return;
+    const panelId = target.dataset.previewPanel || 'cat-preview-panel';
+    const title = target.dataset.catTitle || target.textContent.trim();
+    const desc = target.dataset.catDesc || 'Découvrez cette catégorie.';
+    const img = target.dataset.catImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=ff4747&color=fff`;
+    const href = target.href || '#';
+    const slug = target.dataset.catSlug || title;
+
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    const titleEl = panel.querySelector('.cat-preview-title');
+    const descEl = panel.querySelector('.cat-preview-desc');
+    const imgEl = panel.querySelector('.cat-preview-image');
+    const linkEl = panel.querySelector('.cat-preview-link');
+    const buyEl = panel.querySelector('.cat-preview-buy');
+    const countEl = panel.querySelector('.cat-preview-count');
+    const priceEl = panel.querySelector('.cat-preview-price');
+    const sampleEl = panel.querySelector('.cat-preview-sample');
+    const productImgEl = panel.querySelector('.cat-preview-product-image');
+    const productNameEl = panel.querySelector('.cat-preview-product-name');
+    if (!titleEl || !descEl || !imgEl || !linkEl || !buyEl || !countEl || !priceEl || !sampleEl || !productImgEl || !productNameEl) return;
+
+    const matchingProducts = allProducts.filter(p => {
+      return p.category && String(p.category).toLowerCase() === String(slug).toLowerCase();
+    });
+    const itemCount = matchingProducts.length;
+    const sampleNames = matchingProducts.slice(0, 3).map(p => p.title).filter(Boolean);
+    const newestProduct = matchingProducts.reduce((latest, p) => {
+      const created = p.created_at ? new Date(p.created_at).getTime() : NaN;
+      if (isNaN(created)) return latest;
+      if (!latest || created > latest.createdAt) {
+        return { ...p, createdAt: created };
+      }
+      return latest;
+    }, null);
+    const newestPrice = newestProduct ? parseFloat(newestProduct.price) : NaN;
+    const priceText = !isNaN(newestPrice) ? `Nouveau à partir de ${newestPrice.toLocaleString('fr-FR')} HTG` : 'Prix indisponible';
+
+    titleEl.textContent = title;
+    descEl.textContent = desc;
+    imgEl.src = img;
+    imgEl.alt = title + ' image';
+    linkEl.href = href;
+    countEl.textContent = itemCount > 0 ? `${itemCount} produit${itemCount > 1 ? 's' : ''} disponibles` : 'Aucun pwodwi pou kounye a';
+    priceEl.textContent = priceText;
+    sampleEl.textContent = sampleNames.length > 0 ? `Ex: ${sampleNames.join(', ')}` : 'Dekouvri pi bon of yo.';
+
+    if (newestProduct && newestProduct.id) {
+      productImgEl.src = newestProduct.image_url || '/assets/images/logo.png';
+      productImgEl.alt = `Produit: ${newestProduct.title}`;
+      productNameEl.textContent = newestProduct.title || 'Produit récent';
+      buyEl.href = '#';
+      buyEl.style.display = 'inline-flex';
+      buyEl.onclick = function (event) {
+        event.preventDefault();
+        if (window.orderProduct) {
+          window.orderProduct(
+            String(newestProduct.title || 'Produit'),
+            String(newestProduct.price || ''),
+            String(newestProduct.id),
+            String(newestProduct.image_url || ''),
+            String(newestProduct.seller_id || ''),
+            String((sellerMap[newestProduct.seller_id]?.whatsapp_number || '50948868964')).replace(/[^0-9]/g, ''),
+            String(sellerMap[newestProduct.seller_id]?.shop_name || sellerMap[newestProduct.seller_id]?.full_name || 'Boutique Piyay')
+          );
+        } else {
+          window.location.href = `/pwodwi-machann.html?id=${newestProduct.id}`;
+        }
+      };
+    } else {
+      productImgEl.src = '/assets/images/logo.png';
+      productImgEl.alt = 'Aucun pwodwi disponib';
+      productNameEl.textContent = 'Aucun pwodwi';
+      buyEl.style.display = 'none';
+      buyEl.onclick = null;
+    }
+
+    document.querySelectorAll('.cat-preview-container.active').forEach(activePanel => {
+      if (activePanel !== panel) {
+        activePanel.classList.remove('active');
+        activePanel.setAttribute('aria-hidden', 'true');
+        activePanel.style.display = 'none';
+      }
+    });
+    panel.classList.add('active');
+    panel.setAttribute('aria-hidden', 'false');
+    panel.style.display = 'block';
+  }
+
+  function scheduleHideCategoryPreview() {
+    clearTimeout(catPreviewTimeout);
+    catPreviewTimeout = setTimeout(() => {
+      document.querySelectorAll('.cat-preview-container').forEach(panel => {
+        panel.classList.remove('active');
+        panel.setAttribute('aria-hidden', 'true');
+        panel.style.display = 'none';
+      });
+    }, 150);
+  }
+
+  function cancelHideCategoryPreview() {
+    clearTimeout(catPreviewTimeout);
+  }
+
+  function initCategoryPreview() {
+    const bubbles = document.querySelectorAll('.cat-bubble, .site-nav .nav-lnk[data-cat-slug]');
+    const panel = document.querySelector('.cat-preview-container');
+    if (!bubbles.length || !panel) return;
+
+    bubbles.forEach(bubble => {
+      bubble.addEventListener('pointerenter', () => {
+        cancelHideCategoryPreview();
+        showCategoryPreview(bubble);
+      });
+      bubble.addEventListener('pointerleave', scheduleHideCategoryPreview);
+      bubble.addEventListener('focus', () => {
+        cancelHideCategoryPreview();
+        showCategoryPreview(bubble);
+      });
+      bubble.addEventListener('blur', scheduleHideCategoryPreview);
+    });
+
+    const panels = document.querySelectorAll('.cat-preview-container');
+    panels.forEach(panel => {
+      panel.addEventListener('pointerenter', cancelHideCategoryPreview);
+      panel.addEventListener('pointerleave', scheduleHideCategoryPreview);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     startAdAutoplay();
     loadAllData();
+    initCategoryPreview();
   });
 </script>

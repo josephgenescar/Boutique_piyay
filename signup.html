@@ -118,6 +118,11 @@
                 <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
             </div>
             <div class="form-group">
+                <label class="form-label">Kòd Referans *</label>
+                <input type="text" id="referralCode" class="form-input" placeholder="Antre kòd referans ou resevwa" required>
+                <small style="color: #64748b; font-size: 12px; display: block; margin-top: 8px;">Se sèlman moun ki gen kòd sa a ka kreye yon kont. Pa bay lòt moun kòd la.</small>
+            </div>
+            <div class="form-group">
                 <label class="form-label">Mot de passe *</label>
                 <input type="password" id="password" class="form-input" placeholder="Min. 8 caractères" required minlength="8">
             </div>
@@ -172,6 +177,34 @@
         const email = document.getElementById('email').value.trim();
         const pass = document.getElementById('password').value;
         const fullName = document.getElementById('fullName').value.trim();
+        const referralCode = document.getElementById('referralCode').value.trim().toUpperCase();
+
+        if (!referralCode) {
+            alert("⚠️ Tanpri antre kòd referans la.");
+            btn.disabled = false;
+            btn.innerHTML = "CRÉER MON COMPTE";
+            return;
+        }
+
+        const { data: referralKey, error: referralErr } = await supS
+            .from('referral_keys')
+            .select('id, code, used_at')
+            .eq('code', referralCode)
+            .single();
+
+        if (referralErr || !referralKey) {
+            alert("❌ Kòd referans la pa valab. Tanpri antre kòd ke ou resevwa.");
+            btn.disabled = false;
+            btn.innerHTML = "CRÉER MON COMPTE";
+            return;
+        }
+
+        if (referralKey.used_at) {
+            alert("❌ Kòd referans sa a deja itilize. Tanpri mande yon nouvo kòd.");
+            btn.disabled = false;
+            btn.innerHTML = "CRÉER MON COMPTE";
+            return;
+        }
 
         // Validate seller fields
         if (currentRole === 'seller') {
@@ -200,6 +233,7 @@
                 const profileData = {
                     id: authData.user.id,
                     full_name: fullName,
+                    referral_code: referralCode,
                     shop_name: (currentRole === 'seller') ? document.getElementById('shopName').value.trim() : null,
                     whatsapp: (currentRole === 'seller') ? document.getElementById('whatsappNumber').value.trim() : null,
                     address: (currentRole === 'seller') ? document.getElementById('address').value.trim() : null,
@@ -218,6 +252,19 @@
                     alert("❌ Erè nan kreyasyon profile: " + upsertError.message);
                     btn.disabled = false;
                     btn.innerHTML = "CRÉER MON COMPTE";
+                    return;
+                }
+
+                const { error: markUsedError } = await supS
+                    .from('referral_keys')
+                    .update({ used_at: new Date().toISOString(), used_by: authData.user.id })
+                    .eq('id', referralKey.id)
+                    .is('used_at', null);
+
+                if (markUsedError) {
+                    console.error('Erè nan make kòd itilize:', markUsedError);
+                    alert("⚠️ Enskripsyon fèt, men gen yon pwoblèm sou verifye kòd referans lan. Tanpri kontakte administratè.");
+                    window.location.href = "/login.html";
                     return;
                 }
 

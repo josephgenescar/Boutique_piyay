@@ -93,5 +93,109 @@
     // 4. Anrejistre kòrèkteman
     CMS.registerPreviewTemplate("marketplace_admin", MarketplaceInsights);
   </script>
+  <div id="referral-admin" style="max-width: 980px; margin: 40px auto; padding: 22px; background: #fff; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); font-family: Inter, sans-serif;">
+    <h1 style="font-size: 28px; margin-bottom: 14px; color: #111;">🛡️ Kòd Referans Admin</h1>
+    <p style="margin-bottom: 20px; color: #475569; line-height: 1.6;">Jere kòd referans pou nouvo enskripsyon. Kreye nouvo kòd, wè kòd ki deja egziste, epi asire chak kòd itilize sèlman yon sèl fwa.</p>
+
+    <div style="display:grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-bottom: 10px;">
+      <input id="newReferralCode" type="text" placeholder="Antre yon kòd referans oswa klike Jenere" style="width:100%; padding: 13px 16px; border: 1px solid #d1d5db; border-radius: 14px; font-size: 14px;" />
+      <button id="generateReferralBtn" style="padding: 13px 20px; border:none; border-radius: 14px; background:#ff4747; color:white; font-size:14px; cursor:pointer;">Jenere Kòd</button>
+    </div>
+    <div style="display:flex; gap: 12px; flex-wrap: wrap; margin-bottom: 22px;">
+      <button id="saveReferralBtn" style="padding: 13px 20px; border:none; border-radius: 14px; background:#2563eb; color:white; font-size:14px; cursor:pointer;">Sove Kòd</button>
+      <button id="refreshReferralBtn" style="padding: 13px 20px; border:1px solid #d1d5db; border-radius: 14px; background:#f8fafc; color:#111; font-size:14px; cursor:pointer;">Refrechi Lis</button>
+    </div>
+    <div id="referralMessage" style="min-height: 24px; color:#334155; font-size:14px; margin-bottom:18px;"></div>
+
+    <div class="section" style="padding: 20px; border-radius: 18px;">
+      <h3 style="margin-top:0; font-size:18px; margin-bottom:14px;">Kòd Referans ki egziste</h3>
+      <div id="referralKeysList" style="display:grid; gap: 10px;">Chaje ...</div>
+    </div>
+  </div>
+
+  <!-- Netlify CMS App -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+
+  <script>
+    async function fetchReferralKeys() {
+      const list = document.getElementById('referralKeysList');
+      list.innerHTML = 'Chaje ...';
+      const { data, error } = await supabaseAdmin.from('referral_keys').select('*').order('created_at', { ascending: false });
+      if (error) {
+        list.innerHTML = `<div style="color:red;">Erè: ${error.message}</div>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        list.innerHTML = '<div style="color:#475569;">Okenn kòd referans pa defini ankò.</div>';
+        return;
+      }
+      list.innerHTML = data.map(key => {
+        const status = key.used_at ? 'Itilize' : 'Pa itilize';
+        const statusColor = key.used_at ? '#dc2626' : '#16a34a';
+        const usedBy = key.used_by ? key.used_by : '-';
+        const usedAt = key.used_at ? new Date(key.used_at).toLocaleString() : '-';
+        return `
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+            <div style="min-width:180px; font-weight:700; color:#0f172a;">${key.code}</div>
+            <div style="font-size:13px; color:#475569;">Kreye: ${new Date(key.created_at).toLocaleDateString()}</div>
+            <div style="font-size:13px; color:${statusColor}; font-weight:800;">${status}</div>
+            <div style="font-size:12px; color:#475569;">Itilize pa: ${usedBy}</div>
+            <div style="font-size:12px; color:#475569;">Itilize le: ${usedAt}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function randomReferralCode() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code = 'PIYAY-';
+      for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      return code;
+    }
+
+    async function saveReferralKey(code) {
+      const message = document.getElementById('referralMessage');
+      message.style.color = '#334155';
+      if (!code) {
+        message.style.color = '#dc2626';
+        message.innerText = 'Tanpri antre oswa jenere yon kòd pou sove.';
+        return;
+      }
+      const { data, error } = await supabaseAdmin.from('referral_keys').insert([{ code: code.toUpperCase() }]);
+      if (error) {
+        message.style.color = '#dc2626';
+        if (error.code === '23505') {
+          message.innerText = 'Kòd la deja egziste. Chwazi yon lòt kòd.';
+        } else {
+          message.innerText = 'Erè lè w sove kòd la: ' + error.message;
+        }
+        return;
+      }
+      message.style.color = '#16a34a';
+      message.innerText = 'Kòd referans anrejistre avèk siksè.';
+      document.getElementById('newReferralCode').value = '';
+      fetchReferralKeys();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const generateBtn = document.getElementById('generateReferralBtn');
+      const saveBtn = document.getElementById('saveReferralBtn');
+      const refreshBtn = document.getElementById('refreshReferralBtn');
+      const input = document.getElementById('newReferralCode');
+
+      generateBtn.addEventListener('click', () => {
+        input.value = randomReferralCode();
+      });
+
+      saveBtn.addEventListener('click', async () => {
+        await saveReferralKey(input.value.trim());
+      });
+
+      refreshBtn.addEventListener('click', () => {
+        fetchReferralKeys();
+      });
+
+      fetchReferralKeys();
+    });
+  </script>
 </body>
 </html>

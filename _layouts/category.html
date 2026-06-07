@@ -40,7 +40,7 @@ layout: default
         "https://letyferfjpxmstohvgcj.supabase.co",
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg"
     );
-    const catId = "{{ category_id }}";
+    const catId = "{{ category_id }}".toLowerCase();
 
     async function loadCategoryProducts() {
         const grid = document.getElementById('category-grid');
@@ -52,7 +52,7 @@ layout: default
             const { data: products, error } = await supC
                 .from('user_products')
                 .select('*')
-                .eq('category', catId.toLowerCase()) // Asire kategori a an miniskil pou konparezon
+                .ilike('category', catId) // Case-insensitive matching for category slug
                 .order('created_at', { ascending: false });
 
             if (error) throw error;

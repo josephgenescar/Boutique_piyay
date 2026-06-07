@@ -29,6 +29,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS address text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS facebook_url text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_active_seller boolean DEFAULT false;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referral_code text;
 
 -- Fill missing shop_name for active sellers already registered before shop_name was added
 UPDATE profiles
@@ -50,6 +51,18 @@ CREATE TABLE IF NOT EXISTS affiliates (
   updated_at timestamptz DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_affiliates_user_id ON affiliates(user_id);
+
+CREATE TABLE IF NOT EXISTS referral_keys (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  code text UNIQUE NOT NULL,
+  used_by uuid REFERENCES profiles(id),
+  used_at timestamptz,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_referral_keys_code ON referral_keys(code);
+
+INSERT INTO referral_keys (code) VALUES ('PIYAYVIP2026') ON CONFLICT (code) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS affiliate_transactions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

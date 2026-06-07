@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Kòd Referans — Boutique Piyay</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body { margin: 0; font-family: Inter, sans-serif; background: #eef2ff; color: #0f172a; }
+    .page-wrap { max-width: 1040px; margin: 0 auto; padding: 32px 24px; }
+    .hero { margin-bottom: 28px; }
+    .hero h1 { margin: 0 0 8px; font-size: 2rem; }
+    .hero p { margin: 0; color: #475569; max-width: 720px; line-height: 1.7; }
+    .card { background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08); padding: 28px; margin-bottom: 24px; }
+    .grid { display: grid; gap: 18px; }
+    .field-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: stretch; }
+    .field-row input { width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 16px; font-size: 14px; }
+    .btn { border: none; border-radius: 16px; padding: 14px 20px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-secondary { background: #f8fafc; color: #111827; border: 1px solid #cbd5e1; }
+    .btn-generate { background: #ef4444; color: white; }
+    .note { color: #475569; font-size: 14px; line-height: 1.7; }
+    .message { min-height: 24px; font-size: 14px; margin-top: 14px; }
+    .table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    .table th, .table td { text-align: left; padding: 14px 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+    .table th { color: #334155; font-weight: 700; }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .status-unused { background: #dcfce7; color: #166534; }
+    .status-used { background: #fee2e2; color: #b91c1c; }
+    .top-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #2563eb; text-decoration: none; font-weight: 700; }
+    .top-link:hover { text-decoration: underline; }
+    @media (max-width: 720px) { .field-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <a class="top-link" href="/admin/dashboard.html">← Tounen nan Dashboard</a>
+    <div class="hero">
+      <h1>Jere Kòd Referans</h1>
+      <p>Jenere kòd inik pou nouvo moun enskri. Chak kòd itilize yon sèl fwa epi li make otomatikman apre premye itilizasyon.</p>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div class="field-row">
+          <input id="newReferralCode" type="text" placeholder="Antre yon kòd oswa klike jenere" />
+          <button id="generateReferralBtn" class="btn btn-generate">Jenere</button>
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap: wrap;">
+          <button id="saveReferralBtn" class="btn btn-primary">Sove kòd</button>
+          <button id="refreshReferralBtn" class="btn btn-secondary">Refrechi lis</button>
+        </div>
+        <div id="referralMessage" class="message"></div>
+        <p class="note">Kòd yo ap sove nan tablo <strong>referral_keys</strong> nan baz done Supabase ou a. Chak kòd la ap make <em>used</em> lè yon itilizatè sèvi avè li sou paj enskripsyon.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Lis Kòd Referans</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Kòd</th>
+            <th>Estati</th>
+            <th>Itlije pa</th>
+            <th>Dat itilizasyon</th>
+          </tr>
+        </thead>
+        <tbody id="referralKeysTableBody">
+          <tr><td colspan="4" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SUP_URL = 'https://lsyjnhqjssirtgrdfgcu.supabase.co';
+    const SUP_KEY = 'sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13';
+    const supabase = window.supabase.createClient(SUP_URL, SUP_KEY);
+
+    function randomReferralCode() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code = 'PIYAY-';
+      for (let i = 0; i < 8; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    async function fetchReferralKeys() {
+      const body = document.getElementById('referralKeysTableBody');
+      body.innerHTML = '<tr><td colspan="4" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>';
+
+      const { data, error } = await supabase.from('referral_keys').select('*').order('created_at', { ascending: false });
+      if (error) {
+        body.innerHTML = `<tr><td colspan="4" style="color:#dc2626; padding: 20px;">Erè: ${error.message}</td></tr>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        body.innerHTML = '<tr><td colspan="4" style="color:#475569; padding: 20px;">Okenn kòd pa defini ankò.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = data.map(key => {
+        const status = key.used_at ? 'Itilize' : 'Pa itilize';
+        const statusClass = key.used_at ? 'status-used' : 'status-unused';
+        const usedBy = key.used_by || '-';
+        const usedAt = key.used_at ? new Date(key.used_at).toLocaleString() : '-';
+        return `
+          <tr>
+            <td style="font-weight:700;">${key.code}</td>
+            <td><span class="status-pill ${statusClass}">${status}</span></td>
+            <td>${usedBy}</td>
+            <td>${usedAt}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function saveReferralKey(code) {
+      const message = document.getElementById('referralMessage');
+      message.style.color = '#334155';
+      if (!code) {
+        message.style.color = '#dc2626';
+        message.innerText = 'Tanpri antre oswa jenere yon kòd pou sove.';
+        return;
+      }
+
+      const { data, error } = await supabase.from('referral_keys').insert([{ code: code.toUpperCase() }]);
+      if (error) {
+        if (error.code === '23505') {
+          message.style.color = '#dc2626';
+          message.innerText = 'Kòd la deja egziste. Chwazi yon lòt kòd.';
+        } else {
+          message.style.color = '#dc2626';
+          message.innerText = 'Erè: ' + error.message;
+        }
+        return;
+      }
+      message.style.color = '#16a34a';
+      message.innerText = 'Kòd la te sove avèk siksè.';
+      document.getElementById('newReferralCode').value = '';
+      fetchReferralKeys();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('generateReferralBtn').addEventListener('click', function () {
+        document.getElementById('newReferralCode').value = randomReferralCode();
+      });
+      document.getElementById('saveReferralBtn').addEventListener('click', function () {
+        saveReferralKey(document.getElementById('newReferralCode').value.trim());
+      });
+      document.getElementById('refreshReferralBtn').addEventListener('click', fetchReferralKeys);
+      fetchReferralKeys();
+    });
+  </script>
+</body>
+</html>
