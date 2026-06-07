@@ -99,11 +99,11 @@
 
     <div style="display:grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-bottom: 10px;">
       <input id="newReferralCode" type="text" placeholder="Antre yon kòd referans oswa klike Jenere" style="width:100%; padding: 13px 16px; border: 1px solid #d1d5db; border-radius: 14px; font-size: 14px;" />
-      <button id="generateReferralBtn" style="padding: 13px 20px; border:none; border-radius: 14px; background:#ff4747; color:white; font-size:14px; cursor:pointer;">Jenere Kòd</button>
+      <button type="button" id="generateReferralBtn" style="padding: 13px 20px; border:none; border-radius: 14px; background:#ff4747; color:white; font-size:14px; cursor:pointer;">Jenere Kòd</button>
     </div>
     <div style="display:flex; gap: 12px; flex-wrap: wrap; margin-bottom: 22px;">
-      <button id="saveReferralBtn" style="padding: 13px 20px; border:none; border-radius: 14px; background:#2563eb; color:white; font-size:14px; cursor:pointer;">Sove Kòd</button>
-      <button id="refreshReferralBtn" style="padding: 13px 20px; border:1px solid #d1d5db; border-radius: 14px; background:#f8fafc; color:#111; font-size:14px; cursor:pointer;">Refrechi Lis</button>
+      <button type="button" id="saveReferralBtn" style="padding: 13px 20px; border:none; border-radius: 14px; background:#2563eb; color:white; font-size:14px; cursor:pointer;">Sove Kòd</button>
+      <button type="button" id="refreshReferralBtn" style="padding: 13px 20px; border:1px solid #d1d5db; border-radius: 14px; background:#f8fafc; color:#111; font-size:14px; cursor:pointer;">Refrechi Lis</button>
     </div>
     <div id="referralMessage" style="min-height: 24px; color:#334155; font-size:14px; margin-bottom:18px;"></div>
 
@@ -176,7 +176,7 @@
       fetchReferralKeys();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    function initReferralAdmin() {
       const generateBtn = document.getElementById('generateReferralBtn');
       const saveBtn = document.getElementById('saveReferralBtn');
       const refreshBtn = document.getElementById('refreshReferralBtn');
@@ -195,7 +195,13 @@
       });
 
       fetchReferralKeys();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initReferralAdmin);
+    } else {
+      initReferralAdmin();
+    }
   </script>
 </body>
 </html>
