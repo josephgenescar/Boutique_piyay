@@ -19,6 +19,7 @@
     .btn-primary { background: #2563eb; color: white; }
     .btn-secondary { background: #f8fafc; color: #111827; border: 1px solid #cbd5e1; }
     .btn-generate { background: #ef4444; color: white; }
+    .alert { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 18px; padding: 18px 22px; margin-bottom: 20px; font-weight: 700; }
     .note { color: #475569; font-size: 14px; line-height: 1.7; }
     .message { min-height: 24px; font-size: 14px; margin-top: 14px; }
     .table { width: 100%; border-collapse: collapse; margin-top: 14px; }
@@ -40,18 +41,23 @@
       <p>Jenere kòd inik pou nouvo moun enskri. Chak kòd itilize yon sèl fwa epi li make otomatikman apre premye itilizasyon.</p>
     </div>
 
+    <div class="alert">
+      Atansyon: Kòd sa yo se <strong>kòd referans pou signup</strong> sèlman. Kòd boost pwodwi yo se yon lòt kalite kòd epi yo pa valab sou paj enskripsyon an.
+    </div>
+
     <div class="card">
       <div class="grid">
         <div class="field-row">
           <input id="newReferralCode" type="text" placeholder="Antre yon kòd oswa klike jenere" />
           <button id="generateReferralBtn" class="btn btn-generate">Jenere</button>
+          <button id="copyReferralBtn" class="btn btn-secondary">Kopye</button>
         </div>
         <div style="display:flex; gap:12px; flex-wrap: wrap;">
           <button id="saveReferralBtn" class="btn btn-primary">Sove kòd</button>
           <button id="refreshReferralBtn" class="btn btn-secondary">Refrechi lis</button>
         </div>
         <div id="referralMessage" class="message"></div>
-        <p class="note">Kòd yo ap sove nan tablo <strong>referral_keys</strong> nan baz done Supabase ou a. Chak kòd la ap make <em>used</em> lè yon itilizatè sèvi avè li sou paj enskripsyon.</p>
+        <p class="note">Se sèlman kòd ki nan tablo <strong>referral_keys</strong> ki valab pou paj <strong>signup.html</strong>. Kòd boost pwodwi yo pa dwe itilize pou enskripsyon. Si w ap fè yon nouvo kont, kopye epi kole kòd referans sa a sou paj signup la.</p>
       </div>
     </div>
 
@@ -64,18 +70,19 @@
             <th>Estati</th>
             <th>Itlije pa</th>
             <th>Dat itilizasyon</th>
+            <th>Aksyon</th>
           </tr>
         </thead>
         <tbody id="referralKeysTableBody">
-          <tr><td colspan="4" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>
+          <tr><td colspan="5" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    const SUP_URL = 'https://lsyjnhqjssirtgrdfgcu.supabase.co';
-    const SUP_KEY = 'sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13';
+    const SUP_URL = 'https://letyferfjpxmstohvgcj.supabase.co';
+    const SUP_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg';
     const supabase = window.supabase.createClient(SUP_URL, SUP_KEY);
 
     function randomReferralCode() {
@@ -89,15 +96,15 @@
 
     async function fetchReferralKeys() {
       const body = document.getElementById('referralKeysTableBody');
-      body.innerHTML = '<tr><td colspan="4" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding: 20px;">Chaje kòd...</td></tr>';
 
       const { data, error } = await supabase.from('referral_keys').select('*').order('created_at', { ascending: false });
       if (error) {
-        body.innerHTML = `<tr><td colspan="4" style="color:#dc2626; padding: 20px;">Erè: ${error.message}</td></tr>`;
+        body.innerHTML = `<tr><td colspan="5" style="color:#dc2626; padding: 20px;">Erè: ${error.message}</td></tr>`;
         return;
       }
       if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="4" style="color:#475569; padding: 20px;">Okenn kòd pa defini ankò.</td></tr>';
+        body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding: 20px;">Okenn kòd pa defini ankò.</td></tr>';
         return;
       }
 
@@ -112,6 +119,7 @@
             <td><span class="status-pill ${statusClass}">${status}</span></td>
             <td>${usedBy}</td>
             <td>${usedAt}</td>
+            <td><button class="btn btn-secondary copy-row-btn" data-code="${key.code}">Kopye</button></td>
           </tr>
         `;
       }).join('');
@@ -147,10 +155,30 @@
       document.getElementById('generateReferralBtn').addEventListener('click', function () {
         document.getElementById('newReferralCode').value = randomReferralCode();
       });
+      document.getElementById('copyReferralBtn').addEventListener('click', function () {
+        const code = document.getElementById('newReferralCode').value.trim();
+        if (!code) {
+          document.getElementById('referralMessage').style.color = '#dc2626';
+          document.getElementById('referralMessage').innerText = 'Tanpri jenere oswa antre yon kòd avan pou kopye li.';
+          return;
+        }
+        navigator.clipboard.writeText(code);
+        document.getElementById('referralMessage').style.color = '#16a34a';
+        document.getElementById('referralMessage').innerText = 'Kòd la kopye nan clipboard!';
+      });
       document.getElementById('saveReferralBtn').addEventListener('click', function () {
         saveReferralKey(document.getElementById('newReferralCode').value.trim());
       });
       document.getElementById('refreshReferralBtn').addEventListener('click', fetchReferralKeys);
+      document.addEventListener('click', function (event) {
+        if (!event.target.matches('.copy-row-btn')) return;
+        const code = event.target.dataset.code;
+        if (code) {
+          navigator.clipboard.writeText(code);
+          document.getElementById('referralMessage').style.color = '#16a34a';
+          document.getElementById('referralMessage').innerText = `Kòd referans ${code} te kopye! Mete li sou paj signup.html.`;
+        }
+      });
       fetchReferralKeys();
     });
   </script>
