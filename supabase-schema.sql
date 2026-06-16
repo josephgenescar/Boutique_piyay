@@ -191,3 +191,19 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 CREATE INDEX IF NOT EXISTS idx_transactions_wallet_id ON transactions(wallet_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_order_id ON transactions(order_id);
+
+-- 6) Admin commissions for referral program
+CREATE TABLE IF NOT EXISTS admin_commissions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  referral_code text NOT NULL,
+  referred_user_id uuid REFERENCES profiles(id),
+  referred_user_name text,
+  referred_user_email text,
+  commission_amount numeric(12,2) NOT NULL,
+  commission_type text DEFAULT 'referral_signup',
+  is_paid boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_admin_commissions_referral_code ON admin_commissions(referral_code);
+CREATE INDEX IF NOT EXISTS idx_admin_commissions_referred_user_id ON admin_commissions(referred_user_id);

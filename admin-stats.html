@@ -346,6 +346,7 @@ title: Sant Kontwòl Total - Boutique Piyay
     <!-- TABS -->
     <div class="tabs-bar">
       <button onclick="showTab('tab-notifications')" class="tab-btn">🔔 Notifikasyon</button>
+      <button onclick="showTab('tab-commissions')" class="tab-btn">💰 Komisyon</button>
       <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Vendeur & Disiplin</button>
       <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
       <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
@@ -364,6 +365,21 @@ title: Sant Kontwòl Total - Boutique Piyay
               <tr><th>Tip</th><th>Tit</th><th>Mesaj</th><th>Dat</th><th>Aksyon</th></tr>
             </thead>
             <tbody id="notifications-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: COMMISSIONS -->
+    <div id="tab-commissions" class="tab-content" style="display:none;">
+      <div class="admin-card">
+        <div class="card-title">💰 Komisyon Referral</div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Kòd</th><th>Non Itilizatè</th><th>Email</th><th>Montan</th><th>Dati</th><th>Estati</th></tr>
+            </thead>
+            <tbody id="commissions-list"></tbody>
           </table>
         </div>
       </div>
@@ -527,6 +543,7 @@ title: Sant Kontwòl Total - Boutique Piyay
       const { data: orders } = await supA.from('orders').select('*');
       const { data: withdrawals } = await supA.from('affiliate_withdrawals').select('*').order('created_at', { ascending: false });
       const { data: notifications } = await supA.from('admin_notifications').select('*').order('created_at', { ascending: false });
+      const { data: commissions } = await supA.from('admin_commissions').select('*').order('created_at', { ascending: false });
 
       document.getElementById('stat-sellers').innerText    = users ? users.length : 0;
       document.getElementById('stat-products').innerText   = prods ? prods.length : 0;
@@ -545,6 +562,18 @@ title: Sant Kontwòl Total - Boutique Piyay
           </td>
         </tr>
       `).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;">Pa gen notifikasyon</td></tr>';
+
+      // Chaje komisyon yo
+      document.getElementById('commissions-list').innerHTML = (commissions || []).map(c => `
+        <tr>
+          <td><span class="badge active">${c.referral_code}</span></td>
+          <td>${c.referred_user_name || 'N/A'}</td>
+          <td>${c.referred_user_email || 'N/A'}</td>
+          <td><span class="badge active">${c.commission_amount} HTG</span></td>
+          <td>${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
+          <td><span class="badge ${c.is_paid ? 'active' : 'pending'}">${c.is_paid ? '✅ Peye' : '⏳ An atann'}</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" style="text-align:center;padding:20px;">Pa gen komisyon</td></tr>';
 
       document.getElementById('sellers-list').innerHTML = (users || []).map(u => `
         <tr>

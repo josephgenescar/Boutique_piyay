@@ -278,6 +278,26 @@
                     return;
                 }
 
+                // Ajoute komisyon bay admin lè yon moun enskri ak kòd referral
+                try {
+                    const commissionAmount = 500; // Montan komisyon an HTG
+                    
+                    // Kreye yon tab admin_commissions si li pa egziste
+                    await supS.from('admin_commissions').insert([{
+                        referral_code: referralCode,
+                        referred_user_id: authData.user.id,
+                        referred_user_name: fullName,
+                        referred_user_email: email,
+                        commission_amount: commissionAmount,
+                        commission_type: 'referral_signup',
+                        created_at: new Date().toISOString()
+                    }]);
+                    
+                    console.log('✅ Komisyon referral ajoute bay admin');
+                } catch (commissionError) {
+                    console.error('⚠️ Erè nan ajoute komisyon:', commissionError);
+                }
+
                 console.log('Profile kreye avèk siksè');
                 alert("🎉 Compte créé ! Veuillez vérifier votre email.");
                 window.location.href = "/login.html";

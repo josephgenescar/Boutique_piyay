@@ -1440,23 +1440,21 @@ title: Akèy - Boutique Piyay
       let ratingHTML = '';
       if (p.avgRating > 0) {
         const stars = Math.round(p.avgRating);
-        ratingHTML = `<div class="boosted-rating">⭐ ${p.avgRating.toFixed(1)} (${p.ratingCount})</div>`;
+        ratingHTML = `<div class="mkt-prod-rating">⭐ ${p.avgRating.toFixed(1)} (${p.ratingCount})</div>`;
       }
       
       return `
-        <div class="boosted-card boosted-product-card">
+        <div class="mkt-prod-card">
           <a href="/pwodwi-machann.html?id=${p.id}">
-            <img class="boosted-img" src="${p.image_url}" alt="${p.title}"
+            <img class="mkt-prod-img" src="${p.image_url}" alt="${p.title}"
                  onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
           </a>
-          <div class="boosted-card-body">
-            <div class="boosted-title">${p.title}</div>
-            ${ratingHTML}
-            <div class="boosted-price">${p.price} HTG</div>
-            <button class="btn-boosted-add" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
-              🛒 <span data-i18n="cart.add">Ajouter</span>
-            </button>
-          </div>
+          <div class="mkt-prod-name">${p.title}</div>
+          ${ratingHTML}
+          <div class="mkt-prod-price">${p.price} HTG</div>
+          <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
+            🛒 <span data-i18n="cart.add">Ajouter</span>
+          </button>
         </div>`;
     });
 
@@ -1493,19 +1491,22 @@ title: Akèy - Boutique Piyay
 
     stopBoostedBannerAutoplay();
     container.innerHTML = `
-      <div class="ad-banner boosted-product">
-        <div class="ad-scan-line"></div>
+      <div class="mkt-prod-grid">
         ${boostedProducts.map(p => {
           const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
+          const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
           return `
-            <a href="/pwodwi-machann.html?id=${p.id}" class="boosted-product-item">
-              <img class="boosted-product-img" src="${p.image_url}" alt="${p.title}"
-                   onerror="this.src='https://ui-avatars.com/api/?name=P&background=ff4747&color=fff'">
-              <div class="boosted-product-info">
-                <div class="boosted-product-title" style="font-size:12px;font-weight:700;color:white;">${p.title}</div>
-                <div class="boosted-product-price" style="font-size:13px;font-weight:800;color:white;">${p.price} HTG</div>
-              </div>
-            </a>`;
+            <div class="mkt-prod-card">
+              <a href="/pwodwi-machann.html?id=${p.id}">
+                <img class="mkt-prod-img" src="${p.image_url}" alt="${p.title}"
+                     onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+              </a>
+              <div class="mkt-prod-name">${p.title}</div>
+              <div class="mkt-prod-price">${p.price} HTG</div>
+              <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
+                🛒 <span data-i18n="cart.add">Ajouter</span>
+              </button>
+            </div>`;
         }).join('')}
       </div>`;
 
