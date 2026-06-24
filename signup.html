@@ -188,11 +188,17 @@
             return;
         }
 
-        const { data: referralKey, error: referralErr } = await supS
-            .from('referral_keys')
-            .select('id, code, used_at')
-            .eq('code', referralCode)
-            .maybeSingle();
+       const { data: referralKey, error: referralErr } = await supS
+    .from('referral_keys')
+    .select('id, code, used_at')
+    .eq('code', referralCode)
+    .maybeSingle();
+
+console.log('=== REFERRAL DEBUG ===');
+console.log('Kòd ou antre:', referralCode);
+console.log('Referral data:', referralKey);
+console.log('Referral error:', referralErr);
+console.log('=====================');
 
         if (referralErr) {
             console.error('Referral query failed:', referralErr);
