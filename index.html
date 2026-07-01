@@ -32,12 +32,22 @@ title: Akèy - Boutique Piyay
       border: 1px solid rgba(15,23,42,0.08);
       overflow: hidden;
       box-shadow: 0 22px 50px rgba(15,23,42,0.08);
-      margin: 20px auto 0;
+      margin: 20px auto 24px;
       max-width: 1180px;
-      position: sticky;
-      top: 16px;
+      position: relative;
       z-index: 12;
       backdrop-filter: blur(12px);
+      transition: transform 0.25s ease, opacity 0.25s ease, max-height 0.25s ease, margin 0.25s ease, padding 0.25s ease;
+    }
+
+    .main-ads-box.hidden-on-scroll {
+      transform: translateY(-100%);
+      opacity: 0;
+      max-height: 0;
+      margin: 0 auto 0;
+      padding: 0;
+      overflow: hidden;
+      pointer-events: none;
     }
 
     /* ══════════════════════════════
@@ -47,7 +57,7 @@ title: Akèy - Boutique Piyay
       position: relative;
       overflow: hidden;
       width: 100%;
-      min-height: 220px;
+      min-height: 240px;
     }
     .ad-slider-track {
       display: flex;
@@ -60,7 +70,7 @@ title: Akèy - Boutique Piyay
     .ad-banner {
       flex-shrink: 0;
       width: 100%;
-      min-height: 220px;
+      min-height: 240px;
       display: flex;
       align-items: center;
       position: relative;
@@ -81,6 +91,12 @@ title: Akèy - Boutique Piyay
       background-image: 
         radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .main-ads-box[data-hidden="true"] {
+      transform: translateY(-40px);
+      opacity: 0.04;
       pointer-events: none;
     }
 
@@ -1259,10 +1275,39 @@ title: Akèy - Boutique Piyay
   const hiddenAds   = new Set();
   let adCurrent     = 0;
   let adAutoplay    = null;
+  let lastScrollY   = window.scrollY;
+  let adHidden      = false;
 
   function getVisibleAds() {
     return adBanners.filter(id => !hiddenAds.has(id));
   }
+
+  function updateAdVisibility() {
+    const adBox = document.querySelector('.main-ads-box');
+    if (!adBox) return;
+
+    const currentY = window.scrollY;
+    const delta = currentY - lastScrollY;
+
+    if (delta > 10 && currentY > 120) {
+      if (!adHidden) {
+        adBox.classList.add('hidden-on-scroll');
+        adHidden = true;
+      }
+    } else if (delta < -10) {
+      if (adHidden) {
+        adBox.classList.remove('hidden-on-scroll');
+        adHidden = false;
+      }
+    }
+
+    lastScrollY = currentY;
+  }
+
+  window.addEventListener('scroll', () => {
+    window.requestAnimationFrame(updateAdVisibility);
+  }, { passive: true });
+  document.addEventListener('DOMContentLoaded', updateAdVisibility);
 
   function adGoTo(idx) {
     const track = document.getElementById('adSliderTrack');

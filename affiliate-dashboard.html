@@ -1,0 +1,50 @@
+---
+layout: default
+title: Tableau de bord Affilié
+description: Votre espace affilié — clics, ventes et paiements
+---
+
+<div style="max-width:1000px;margin:40px auto;padding:28px;background:white;border-radius:18px;border:1px solid #f1f5f9;">
+  <h1 style="margin-top:0;">Tableau de bord Affilié</h1>
+  <p>Connectez-vous pour voir vos gains, liens d'affiliation et demandes de retrait.</p>
+
+  <div id="affiliate-content" style="margin-top:20px;">
+    <p>Chargement des données affilié…</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  const AFFILIATE_SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+  const AFFILIATE_SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+
+  const sup = window.supabase.createClient(AFFILIATE_SUP_URL, AFFILIATE_SUP_KEY);
+
+  async function loadAffiliateDashboard() {
+    try {
+      const { data: { session } } = await sup.auth.getSession();
+      if (!session) {
+        // Redirect to login with redirect back
+        window.location.href = '/login.html?redirect=/affiliate-dashboard.html';
+        return;
+      }
+
+      const userId = session.user.id;
+      const { data: stats } = await sup.from('affiliate_stats').select('*').eq('affiliate_id', userId).maybeSingle();
+
+      const container = document.getElementById('affiliate-content');
+      container.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="background:#fff7f6;padding:18px;border-radius:12px;border:1px solid #ffe4e1;"><strong>${stats?.clicks||0}</strong><div>Clics</div></div>
+          <div style="background:#fff;padding:18px;border-radius:12px;border:1px solid #f1f5f9;"><strong>${stats?.sales||0}</strong><div>Ventes</div></div>
+          <div style="background:#f8fff7;padding:18px;border-radius:12px;border:1px solid #e6f6ec;"><strong>${stats?.pending_commission||0} HTG</strong><div>En attente</div></div>
+        </div>
+      `;
+    } catch (e) {
+      document.getElementById('affiliate-content').innerText = 'Erreur lors du chargement du tableau de bord.';
+      console.error(e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadAffiliateDashboard);
+</script>

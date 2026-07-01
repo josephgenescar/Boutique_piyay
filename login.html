@@ -285,12 +285,17 @@ title: Konekte - Boutique Piyay
         const redirect = new URLSearchParams(window.location.search).get('redirect');
 
         setTimeout(() => {
-          // Si c'est un vendeur ou admin, rediriger vers dashboard
-          if (profile && (profile.role === 'seller' || profile.role === 'admin')) {
+          // Si utilisateur gen role 'affiliate', redirige li sou affiliate dashboard
+          if (profile && profile.role === 'affiliate') {
+            console.log('Redirection vers affiliate-dashboard.html');
+            window.location.href = redirect || '/affiliate-dashboard.html';
+          }
+          // Si c'est un vendeur oswa admin, rediriger vers dashboard
+          else if (profile && (profile.role === 'seller' || profile.role === 'admin')) {
             console.log('Redirection vers dashboard.html');
             window.location.href = redirect || '/dashboard.html';
           }
-          // Si c'est un client ou profile pa egziste, rediriger vers la page d'accueil
+          // Sinon rediriger sou accueil
           else {
             console.log('Redirection vers page accueil');
             window.location.href = redirect || '/';
