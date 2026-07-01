@@ -1,109 +1,393 @@
-<!--
-Tout kontni paj affiliate.html mete sou kòmantè pou inaktif.
--->
-<!---->
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affiliation - Boutique Piyay</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="shortcut icon" href="/assets/images/logo.png">
-    <link rel="icon" href="/assets/images/logo.png">
-</head>
-<body style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;min-height:100vh;">
-    <div style="background:white;padding:48px 32px;border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,0.08);text-align:center;max-width:400px;">
-        <h2 style="color:#ff4747;font-weight:900;margin-bottom:18px;">Affiliation</h2>
-        <p style="font-size:1.1rem;color:#444;">Ce service sera <b>bientôt disponible</b>.<br>Merci de votre patience !</p>
-    </div>
-</body>
-</html>
-        .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid #f8fafc; }
-        .tx-amount.earn { color: var(--green); font-weight: 900; }
-        .tx-amount.withdraw { color: var(--primary); font-weight: 900; }
+---
+layout: default
+title: Affiliation Boutique Piyay
+description: Devenez affilié Boutique Piyay et gagnez des commissions rapides par MonCash et NatCash.
+---
 
-        .adsterra-banner { margin: 30px auto; text-align: center; width: 100%; overflow: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+<style>
+  :root {
+    --primary: #ff4747;
+    --primary-soft: rgba(255, 71, 71, 0.12);
+    --dark: #102a43;
+    --gray: #475569;
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --border: #e2e8f0;
+    --radius: 24px;
+    --radius-sm: 14px;
+    --shadow: 0 18px 48px rgba(15, 23, 42, 0.09);
+  }
 
-        @media (max-width: 500px) { .stat-grid { grid-template-columns: 1fr 1fr; } .stat-grid .stat-card:last-child { grid-column: 1 / -1; } }
-    </style>
-</head>
-<body>
-<div class="page-wrap">
-    <div class="top-bar">
-        <a href="/" class="top-logo"><img src="/assets/images/logo.png"><div class="top-logo-text">Boutique Piyay</div></a>
-        <a href="/" class="btn-home">🏠 Mache</a>
+  .affiliate-wrap { max-width: 1180px; margin: 0 auto; padding: 40px 18px 90px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); }
+  .section { margin-bottom: 48px; }
+  .section-title { font-size: 1.85rem; font-weight: 900; margin-bottom: 10px; color: var(--dark); }
+  .section-subtitle { color: #64748b; line-height: 1.8; max-width: 760px; margin-bottom: 24px; }
+
+  .affiliate-hero { background: linear-gradient(135deg, rgba(255, 71, 71, 0.14), rgba(255, 71, 71, 0.04)); border: 1px solid rgba(255, 71, 71, 0.18); border-radius: var(--radius); padding: 44px 36px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(280px, 1fr); gap: 32px; align-items: center; }
+  .hero-copy { max-width: 640px; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 10px; background: #fff0f0; color: var(--primary); font-weight: 800; padding: 10px 16px; border-radius: 999px; margin-bottom: 22px; font-size: 14px; }
+  .hero-heading { font-size: clamp(2.4rem, 4vw, 3.8rem); line-height: 1.02; font-weight: 900; margin: 0 0 20px; }
+  .hero-copy p { font-size: 1.06rem; color: #334155; line-height: 1.9; margin-bottom: 28px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+  .btn-primary, .btn-secondary { min-width: 220px; border-radius: 999px; font-weight: 900; border: none; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .btn-primary { background: var(--primary); color: white; padding: 16px 24px; }
+  .btn-secondary { background: white; color: var(--dark); padding: 16px 24px; border: 1px solid var(--border); }
+  .btn-primary:hover, .btn-secondary:hover { transform: translateY(-2px); }
+  .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+  .hero-stat { background: white; border-radius: var(--radius-sm); padding: 18px 20px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; }
+  .hero-stat strong { display: block; font-size: 1.4rem; font-weight: 900; margin-bottom: 6px; }
+  .hero-stat span { color: #64748b; line-height: 1.6; }
+
+  .step-grid, .benefit-grid, .preview-grid { display: grid; gap: 18px; }
+  .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .step-card { background: white; border: 1px solid #f1f5f9; border-radius: var(--radius-sm); padding: 24px; box-shadow: var(--shadow); }
+  .step-number { width: 44px; height: 44px; border-radius: 14px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; font-weight: 900; margin-bottom: 18px; }
+  .step-card h3 { font-size: 1.05rem; margin: 0 0 12px; }
+  .step-card p { margin: 0; color: #64748b; line-height: 1.85; }
+
+  .commission-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .commission-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 28px; box-shadow: var(--shadow); }
+  .commission-panel h2 { font-size: 1.35rem; margin-bottom: 18px; }
+  .commission-panel p { color: #475569; line-height: 1.8; margin-bottom: 22px; }
+  .commission-card { display: grid; gap: 12px; margin-bottom: 16px; }
+  .commission-card strong { display: block; font-size: 1.1rem; margin-bottom: 8px; }
+  .commission-card span { color: #64748b; line-height: 1.65; }
+  .benefit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .benefit-card { background: white; border: 1px solid #f1f5f9; border-radius: var(--radius-sm); padding: 20px 20px 20px 18px; display: flex; gap: 14px; box-shadow: var(--shadow); }
+  .benefit-card strong { font-size: 1rem; display: block; margin-bottom: 6px; }
+  .benefit-card span { color: #64748b; line-height: 1.7; }
+  .benefit-icon { font-size: 22px; line-height: 1; }
+
+  .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 24px; align-items: start; }
+  .form-copy h2 { margin-bottom: 16px; font-size: 1.5rem; }
+  .form-copy p { color: #475569; line-height: 1.9; margin-bottom: 12px; }
+  .affiliate-form { background: var(--surface); border-radius: var(--radius); padding: 30px; border: 1px solid #f1f5f9; box-shadow: var(--shadow); }
+  .form-field { display: grid; gap: 8px; margin-bottom: 16px; }
+  .form-label { font-size: 0.9rem; font-weight: 700; color: #334155; }
+  .form-input, .form-select { width: 100%; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; font-size: 0.95rem; color: #102a43; background: white; }
+  .form-select { appearance: none; }
+  .checkbox-field { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+  .checkbox-field input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--primary); }
+  .checkbox-text { color: #475569; line-height: 1.65; font-size: 0.95rem; }
+  .form-note { color: #64748b; font-size: 0.92rem; line-height: 1.7; margin-top: 8px; }
+  .btn-submit { width: 100%; padding: 16px 20px; background: var(--primary); color: white; font-size: 1rem; font-weight: 900; border-radius: 999px; border: none; cursor: pointer; }
+
+  .dashboard-preview { background: #ffffff; border: 1px solid #f1f5f9; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); }
+  .preview-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 22px; }
+  .preview-card { background: var(--surface-alt); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 12px; border: 1px solid #f1f5f9; }
+  .preview-card span { color: #64748b; font-size: 0.92rem; }
+  .preview-card strong { font-size: 1.75rem; color: var(--dark); }
+  .preview-summary { margin-top: 24px; color: #475569; line-height: 1.75; }
+
+  .faq-grid { display: grid; gap: 18px; }
+  .faq-item { background: white; border: 1px solid #f1f5f9; border-radius: var(--radius-sm); padding: 0; box-shadow: var(--shadow); overflow: hidden; }
+  .faq-item summary { cursor: pointer; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1rem; color: var(--dark); list-style: none; }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary:after { content: "⯈"; transform: rotate(0deg); transition: transform .2s ease; }
+  .faq-item[open] summary:after { transform: rotate(90deg); }
+  .faq-item p { color: #64748b; line-height: 1.75; margin: 0; padding: 0 22px 18px; }
+  .section-label { font-size: 0.95rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; }
+
+  .final-cta { background: linear-gradient(135deg, rgba(255, 71, 71, 0.16), rgba(255, 71, 71, 0.04)); border-radius: var(--radius); padding: 34px 30px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; border: 1px solid rgba(255, 71, 71, 0.14); }
+  .final-cta h2 { margin: 0; font-size: 1.8rem; }
+  .section-nav { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0 28px; padding: 14px 18px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 999px; box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06); position: sticky; top: 86px; z-index: 20; }
+  .section-nav a { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; background: #f8fafc; color: var(--dark); border-radius: 999px; text-decoration: none; font-size: 0.95rem; font-weight: 700; border: 1px solid transparent; transition: all 0.2s ease; }
+  .section-nav a:hover { background: rgba(255, 71, 71, 0.08); border-color: rgba(255, 71, 71, 0.16); }
+  .final-cta p { margin: 10px 0 0; color: #475569; line-height: 1.8; }
+
+  .link-button { display: inline-flex; align-items: center; justify-content: center; padding: 16px 24px; border-radius: 999px; background: #10b981; color: white; text-decoration: none; font-weight: 900; transition: transform 0.25s ease; }
+  .link-button:hover { transform: translateY(-2px); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 960px) {
+    .affiliate-hero, .commission-grid, .form-grid, .final-cta { grid-template-columns: 1fr; }
+    .hero-stats { grid-template-columns: 1fr; }
+    .preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .affiliate-wrap { padding: 28px 14px 60px; }
+    .step-grid, .benefit-grid, .preview-grid { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; align-items: stretch; }
+    .hero-copy p, .section-subtitle { max-width: 100%; }
+  }
+</style>
+
+<div class="affiliate-wrap">
+  <section class="section affiliate-hero">
+    <div class="hero-copy">
+      <div class="hero-tag" data-i18n="pages.affiliate.hero_tag">💸 Programme d'affiliation</div>
+      <h1 class="hero-heading" data-i18n="pages.affiliate.hero_title">Devenez Affilié Boutique Piyay — Gagnez à Chaque Vente</h1>
+      <p class="section-subtitle" data-i18n="pages.affiliate.hero_subtitle">Rejoignez un programme simple et honnête. Partagez votre lien, suivez les ventes, et recevez vos commissions rapidement sur MonCash ou NatCash.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.querySelector('#form-inscription').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.hero_cta">S'inscrire Maintenant</button>
+        <button class="btn-secondary" onclick="document.querySelector('#comment-ca-marche').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.hero_cta_secondary">Comment ça marche</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong data-i18n="pages.affiliate.hero_stat_1">Jusqu'à 10% de commission</strong>
+          <span data-i18n="pages.affiliate.hero_stat_1_desc">Sur chaque vente réalisée grâce à votre lien.</span>
+        </div>
+        <div class="hero-stat">
+          <strong data-i18n="pages.affiliate.hero_stat_2">Paiments rapides</strong>
+          <span data-i18n="pages.affiliate.hero_stat_2_desc">MonCash ou NatCash, sans frais d'inscription.</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding: 24px; background: linear-gradient(180deg, #fff, #fff7f6); border-radius: 28px; border: 1px solid #ffe4e1; box-shadow: var(--shadow);">
+      <div style="font-size: 0.95rem; color: #334155; font-weight: 700; margin-bottom: 18px;" data-i18n="pages.affiliate.hero_stats_title">Pourquoi rejoindre maintenant ?</div>
+      <div style="display:grid; gap: 18px;">
+        <div style="background: #fff; border-radius: 20px; padding: 18px; border: 1px solid #f8e7e5;"><strong data-i18n="pages.affiliate.hero_highlight_1">Paiement rapide</strong><p style="margin: 8px 0 0; color: #64748b; line-height: 1.75;" data-i18n="pages.affiliate.hero_highlight_1_desc">Chaque vente est suivie et payée directement sur votre compte.</p></div>
+        <div style="background: #fff; border-radius: 20px; padding: 18px; border: 1px solid #f8e7e5;"><strong data-i18n="pages.affiliate.hero_highlight_2">Aucun frais</strong><p style="margin: 8px 0 0; color: #64748b; line-height: 1.75;" data-i18n="pages.affiliate.hero_highlight_2_desc">Pas de frais d'inscription, pas de coût caché.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="section-nav" aria-label="Affiliate sections">
+    <a href="#comment-ca-marche" onclick="document.querySelector('#comment-ca-marche').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_steps">Comment ça marche</a>
+    <a href="#commission-structure" onclick="document.querySelector('#commission-structure').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_commission">Commission</a>
+    <a href="#form-inscription" onclick="document.querySelector('#form-inscription').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_signup">Inscription</a>
+    <a href="#apercu-dashboard" onclick="document.querySelector('#apercu-dashboard').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_preview">Aperçu</a>
+    <a href="#faq-section" onclick="document.querySelector('#faq-section').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_faq">FAQ</a>
+  </nav>
+
+  <section class="section" id="comment-ca-marche">
+    <div class="section-title" data-i18n="pages.affiliate.steps_title">Comment ça marche</div>
+    <p class="section-subtitle" data-i18n="pages.affiliate.steps_subtitle">Suivez ces 4 étapes simples pour commencer à gagner avec Boutique Piyay.</p>
+    <div class="step-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3 data-i18n="pages.affiliate.step_1_title">Inscription gratuite</h3>
+        <p data-i18n="pages.affiliate.step_1_text">Créez votre compte en moins de 2 minutes, sans frais ni vérification compliquée.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3 data-i18n="pages.affiliate.step_2_title">Partagez votre lien</h3>
+        <p data-i18n="pages.affiliate.step_2_text">Recevez un lien personnalisé. Partagez-le par WhatsApp, Facebook, Instagram ou messagerie locale.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3 data-i18n="pages.affiliate.step_3_title">Générez des ventes</h3>
+        <p data-i18n="pages.affiliate.step_3_text">Chaque achat réalisé via votre lien est suivi automatiquement.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <h3 data-i18n="pages.affiliate.step_4_title">Touche votre commission</h3>
+        <p data-i18n="pages.affiliate.step_4_text">Recevez vos paiements sur MonCash ou NatCash chaque fois qu’une vente est validée.</p>
+      </div>
+    </div>
+    <div style="margin-top: 24px;">
+      <button class="btn-primary" onclick="document.querySelector('#form-inscription').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.steps_cta">Commencer Maintenant</button>
+    </div>
+  </section>
+
+  <section class="section commission-grid" id="commission-structure">
+    <div class="commission-panel">
+      <div class="section-title" style="font-size:1.4rem;" data-i18n="pages.affiliate.commission_title">Structure de commission</div>
+      <p class="section-subtitle" data-i18n="pages.affiliate.commission_subtitle">Vous gagnez une part claire et motivante pour chaque produit vendu.</p>
+      <div class="commission-card">
+        <strong data-i18n="pages.affiliate.commission_item_1_title">Jusqu'à 10% par vente</strong>
+        <span data-i18n="pages.affiliate.commission_item_1_text">Les commissions sont calculées sur le montant final payé par le client.</span>
+      </div>
+      <div class="commission-card">
+        <strong data-i18n="pages.affiliate.commission_item_2_title">Paiement transparent</strong>
+        <span data-i18n="pages.affiliate.commission_item_2_text">Suivez vos gains en temps réel et recevez une confirmation dès qu'une vente est validée.</span>
+      </div>
+      <div class="commission-card">
+        <strong data-i18n="pages.affiliate.commission_item_3_title">Pas de frais cachés</strong>
+        <span data-i18n="pages.affiliate.commission_item_3_text">Aucun coût pour devenir affilié. Vous gagnez, nous gagnons aussi.</span>
+      </div>
     </div>
 
-    <div id="aff-content">
-        <div style="text-align:center; padding:50px;">Chaje...</div>
+    <div>
+      <div class="section-title" style="font-size:1.4rem;" data-i18n="pages.affiliate.advantages_title">Avantages clés</div>
+      <div class="benefit-grid">
+        <div class="benefit-card"><div class="benefit-icon">✅</div><div><strong data-i18n="pages.affiliate.advantage_1_title">Pas de frais d'inscription</strong><span data-i18n="pages.affiliate.advantage_1_text">Commencez sans investissement initial.</span></div></div>
+        <div class="benefit-card"><div class="benefit-icon">💸</div><div><strong data-i18n="pages.affiliate.advantage_2_title">Paiement rapide</strong><span data-i18n="pages.affiliate.advantage_2_text">MonCash et NatCash disponibles pour vos gains.</span></div></div>
+        <div class="benefit-card"><div class="benefit-icon">📊</div><div><strong data-i18n="pages.affiliate.advantage_3_title">Dashboard clair</strong><span data-i18n="pages.affiliate.advantage_3_text">Suivez clics, ventes et commissions en un seul endroit.</span></div></div>
+        <div class="benefit-card"><div class="benefit-icon">📱</div><div><strong data-i18n="pages.affiliate.advantage_4_title">Support WhatsApp</strong><span data-i18n="pages.affiliate.advantage_4_text">Assistance rapide avec l’équipe Boutique Piyay.</span></div></div>
+      </div>
+      <a class="btn-primary" href="#apercu-dashboard" style="margin-top: 24px; display: inline-flex;" data-i18n="pages.affiliate.commission_dashboard_cta">Voir le Tableau de Bord Affilié</a>
+    </div>
+  </section>
+
+  <section class="section form-grid" id="form-inscription">
+    <div class="form-copy">
+      <div class="section-title" data-i18n="pages.affiliate.form_title">Rejoignez le programme d'affiliation</div>
+      <p class="section-subtitle" data-i18n="pages.affiliate.form_subtitle">Remplissez le formulaire, recevez votre lien d’affiliation et commencez à gagner dès le premier partage.</p>
+      <p class="form-note"><span data-i18n="pages.affiliate.form_note_prefix">Si vous avez déjà un compte, </span><a href="/login.html" style="color: var(--primary); text-decoration: underline;" data-i18n="pages.affiliate.form_login_link">connectez-vous ici</a>.</p>
     </div>
 
-    <!-- ✅ ADS RESTORED -->
-    <div class="adsterra-banner">
-        <script async="async" data-cfasync="false" src="https://pl29038232.profitablecpmratenetwork.com/2e8d42466e54761c90d32db5824eb06c/invoke.js"></script>
-        <div id="container-2e8d42466e54761c90d32db5824eb06c"></div>
-        <script type="text/javascript">
-          atOptions = { 'key' : '7e583d14333f8a24b10020a036dafea9', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-        </script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/7e583d14333f8a24b10020a036dafea9/invoke.js"></script>
+    <form id="signup-form" class="affiliate-form" name="affiliate-program" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="affiliate-program">
+      <p class="hidden"><label>Don’t fill this out if you're human: <input name="bot-field"></label></p>
+
+      <div class="form-field">
+        <label class="form-label" for="fullName" data-i18n="pages.affiliate.form_label_fullname">Nom complet</label>
+        <input id="fullName" name="fullName" class="form-input" type="text" required data-i18n-placeholder="pages.affiliate.form_placeholder_fullname" placeholder="Jean Dupont">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="phone" data-i18n="pages.affiliate.form_label_phone">N° WhatsApp</label>
+        <input id="phone" name="phone" class="form-input" type="tel" required data-i18n-placeholder="pages.affiliate.form_placeholder_phone" placeholder="+509 4886-8964">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="email" data-i18n="pages.affiliate.form_label_email">Email</label>
+        <input id="email" name="email" class="form-input" type="email" required data-i18n-placeholder="pages.affiliate.form_placeholder_email" placeholder="vous@exemple.com">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="paymentMethod" data-i18n="pages.affiliate.form_label_payment_method">Moyen de paiement préféré</label>
+        <select id="paymentMethod" name="paymentMethod" class="form-select" required>
+          <option value="" disabled selected data-i18n="pages.affiliate.form_payment_placeholder">Choisissez une option</option>
+          <option value="MonCash" data-i18n="pages.affiliate.form_option_moncash">MonCash</option>
+          <option value="NatCash" data-i18n="pages.affiliate.form_option_natcash">NatCash</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="accountNumber" data-i18n="pages.affiliate.form_label_account_number">N° de compte MonCash / NatCash</label>
+        <input id="accountNumber" name="accountNumber" class="form-input" type="text" required data-i18n-placeholder="pages.affiliate.form_placeholder_account_number" placeholder="4886-8964">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="howHeard" data-i18n="pages.affiliate.form_label_how_heard">Comment avez-vous connu Boutique Piyay ?</label>
+        <select id="howHeard" name="howHeard" class="form-select" required>
+          <option value="" disabled selected data-i18n="pages.affiliate.form_how_placeholder">Sélectionnez une option</option>
+          <option value="Facebook" data-i18n="pages.affiliate.form_option_facebook">Facebook</option>
+          <option value="Instagram" data-i18n="pages.affiliate.form_option_instagram">Instagram</option>
+          <option value="Friend" data-i18n="pages.affiliate.form_option_friend">Ami</option>
+          <option value="Other" data-i18n="pages.affiliate.form_option_other">Autre</option>
+        </select>
+      </div>
+      <label class="checkbox-field"><input type="checkbox" id="termsCheckbox" name="terms" required><span class="checkbox-text"><span data-i18n="pages.affiliate.form_terms_prefix">J'accepte </span><a href="/regleman.html" style="color: var(--primary); text-decoration: underline;" data-i18n="pages.affiliate.form_terms_link">les conditions d'affiliation</a>.</span></label>
+      <button type="submit" class="btn-submit" data-i18n="pages.affiliate.form_submit">Envoyer ma demande</button>
+    </form>
+  </section>
+
+  <section class="section dashboard-preview" id="apercu-dashboard">
+    <div class="section-label" data-i18n="pages.affiliate.preview_label">Aperçu</div>
+    <div class="section-title" data-i18n="pages.affiliate.preview_title">Aperçu du tableau de bord affilié</div>
+    <p class="section-subtitle" data-i18n="pages.affiliate.preview_subtitle">Suivez vos clics, ventes et gains sans perdre une seconde.</p>
+    <div class="preview-grid">
+      <div class="preview-card"><span data-i18n="pages.affiliate.preview_clicks_label">Clics sur lien</span><strong>1 248</strong></div>
+      <div class="preview-card"><span data-i18n="pages.affiliate.preview_sales_label">Ventes générées</span><strong>27</strong></div>
+      <div class="preview-card"><span data-i18n="pages.affiliate.preview_pending_label">Commission en attente</span><strong>2 430 HTG</strong></div>
+      <div class="preview-card"><span data-i18n="pages.affiliate.preview_paid_label">Déjà payé</span><strong>4 180 HTG</strong></div>
     </div>
+    <p class="preview-summary" data-i18n="pages.affiliate.preview_note">Les chiffres affichés ici sont un exemple de l’interface que vous verrez après validation de votre compte.</p>
+  </section>
+
+  <section class="section faq-section" id="faq-section">
+    <div class="section-title" data-i18n="pages.affiliate.faq_title">Questions fréquentes</div>
+    <p class="section-subtitle" data-i18n="pages.affiliate.faq_subtitle">Réponses claires pour démarrer en toute confiance.</p>
+    <div class="faq-grid">
+      <details class="faq-item">
+        <summary data-i18n="pages.affiliate.faq_q1">Combien de temps pour recevoir le premier paiement ?</summary>
+        <p data-i18n="pages.affiliate.faq_a1">Le premier paiement arrive dès qu'une vente est validée. En général, vous êtes payé dans les 3 à 5 jours suivant la confirmation.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="pages.affiliate.faq_q2">Y a-t-il des frais pour s'inscrire ?</summary>
+        <p data-i18n="pages.affiliate.faq_a2">Non. L'inscription est gratuite et vous ne payez aucun frais pour participer au programme.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="pages.affiliate.faq_q3">Comment obtenir mon lien d'affiliation ?</summary>
+        <p data-i18n="pages.affiliate.faq_a3">Après votre inscription, vous recevrez un lien unique que vous pourrez partager immédiatement.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="pages.affiliate.faq_q4">Puis-je partager mon lien sur plusieurs réseaux ?</summary>
+        <p data-i18n="pages.affiliate.faq_a4">Oui. Votre lien fonctionne sur WhatsApp, Facebook, Instagram, TikTok ou ailleurs.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="pages.affiliate.faq_q5">Comment sont calculées les commissions ?</summary>
+        <p data-i18n="pages.affiliate.faq_a5">Les commissions sont basées sur le montant final payé par le client, après taxes et frais de livraison.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="pages.affiliate.faq_q6">Si un client annule, est-ce que je touche toujours ma commission ?</summary>
+        <p data-i18n="pages.affiliate.faq_a6">La commission n'est versée que lorsque la vente est confirmée. En cas d'annulation, elle n'est pas due.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div>
+      <h2 data-i18n="pages.affiliate.final_title">Prêt à transformer vos partages en revenus ?</h2>
+      <p data-i18n="pages.affiliate.final_text">Remplissez le formulaire ou écrivez-nous directement sur WhatsApp. Nous vous aidons à démarrer rapidement.</p>
+      <div class="hero-actions" style="margin-top: 20px; flex-wrap: wrap; gap: 12px;">
+        <button class="btn-primary" onclick="document.querySelector('#form-inscription').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.final_cta_action">S'inscrire Maintenant</button>
+        <a class="link-button" href="https://wa.me/50948868964?text=Bonjour%20Boutique%20Piyay,%20je%20veux%20devenir%20affili%C3%A9" target="_blank" data-i18n="pages.affiliate.final_whatsapp_button">💬 Poser une question sur WhatsApp</a>
+      </div>
+    </div>
+  </section>
 </div>
 
 <script>
-    const SUP_URL_A = "https://letyferfjpxmstohvgcj.supabase.co";
-    const SUP_KEY_A = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-    const supabaseA = window.supabase.createClient(SUP_URL_A, SUP_KEY_A);
-    let currentAff = null;
+  const AFFILIATE_SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
+  const AFFILIATE_SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
-    async function initAffiliate() {
-        const { data: { user } } = await supabaseA.auth.getUser();
-        if (!user) return;
-        const { data: aff } = await supabaseA.from('affiliates').select('*').eq('user_id', user.id).single();
-        if (!aff) { renderOnboarding(user); return; }
-        currentAff = aff;
-        renderDashboard(aff);
-        loadTransactions();
-    }
+  async function prefillAffiliateForm() {
+    if (typeof window.supabase === 'undefined') return;
+    try {
+      const supabaseClient = window.supabase.createClient(AFFILIATE_SUP_URL, AFFILIATE_SUP_KEY);
+      const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError || !session) return;
 
-    function renderDashboard(aff) {
-        const refLink = `${window.location.origin}/?ref=${aff.referral_code}`;
-        const balance = parseFloat(aff.balance || 0).toFixed(0);
-        document.getElementById('aff-content').innerHTML = `
-            <div class="hero-banner">
-                <div class="hero-tag">🚀 Afilyasyon</div>
-                <h1 class="hero-title">Bonjou, Affilié!</h1>
-                <div class="hero-code">${aff.referral_code}</div>
-                <div class="hero-link-box"><span class="hero-link-text">${refLink}</span><button class="btn-copy-hero" onclick="copyText('${refLink}', this)">📋 Kopye</button></div>
-            </div>
-            <div class="stat-grid">
-                <div class="stat-card"><span class="stat-val">${balance} HTG</span><span class="stat-lbl">Balans</span><div class="stat-bar red"></div></div>
-                <div class="stat-card"><span class="stat-val">${aff.total_referrals || 0}</span><span class="stat-lbl">Vant</span><div class="stat-bar green"></div></div>
-                <div class="stat-card"><span class="stat-val">5%</span><span class="stat-lbl">Komisyon</span><div class="stat-bar gold"></div></div>
-            </div>
-            <div class="withdraw-card">
-                <div class="w-balance">${balance} HTG</div>
-                <button class="btn-withdraw" onclick="requestWithdrawal()" ${balance < 500 ? 'disabled' : ''}>💸 Retire Lajan</button>
-            </div>
-            <div class="section-title">📜 Istwa Komisyon</div>
-            <div class="tx-card" id="tx-list"><div style="padding:20px;text-align:center;">Chaje...</div></div>
-        `;
-    }
+      const fullNameInput = document.getElementById('fullName');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
 
-    async function loadTransactions() {
-        const { data: txs } = await supabaseA.from('affiliate_transactions').select('*').eq('affiliate_id', currentAff.id).order('created_at', { ascending: false });
-        const container = document.getElementById('tx-list');
-        if (txs && txs.length > 0) {
-            container.innerHTML = txs.map(tx => `<div class="tx-item"><div>${new Date(tx.created_at).toLocaleDateString()}</div><div class="tx-amount earn">+${parseFloat(tx.amount).toFixed(0)} HTG</div></div>`).join('');
-        } else { container.innerHTML = '<div style="padding:20px;text-align:center;">Okenn tranzaksyon</div>'; }
-    }
+      if (session.user?.user_metadata?.full_name && fullNameInput && !fullNameInput.value) {
+        fullNameInput.value = session.user.user_metadata.full_name;
+      }
+      if (session.user?.email && emailInput && !emailInput.value) {
+        emailInput.value = session.user.email;
+      }
 
-    function copyText(t, btn) { navigator.clipboard.writeText(t).then(() => { if (btn) { const o = btn.innerText; btn.innerText = '✅!'; setTimeout(() => btn.innerText = o, 2000); } }); }
-    async function requestWithdrawal() {
-        const m = prompt("MonCash / NatCash?"); const n = prompt("Numéro?");
-        if (m && n) { await supabaseA.from('affiliate_withdrawals').insert([{ affiliate_id: currentAff.id, amount: currentAff.balance, method: m, number: n, status: 'pending' }]); alert("Demann voye!"); }
+      const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('full_name, email, whatsapp, whatsapp_number, phone')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError || !profile) return;
+      if (fullNameInput && !fullNameInput.value && profile.full_name) fullNameInput.value = profile.full_name;
+      if (emailInput && !emailInput.value && profile.email) emailInput.value = profile.email;
+      const phoneValue = profile.whatsapp_number || profile.whatsapp || profile.phone || '';
+      if (phoneInput && phoneValue && !phoneInput.value) phoneInput.value = phoneValue;
+    } catch (error) {
+      console.warn('Pré-remplissage du formulaire affilié impossible :', error);
     }
-    initAffiliate();
+  }
+
+  function updateAffiliateMeta() {
+    const t = window.translations?.[window.currentLang]?.pages?.affiliate;
+    if (!t) return;
+    if (t.meta_title) document.title = t.meta_title;
+    const desc = t.meta_description || '';
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'description';
+      document.head.appendChild(meta);
+    }
+    if (desc) meta.content = desc;
+  }
+
+  function initAffiliateFormControls() {
+    const terms = document.getElementById('termsCheckbox');
+    const submitBtn = document.querySelector('#signup-form button[type="submit"]');
+    if (!terms || !submitBtn) return;
+    submitBtn.disabled = !terms.checked;
+    terms.addEventListener('change', () => {
+      submitBtn.disabled = !terms.checked;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    prefillAffiliateForm();
+    initAffiliateFormControls();
+    const interval = setInterval(() => {
+      if (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang].pages?.affiliate) {
+        updateAffiliateMeta();
+        clearInterval(interval);
+      }
+    }, 100);
+  });
 </script>
-</body>
-</html>
+

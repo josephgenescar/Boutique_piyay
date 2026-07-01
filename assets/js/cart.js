@@ -6,6 +6,34 @@ function getCart() {
   return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 }
 
+function groupCartBySeller(cart) {
+  return cart.reduce((groups, item) => {
+    const sellerId = item.sellerId || item.seller_id || 'boutique-piyay';
+    const qty = Number(item.qty || item.quantity || 1);
+    const price = parseFloat(item.price) || 0;
+
+    if (!groups[sellerId]) {
+      groups[sellerId] = {
+        sellerId,
+        sellerName: item.sellerName || item.seller_name || 'Boutique Piyay',
+        sellerPhone: item.sellerPhone || item.seller_phone || '50948868964',
+        items: [],
+        amount: 0,
+      };
+    }
+
+    groups[sellerId].items.push({
+      ...item,
+      quantity: qty,
+      price,
+      total: qty * price,
+    });
+    groups[sellerId].amount += qty * price;
+
+    return groups;
+  }, {});
+}
+
 function getSupabaseClient() {
   if (typeof window === 'undefined') return null;
   if (window.supabaseMain) return window.supabaseMain;
@@ -76,7 +104,10 @@ function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zon
     product_id: group.items.length === 1 ? group.items[0].product_id : null,
     quantity: group.items.reduce((sum, item) => sum + Number(item.quantity || 1), 0),
     amount: group.amount,
+    total_price: group.amount,
     status: 'pending',
+    payment_status: paymentMethod === 'Cash' ? 'pending' : 'pending',
+    currency: 'HTG',
     created_at: createdAt,
     updated_at: createdAt
   }));
@@ -705,10 +736,11 @@ window.submitOrder = async function() {
   const nameInput = document.getElementById('customer-name');
   const phoneInput = document.getElementById('customer-phone');
   const zoneInput = document.getElementById('delivery-zone');
-  const paymentRadio = document.querySelector('input[name="payment-method"]:checked');
+  const paymentRadio = document.querySelector('input[name="payment-method"]:checked') || document.querySelector('input[name="payment_method"]:checked');
+  const btn = document.getElementById('btn-pay') || document.getElementById('submitOrderBtn');
 
   if (!nameInput || !phoneInput || !zoneInput || !paymentRadio) {
-    alert('⚠️ Erreur : le formulaire est introuvable sur la page.'); return;
+    alert('⚠️ Erreur : le formulaire est introuvable sur la page ou ou poko chwazi metòd peman.'); return;
   }
 
   const name = nameInput.value.trim();
@@ -725,10 +757,11 @@ window.submitOrder = async function() {
 
   const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   const orderGroupId = "BP-" + Date.now();
-  const btn = document.getElementById('submitOrderBtn');
 
-  btn.disabled = true;
-  btn.innerText = "⏳ Anrejistreman...";
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "⏳ Anrejistreman...";
+  }
 
   try {
     const sup = getSupabaseClient();
@@ -770,90 +803,76 @@ window.submitOrder = async function() {
         console.error('⚠️ Erè nan kreye notifikasyon:', notifError);
       }
 
-      // Voye notifikasyon push bay vandè a
+      // Voye notifikasyon push ak email bay chak vandè nan panier an
       try {
-        const sellerId = cart[0]?.sellerId || null;
-        if (sellerId) {
-          await fetch('/.netlify/functions/send-notification', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              user_id: sellerId,
-              type: 'new_order',
-              data: {
-                order_id: orderGroupId,
-                customer_name: name,
-                customer_phone: phone,
-                total_amount: totalAmount
-              }
-            })
-          });
-          console.log('✅ Notifikasyon push voye bay vandè');
-        }
-      } catch (pushError) {
-        console.error('⚠️ Erè nan voye notifikasyon push:', pushError);
-      }
+        const sellerGroups = groupCartBySeller(cart);
+        const sellerIds = Object.keys(sellerGroups).filter(id => id && id !== 'boutique-piyay');
+        const { data: sellerProfiles = [] } = await sup.from('profiles')
+          .select('id, email, whatsapp, shop_name, full_name')
+          .in('id', sellerIds);
+        const profilesById = sellerProfiles.reduce((map, profile) => {
+          if (profile?.id) map[profile.id] = profile;
+          return map;
+        }, {});
 
-      // Voye email bay vandè a lè l sèvi Supabase Edge Function
-      try {
-        const sellerId = cart[0]?.sellerId || null;
-        if (sellerId) {
-          // Jwenn email vandè a nan Supabase
-          const { data: sellerProfile } = await sup.from('profiles').select('email, whatsapp').eq('id', sellerId).single();
-          const sellerEmail = sellerProfile?.email;
-          const sellerPhone = sellerProfile?.whatsapp || cart[0]?.sellerPhone || '';
-          
-          if (sellerEmail) {
-            const emailHtml = `
-              <!DOCTYPE html>
-              <html>
-              <head>
-                <meta charset="utf-8">
-                <style>
-                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                  .header { background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-                  .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-                  .info-box { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #ff4747; }
-                  .btn { background: #ff4747; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; }
-                  .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <div class="header">
-                    <h1>🛒 Nouvo Komand</h1>
-                  </div>
-                  <div class="content">
-                    <p><strong>Kliyan:</strong> ${name}</p>
-                    <p><strong>Telefòn:</strong> ${phone}</p>
-                    <p><strong>Zon:</strong> ${zone}</p>
-                    <p><strong>Metòd Peman:</strong> ${paymentMethod}</p>
-                    <p><strong>Total:</strong> ${totalAmount} HTG</p>
-                    
-                    <div class="info-box">
-                      <p><strong>Artik:</strong></p>
-                      ${cart.map(item => `<p>• ${item.title} (${item.qty} x ${item.price} HTG)</p>`).join('')}
-                    </div>
+        await Promise.all(Object.values(sellerGroups).map(async (group) => {
+          if (!group.sellerId) return;
 
-                    <p style="margin-top: 20px;">
-                      <a href="https://wa.me/${sellerPhone.replace(/[^0-9+]/g, '')}?text=Salut,%20mwen%20gen%20yon%20nouvo%20komand%20#${orderGroupId}" class="btn">Kontakte Kliyan sou WhatsApp</a>
-                    </p>
-                  </div>
-                  <div class="footer">
-                    <p>Boutique Piyay - © 2026</p>
-                  </div>
+          const sellerProfile = profilesById[group.sellerId] || {};
+          const sellerEmail = sellerProfile.email;
+          const sellerPhone = sellerProfile.whatsapp || group.sellerPhone || '';
+          const sellerName = sellerProfile.shop_name || sellerProfile.full_name || group.sellerName || 'Boutique Piyay';
+
+          // Push notifications are handled server-side in `create-order`.
+          // Do not call `send-notification` from client (would require exposing internal secret).
+
+          if (!sellerEmail) return;
+
+          const emailHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #ff4747 0%, #ff6b6b 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                .info-box { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #ff4747; }
+                .btn { background: #ff4747; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; }
+                .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>🛒 Nouvo Komand</h1>
                 </div>
-              </body>
-              </html>
-            `;
+                <div class="content">
+                  <p><strong>Vandè:</strong> ${sellerName}</p>
+                  <p><strong>Kliyan:</strong> ${name}</p>
+                  <p><strong>Telefòn:</strong> ${phone}</p>
+                  <p><strong>Zòn:</strong> ${zone}</p>
+                  <p><strong>Metòd Peman:</strong> ${paymentMethod}</p>
+                  <p><strong>Total pou ou:</strong> ${group.amount.toLocaleString()} HTG</p>
+                  <div class="info-box">
+                    <p><strong>Artik:</strong></p>
+                    ${group.items.map(item => `<p>• ${item.title} (${item.quantity} x ${item.price} HTG)</p>`).join('')}
+                  </div>
+                  <p style="margin-top: 20px;"><a href="https://wa.me/${sellerPhone.replace(/[^0-9+]/g, '')}?text=Salut,%20mwen%20gen%20yon%20nouvo%20komand%20#${orderGroupId}" class="btn">Kontakte Kliyan sou WhatsApp</a></p>
+                </div>
+                <div class="footer">
+                  <p>Boutique Piyay - © 2026</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
 
-            // Voye email bay vandè a via server-side Netlify function
+          try {
             const response = await fetch('/.netlify/functions/send-email', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 to: sellerEmail,
                 subject: `🛒 Nouvo Komand #${orderGroupId}`,
@@ -865,21 +884,22 @@ window.submitOrder = async function() {
                   customer_phone: phone,
                   delivery_zone: zone,
                   payment_method: paymentMethod,
-                  total_amount: totalAmount,
-                  items: cart.map(item => ({ title: item.title, qty: item.qty, price: item.price })),
+                  total_amount: group.amount,
+                  seller_items: group.items
                 }
               })
             });
-
             if (response.ok) {
-              console.log('✅ Email voye bay vandè via send-email function');
+              console.log(`✅ Email voye bay vandè ${group.sellerId}`);
             } else {
-              console.error('⚠️ Erè nan voye email:', await response.text());
+              console.error(`⚠️ Erè nan voye email pou ${group.sellerId}:`, await response.text());
             }
+          } catch (emailError) {
+            console.error(`⚠️ Erè nan voye email pou ${group.sellerId}:`, emailError);
           }
-        }
-      } catch (emailError) {
-        console.error('⚠️ Erè nan voye email:', emailError);
+        }));
+      } catch (error) {
+        console.error('⚠️ Erè nan lojik notifikasyon vandè pa gwoup:', error);
       }
     } else {
       console.warn('⚠️ Supabase client introuvable : la commande ne pourra pas être enregistrée dans la base de données.');
@@ -898,7 +918,7 @@ window.submitOrder = async function() {
     console.log('📄 Jeneren recu pou kòmand:', orderGroupId);
     generateReceipt(receiptData);
 
-    if (paymentMethod === 'MonCash') {
+    if (paymentMethod === 'MonCash' || paymentMethod === 'moncash_api') {
         console.log('📤 Sending to MonCash:', { amount: totalAmount, orderId: orderGroupId });
 
         const moncashRes = await fetch('/.netlify/functions/moncash', {
@@ -947,6 +967,8 @@ window.submitOrder = async function() {
       alert('Commande enregistrée! Contactez le vendeur sur WhatsApp pour finaliser le paiement.');
     } else if (paymentMethod === 'Cash') {
       alert('Commande enregistrée! Vous paierez à la livraison.');
+    } else if (paymentMethod === 'NatCash') {
+      alert('Kòmand lan anrejistre. Tanpri voye prèv peman NatCash bay vandè a pou validate.');
     } else {
       alert('Commande enregistrée avec succès!');
     }
@@ -955,8 +977,10 @@ window.submitOrder = async function() {
     refreshBadge();
     drawCart();
 
-    btn.disabled = false;
-    btn.innerText = "Valider la commande ✅";
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "Valider la commande ✅";
+    }
 
     // Afiche fakti apre komand
     showInvoice(receiptData, totalAmount);
@@ -964,10 +988,10 @@ window.submitOrder = async function() {
   } catch (err) {
     console.error('❌ Erè submitOrder:', err);
     alert('❌ Erè: ' + err.message);
-    const btn = document.getElementById('submitOrderBtn');
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "Valider la commande ✅";
+    const fallbackBtn = document.getElementById('submitOrderBtn') || document.getElementById('btn-pay');
+    if (fallbackBtn) {
+      fallbackBtn.disabled = false;
+      fallbackBtn.innerText = "Valider la commande ✅";
     }
   }
 }

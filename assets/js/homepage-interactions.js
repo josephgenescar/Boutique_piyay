@@ -259,6 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   `;
   document.head.appendChild(style);
+  // Initialize hide-on-scroll for banners and map sections
+  initHideBannersOnScroll();
 });
 
 // Export functions for use in HTML
@@ -266,3 +268,50 @@ window.addToCartHome = addToCartHome;
 window.toggleWishlistHome = toggleWishlistHome;
 window.scrollCategories = scrollCategories;
 window.liveSearchHome = liveSearchHome;
+
+// Hide/show homepage banners (and map) when user scrolls down/up
+function initHideBannersOnScroll() {
+  const selectors = ['.main-banner-new', '.ad-banner', '#seller-map', '.flash-sale-banner'];
+  const elements = selectors.flatMap(sel => Array.from(document.querySelectorAll(sel)));
+  if (!elements.length) return;
+
+  let lastY = window.scrollY || 0;
+  let ticking = false;
+
+  function setHidden(hidden) {
+    elements.forEach(el => {
+      if (hidden) {
+        el.classList.add('hidden-on-scroll');
+      } else {
+        el.classList.remove('hidden-on-scroll');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', () => {
+    const currentY = window.scrollY || 0;
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const delta = currentY - lastY;
+        // if scrolling down by more than 10px, hide; if up by more than 10px, show
+        if (delta > 10) setHidden(true);
+        else if (delta < -10) setHidden(false);
+        lastY = currentY;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Add minimal CSS for hidden state
+  const hideStyleId = 'hide-on-scroll-style';
+  if (!document.getElementById(hideStyleId)) {
+    const s = document.createElement('style');
+    s.id = hideStyleId;
+    s.textContent = `
+      .hidden-on-scroll { transform: translateY(-120%); transition: transform 250ms ease; pointer-events: none; }
+      .ad-banner.hidden-on-scroll { transform: translateY(-120%); }
+    `;
+    document.head.appendChild(s);
+  }
+}

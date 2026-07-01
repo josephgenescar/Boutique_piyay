@@ -1,6 +1,21 @@
 <style>
     /* ===== HEADER ===== */
-    .main-header { box-shadow:0 2px 15px rgba(0,0,0,0.1); position:sticky; top:0; z-index:1000; width: 100%; background: #fff; }
+    .main-header {
+        box-shadow:0 2px 15px rgba(0,0,0,0.1);
+        position:sticky;
+        top:0;
+        z-index:1000;
+        width: 100%;
+        background: #fff;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+        transform: translateY(0);
+        will-change: transform;
+    }
+    .main-header.header-hidden {
+        transform: translateY(-100%);
+        box-shadow: none;
+        opacity: 0.98;
+    }
     .top-bar { background:#111; color:#fff; padding:6px 0; font-size:11px; font-weight:600; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .top-bar .container { display:flex; justify-content:space-between; align-items:center; padding: 0 15px; }
     .top-bar-links { display:flex; gap:15px; }

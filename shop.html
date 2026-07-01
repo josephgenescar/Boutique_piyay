@@ -11,84 +11,139 @@ permalink: /shop/
       --primary: #ff4747;
       --dark: #0f172a;
       --gray: #64748b;
-      --white: #ffffff;
-      --radius: 18px;
+      --muted: #94a3b8;
+      --surface: #ffffff;
+      --surface-strong: #f8fafc;
+      --radius: 24px;
+      --shadow: 0 20px 80px rgba(15, 23, 42, 0.08);
     }
 
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: var(--dark); margin: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #eef2f7; color: var(--dark); margin: 0; }
 
     .shop-hero {
-      background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
-      padding: 40px 20px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 50px 20px 40px;
       color: white;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
+    .shop-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(255,71,71,0.18), transparent 30%),
+                  radial-gradient(circle at bottom left, rgba(59,130,246,0.12), transparent 28%);
+      pointer-events: none;
+    }
+    .shop-hero h1 { font-size: clamp(2.2rem, 4vw, 3.8rem); margin: 0; line-height: 1.03; letter-spacing: -0.03em; }
+    .shop-hero p { max-width: 720px; margin: 16px auto 0; color: #cbd5e1; font-size: 1.05rem; line-height: 1.8; }
+
     .search-box {
-      max-width: 600px; margin: 20px auto 0; position: relative;
+      max-width: 660px; margin: 24px auto 0; position: relative;
     }
     .search-box input {
-      width: 100%; padding: 15px 25px; border-radius: 50px; border: none; outline: none; font-size: 1rem;
+      width: 100%; padding: 16px 24px; border-radius: 999px; border: none; outline: none; font-size: 1rem; background: rgba(255,255,255,0.95);
+      color: #111827; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+    }
+    .search-box input::placeholder { color: var(--muted); }
+
+    .shop-toolbar {
+      max-width: 1300px; margin: 0 auto 20px; padding: 18px 20px; display: flex; align-items: center;
+      justify-content: space-between; gap: 16px; background: white; border-radius: 22px; box-shadow: 0 18px 50px rgba(15,23,42,0.06);
+      margin-top: -24px;
+    }
+    .shop-summary { display: flex; flex-direction: column; gap: 6px; }
+    .shop-summary strong { font-size: 0.95rem; color: var(--primary); font-weight: 800; }
+    .shop-summary span { font-size: 0.95rem; color: var(--dark); font-weight: 700; }
+
+    .toolbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .toolbar-actions select {
+      border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; background: white; color: var(--dark); font-weight: 700;
+      min-width: 160px; cursor: pointer;
     }
 
     .shop-container {
-      max-width: 1300px; margin: 30px auto; padding: 0 20px;
-      display: grid; grid-template-columns: 250px 1fr; gap: 30px;
+      max-width: 1300px; margin: 0 auto 40px; padding: 0 20px;
+      display: grid; grid-template-columns: 280px 1fr; gap: 30px;
     }
 
-    .sidebar { background: white; padding: 20px; border-radius: var(--radius); height: fit-content; position: sticky; top: 100px; }
-    .sidebar h3 { font-size: 0.9rem; text-transform: uppercase; color: var(--gray); margin-bottom: 15px; }
+    .sidebar { background: white; padding: 24px; border-radius: var(--radius); height: fit-content; position: sticky; top: 110px; box-shadow: var(--shadow); }
+    .sidebar h3 { font-size: 0.9rem; text-transform: uppercase; color: var(--gray); margin-bottom: 18px; letter-spacing: 0.08em; }
     .cat-btn {
-        display: block; width: 100%; text-align: left; padding: 10px;
-        background: none; border: none; cursor: pointer; font-weight: 600; color: var(--dark);
-        border-radius: 8px; transition: 0.2s;
+        display: block; width: 100%; text-align: left; padding: 14px 16px;
+        background: #f8fafc; border: 1px solid transparent; cursor: pointer; font-weight: 700; color: var(--dark);
+        border-radius: 16px; transition: 0.25s ease;
     }
-    .cat-btn:hover, .cat-btn.active { background: #fee2e2; color: var(--primary); }
+    .cat-btn:hover, .cat-btn.active { background: #fee2e2; color: var(--primary); border-color: rgba(255,71,71,0.15); }
 
     .products-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
     }
 
     .product-card {
       background: white; border-radius: var(--radius); overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: 0.3s;
-      display: flex; flex-direction: column; height: 100%;
+      box-shadow: 0 20px 50px rgba(15,23,42,0.08); transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex; flex-direction: column; min-height: 100%;
     }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(15,23,42,0.12); }
 
-    .img-wrap { width: 100%; aspect-ratio: 1; background: #f8fafc; overflow: hidden; }
-    .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .card-image {
+      position: relative; width: 100%; min-height: 260px; background: var(--surface-strong); overflow: hidden;
+    }
+    .card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-    .info .cat { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; }
-    .info .title { font-size: 0.95rem; font-weight: 700; margin: 5px 0; color: var(--dark); }
-    .info .price { font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-top: auto; }
+    .card-body { padding: 22px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .card-badge { background: rgba(255,71,71,0.12); color: var(--primary); border-radius: 999px; padding: 7px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .card-title { font-size: 1rem; font-weight: 800; line-height: 1.3; color: var(--dark); margin: 0; }
+    .card-desc { font-size: 0.92rem; color: #475569; line-height: 1.6; min-height: 3.2rem; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .card-meta .seller { color: var(--muted); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .card-price { font-size: 1.2rem; font-weight: 900; color: var(--primary); }
 
     .btn-add {
-      width: 100%; padding: 12px; background: var(--dark); color: white;
-      border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px;
+      width: 100%; padding: 14px 18px; background: linear-gradient(135deg, #ff4747, #ff8c42);
+      color: white; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; margin-top: 10px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .btn-add:hover { background: var(--primary); }
+    .btn-add:hover { transform: translateY(-1px); box-shadow: 0 12px 25px rgba(255,71,71,0.18); }
+    .load-more-wrap { display:flex; justify-content:center; margin-top: 24px; }
+    .load-more-btn {
+      width: auto; min-width: 220px; padding: 14px 24px; background: #0f172a; color: white;
+      border-radius: 16px; border: none; font-weight: 800; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .load-more-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(15,23,42,0.18); }
 
     .loading-msg { grid-column: 1/-1; text-align: center; padding: 50px; font-weight: 700; color: var(--gray); }
 
-    /* ADSTERRA STYLES */
-    .adsterra-banner {
-        margin: 30px auto;
-        text-align: center;
-        max-width: 1000px;
-        width: 100%;
-        overflow: hidden;
-        border-radius: 12px;
-        min-height: 90px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
+    @media (max-width: 1080px) {
+      .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 850px) {
         .shop-container { grid-template-columns: 1fr; }
-        .sidebar { display: none; }
+        .sidebar { position: relative; top: auto; display: none; }
+        .shop-toolbar { flex-direction: column; align-items: stretch; }
+    }
+
+    @media (max-width: 620px) {
+      .products-grid { grid-template-columns: 1fr; }
+      .shop-hero { padding: 36px 16px 30px; }
+      .shop-hero h1 { font-size: 2.4rem; }
+      .shop-toolbar { padding: 16px; }
+    }
+
+    /* Force Adsterra ad to behave as a normal page block and not as a floating overlay */
+    .adsterra-banner,
+    .adsterra-banner * {
+      position: static !important;
+      top: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      z-index: auto !important;
+      max-width: 100% !important;
     }
 </style>
 
@@ -96,7 +151,20 @@ permalink: /shop/
     <h1>Boutique des Vendeurs 🏪</h1>
     <p>Tous les produits de nos vendeurs s'affichent ici</p>
     <div class="search-box">
-        <input type="text" id="shopSearch" placeholder="Rechercher un produit (ex : robe, téléphone...)" oninput="filterLocal()">
+        <input type="text" id="shopSearch" placeholder="Rechercher un pwodwi (eg: telefòn, rad, manje...)" oninput="filterLocal()">
+    </div>
+    <div class="shop-toolbar">
+      <div class="shop-summary">
+        <strong id="productCount">Loading ...</strong>
+        <span>Filtre rapid, rechèch pi vit, ak yon eksperyans plis pwofesyonèl.</span>
+      </div>
+      <div class="toolbar-actions">
+        <select id="sortSelect" onchange="sortProducts(this.value)">
+          <option value="newest">Pi nouvo</option>
+          <option value="price_desc">Pri: pa wo</option>
+          <option value="price_asc">Pri: pa ba</option>
+        </select>
+      </div>
     </div>
 </div>
 
@@ -119,6 +187,9 @@ permalink: /shop/
                 <p>⏳ Préparation de la connexion à Supabase...</p>
                 <small id="debug-log" style="display:block; margin-top:10px; color:#94a3b8;"></small>
             </div>
+        </div>
+        <div id="loadMoreContainer" class="load-more-wrap" style="display:none;">
+            <button id="loadMoreBtn" class="load-more-btn" type="button" onclick="loadMoreProducts()">Chaje plis pwodwi</button>
         </div>
     </main>
 </div>
@@ -151,6 +222,9 @@ permalink: /shop/
     const SHOP_SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
     let allProducts = [];
+    let currentProducts = [];
+    let currentPage = 1;
+    const PAGE_SIZE = 9;
 
     function log(msg) {
         console.log(msg);
@@ -192,7 +266,9 @@ permalink: /shop/
             if (allProducts.length === 0) {
                 grid.innerHTML = `<div class="loading-msg">📭 Aucun produit n'a encore été ajouté par les vendeurs dans la base de données.</div>`;
             } else {
-                renderProducts(allProducts);
+                currentProducts = allProducts;
+                currentPage = 1;
+                renderProducts(currentProducts, currentPage);
             }
 
         } catch (err) {
@@ -204,23 +280,58 @@ permalink: /shop/
         }
     }
 
-    function renderProducts(products) {
+    function updateLoadMoreVisibility(total, visibleCount) {
+        const container = document.getElementById('loadMoreContainer');
+        if (!container) return;
+        container.style.display = visibleCount < total ? 'flex' : 'none';
+    }
+
+    function renderProducts(products, page = 1) {
         const grid = document.getElementById('productsGrid');
-        grid.innerHTML = products.map(p => {
+        const countEl = document.getElementById('productCount');
+        if (!grid) return;
+
+        currentProducts = products;
+        currentPage = page;
+        const visibleProducts = products.slice(0, page * PAGE_SIZE);
+
+        if (!products || products.length === 0) {
+            grid.innerHTML = `<div class="loading-msg">😔 Okenn pwodwi pa koresponn ak rechèch oswa kategori sa.</div>`;
+            if (countEl) countEl.textContent = '0 pwodwi jwenn';
+            updateLoadMoreVisibility(0, 0);
+            return;
+        }
+
+        if (countEl) countEl.textContent = `${visibleProducts.length} / ${products.length} pwodwi`; 
+        updateLoadMoreVisibility(products.length, visibleProducts.length);
+
+        grid.innerHTML = visibleProducts.map(p => {
             const sellerId = p.seller_id || '';
             const sellerPhone = (p.whatsapp_number || p.whatsapp || '').toString().replace(/[^0-9]/g, '');
             const sellerName = (p.seller_name || p.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
+            const description = (p.description || p.short_description || '').substring(0, 96);
+            const displayDesc = description ? description : 'Dekouvri pwodwi sa a soti nan vandè nou an.';
+            const categoryLabel = p.category || 'Boutique';
+            const imageUrl = p.image_url || 'https://via.placeholder.com/400?text=Image+non+disponible';
+            const priceValue = Number(p.price || 0).toLocaleString();
+
             return `
             <div class="product-card">
-                <div class="img-wrap">
-                    <img src="${p.image_url}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300?text=Image+non+disponible'">
+                <div class="card-image">
+                    <img src="${imageUrl}" alt="${p.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400?text=Image+non+disponible'">
                 </div>
-                <div class="info">
-                    <div class="cat">${p.category || 'Boutique'}</div>
-                    <div class="title">${p.title}</div>
-                    <div class="price">${p.price ? Number(p.price).toLocaleString() : 0} HTG</div>
-                    <button class="btn-add" onclick="if(window.orderProduct) window.orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price || 0}', '${p.id}', '${p.image_url}', '${sellerId}', '${sellerPhone}', '${sellerName}')">
-                        🛒 Ajouterrr au Panier
+                <div class="card-body">
+                    <div class="card-top">
+                        <span class="card-badge">${categoryLabel}</span>
+                    </div>
+                    <h2 class="card-title">${p.title}</h2>
+                    <p class="card-desc">${displayDesc}</p>
+                    <div class="card-meta">
+                        <span class="seller">Vandè: ${sellerName}</span>
+                        <span class="card-price">${priceValue} HTG</span>
+                    </div>
+                    <button class="btn-add" onclick="if(window.orderProduct) window.orderProduct('${p.title.replace(/'/g, "\\'")}', '${p.price || 0}', '${p.id}', '${imageUrl}', '${sellerId}', '${sellerPhone}', '${sellerName}')">
+                        🛒 Ajoute nan Panier
                     </button>
                 </div>
             </div>
@@ -228,13 +339,26 @@ permalink: /shop/
         }).join('');
     }
 
+    function sortProducts(value) {
+        let sorted = [...currentProducts];
+        if (value === 'price_asc') {
+            sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+        } else if (value === 'price_desc') {
+            sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+        } else {
+            sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+        renderProducts(sorted, 1);
+    }
+
     function filterLocal() {
         const txt = document.getElementById('shopSearch').value.toLowerCase();
         const filtered = allProducts.filter(p =>
-            p.title.toLowerCase().includes(txt) ||
-            (p.category && p.category.toLowerCase().includes(txt))
+            (p.title || '').toLowerCase().includes(txt) ||
+            ((p.category || '').toLowerCase().includes(txt))
         );
-        renderProducts(filtered);
+        currentProducts = filtered;
+        renderProducts(currentProducts, 1);
     }
 
     function filterCat(cat, btn) {
@@ -242,11 +366,17 @@ permalink: /shop/
         btn.classList.add('active');
 
         if (cat === 'all') {
-            renderProducts(allProducts);
+            currentProducts = allProducts;
         } else {
-            const filtered = allProducts.filter(p => p.category === cat);
-            renderProducts(filtered);
+            currentProducts = allProducts.filter(p => p.category === cat);
         }
+        renderProducts(currentProducts, 1);
+    }
+
+    function loadMoreProducts() {
+        if (!currentProducts.length) return;
+        currentPage += 1;
+        renderProducts(currentProducts, currentPage);
     }
 
     // Lanse chajman an dirèktman

@@ -69,17 +69,17 @@ title: Finaliser la Commande - Boutique Piyay
             <div class="form-row">
               <div class="form-group">
                 <label data-i18n="pages.checkout.label_name">Non konplè *</label>
-                <input type="text" id="customerName" required data-i18n-placeholder="pages.checkout.placeholder_name" placeholder="Eg: Jean Baptiste">
+                <input type="text" id="customer-name" required data-i18n-placeholder="pages.checkout.placeholder_name" placeholder="Eg: Jean Baptiste">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label data-i18n="pages.checkout.label_phone">Telefòn *</label>
-                <input type="tel" id="customerPhone" required data-i18n-placeholder="pages.checkout.placeholder_phone" placeholder="Eg: 4886-8964">
+                <input type="tel" id="customer-phone" required data-i18n-placeholder="pages.checkout.placeholder_phone" placeholder="Eg: 4886-8964">
               </div>
               <div class="form-group">
                 <label data-i18n="pages.checkout.label_zone">Zone Livraison *</label>
-                <select id="customerCity" required>
+                <select id="delivery-zone" required>
                   <option value="" data-i18n="pages.checkout.select_zone">-- Choisissez --</option>
                   <option value="Port-au-Prince">Port-au-Prince</option>
                   <option value="Delmas">Delmas</option>
@@ -95,41 +95,27 @@ title: Finaliser la Commande - Boutique Piyay
             <h2 data-i18n="pages.checkout.payment_title">💳 Choisissez kijan w ap peye</h2>
             <div class="payment-methods">
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="moncash_api" disabled>
-                <div class="payment-card" style="opacity:0.5;">
-                  <div class="payment-icon">⚡</div>
-                  <div class="payment-info">
-                    <strong data-i18n="pages.checkout.payment_moncash">MonCash (Bientôt disponible)</strong>
-                    <p data-i18n="pages.checkout.payment_moncash_desc">Metòd sa a ap disponib byento. Sèvi ak NatCash oswa WhatsApp pou kounya.</p>
-                  </div>
-                </div>
-              </label>
-
-              <!--
-              <label class="payment-option">
-                <input type="radio" name="payment_method" value="moncash_api" disabled>
-                <div class="payment-card" style="opacity:0.5;">
-                  <div class="payment-icon">⚡</div>
-                  <div class="payment-info">
-                    <strong>MonCash (Bientôt)</strong>
-                    <p>Disponible bientôt. Payer manyèlman pou kounya.</p>
-                  </div>
-                </div>
-              </label>
-              -->
-              <label class="payment-option">
-                <input type="radio" name="payment_method" value="manual" checked>
+                <input type="radio" name="payment-method" value="MonCash">
                 <div class="payment-card">
-                  <div class="payment-icon">💵</div>
+                  <div class="payment-icon">⚡</div>
                   <div class="payment-info">
-                    <strong data-i18n="pages.checkout.payment_manual">Payer Manyèlman</strong>
-                    <p data-i18n="pages.checkout.payment_manual_desc">Tanpri kontakte machann lan sou WhatsApp pour vous negosye epi peye. Après avoir payé, voye prèv la bay machann lan pou validasyon.</p>
+                    <strong data-i18n="pages.checkout.payment_moncash">MonCash</strong>
+                    <p data-i18n="pages.checkout.payment_moncash_desc">Peye dirèk sou MonCash. Kòmand lan ap anrejistre otomatikman e vandè a pral resevwa notifikasyon.</p>
                   </div>
                 </div>
               </label>
-
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="cash">
+                <input type="radio" name="payment-method" value="NatCash">
+                <div class="payment-card">
+                  <div class="payment-icon">🔵</div>
+                  <div class="payment-info">
+                    <strong data-i18n="pages.checkout.payment_natcash">NatCash</strong>
+                    <p data-i18n="pages.checkout.payment_natcash_desc">Peye via NatCash. Kòmand lan ap anrejistre otomatikman e vandè a pral resevwa detay yo.</p>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment-method" value="Cash" checked>
                 <div class="payment-card">
                   <div class="payment-icon">💵</div>
                   <div class="payment-info">
@@ -143,15 +129,15 @@ title: Finaliser la Commande - Boutique Piyay
 
           <div class="form-actions">
             <button type="button" class="btn-primary" id="btn-pay" style="width:100%; padding:20px;" data-i18n="pages.checkout.confirm_button">
-              KONFIME & VOYE SOU WHATSAPP →
+              KONFIME & POURSUIVRE PEMAN →
             </button>
             <div style="margin-top:18px; color:#64748b; font-size:15px;">
               <strong data-i18n="pages.checkout.guide_title">Gid pou Peman:</strong><br>
-              <span data-i18n="pages.checkout.guide_step_1">1. Choisissez pwodwi ou yo epi valide kòmand lan.</span><br>
-              <span data-i18n="pages.checkout.guide_step_2">2. Klike sou bouton WhatsApp pou voye kòmand lan dirèkteman bay machann lan.</span><br>
-              <span data-i18n="pages.checkout.guide_step_3">3. Payer manyèlman via MonCash: <b>48868964</b> oswa NatCash: <b>40683108</b>.</span><br>
-              <span data-i18n="pages.checkout.guide_step_4">4. Après avoir payé, voye prèv la bay machann lan.</span><br>
-              <span data-i18n="pages.checkout.guide_step_5">5. Vendeur lan ap valide kòmand ou epi ou ap resevwa konfimasyon.</span><br>
+              <span data-i18n="pages.checkout.guide_step_1">1. Ranpli enfòmasyon yo.</span><br>
+              <span data-i18n="pages.checkout.guide_step_2">2. Chwazi MonCash, NatCash oswa Cash.</span><br>
+              <span data-i18n="pages.checkout.guide_step_3">3. Kòmand ou an ap anrejistre otomatikman e sistèm nan ap enfòme vandè a.</span><br>
+              <span data-i18n="pages.checkout.guide_step_4">4. Si w chwazi MonCash, ou pral redireksyone pou konplete peman an.</span><br>
+              <span data-i18n="pages.checkout.guide_step_5">5. Si w chwazi NatCash oswa Cash, ou pral resevwa konfimasyon sou paj sa a.</span><br>
             </div>
           </div>
         </form>
@@ -179,7 +165,7 @@ title: Finaliser la Commande - Boutique Piyay
             <strong data-i18n="pages.checkout.total_label">Total pou peye</strong>
             <strong id="checkoutTotal" style="color:#ef4444;">0 HTG</strong>
           </div>
-          <div class="summary-card-note" data-i18n="pages.checkout.summary_note">Konfime detay yo, epi klike sou bouton WhatsApp la pou voye kòmand lan bay machann lan.</div>
+          <div class="summary-card-note" data-i18n="pages.checkout.summary_note">Konfime detay yo, epi klike sou bouton an pou anrejistre kòmand lan otomatikman. Vandè a ap resevwa notifikasyon.</div>
         </div>
       </div>
     </div>
@@ -187,9 +173,19 @@ title: Finaliser la Commande - Boutique Piyay
 </div>
 
 <script>
+function handleCheckoutSubmit(event) {
+  event.preventDefault();
+  if (typeof window.submitOrder === 'function') {
+    window.submitOrder();
+  } else {
+    alert('Kòd checkout la pa jwenn. Tanpri rafrechi paj la.');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadCheckout();
-  const fields = ['customerName', 'customerPhone', 'customerCity'];
+
+  const fields = ['customer-name', 'customer-phone', 'delivery-zone'];
   fields.forEach((id) => {
     const input = document.getElementById(id);
     if (input) {
@@ -197,6 +193,18 @@ document.addEventListener('DOMContentLoaded', () => {
       input.addEventListener('change', renderCheckoutSummary);
     }
   });
+
+  const btn = document.getElementById('btn-pay');
+  if (btn) {
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (typeof window.submitOrder === 'function') {
+        window.submitOrder();
+      } else {
+        alert('Kòd checkout la pa jwenn. Tanpri rafrechi paj la.');
+      }
+    });
+  }
 });
 
 function renderCheckoutSummary() {
@@ -204,9 +212,9 @@ function renderCheckoutSummary() {
   const cart = JSON.parse(localStorage.getItem('boutique_piyay_cart') || '[]');
   const container = document.getElementById('checkoutItems');
   const customerInfo = document.getElementById('checkoutCustomerInfo');
-  const name = document.getElementById('customerName')?.value.trim();
-  const phone = document.getElementById('customerPhone')?.value.trim();
-  const zone = document.getElementById('customerCity')?.value;
+  const name = document.getElementById('customer-name')?.value.trim() || '';
+  const phone = document.getElementById('customer-phone')?.value.trim() || '';
+  const zone = document.getElementById('delivery-zone')?.value || '';
 
   let total = 0;
   if (cart.length === 0) {
@@ -214,11 +222,13 @@ function renderCheckoutSummary() {
     document.getElementById('checkoutTotal').textContent = '0 HTG';
   } else {
     container.innerHTML = cart.map(item => {
-      total += (item.price * item.quantity);
+      const qty = item.quantity || item.qty || 1;
+      const lineTotal = item.price * qty;
+      total += lineTotal;
       return `
         <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
-          <span>${item.quantity}x ${item.title}</span>
-          <span style="font-weight:700;">${(item.price * item.quantity).toLocaleString()} HTG</span>
+          <span>${qty}x ${item.title}</span>
+          <span style="font-weight:700;">${lineTotal.toLocaleString()} HTG</span>
         </div>
       `;
     }).join('');
@@ -240,37 +250,4 @@ function loadCheckout() {
   if (cart.length === 0) { window.location.href = '/'; return; }
   renderCheckoutSummary();
 }
-
-document.getElementById('btn-pay').addEventListener('click', function() {
-  const cart = JSON.parse(localStorage.getItem('boutique_piyay_cart') || '[]');
-  const customerName = document.getElementById('customerName').value;
-  const customerPhone = document.getElementById('customerPhone').value;
-  const customerCity = document.getElementById('customerCity').value;
-  const checkoutText = window.translations?.[window.currentLang]?.pages?.checkout || {};
-  if (!customerName || !customerPhone || !customerCity) {
-    alert(checkoutText.fill_required_fields || 'Ranpli tout chan yo!');
-    return;
-  }
-  this.disabled = true;
-  this.innerHTML = checkoutText.whatsapp_loading || "⏳ Ap prepare WhatsApp...";
-
-  // Rale nimewo machann lan otomatikman (premye machann si plizyè)
-  let sellerPhone = '50948868964';
-  if (cart.length > 0 && cart[0].sellerPhone) sellerPhone = cart[0].sellerPhone;
-
-  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n👤 *Client:* ${customerName}\n📞 *Tèl:* ${customerPhone}\n📍 *Zone:* ${customerCity}\n\n*ATIK YO:*`;
-  cart.forEach(it => msg += `\n• ${it.title} (x${it.quantity})`);
-  const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-  msg += `\n\n💰 *TOTAL:* ${total} HTG`;
-  msg += `\n\n*Peman:* Manyèl via MonCash: 48868964 oswa NatCash: 40683108`;
-
-  // Ouvri WhatsApp ak mesaj la
-  window.open(`https://wa.me/${sellerPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-  setTimeout(() => {
-    this.disabled = false;
-    this.innerHTML = window.translations?.[window.currentLang]?.pages?.checkout?.confirm_button || "KONFIME & VOYE SOU WHATSAPP →";
-    localStorage.removeItem('boutique_piyay_cart');
-    window.location.href = "/merci.html";
-  }, 2000);
-});
 </script>

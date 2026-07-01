@@ -209,6 +209,32 @@ window.liveSearch = async function() {
     resultsDiv.style.display = 'block';
 };
 
+function initHeaderAutoHide() {
+    const header = document.querySelector('.main-header');
+    if (!header) return;
+    let lastScrollY = window.scrollY;
+    let isHidden = false;
+
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        if (currentScrollY < 60) {
+            header.classList.remove('header-hidden');
+            isHidden = false;
+        } else if (currentScrollY > lastScrollY + 5) {
+            if (!isHidden) {
+                header.classList.add('header-hidden');
+                isHidden = true;
+            }
+        } else if (currentScrollY < lastScrollY - 5) {
+            if (isHidden) {
+                header.classList.remove('header-hidden');
+                isHidden = false;
+            }
+        }
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+}
+
 // Close search on click outside
 document.addEventListener('click', (e) => {
     const box = document.getElementById('search-results');
@@ -222,6 +248,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
     initSearch();
+    initHeaderAutoHide();
 });
 
 // EXPOSE FUNCTIONS
