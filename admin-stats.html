@@ -566,7 +566,7 @@ title: Sant Kontwòl Total - Boutique Piyay
       // Chaje komisyon yo
       document.getElementById('commissions-list').innerHTML = (commissions || []).map(c => `
         <tr>
-          <td><span class="badge active">${c.referral_code}</span></td>
+          <td><span class="badge active">${c.referral_f}</span></td>
           <td>${c.referred_user_name || 'N/A'}</td>
           <td>${c.referred_user_email || 'N/A'}</td>
           <td><span class="badge active">${c.commission_amount} HTG</span></td>
