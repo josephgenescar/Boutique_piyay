@@ -6,6 +6,7 @@
 // ============================================================
 
 const webpush = require("web-push");
+const ws = require('ws');
 const { createClient } = require("@supabase/supabase-js");
 
 // Konfigirasyon VAPID
@@ -17,7 +18,8 @@ webpush.setVapidDetails(
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { transport: ws }
 );
 
 // ── Modèl mesaj pa tip ──────────────────────────────────────

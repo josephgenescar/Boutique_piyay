@@ -1,9 +1,10 @@
 const axios = require('axios');
+const ws = require('ws');
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = "https://letyferfjpxmstohvgcj.supabase.co";
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
-const supabase = SUPABASE_KEY ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const supabase = SUPABASE_KEY ? createClient(SUPABASE_URL, SUPABASE_KEY, { transport: ws }) : null;
 
 exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {

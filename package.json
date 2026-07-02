@@ -1,9 +1,11 @@
 {
   "dependencies": {
-    "imagekit": "^2.0.0",
+    "@imagekit/nodejs": "^7.9.1",
+    "@supabase/supabase-js": "^2.39.3",
+    "axios": "^1.6.0",
+    "imagekit": "^6.0.0",
     "postgres": "^3.4.3",
     "web-push": "^3.6.6",
-    "@supabase/supabase-js": "^2.39.3",
-    "axios": "^1.6.0"
+    "ws": "^8.21.0"
   }
 }

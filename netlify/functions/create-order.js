@@ -1,9 +1,10 @@
+const ws = require('ws');
 const { createClient } = require('@supabase/supabase-js');
 const webpush = require('web-push');
 
 const SUP_URL = 'https://letyferfjpxmstohvgcj.supabase.co';
 const SUP_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = SUP_KEY ? createClient(SUP_URL, SUP_KEY) : null;
+const supabase = SUP_KEY ? createClient(SUP_URL, SUP_KEY, { transport: ws }) : null;
 
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;

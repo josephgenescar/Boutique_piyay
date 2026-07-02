@@ -4,11 +4,13 @@
 //  Itilize: Resend API pou voye email bay admin oswa vandè
 // ============================================================
 
+const ws = require('ws');
 const { createClient } = require("@supabase/supabase-js");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { transport: ws }
 );
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;

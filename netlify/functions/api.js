@@ -1,8 +1,9 @@
+const ws = require('ws');
 const { createClient } = require('@supabase/supabase-js');
 
 const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
 const SUP_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(SUP_URL, SUP_KEY);
+const supabase = createClient(SUP_URL, SUP_KEY, { transport: ws });
 
 exports.handler = async (event) => {
     const headers = {
