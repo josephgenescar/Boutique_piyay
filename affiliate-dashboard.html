@@ -32,7 +32,18 @@ description: Votre espace affilié — clics, ventes et paiements
       }
 
       const userId = session.user.id;
-      const [{ data: affiliate }, { data: stats }, { data: transactions }, { data: withdrawals }] = await Promise.all([
+      const { data: profile, error: profileError } = await sup.from('profiles').select('role').eq('id', userId).single();
+      if (profileError || !profile || profile.role !== 'affiliate') {
+        container.innerHTML = `
+          <div style="padding:24px; background:#fff7f6; border-radius:18px; border:1px solid #fdecea; color:#991b1b;">
+            <h2 style="margin-top:0;">Ou pa gen wòl afilye</h2>
+            <p>Pou itilize tablo afilye a, ou bezwen gen yon kont afilye. Kreye li sou <a href="/signup.html?role=affiliate&redirect=/affiliate-dashboard.html">signup afilye</a>.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let [{ data: affiliate }, { data: stats }, { data: transactions }, { data: withdrawals }] = await Promise.all([
         sup.from('affiliates').select('*').eq('user_id', userId).maybeSingle(),
         sup.from('affiliate_stats').select('*').eq('affiliate_id', userId).maybeSingle(),
         sup.from('affiliate_transactions').select('*').eq('affiliate_id', userId).order('created_at', { ascending: false }).limit(10),
@@ -40,13 +51,28 @@ description: Votre espace affilié — clics, ventes et paiements
       ]);
 
       if (!affiliate) {
-        container.innerHTML = `
-          <div style="padding:24px; background:#fff7f6; border-radius:18px; border:1px solid #fdecea; color:#991b1b;">
-            <h2 style="margin-top:0;">Aksè afilye pa disponib</h2>
-            <p>Ou pa gen okenn kont afilye konekte. Tanpri kreye yon kont afilye sou <a href="/signup.html?role=affiliate&redirect=/affiliate-dashboard.html">signup afilye</a> oswa kontakte sipò.</p>
-          </div>
-        `;
-        return;
+        const referralCode = 'AFF-' + userId.substring(0, 8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+        const { data: newAffiliate, error: createError } = await sup.from('affiliates').insert([{ user_id: userId, referral_code: referralCode, balance: 0, total_referrals: 0 }]).select().single();
+        if (createError || !newAffiliate) {
+          container.innerHTML = `
+            <div style="padding:24px; background:#fff7f6; border-radius:18px; border:1px solid #fdecea; color:#991b1b;">
+              <h2 style="margin-top:0;">Aksè afilye pa disponib</h2>
+              <p>Gen yon pwoblèm kreyasyon kont afilye. Tanpri kontakte sipò oswa eseye konekte ankò.</p>
+            </div>
+          `;
+          console.error('Affiliate creation error:', createError);
+          return;
+        }
+        affiliate = newAffiliate;
+
+        const results = await Promise.all([
+          sup.from('affiliate_stats').select('*').eq('affiliate_id', userId).maybeSingle(),
+          sup.from('affiliate_transactions').select('*').eq('affiliate_id', userId).order('created_at', { ascending: false }).limit(10),
+          sup.from('affiliate_withdrawals').select('*').eq('affiliate_id', userId).order('created_at', { ascending: false }).limit(10)
+        ]);
+        stats = results[0].data;
+        transactions = results[1].data;
+        withdrawals = results[2].data;
       }
 
       referralLinkText = affiliate.referral_code;

@@ -16,7 +16,6 @@ const supabaseAuth = window.supabaseAuth;
 async function updateHeaderAuth() {
     const authLinks = document.getElementById('authLinks');
     const userInfo = document.getElementById('userInfo');
-    const btnCustomerAccount = document.getElementById('btn-customer-account');
     const btnMerchantDash = document.getElementById('btn-merchant-dash');
     const navSellLink = document.getElementById('nav-sell-link');
 
@@ -39,29 +38,39 @@ async function updateHeaderAuth() {
             // Montre userInfo
             userInfo.style.display = 'flex';
 
-            // Si se yon kliyan, montre bouton kont kliyan an
+            // Si se yon kliyan, pa montre okenn lyen kont la isit
             if (profile && profile.role === 'client') {
-                btnCustomerAccount.style.display = 'flex';
-                btnMerchantDash.style.display = 'none';
-                navSellLink.style.display = 'none';
+                if (btnMerchantDash) btnMerchantDash.style.display = 'none';
+                if (navSellLink) navSellLink.style.display = 'none';
+            }
+            // Si se yon afilye, montre bouton tablodbò afilye a
+            else if (profile && profile.role === 'affiliate') {
+                if (btnMerchantDash) {
+                    btnMerchantDash.style.display = 'flex';
+                    btnMerchantDash.href = '/affiliate-dashboard.html';
+                    btnMerchantDash.textContent = '📊 Affilié';
+                }
+                if (navSellLink) navSellLink.style.display = 'none';
             }
             // Si se yon vandè, montre bouton dashboard la epi lyen "Vann pa w"
             else if (profile && profile.role === 'seller') {
-                btnCustomerAccount.style.display = 'none';
-                btnMerchantDash.style.display = 'flex';
-                navSellLink.style.display = 'inline-block';
+                if (btnMerchantDash) {
+                    btnMerchantDash.style.display = 'flex';
+                    btnMerchantDash.href = '/dashboard.html';
+                    btnMerchantDash.textContent = '📊 Dashboard';
+                }
+                if (navSellLink) navSellLink.style.display = 'inline-block';
             }
-            // Si pa gen profile ou wòl pa defini, montre sèlman bouton kont kliyan an
+            // Si pa gen profile ou wòl pa defini, pa montre okenn bouton kont
             else {
-                btnCustomerAccount.style.display = 'flex';
-                btnMerchantDash.style.display = 'none';
-                navSellLink.style.display = 'none';
+                if (btnMerchantDash) btnMerchantDash.style.display = 'none';
+                if (navSellLink) navSellLink.style.display = 'none';
             }
         } else {
             // Itilizatè pa konekte
             authLinks.style.display = 'flex';
             userInfo.style.display = 'none';
-            navSellLink.style.display = 'none';
+            if (navSellLink) navSellLink.style.display = 'none';
         }
     } catch (error) {
         console.error('Erè nan verifikasyon otantifikasyon:', error);

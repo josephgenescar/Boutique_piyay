@@ -57,6 +57,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_new_order ON orders;
 CREATE TRIGGER trigger_new_order
 AFTER INSERT ON orders
 FOR EACH ROW
@@ -90,6 +91,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_new_seller ON profiles;
 CREATE TRIGGER trigger_new_seller
 AFTER UPDATE OF is_active_seller ON profiles
 FOR EACH ROW
@@ -125,6 +127,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_new_product ON user_products;
 CREATE TRIGGER trigger_new_product
 AFTER INSERT ON user_products
 FOR EACH ROW
@@ -157,6 +160,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_product_approval_request ON user_products;
 CREATE TRIGGER trigger_product_approval_request
 AFTER INSERT ON user_products
 FOR EACH ROW
@@ -203,6 +207,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_withdrawal_request ON affiliate_withdrawals;
 CREATE TRIGGER trigger_withdrawal_request
 AFTER INSERT ON affiliate_withdrawals
 FOR EACH ROW
@@ -237,6 +242,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_subscription_payment ON profiles;
 CREATE TRIGGER trigger_subscription_payment
 AFTER UPDATE OF subscription_ends_at ON profiles
 FOR EACH ROW
