@@ -121,9 +121,11 @@ title: Kontakte Nou - Boutique Piyay
 
 <script>
   // ✅ BON SUPABASE CONFIG
-  const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-  const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-  const supC = window.supabase.createClient(SUP_URL, SUP_KEY);
+  const supC = (() => {
+    const SUP_URL_CONTACT = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SUP_KEY_CONTACT = "eyJhbGciOiJIUzI1NiIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9zIjoibm90aWZ5IiwicmV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    return window.supabase.createClient(SUP_URL_CONTACT, SUP_KEY_CONTACT);
+  })();
 
   function showToast(msg, type) {
     const t = document.getElementById('toast');

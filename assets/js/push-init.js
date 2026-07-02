@@ -24,11 +24,15 @@ async function savePushSubscription(subscription) {
       user_id: userId,
     };
 
-    await fetch(PUSH_REGISTRATION_URL, {
+    const response = await fetch(PUSH_REGISTRATION_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Push registration failed: ${response.status} ${response.statusText} - ${text}`);
+    }
     console.log("Push subscription saved.");
   } catch (err) {
     console.warn("Push subscription save failed:", err);

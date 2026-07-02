@@ -16,9 +16,12 @@
     const h = window.h || window.React.createElement;
     const createClass = window.createClass || window.React.createClass;
 
-    const SUP_URL = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
-    const SUP_KEY = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
-    const supabaseAdmin = supabase.createClient(SUP_URL, SUP_KEY);
+    (() => {
+      const SUP_URL_ADMIN_PREVIEW = "https://lsyjnhqjssirtgrdfgcu.supabase.co";
+      const SUP_KEY_ADMIN_PREVIEW = "sb_publishable_yoALXcRyaiBnSieRF7MSpA_bB5DGT13";
+      window.supabaseAdmin = supabase.createClient(SUP_URL_ADMIN_PREVIEW, SUP_KEY_ADMIN_PREVIEW);
+    })();
+    const supabaseAdmin = window.supabaseAdmin;
 
     // 2. Style anndan Preview a
     CMS.registerPreviewStyle(`

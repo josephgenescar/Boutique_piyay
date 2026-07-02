@@ -474,9 +474,13 @@ title: Sant Kontwòl Total - Boutique Piyay
 <div class="toast" id="toast"></div>
 
 <script>
-  const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-  const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-  const supA = window.supabase.createClient(SUP_URL, SUP_KEY);
+  (() => {
+    const SUP_URL_ADMIN = "https://letyferfjpxmstohvgcj.supabase.co";
+    const SUP_KEY_ADMIN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+    window.supA = window.supabase.createClient(SUP_URL_ADMIN, SUP_KEY_ADMIN);
+  })();
+
+  const supA = window.supA;
 
   function showToast(msg, type) {
     const t = document.getElementById('toast');

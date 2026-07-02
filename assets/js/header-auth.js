@@ -3,10 +3,14 @@
 //  Jere afichaj lyen otantifikasyon nan header la
 // ============================================================
 
-const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+(() => {
+  const SUP_URL_HEADER = "https://letyferfjpxmstohvgcj.supabase.co";
+  const SUP_KEY_HEADER = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
-const supabaseAuth = window.supabase.createClient(SUP_URL, SUP_KEY);
+  window.supabaseAuth = window.supabase.createClient(SUP_URL_HEADER, SUP_KEY_HEADER);
+})();
+
+const supabaseAuth = window.supabaseAuth;
 
 // Fonksyon pou verifie etat koneksyon an epi mete ajou header la
 async function updateHeaderAuth() {

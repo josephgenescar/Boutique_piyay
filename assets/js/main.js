@@ -7,12 +7,14 @@ let cartItems = [];
 try { cartItems = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || []; } catch(e) { cartItems = []; }
 
 // ── SUPABASE ──
-const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+(() => {
+  const SUP_URL_MAIN = "https://letyferfjpxmstohvgcj.supabase.co";
+  const SUP_KEY_MAIN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
 
-window.supabaseMain = (typeof window !== 'undefined' && window.supabase)
-  ? window.supabase.createClient(SUP_URL, SUP_KEY)
-  : null;
+  window.supabaseMain = (typeof window !== 'undefined' && window.supabase)
+    ? window.supabase.createClient(SUP_URL_MAIN, SUP_KEY_MAIN)
+    : null;
+})();
 
 const supabaseMain = window.supabaseMain;
 

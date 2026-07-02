@@ -25,9 +25,12 @@ title: Efase Kont - Boutique Piyay
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-    const SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
-    const SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-    const supD = supabase.createClient(SUP_URL, SUP_KEY);
+    (() => {
+        const SUP_URL_DELETE = "https://letyferfjpxmstohvgcj.supabase.co";
+        const SUP_KEY_DELETE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
+        window.supD = supabase.createClient(SUP_URL_DELETE, SUP_KEY_DELETE);
+    })();
+    const supD = window.supD;
 
     async function checkUser() {
         const { data: { user } } = await supD.auth.getUser();
