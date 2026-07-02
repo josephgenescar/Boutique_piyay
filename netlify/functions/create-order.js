@@ -87,6 +87,8 @@ exports.handler = async (event) => {
       createSellerNotification(sellerId, orderGroupId, customerName, totalAmount, sellerOrders)
     ));
 
+    await processAffiliateCommissions(insertedOrders);
+
     return {
       statusCode: 200,
       headers,
@@ -192,5 +194,62 @@ async function createSellerNotification(userId, orderGroupId, customerName, tota
     }
   } catch (err) {
     console.warn('Unable to send push notification:', err.message || err);
+  }
+}
+
+async function processAffiliateCommissions(insertedOrders) {
+  const affiliateOrders = insertedOrders.filter(order => order.affiliate_id);
+  if (!affiliateOrders.length) return;
+
+  const ordersByAffiliate = affiliateOrders.reduce((groups, order) => {
+    const affiliateId = order.affiliate_id;
+    groups[affiliateId] = groups[affiliateId] || [];
+    groups[affiliateId].push(order);
+    return groups;
+  }, {});
+
+  for (const [affiliateId, orders] of Object.entries(ordersByAffiliate)) {
+    const commissionTotal = orders.reduce((sum, order) => sum + Number(order.affiliate_commission || 0), 0);
+    if (commissionTotal <= 0) continue;
+
+    try {
+      const { data: affiliateRow, error: affiliateRowError } = await supabase
+        .from('affiliates')
+        .select('id,user_id,balance')
+        .eq('id', affiliateId)
+        .single();
+
+      if (affiliateRowError || !affiliateRow) {
+        console.warn('⚠️ Pa jwenn affiliate pou komisyon:', affiliateId, affiliateRowError);
+        continue;
+      }
+
+      const newBalance = Number(affiliateRow.balance || 0) + commissionTotal;
+      await supabase.from('affiliates').update({ balance: newBalance }).eq('id', affiliateId);
+
+      const transactions = orders.map(order => ({
+        affiliate_id: affiliateId,
+        amount: order.affiliate_commission,
+        type: 'order_commission',
+        description: `Komisyon pou komann ${order.order_group_id}`,
+        created_at: new Date().toISOString()
+      }));
+
+      await supabase.from('affiliate_transactions').insert(transactions);
+
+      await supabase.from('notifications').insert({
+        user_id: affiliateRow.user_id,
+        type: 'commission_earned',
+        title: `💰 Ou touche ${commissionTotal.toLocaleString()} HTG`,
+        body: `Yon komisyon te ajoute pou komann ${orders.map(o => o.order_group_id).join(', ')}.`,
+        data: {
+          order_group_ids: orders.map(o => o.order_group_id),
+          amount: commissionTotal
+        },
+        read: false
+      });
+    } catch (err) {
+      console.warn('⚠️ Erè processe komisyon affiliate:', err.message || err);
+    }
   }
 }

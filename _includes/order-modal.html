@@ -15,7 +15,7 @@
                 <p style="font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">Détails de livraison</p>
 
                 <input type="text" id="customer-name" placeholder="Nom complet *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                <input type="tel" id="customer-phone" placeholder="Numéro WhatsApp *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <input type="tel" id="customer-phone" placeholder="Numéro de téléphone *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
 
                 <!-- LIS ZÒN KONPLÈ -->
                 <select id="delivery-zone" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
@@ -57,7 +57,7 @@
                     </label>
                 </div>
                 <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
-                    <b>Gid:</b> Choisissez « Paiement manuel » pour contacter le vendeur sur WhatsApp, négocier et envoyer la preuve de paiement. Le vendeur validera votre commande.
+                    <b>Gid:</b> Choisissez MonCash, NatCash ou Cash selon votre mode de paiement. La commande sera enregistrée et le vendeur recevra les détails.
                 </div>
 
                 <!-- ZÒN POU PREV PEMAN -->
@@ -72,12 +72,8 @@
                     </div>
                 </div>
 
-                <!-- GWO BOUTON WHATSAPP -->
-                <button id="submitOrderBtn" class="btn-whatsapp-order" onclick="submitOrder()" style="width: 100%; padding: 18px; background: #25D366; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.246 2.76.689 4.012L.068 16l8.02-2.104a7.9 7.9 0 0 0 3.906 1.02A7.854 7.854 0 0 0 15.94 7.926c0-4.366-3.558-7.934-7.933-7.934-.578 0-1.17.074-1.765.216a7.854 7.854 0 0 0-7.934 7.934c0 1.399.246 2.76.689 4.012L.068 16l8.02-2.104a7.9 7.9 0 0 0 3.906 1.02A7.854 7.854 0 0 0 15.94 7.926c0-4.366-3.558-7.934-7.933-7.934-.578 0-1.17.074-1.765.216z"/>
-                    </svg>
-                    Commander sur WhatsApp
+                <button id="submitOrderBtn" onclick="submitOrder()" style="width: 100%; padding: 18px; background: #1f2937; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 5px 20px rgba(31, 41, 55, 0.25); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    Valider la commande
                 </button>
             </div>
         </div>
@@ -89,13 +85,6 @@
         const otherInput = document.getElementById('other-zone');
         if (this.value === 'Lòt Zone') { otherInput.style.display = 'block'; }
         else { otherInput.style.display = 'none'; }
-    });
-
-    // Gestion des radio buttons pour paiement
-    document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            document.getElementById('payment-method-select').value = this.value;
-        });
     });
 
     // Preview de la preuve de paiement
@@ -142,7 +131,4 @@
 /* Radio buttons */
 input[type="radio"] { accent-color: #ff4747; width: 18px; height: 18px; }
 
-/* Bouton WhatsApp */
-.btn-whatsapp-order:hover { background: #128C7E; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5); }
-.btn-whatsapp-order:active { transform: translateY(0); }
 </style>

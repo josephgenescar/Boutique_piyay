@@ -62,18 +62,110 @@
     }
 
     /* Header actions */
-    .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; position: relative; }
+    .lang-label { font-size: 12px; font-weight: 700; color: #334155; margin-right: 4px; white-space: nowrap; }
+    #lang-selector { min-width: 120px; font-size: 12px; padding: 9px 12px; border-radius: 999px; border: 1px solid #d1d5db; background: #f8fafc; color: #111827; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+    #lang-selector:hover { border-color: #cbd5e1; background: #ffffff; }
     .btn-auth { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-decoration: none; padding: 9px 16px; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; }
     .btn-login { background: #0f172a; color: white; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
     .btn-signup { background: linear-gradient(135deg, #ff4747, #ff8c42); color: white; box-shadow: 0 4px 12px rgba(255, 71, 71, 0.3); }
 
-    .site-nav { background: linear-gradient(270deg, #ffffff, #f0f9ff, #e5e7eb, #f0f9ff, #ffffff); background-size: 200% 100%; animation: move-left 10s linear infinite; border-bottom: 1px solid #eee; position: relative; }
+    .site-nav { display: flex; background: linear-gradient(270deg, #ffffff, #f0f9ff, #e5e7eb, #f0f9ff, #ffffff); background-size: 200% 100%; animation: move-left 10s linear infinite; border-bottom: 1px solid #eee; position: relative; }
     .site-nav + .cat-preview-container {
       margin-top: 0;
       padding: 0 15px 14px;
       max-width: 1180px;
       margin-left: auto;
       margin-right: auto;
+    }
+    .header-menu-button {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #0f172a;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .header-menu-button:hover,
+    .header-menu-button.open {
+      transform: translateY(-1px);
+      background: #ff4747;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.16);
+    }
+    #header-menu-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 15px;
+      width: min(360px, calc(100vw - 30px));
+      max-height: 70vh;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 24px;
+      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.14);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px) scale(0.98);
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+      z-index: 1002;
+      padding: 18px;
+      pointer-events: none;
+    }
+    #header-menu-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .header-menu-group {
+      margin-bottom: 18px;
+    }
+    .header-menu-group:last-child {
+      margin-bottom: 0;
+    }
+    .header-menu-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .header-menu-link {
+      display: block;
+      padding: 12px 16px;
+      border-radius: 16px;
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 700;
+      background: #f8fafc;
+      margin-bottom: 8px;
+      transition: background 0.2s ease;
+    }
+    .header-menu-link:hover {
+      background: #eef2ff;
+    }
+    @media (max-width: 1024px) {
+      .site-nav { display: none; }
+      .header-menu-button { display: inline-flex; }
+    }
+    @media (max-width: 520px) {
+      #header-menu-dropdown {
+        left: 10px;
+        right: 10px;
+        width: calc(100vw - 20px);
+        max-height: 80vh;
+        padding: 14px;
+        border-radius: 20px;
+      }
+      .header-menu-link {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+      }
     }
     .site-nav + .cat-preview-container .cat-preview-card {
       padding: 16px;
@@ -214,7 +306,7 @@
 
             <div class="header-actions">
                 <!-- Language Selector -->
-                <select id="lang-selector" onchange="changeLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; border: 2px solid #eee; background: white; font-size: 12px; font-weight: 700; cursor: pointer;">
+                <select id="lang-selector" onchange="changeLanguage(this.value)" style="padding: 8px 12px; border-radius: 999px; border: 1px solid #d1d5db; background: #f8fafc; font-size: 12px; font-weight: 700; cursor: pointer;">
                     <option value="fr">🇫🇷 FR</option>
                     <option value="ht">🇭🇹 KR</option>
                 </select>
@@ -236,6 +328,26 @@
                     <span>🛒</span>
                     <div class="cart-badge" id="cart-count" style="display:none;">0</div>
                 </button>
+                <button class="header-menu-button" id="header-menu-button" type="button" onclick="toggleHeaderMenu()">
+                    ☰ Menu
+                </button>
+                <div id="header-menu-dropdown" aria-hidden="true">
+                    <div class="header-menu-group">
+                        <span class="header-menu-title" data-i18n="nav.menu_primary">Lyen prensipal</span>
+                        <a href="/" class="header-menu-link" data-i18n="nav.all_products">Tout Pwodwi</a>
+                        <a href="/shop/" class="header-menu-link" data-i18n="nav.shop">🛍️ BOUTIK</a>
+                        <a href="/vendre.html" class="header-menu-link" id="menu-sell-link" style="display:none;" data-i18n="nav.sell">🚀 Vann pa w</a>
+                        <a href="/affiliate.html" class="header-menu-link" data-i18n="nav.affiliate">💸 Afilyasyon</a>
+                        <a href="/login.html" class="header-menu-link" data-i18n="nav.login">🔑 Kont</a>
+                        <a href="/signup.html" class="header-menu-link" data-i18n="nav.signup">✨ Enskri</a>
+                    </div>
+                    <div class="header-menu-group">
+                        <span class="header-menu-title" data-i18n="nav.categories">Kategori</span>
+                        {% for cat in site.categories %}
+                        <a href="{{ cat.url }}" class="header-menu-link">{{ cat.display_name | default: cat.title }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -292,3 +404,38 @@
     </div>
     {% endif %}
 </header>
+<script>
+  function toggleHeaderMenu() {
+    const dropdown = document.getElementById('header-menu-dropdown');
+    const button = document.getElementById('header-menu-button');
+    if (!dropdown || !button) return;
+    const isOpen = dropdown.classList.toggle('open');
+    button.classList.toggle('open', isOpen);
+    dropdown.setAttribute('aria-hidden', !isOpen);
+  }
+
+  function closeHeaderMenu() {
+    const dropdown = document.getElementById('header-menu-dropdown');
+    const button = document.getElementById('header-menu-button');
+    if (!dropdown || !button) return;
+    dropdown.classList.remove('open');
+    button.classList.remove('open');
+    dropdown.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('click', (event) => {
+    const dropdown = document.getElementById('header-menu-dropdown');
+    const button = document.getElementById('header-menu-button');
+    if (!dropdown || !button) return;
+
+    if (!dropdown.contains(event.target) && event.target !== button) {
+      closeHeaderMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeHeaderMenu();
+    }
+  });
+</script>

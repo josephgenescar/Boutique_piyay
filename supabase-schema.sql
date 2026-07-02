@@ -159,6 +159,29 @@ CREATE INDEX IF NOT EXISTS idx_orders_seller_id ON orders(seller_id);
 CREATE INDEX IF NOT EXISTS idx_orders_product_id ON orders(product_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS affiliate_id uuid REFERENCES affiliates(id);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS referral_code text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS affiliate_user_id uuid;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS affiliate_commission numeric(12,2) DEFAULT 0;
+
+CREATE INDEX IF NOT EXISTS idx_orders_affiliate_id ON orders(affiliate_id);
+
+CREATE OR REPLACE VIEW affiliate_stats AS
+SELECT
+  a.user_id AS affiliate_id,
+  a.referral_code,
+  COALESCE(COUNT(o.id), 0) AS sales,
+  COALESCE(SUM(o.amount), 0) AS total_sales,
+  COALESCE(SUM(o.affiliate_commission), 0) AS total_commission,
+  COALESCE(SUM(CASE WHEN o.status = 'pending' THEN o.affiliate_commission ELSE 0 END), 0) AS pending_commission,
+  COALESCE(SUM(CASE WHEN o.status = 'completed' THEN o.affiliate_commission ELSE 0 END), 0) AS paid_commission,
+  COALESCE(SUM(w.amount) FILTER (WHERE w.status = 'pending'), 0) AS pending_withdrawal,
+  COALESCE(a.balance, 0) AS balance
+FROM affiliates a
+LEFT JOIN orders o ON o.affiliate_id = a.id
+LEFT JOIN affiliate_withdrawals w ON w.affiliate_id = a.id
+GROUP BY a.user_id, a.referral_code, a.balance;
+
 -- 5) Site traffic tracking for admin analytics
 CREATE TABLE IF NOT EXISTS site_traffic (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

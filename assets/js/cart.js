@@ -62,8 +62,9 @@ async function getCurrentCustomerEmail(sup) {
   }
 }
 
-function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zone, paymentMethod, orderGroupId) {
+function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zone, paymentMethod, orderGroupId, affiliateId = null, referralCode = null, affiliateUserId = null) {
   const grouped = {};
+  const affiliateRate = affiliateId ? 0.10 : 0;
   cart.forEach(item => {
     const sellerId = item.sellerId || item.seller_id;
     if (!sellerId) {
@@ -80,11 +81,13 @@ function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zon
     }
     const qty = item.qty || item.quantity || 1;
     const price = parseFloat(item.price) || 0;
+    const commission = parseFloat(((price * qty) * affiliateRate).toFixed(2));
     grouped[sellerId].items.push({
       product_id: item.id || null,
       title: item.title || 'Produit',
       quantity: qty,
-      price: price
+      price: price,
+      affiliate_commission: commission
     });
     grouped[sellerId].amount += price * qty;
   });
@@ -105,8 +108,12 @@ function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zon
     quantity: group.items.reduce((sum, item) => sum + Number(item.quantity || 1), 0),
     amount: group.amount,
     total_price: group.amount,
+    affiliate_id: affiliateId,
+    referral_code: referralCode,
+    affiliate_user_id: affiliateUserId,
+    affiliate_commission: group.items.reduce((sum, item) => sum + Number(item.affiliate_commission || 0), 0),
     status: 'pending',
-    payment_status: paymentMethod === 'Cash' ? 'pending' : 'pending',
+    payment_status: 'pending',
     currency: 'HTG',
     created_at: createdAt,
     updated_at: createdAt
@@ -225,8 +232,6 @@ function drawCart() {
     .seller-group { background: #ffffff; border-radius: 18px; padding: 20px; margin-bottom: 18px; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(15,23,42,0.06); }
     .seller-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; }
     .seller-name { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 900; color: #111827; }
-    .seller-wa a { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; background: #25d366; color: white; border-radius: 12px; text-decoration: none; font-weight: 800; transition: transform .2s; }
-    .seller-wa a:hover { transform: translateY(-1px); }
     .cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #f1f5f9; border-radius: 12px; margin-bottom: 12px; background: #fafbfc; }
     .cart-item-image { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; }
     .cart-item-details { flex: 1; }
@@ -247,24 +252,11 @@ function drawCart() {
   </style>`;
 
   Object.entries(bySeller).forEach(([sellerId, group]) => {
-    const phone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
     const sellerName = group.sellerName || 'Boutique Piyay';
-
-    let sellerMessage = `Bonjou ${sellerName}, mwen swete ou byen. Mwen enterese nan kòmand sa a :\n\n`;
-    group.items.forEach(it => {
-      const lineTotal = (it.price * it.qty) || 0;
-      sellerMessage += `• ${it.title} (x${it.qty}) — ${it.price.toLocaleString()} HTG chak — ${lineTotal.toLocaleString()} HTG total\n`;
-    });
-    const sellerTotal = group.items.reduce((sum, it) => sum + (it.price * it.qty), 0);
-    sellerMessage += `\n💰 *TOTAL:* ${sellerTotal.toLocaleString()} HTG\n\nMèsi, tanpri konfime si pwodwi yo disponib.`;
-    const encodedMessage = encodeURIComponent(sellerMessage);
 
     html += `<div class="seller-group">
       <div class="seller-header">
         <span class="seller-name">🏪 ${sellerName}</span>
-        <div class="seller-wa">
-          <a href="https://wa.me/${phone}?text=${encodedMessage}" target="_blank">📱 Voye sou WhatsApp</a>
-        </div>
       </div>`;
 
     group.items.forEach(it => {
@@ -627,111 +619,6 @@ function getCustomerDetailsFromModal() {
   return { name, phone, zone };
 }
 
-function contactWhatsApp(data) {
-  const sPhone = data.cart[0]?.sellerPhone || '50948868964';
-  const customerName = data.name || '–';
-  const customerPhone = data.phone || '–';
-  const customerZone = data.zone || '–';
-  const paymentMethod = data.payment || 'Pa defini';
-  const transactionId = data.transactionId || 'N/A';
-  const totalAmount = data.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-
-  let msg = `🛍️ *NOUVO KÒMAND BOUTIQUE PIYAY*\n\n`;
-  msg += `👤 *Non:* ${customerName}\n`;
-  msg += `📞 *WhatsApp:* ${customerPhone}\n`;
-  msg += `📍 *Zòn:* ${customerZone}\n`;
-  msg += `💳 *Peman:* ${paymentMethod}\n`;
-  msg += `🔖 *Kòd:* ${transactionId}\n\n`;
-  msg += `*ATIK YO:*\n`;
-
-  data.cart.forEach(it => {
-    const lineTotal = (it.price * it.qty) || 0;
-    msg += `• ${it.title}\n  - Kantite: ${it.qty}\n  - Pri inite: ${it.price.toLocaleString()} HTG\n  - Total: ${lineTotal.toLocaleString()} HTG\n`;
-  });
-
-  msg += `\n*TOTAL KOMÈS:* ${totalAmount.toLocaleString()} HTG\n`;
-  msg += `\nMèsi! Tanpri konfime disponiblite pwodwi yo ak pri a.`;
-
-  window.open(`https://wa.me/${sPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-window.contactSellersWhatsApp = async function() {
-  console.log('📱 contactSellersWhatsApp appelé');
-  const cart = getCart();
-  if (!cart || cart.length === 0) {
-    alert('Panier la vid. Ajoute yon pwodwi avan ou kontakte vandè a.');
-    return;
-  }
-
-  const { name, phone, zone } = getCustomerDetailsFromModal();
-  const paymentMethod = document.getElementById('payment-method-select')?.value || 'Pa defini';
-  if (!name || !phone || !zone) {
-    alert('Tanpri ranpli non, telefòn ak zòn livrezon avan ou kontakte vandè a.');
-    return;
-  }
-
-  console.log('🛒 Panier:', cart);
-
-  const sellers = {};
-  cart.forEach(item => {
-    const sellerId = item.sellerId || 'boutique-piyay';
-    if (!sellers[sellerId]) {
-      sellers[sellerId] = {
-        phone: item.sellerPhone || null,
-        sellerName: item.sellerName || 'Boutique Piyay',
-        items: []
-      };
-    }
-    sellers[sellerId].items.push(item);
-  });
-
-  await resolveSellerPhoneFallbacks(sellers);
-
-  const detailsHeader = `🛍️ *NOUVO KÒMAND*\n\n👤 *Client:* ${name}\n📞 *Tèl:* ${phone}\n📍 *Zone:* ${zone}\n💳 *Peman:* ${paymentMethod}\n\n*ATIK YO:*`;
-
-  const sellerKeys = Object.keys(sellers);
-  if (sellerKeys.length === 1) {
-    const group = sellers[sellerKeys[0]];
-    const phoneNumber = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
-    let msg = `${detailsHeader}`;
-    group.items.forEach(it => {
-      const lineTotal = (it.price * it.qty) || 0;
-      msg += `\n• ${it.title}\n  - Kantite: ${it.qty}\n  - Pri inite: ${it.price.toLocaleString()} HTG\n  - Total: ${lineTotal.toLocaleString()} HTG\n`;
-    });
-    const total = group.items.reduce((sum, it) => sum + (it.price * it.qty), 0);
-    msg += `\n*TOTAL:* ${total.toLocaleString()} HTG\n\nMèsi! Tanpri konfime disponiblite pwodwi yo.`;
-    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`, '_blank');
-    return;
-  }
-
-  let sellerList = 'Gen plizyè vandè nan panie a. Chwazi vandè pou kontakte sou WhatsApp :\n\n';
-  sellerKeys.forEach((key, index) => {
-    const group = sellers[key];
-    const displayPhone = (group.phone || '50948868964').toString().replace(/[^0-9]/g, '');
-    sellerList += `${index + 1}. ${group.sellerName} - ${displayPhone}\n`;
-  });
-  sellerList += '\nAntre nimewo vandè a (egzanp 1, 2, ...).';
-
-  const choice = prompt(sellerList, '1');
-  const selectedIndex = parseInt(choice, 10) - 1;
-  if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= sellerKeys.length) {
-    alert('Chwa enkòrèk. Aksyon an anile.');
-    return;
-  }
-
-  const selectedGroup = sellers[sellerKeys[selectedIndex]];
-  const phoneNumber = (selectedGroup.phone || '50948868964').toString().replace(/[^0-9]/g, '');
-  let msg = `${detailsHeader}`;
-  let groupTotal = 0;
-  selectedGroup.items.forEach(it => {
-    const lineTotal = (it.price * it.qty) || 0;
-    groupTotal += lineTotal;
-    msg += `\n• ${it.title}\n  - Kantite: ${it.qty}\n  - Pri inite: ${it.price.toLocaleString()} HTG\n  - Total: ${lineTotal.toLocaleString()} HTG\n`;
-  });
-  msg += `\n*TOTAL:* ${groupTotal.toLocaleString()} HTG\n\nMèsi! Tanpri konfime si pwodwi yo disponib.`;
-  window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
 window.submitOrder = async function() {
   const nameInput = document.getElementById('customer-name');
   const phoneInput = document.getElementById('customer-phone');
@@ -749,6 +636,7 @@ window.submitOrder = async function() {
   const otherZone = document.getElementById('other-zone')?.value.trim() || '';
   const zone = rawZone === 'Lòt Zone' && otherZone ? otherZone : rawZone;
   const paymentMethod = paymentRadio.value;
+  const originalButtonText = btn?.innerText;
 
   if (!name || !phone || !zone) { alert('⚠️ Veuillez remplir tous les champs !'); return; }
 
@@ -757,6 +645,9 @@ window.submitOrder = async function() {
 
   const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   const orderGroupId = "BP-" + Date.now();
+  const referralCode = localStorage.getItem('ref_code') || null;
+  let affiliateId = null;
+  let affiliateUserId = null;
 
   if (btn) {
     btn.disabled = true;
@@ -765,8 +656,33 @@ window.submitOrder = async function() {
 
   try {
     const sup = getSupabaseClient();
+    if (sup && referralCode) {
+      const { data: affiliateMatch, error: affiliateMatchError } = await sup
+        .from('affiliates')
+        .select('id,user_id')
+        .eq('referral_code', referralCode)
+        .maybeSingle();
+      if (!affiliateMatchError && affiliateMatch) {
+        affiliateId = affiliateMatch.id;
+        affiliateUserId = affiliateMatch.user_id;
+      } else if (affiliateMatchError) {
+        console.warn('⚠️ Erè rechèch affiliate referral:', affiliateMatchError);
+      }
+    }
+
     const customerEmail = await getCurrentCustomerEmail(sup);
-    const orders = buildOrderPayload(cart, customerEmail, name, phone, zone, paymentMethod, orderGroupId);
+    const orders = buildOrderPayload(
+      cart,
+      customerEmail,
+      name,
+      phone,
+      zone,
+      paymentMethod,
+      orderGroupId,
+      affiliateId,
+      referralCode,
+      affiliateUserId
+    );
 
     if (sup) {
       const response = await fetch('/.netlify/functions/create-order', {
@@ -964,7 +880,7 @@ window.submitOrder = async function() {
 
     // Gid pou peman manyèl oswa cash
     if (paymentMethod === 'manual') {
-      alert('Commande enregistrée! Contactez le vendeur sur WhatsApp pour finaliser le paiement.');
+      alert('Commande enregistrée! Contactez le vendeur pour finaliser le paiement.');
     } else if (paymentMethod === 'Cash') {
       alert('Commande enregistrée! Vous paierez à la livraison.');
     } else if (paymentMethod === 'NatCash') {
@@ -979,7 +895,7 @@ window.submitOrder = async function() {
 
     if (btn) {
       btn.disabled = false;
-      btn.innerText = "Valider la commande ✅";
+      btn.innerText = originalButtonText || btn.innerText;
     }
 
     // Afiche fakti apre komand
@@ -991,12 +907,10 @@ window.submitOrder = async function() {
     const fallbackBtn = document.getElementById('submitOrderBtn') || document.getElementById('btn-pay');
     if (fallbackBtn) {
       fallbackBtn.disabled = false;
-      fallbackBtn.innerText = "Valider la commande ✅";
+      fallbackBtn.innerText = originalButtonText || fallbackBtn.innerText;
     }
   }
 }
-window.contactWhatsApp = contactWhatsApp;
-
 // Fonksyon pou afiche fakti
 window.showInvoice = function(receiptData, totalAmount) {
   const invoiceContainer = document.getElementById('invoice-template');

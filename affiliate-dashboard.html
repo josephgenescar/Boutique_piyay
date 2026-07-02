@@ -20,30 +20,183 @@ description: Votre espace affilié — clics, ventes et paiements
 
   const sup = window.supabase.createClient(AFFILIATE_SUP_URL, AFFILIATE_SUP_KEY);
 
+  let referralLinkText = null;
+
   async function loadAffiliateDashboard() {
+    const container = document.getElementById('affiliate-content');
     try {
       const { data: { session } } = await sup.auth.getSession();
       if (!session) {
-        // Redirect to login with redirect back
         window.location.href = '/login.html?redirect=/affiliate-dashboard.html';
         return;
       }
 
       const userId = session.user.id;
-      const { data: stats } = await sup.from('affiliate_stats').select('*').eq('affiliate_id', userId).maybeSingle();
+      const [{ data: affiliate }, { data: stats }, { data: transactions }, { data: withdrawals }] = await Promise.all([
+        sup.from('affiliates').select('*').eq('user_id', userId).maybeSingle(),
+        sup.from('affiliate_stats').select('*').eq('affiliate_id', userId).maybeSingle(),
+        sup.from('affiliate_transactions').select('*').eq('affiliate_id', userId).order('created_at', { ascending: false }).limit(10),
+        sup.from('affiliate_withdrawals').select('*').eq('affiliate_id', userId).order('created_at', { ascending: false }).limit(10)
+      ]);
 
-      const container = document.getElementById('affiliate-content');
+      if (!affiliate) {
+        container.innerHTML = `
+          <div style="padding:24px; background:#fff7f6; border-radius:18px; border:1px solid #fdecea; color:#991b1b;">
+            <h2 style="margin-top:0;">Aksè afilye pa disponib</h2>
+            <p>Ou pa gen okenn kont afilye konekte. Tanpri kreye yon kont afilye sou <a href="/signup.html?role=affiliate&redirect=/affiliate-dashboard.html">signup afilye</a> oswa kontakte sipò.</p>
+          </div>
+        `;
+        return;
+      }
+
+      referralLinkText = affiliate.referral_code;
+      const referralLink = `${window.location.origin}/signup.html?ref=${encodeURIComponent(referralLinkText)}`;
+      const totalSales = stats?.sales || 0;
+      const totalCommission = stats?.total_commission || 0;
+      const balance = stats?.balance || 0;
+      const pendingWithdrawal = stats?.pending_withdrawal || 0;
+      const pendingCommission = stats?.pending_commission || 0;
+
       container.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-          <div style="background:#fff7f6;padding:18px;border-radius:12px;border:1px solid #ffe4e1;"><strong>${stats?.clicks||0}</strong><div>Clics</div></div>
-          <div style="background:#fff;padding:18px;border-radius:12px;border:1px solid #f1f5f9;"><strong>${stats?.sales||0}</strong><div>Ventes</div></div>
-          <div style="background:#f8fff7;padding:18px;border-radius:12px;border:1px solid #e6f6ec;"><strong>${stats?.pending_commission||0} HTG</strong><div>En attente</div></div>
+        <div style="display:grid;grid-template-columns:1fr;gap:20px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+            <div style="padding:20px;border-radius:20px;border:1px solid #e5e7eb;background:#ffffff;"><div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:10px;">Ventes</div><div style="font-size:32px;font-weight:900;color:#111827;">${totalSales}</div></div>
+            <div style="padding:20px;border-radius:20px;border:1px solid #e5e7eb;background:#ffffff;"><div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:10px;">Komisyon Total</div><div style="font-size:32px;font-weight:900;color:#111827;">${formatCurrency(totalCommission)}</div></div>
+            <div style="padding:20px;border-radius:20px;border:1px solid #e5e7eb;background:#ffffff;"><div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:10px;">Balans</div><div style="font-size:32px;font-weight:900;color:#111827;">${formatCurrency(balance)}</div></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+            <div style="padding:20px;border-radius:20px;background:#eff6ff;border:1px solid #dbeafe;">
+              <div style="font-weight:700;margin-bottom:10px;">Lyen afilye ou</div>
+              <div style="word-break:break-all;color:#1d4ed8;margin-bottom:16px;">${referralLink}</div>
+              <button onclick="copyReferralLink()" style="border:none;background:#2563eb;color:white;padding:12px 18px;border-radius:14px;cursor:pointer;">Kopi lyen</button>
+            </div>
+            <div style="padding:20px;border-radius:20px;background:#f7f6ff;border:1px solid #e0e7ff;">
+              <div style="font-weight:700;margin-bottom:10px;">En attente</div>
+              <div style="font-size:28px;font-weight:900;color:#1f2937;">${formatCurrency(pendingCommission)}</div>
+              <div style="color:#475569;margin-top:10px;">Komisyon ke ou poko resevwa.</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="padding:24px;background:#ffffff;border-radius:24px;border:1px solid #e5e7eb;">
+              <h2 style="margin-top:0;font-size:20px;">Mande yon retrè</h2>
+              <form id="withdrawalForm">
+                <div style="display:grid;gap:14px;margin-top:14px;">
+                  <label style="font-weight:700;color:#334155;">Montan (HTG)</label>
+                  <input type="number" id="withdrawalAmount" min="100" step="10" value="${Math.min(balance, 100)}" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:14px;">
+                  <label style="font-weight:700;color:#334155;">Metòd</label>
+                  <select id="withdrawalMethod" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:14px;">
+                    <option value="MonCash">MonCash</option>
+                    <option value="NatCash">NatCash</option>
+                  </select>
+                  <label style="font-weight:700;color:#334155;">Nimewo MonCash / NatCash</label>
+                  <input type="text" id="withdrawalNumber" placeholder="509XXXXXXXX" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:14px;">
+                  <button type="submit" style="border:none;background:#ef4444;color:white;padding:14px 18px;border-radius:14px;cursor:pointer;font-weight:700;">Mande Retrè</button>
+                  <div id="withdrawalMessage" style="font-size:14px;color:#475569;min-height:20px;"></div>
+                </div>
+              </form>
+            </div>
+
+            <div style="padding:24px;background:#ffffff;border-radius:24px;border:1px solid #e5e7eb;">
+              <h2 style="margin-top:0;font-size:20px;">Detay retrè</h2>
+              <div style="display:grid;gap:10px;margin-top:14px;">
+                <div><strong>Pandye retrè:</strong> ${formatCurrency(pendingWithdrawal)}</div>
+                <div><strong>Balans total:</strong> ${formatCurrency(balance)}</div>
+                <div><strong>Kòd referans:</strong> ${affiliate.referral_code}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="padding:24px;background:#ffffff;border-radius:24px;border:1px solid #e5e7eb;">
+              <h2 style="margin-top:0;font-size:20px;">Dernye komisyon</h2>
+              <div id="transactionsList">${renderTransactions(transactions)}</div>
+            </div>
+            <div style="padding:24px;background:#ffffff;border-radius:24px;border:1px solid #e5e7eb;">
+              <h2 style="margin-top:0;font-size:20px;">Demand retrè resan</h2>
+              <div id="withdrawalsList">${renderWithdrawals(withdrawals)}</div>
+            </div>
+          </div>
         </div>
       `;
+
+      document.getElementById('withdrawalForm')?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        await submitWithdrawal(affiliate.id);
+      });
     } catch (e) {
-      document.getElementById('affiliate-content').innerText = 'Erreur lors du chargement du tableau de bord.';
+      container.innerHTML = '<div style="padding:24px;background:#fee2e2;border-radius:18px;color:#991b1b;">Erreur lors du chargement du tableau de bord. Tanpri rafrechi paj la.</div>';
       console.error(e);
     }
+  }
+
+  function renderTransactions(transactions = []) {
+    if (!transactions || transactions.length === 0) {
+      return '<div style="color:#64748b;">Pa gen tranzaksyon pou kounye a.</div>';
+    }
+    return `<div style="display:grid;gap:12px;">${transactions.map(tx => `
+      <div style="padding:14px;border-radius:16px;border:1px solid #e5e7eb;background:#f8fafc;">
+        <div style="font-weight:700;color:#111827;">${formatCurrency(tx.amount)}</div>
+        <div style="font-size:13px;color:#475569;">${tx.type || 'Komisyon'} — ${new Date(tx.created_at).toLocaleDateString('fr-FR')}</div>
+        <div style="margin-top:6px;color:#475569;">${tx.description || 'Komisyon pou vant'}</div>
+      </div>`).join('')}</div>`;
+  }
+
+  function renderWithdrawals(withdrawals = []) {
+    if (!withdrawals || withdrawals.length === 0) {
+      return '<div style="color:#64748b;">Pa gen demann retrè pou kounye a.</div>';
+    }
+    return `<div style="display:grid;gap:12px;">${withdrawals.map(w => `
+      <div style="padding:14px;border-radius:16px;border:1px solid #e5e7eb;background:#f8fafc;">
+        <div style="font-weight:700;color:#111827;">${formatCurrency(w.amount)} — ${w.method || '—'}</div>
+        <div style="font-size:13px;color:#475569;">${new Date(w.created_at).toLocaleDateString('fr-FR')} — ${w.status}</div>
+        <div style="margin-top:6px;color:#475569;">${w.number || 'Nimewo pa disponib'}</div>
+      </div>`).join('')}</div>`;
+  }
+
+  async function submitWithdrawal(affiliateId) {
+    const amount = parseFloat(document.getElementById('withdrawalAmount')?.value || 0);
+    const method = document.getElementById('withdrawalMethod')?.value;
+    const number = document.getElementById('withdrawalNumber')?.value.trim();
+    const message = document.getElementById('withdrawalMessage');
+
+    if (!amount || amount <= 0 || !number) {
+      message.textContent = 'Tanpri antre yon montan ak yon nimewo valab.';
+      return;
+    }
+
+    try {
+      const { error } = await sup.from('affiliate_withdrawals').insert([{
+        affiliate_id: affiliateId,
+        amount,
+        method,
+        number,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }]);
+
+      if (error) throw error;
+      message.textContent = 'Demann retrè anrejistre. Nou ap kontakte w byento.';
+      loadAffiliateDashboard();
+    } catch (err) {
+      console.error(err);
+      message.textContent = 'Erè pandan demann retrè. Tanpri eseye ankò.';
+    }
+  }
+
+  function copyReferralLink() {
+    const referralLink = `${window.location.origin}/signup.html?ref=${encodeURIComponent(referralLinkText || '')}`;
+    navigator.clipboard.writeText(referralLink).then(() => {
+      alert('Lyen afilye kopye!');
+    }).catch(() => {
+      alert('Pa kapab kopye lyen la. Tanpri kopye manyèlman.');
+    });
+  }
+
+  function formatCurrency(value) {
+    return Number(value || 0).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' HTG';
   }
 
   document.addEventListener('DOMContentLoaded', loadAffiliateDashboard);

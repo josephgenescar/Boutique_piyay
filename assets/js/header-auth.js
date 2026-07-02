@@ -65,6 +65,8 @@ async function updateHeaderAuth() {
         authLinks.style.display = 'flex';
         userInfo.style.display = 'none';
         navSellLink.style.display = 'none';
+        const menuSellLink = document.getElementById('menu-sell-link');
+        if (menuSellLink) menuSellLink.style.display = 'none';
     }
 }
 

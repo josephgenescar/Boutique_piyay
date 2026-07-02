@@ -218,48 +218,11 @@ description: Devenez affilié Boutique Piyay et gagnez des commissions rapides p
       <p class="form-note"><span data-i18n="pages.affiliate.form_note_prefix">Si vous avez déjà un compte, </span><a href="/login.html" style="color: var(--primary); text-decoration: underline;" data-i18n="pages.affiliate.form_login_link">connectez-vous ici</a>.</p>
     </div>
 
-    <form id="signup-form" class="affiliate-form" name="affiliate-program" method="POST" action="/affiliate-success.html" data-netlify="true" netlify-honeypot="bot-field">
-      <input type="hidden" name="form-name" value="affiliate-program">
-      <p class="hidden"><label>Don’t fill this out if you're human: <input name="bot-field"></label></p>
-
-      <div class="form-field">
-        <label class="form-label" for="fullName" data-i18n="pages.affiliate.form_label_fullname">Nom complet</label>
-        <input id="fullName" name="fullName" class="form-input" type="text" required data-i18n-placeholder="pages.affiliate.form_placeholder_fullname" placeholder="Jean Dupont">
+<div class="affiliate-form" style="padding: 32px; border: 1px solid #f1f5f9; border-radius: 28px; background: #ffffff; box-shadow: var(--shadow);">
+        <p class="section-subtitle" data-i18n="pages.affiliate.form_signup_cta" style="margin-bottom: 24px;">Pou vin affilié, tanpri kreye kont ou sou paj signup la.</p>
+        <button type="button" class="btn-primary" onclick="window.location.href='/signup.html?role=affiliate&redirect=/affiliate-dashboard.html'" style="display:inline-flex; text-decoration:none;" data-i18n="pages.affiliate.form_signup_action">S'inscrire en tant qu'affilié</button>
       </div>
-      <div class="form-field">
-        <label class="form-label" for="phone" data-i18n="pages.affiliate.form_label_phone">N° WhatsApp</label>
-        <input id="phone" name="phone" class="form-input" type="tel" required data-i18n-placeholder="pages.affiliate.form_placeholder_phone" placeholder="+509 4886-8964">
-      </div>
-      <div class="form-field">
-        <label class="form-label" for="email" data-i18n="pages.affiliate.form_label_email">Email</label>
-        <input id="email" name="email" class="form-input" type="email" required data-i18n-placeholder="pages.affiliate.form_placeholder_email" placeholder="vous@exemple.com">
-      </div>
-      <div class="form-field">
-        <label class="form-label" for="paymentMethod" data-i18n="pages.affiliate.form_label_payment_method">Moyen de paiement préféré</label>
-        <select id="paymentMethod" name="paymentMethod" class="form-select" required>
-          <option value="" disabled selected data-i18n="pages.affiliate.form_payment_placeholder">Choisissez une option</option>
-          <option value="MonCash" data-i18n="pages.affiliate.form_option_moncash">MonCash</option>
-          <option value="NatCash" data-i18n="pages.affiliate.form_option_natcash">NatCash</option>
-        </select>
-      </div>
-      <div class="form-field">
-        <label class="form-label" for="accountNumber" data-i18n="pages.affiliate.form_label_account_number">N° de compte MonCash / NatCash</label>
-        <input id="accountNumber" name="accountNumber" class="form-input" type="text" required data-i18n-placeholder="pages.affiliate.form_placeholder_account_number" placeholder="4886-8964">
-      </div>
-      <div class="form-field">
-        <label class="form-label" for="howHeard" data-i18n="pages.affiliate.form_label_how_heard">Comment avez-vous connu Boutique Piyay ?</label>
-        <select id="howHeard" name="howHeard" class="form-select" required>
-          <option value="" disabled selected data-i18n="pages.affiliate.form_how_placeholder">Sélectionnez une option</option>
-          <option value="Facebook" data-i18n="pages.affiliate.form_option_facebook">Facebook</option>
-          <option value="Instagram" data-i18n="pages.affiliate.form_option_instagram">Instagram</option>
-          <option value="Friend" data-i18n="pages.affiliate.form_option_friend">Ami</option>
-          <option value="Other" data-i18n="pages.affiliate.form_option_other">Autre</option>
-        </select>
-      </div>
-      <label class="checkbox-field"><input type="checkbox" id="termsCheckbox" name="terms" required><span class="checkbox-text"><span data-i18n="pages.affiliate.form_terms_prefix">J'accepte </span><a href="/regleman.html" style="color: var(--primary); text-decoration: underline;" data-i18n="pages.affiliate.form_terms_link">les conditions d'affiliation</a>.</span></label>
-      <button type="submit" class="btn-submit" data-i18n="pages.affiliate.form_submit">Envoyer ma demande</button>
-    </form>
-  </section>
+    </section>
 
   <section class="section dashboard-preview" id="apercu-dashboard">
     <div class="section-label" data-i18n="pages.affiliate.preview_label">Aperçu</div>
