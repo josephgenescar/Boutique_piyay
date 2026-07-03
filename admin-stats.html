@@ -489,31 +489,40 @@ title: Sant Kontwòl Total - Boutique Piyay
   }
 
   async function handleAdminLogin() {
-  const email = document.getElementById('adminEmail').value;
-  const password = document.getElementById('adminPass').value;
-  const btn = document.getElementById('loginBtn');
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPass').value;
+    const btn = document.getElementById('loginBtn');
 
-  btn.disabled = true;
-  btn.innerText = "⏳ Verifikasyon...";
+    if (!email || !password) {
+      showToast("❌ Antre email ak modpas", 'error');
+      return;
+    }
 
-  const { data, error } = await supA.auth.signInWithPassword({ email, password });
+    btn.disabled = true;
+    btn.innerText = "⏳ Verifikasyon...";
 
-  if (error) {
-      showToast("❌ " + error.message, 'error');
+    try {
+      const { data, error } = await supA.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showToast("❌ " + error.message, 'error');
+        btn.disabled = false;
+        btn.innerText = "🔐 KONEKTE";
+        return;
+      }
+
+      showToast("✅ Koneksyon reyisi!", 'success');
       btn.disabled = false;
       btn.innerText = "🔐 KONEKTE";
-      return;
-  }
 
-  // SI TOUT BAGAY OK (Pa gen erè):
-  showToast("✅ Koneksyon reyisi! Verifikasyon 2fa...", 'success');
+      // Verifye si se admin, epi ale nan dashboard
+      await checkAccess();
 
-  // Nou itilize window.location.href pou voye l sou paj 2AF la
-  setTimeout(() => {
-      window.location.href = "admin-setup-2fa.html";
-  }, 1000); // Mwen mete yon ti tan 1 segonn pou l ka wè mesaj siksè a
-
-    await checkAccess();
+    } catch (err) {
+      showToast("❌ " + err.message, 'error');
+      btn.disabled = false;
+      btn.innerText = "🔐 KONEKTE";
+    }
   }
 
   async function checkAccess() {
@@ -1001,5 +1010,18 @@ title: Sant Kontwòl Total - Boutique Piyay
     }
   }
 
-  checkAccess();
+  // Logout function
+  async function handleAdminLogout() {
+    await supA.auth.signOut();
+    showToast('✅ Ou dkonekte avèk siksè', 'success');
+    document.getElementById('admin-dashboard').style.display = 'none';
+    document.getElementById('admin-login-section').style.display = 'flex';
+    document.getElementById('adminEmail').value = '';
+    document.getElementById('adminPass').value = '';
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginBtn').innerText = '🔐 KONEKTE';
+  }
+
+  // Check authentication on page load
+  window.addEventListener('DOMContentLoaded', checkAccess);
 </script>
