@@ -89,9 +89,15 @@ title: Finaliser la Commande - Boutique Piyay
                 </select>
               </div>
             </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label data-i18n="pages.checkout.label_address">Adres Livraison *</label>
+                <input type="text" id="customer-address" required data-i18n-placeholder="pages.checkout.placeholder_address" placeholder="Eg: Rèn Meya Nò, Kay nimewo 45">
+              </div>
+            </div>
           </div>
 
-          <div class="form-section">
+          <div class="form-section" id="paymentSection" style="display: none;">
             <h2 data-i18n="pages.checkout.payment_title">💳 Choisissez kijan w ap peye</h2>
             <div class="payment-methods">
               <label class="payment-option">
@@ -128,9 +134,24 @@ title: Finaliser la Commande - Boutique Piyay
           </div>
 
           <div class="form-actions">
-            <button type="button" class="btn-primary" id="btn-pay" style="width:100%; padding:20px;" data-i18n="pages.checkout.confirm_button">
+            <!-- OTP Section -->
+            <div id="otpSection" style="display:none; background:#fef3c7; padding:18px; border-radius:14px; margin-bottom:16px;">
+              <h3 style="margin-top:0; color:#b45309;">🔐 Konfime Peman w</h3>
+              <p style="color:#666; margin:10px 0;">Kod OTP ou: <strong id="otpCode" style="font-size:24px; color:#ef4444;">------</strong></p>
+              <p style="color:#666; margin:10px 0; font-size:14px;">Voye kod sa a bay vandè a oswa kopil paman ou</p>
+              <button type="button" class="btn-primary" id="btn-confirm-otp" style="margin-top:10px;">✅ Konfime</button>
+            </div>
+
+            <!-- Payment Button (appears only after all fields filled) -->
+            <button type="button" class="btn-primary" id="btn-pay" style="width:100%; padding:20px; display:none;" data-i18n="pages.checkout.confirm_button">
               KONFIME & POURSUIVRE PEMAN →
             </button>
+
+            <!-- Validation Message -->
+            <div id="validationMessage" style="background:#fee2e2; color:#dc2626; padding:14px; border-radius:8px; font-size:14px; display:none; text-align:center;">
+              ⚠️ <span id="validationText">Ranpli tout jaden yo anvan kontinye</span>
+            </div>
+
             <div style="margin-top:18px; color:#64748b; font-size:15px;">
               <strong data-i18n="pages.checkout.guide_title">Gid pou Peman:</strong><br>
               <span data-i18n="pages.checkout.guide_step_1">1. Ranpli enfòmasyon yo.</span><br>
@@ -159,6 +180,7 @@ title: Finaliser la Commande - Boutique Piyay
             <div class="info-row"><span data-i18n="pages.checkout.customer_label_name">Non kliyan</span><strong id="checkoutCustomerName"></strong></div>
             <div class="info-row"><span data-i18n="pages.checkout.customer_label_phone">Telefòn</span><strong id="checkoutCustomerPhone"></strong></div>
             <div class="info-row"><span data-i18n="pages.checkout.customer_label_zone">Zone Livrezon</span><strong id="checkoutCustomerZone"></strong></div>
+            <div class="info-row"><span data-i18n="pages.checkout.customer_label_address">Adres</span><strong id="checkoutCustomerAddress"></strong></div>
           </div>
           <div class="order-card-products" id="checkoutItems"></div>
           <div class="summary-row total">
@@ -182,29 +204,115 @@ function handleCheckoutSubmit(event) {
   }
 }
 
+// Generate 4-digit OTP
+function generateOTP() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+// Check if all required fields are filled
+function validateCheckoutForm() {
+  const name = document.getElementById('customer-name')?.value.trim() || '';
+  const phone = document.getElementById('customer-phone')?.value.trim() || '';
+  const zone = document.getElementById('delivery-zone')?.value || '';
+  const address = document.getElementById('customer-address')?.value.trim() || '';
+  
+  return name && phone && zone && address;
+}
+
+// Show/hide payment section and button
+function updatePaymentVisibility() {
+  const isValid = validateCheckoutForm();
+  const paymentSection = document.getElementById('paymentSection');
+  const payBtn = document.getElementById('btn-pay');
+  const validationMsg = document.getElementById('validationMessage');
+  
+  if (isValid) {
+    if (paymentSection) paymentSection.style.display = 'block';
+    if (payBtn) payBtn.style.display = 'block';
+    if (validationMsg) validationMsg.style.display = 'none';
+  } else {
+    if (paymentSection) paymentSection.style.display = 'none';
+    if (payBtn) payBtn.style.display = 'none';
+    if (validationMsg) validationMsg.style.display = 'block';
+  }
+}
+
+// Handle "KONFIME & POURSUIVRE PEMAN" button click
+function handlePaymentButtonClick() {
+  if (!validateCheckoutForm()) {
+    alert('⚠️ Veuillez remplir tous les champs !');
+    return;
+  }
+  
+  // Generate OTP
+  const otp = generateOTP();
+  document.getElementById('currentOTP', otp);
+  
+  // Store OTP in data attribute for later verification
+  document.getElementById('btn-pay').dataset.otp = otp;
+  
+  // Show OTP section
+  document.getElementById('otpSection').style.display = 'block';
+  document.getElementById('otpCode').textContent = otp;
+  document.getElementById('btn-pay').style.display = 'none';
+  document.getElementById('paymentSection').style.display = 'none';
+  
+  // Scroll to OTP section
+  document.getElementById('otpSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Handle OTP confirmation
+function handleOTPConfirm() {
+  const btn = document.getElementById('btn-confirm-otp');
+  const originalText = btn.innerText;
+  
+  // Simulate OTP verification (in real app, send to backend)
+  btn.disabled = true;
+  btn.innerText = '⏳ Konfime...';
+  
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerText = originalText;
+    
+    // OTP verified - submit the order
+    if (typeof window.submitOrder === 'function') {
+      window.submitOrder();
+    } else {
+      alert('Kòd checkout la pa jwenn. Tanpri rafrechi paj la.');
+    }
+  }, 1500);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadCheckout();
 
-  const fields = ['customer-name', 'customer-phone', 'delivery-zone'];
+  const fields = ['customer-name', 'customer-phone', 'delivery-zone', 'customer-address'];
   fields.forEach((id) => {
     const input = document.getElementById(id);
     if (input) {
-      input.addEventListener('input', renderCheckoutSummary);
-      input.addEventListener('change', renderCheckoutSummary);
+      input.addEventListener('input', () => {
+        renderCheckoutSummary();
+        updatePaymentVisibility();
+      });
+      input.addEventListener('change', () => {
+        renderCheckoutSummary();
+        updatePaymentVisibility();
+      });
     }
   });
 
   const btn = document.getElementById('btn-pay');
   if (btn) {
-    btn.addEventListener('click', (event) => {
-      event.preventDefault();
-      if (typeof window.submitOrder === 'function') {
-        window.submitOrder();
-      } else {
-        alert('Kòd checkout la pa jwenn. Tanpri rafrechi paj la.');
-      }
-    });
+    btn.addEventListener('click', handlePaymentButtonClick);
   }
+  
+  const confirmOtpBtn = document.getElementById('btn-confirm-otp');
+  if (confirmOtpBtn) {
+    confirmOtpBtn.addEventListener('click', handleOTPConfirm);
+  }
+  
+  // Initial visibility check
+  updatePaymentVisibility();
 });
 
 function renderCheckoutSummary() {
@@ -215,6 +323,7 @@ function renderCheckoutSummary() {
   const name = document.getElementById('customer-name')?.value.trim() || '';
   const phone = document.getElementById('customer-phone')?.value.trim() || '';
   const zone = document.getElementById('delivery-zone')?.value || '';
+  const address = document.getElementById('customer-address')?.value.trim() || '';
 
   let total = 0;
   if (cart.length === 0) {
@@ -235,11 +344,12 @@ function renderCheckoutSummary() {
     document.getElementById('checkoutTotal').textContent = total.toLocaleString() + ' HTG';
   }
 
-  if (name || phone || zone) {
+  if (name || phone || zone || address) {
     customerInfo.style.display = 'block';
-    document.getElementById('checkoutCustomerName').textContent = name ? `${checkoutText.customer_label_name || 'Nom client'}: ${name}` : '';
-    document.getElementById('checkoutCustomerPhone').textContent = phone ? `${checkoutText.customer_label_phone || 'Téléphone'}: ${phone}` : '';
-    document.getElementById('checkoutCustomerZone').textContent = zone ? `${checkoutText.customer_label_zone || 'Zone de livraison'}: ${zone}` : '';
+    document.getElementById('checkoutCustomerName').textContent = name || '';
+    document.getElementById('checkoutCustomerPhone').textContent = phone || '';
+    document.getElementById('checkoutCustomerZone').textContent = zone || '';
+    document.getElementById('checkoutCustomerAddress').textContent = address || '';
   } else {
     customerInfo.style.display = 'none';
   }

@@ -62,7 +62,7 @@ async function getCurrentCustomerEmail(sup) {
   }
 }
 
-function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zone, paymentMethod, orderGroupId, affiliateId = null, referralCode = null, affiliateUserId = null) {
+function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zone, paymentMethod, orderGroupId, affiliateId = null, referralCode = null, affiliateUserId = null, customerAddress = '') {
   const grouped = {};
   const affiliateRate = affiliateId ? 0.10 : 0;
   cart.forEach(item => {
@@ -101,6 +101,7 @@ function buildOrderPayload(cart, customerEmail, customerName, customerPhone, zon
     customer_phone: customerPhone,
     customer_email: customerEmail,
     delivery_zone: zone,
+    delivery_address: customerAddress,
     payment_method: paymentMethod,
     order_group_id: orderGroupId,
     order_items: group.items,
@@ -572,6 +573,10 @@ function generateReceipt(data) {
               <span class="info-label">Commande</span>
               <div class="info-value">${serial}</div>
             </div>
+            <div class="info-card" style="grid-column: 1/-1;">
+              <span class="info-label">Adresse Livraison</span>
+              <div class="info-value">${data.address || '—'}</div>
+            </div>
           </div>
           <div class="section-title">Articles commandés</div>
           <table>
@@ -623,22 +628,24 @@ window.submitOrder = async function() {
   const nameInput = document.getElementById('customer-name');
   const phoneInput = document.getElementById('customer-phone');
   const zoneInput = document.getElementById('delivery-zone');
+  const addressInput = document.getElementById('customer-address');
   const paymentRadio = document.querySelector('input[name="payment-method"]:checked') || document.querySelector('input[name="payment_method"]:checked');
   const btn = document.getElementById('btn-pay') || document.getElementById('submitOrderBtn');
 
-  if (!nameInput || !phoneInput || !zoneInput || !paymentRadio) {
+  if (!nameInput || !phoneInput || !zoneInput || !addressInput || !paymentRadio) {
     alert('⚠️ Erreur : le formulaire est introuvable sur la page ou ou poko chwazi metòd peman.'); return;
   }
 
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
   const rawZone = zoneInput.value;
+  const address = addressInput.value.trim();
   const otherZone = document.getElementById('other-zone')?.value.trim() || '';
   const zone = rawZone === 'Lòt Zone' && otherZone ? otherZone : rawZone;
   const paymentMethod = paymentRadio.value;
   const originalButtonText = btn?.innerText;
 
-  if (!name || !phone || !zone) { alert('⚠️ Veuillez remplir tous les champs !'); return; }
+  if (!name || !phone || !zone || !address) { alert('⚠️ Veuillez remplir tous les champs !'); return; }
 
   const cart = getCart();
   if (cart.length === 0) return;
@@ -681,7 +688,8 @@ window.submitOrder = async function() {
       orderGroupId,
       affiliateId,
       referralCode,
-      affiliateUserId
+      affiliateUserId,
+      address
     );
 
     if (sup) {
@@ -769,6 +777,7 @@ window.submitOrder = async function() {
                   <p><strong>Kliyan:</strong> ${name}</p>
                   <p><strong>Telefòn:</strong> ${phone}</p>
                   <p><strong>Zòn:</strong> ${zone}</p>
+                  <p><strong>Adres Livrezon:</strong> ${address}</p>
                   <p><strong>Metòd Peman:</strong> ${paymentMethod}</p>
                   <p><strong>Total pou ou:</strong> ${group.amount.toLocaleString()} HTG</p>
                   <div class="info-box">
@@ -826,6 +835,7 @@ window.submitOrder = async function() {
       name,
       phone,
       zone,
+      address,
       payment: paymentMethod,
       sellerName: cart[0]?.sellerName || 'Boutique Piyay',
       transactionId: orderGroupId

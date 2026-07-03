@@ -972,37 +972,12 @@
             </div>
 
             <!-- Boost Payant -->
-            <div class="boost-opt" id="boost-paid-opt">
-                                <div class="boost-opt-title">💳 Boost payant (100 HTG)</div>
-                                <div class="boost-opt-sub">Pour booster votre produit, payez manuellement et envoyez la preuve à l’admin.<br><br>
-                                    <b>MonCash:</b> 48868964<br>
-                                    <b>NatCash:</b> 40683108<br>
-                                    <span style="color:#64748b;font-size:13px;">Après paiement, envoyez la preuve et entrez le code reçu pour activer le boost.</span><br><br>
-                                    <i>Opsyon otomatik ap vini byento.</i>
-                                </div>
-                                <button onclick="openPaidBoostModal()" style="margin-top:10px;padding:10px 18px;border-radius:8px;background:#ff4747;color:white;font-weight:800;border:none;">J’ai payé, envoyer preuve & code</button>
-                                <span class="boost-opt-tag">MANUEL</span>
-            <!-- MODAL: Peman Manyèl Boost -->
-            <div id="paid-boost-modal" class="modal-overlay" style="display:none;z-index:10000;">
-                <div class="modal-card">
-                    <div class="modal-title">📤 Voye Prèv & Antre Kòd</div>
-                    <div class="modal-sub">1. Upload prèv peman an oswa voye sou WhatsApp admin.<br>2. Antre code ou resevwa a pou aktive boost la.</div>
-                    <input type="file" id="boost-proof" accept="image/*" style="margin-bottom:12px;">
-                    <button onclick="sendProofWhatsApp()" style="margin-bottom:16px;background:#25D366;color:white;padding:10px 18px;border-radius:8px;font-weight:800;border:none;">Envoyer la preuve sur WhatsApp Admin</button>
-                    <input type="text" id="boost-code" placeholder="Antre code ou resevwa a" style="padding:10px;width:90%;border-radius:8px;border:1px solid #eee;margin-bottom:12px;">
-                    <button onclick="activateBoostWithCode()" style="background:#ff4747;color:white;padding:10px 18px;border-radius:8px;font-weight:800;border:none;">Aktive Boost</button>
-                    <button onclick="closePaidBoostModal()" style="margin-top:18px;background:none;border:none;color:#64748b;font-weight:700;cursor:pointer;">Annuler</button>
+            <div class="boost-opt" id="boost-paid-opt" onclick="processBoost('paid')">
+                <div class="boost-opt-title">💳 Boost payant (100 HTG)</div>
+                <div class="boost-opt-sub">Peman otomatik ap vini byento. Pou kounye a, pwodwi a pral boosté pou 48h lè ou chwazi opsyon sa a.<br><br>
+                    <span style="color:#64748b;font-size:13px;">API peman an pral entegre pita pou verifye tranzaksyon yo.</span>
                 </div>
-            </div>
-            <!-- ADMIN: Zone pou jenere code boost (vizib sèlman pou admin, mete kòmantè pou devlopman) -->
-            <!--
-            <div style="background:#fffbe6;padding:24px;border-radius:16px;margin:32px 0 0 0;max-width:400px;">
-                <h3 style="color:#ff4747;">Générer un code Boost</h3>
-                <input type="text" id="admin-boost-code" value="" placeholder="Kòd aleatwa" style="padding:10px;width:70%;border-radius:8px;border:1px solid #eee;">
-                <button onclick="document.getElementById('admin-boost-code').value = Math.random().toString(36).substr(2,8).toUpperCase();" style="margin-left:10px;padding:10px 18px;border-radius:8px;background:#ff4747;color:white;font-weight:800;border:none;">Générer</button>
-                <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye code la epi voye bay machann lan apre verifikasyon peman.</div>
-            </div>
-            -->
+                <span class="boost-opt-tag">OTOMATIK</span>
             </div>
             <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
                 <div class="boost-opt-title">🏆 Nivo Rekonpans</div>
@@ -1024,16 +999,45 @@
 </nav>
 
 <script>
-    // Modal pou peman manyèl boost
-    function openPaidBoostModal() {
-        document.getElementById('paid-boost-modal').style.display = 'flex';
-    }
-    function closePaidBoostModal() {
-        document.getElementById('paid-boost-modal').style.display = 'none';
-    }
     async function processBoost(type) {
         if (type === 'paid') {
-            openPaidBoostModal();
+            if (!selectedProdId) {
+                alert('Opsyon boost la pa chwazi pwodwi a. Rekòmanse paj la epi eseye ankò.');
+                return;
+            }
+
+            const nowISOString = new Date().toISOString();
+            const { data: activeBoosts, error: activeError } = await supD.from('user_products')
+                .select('id')
+                .eq('seller_id', currentUser.id)
+                .eq('is_boosted', true)
+                .gt('boost_expires_at', nowISOString);
+
+            if (activeError) {
+                console.error('Erè pandan rechèch boost aktif yo:', activeError);
+                alert('❌ Erè rezo. Tanpri eseye ankò.');
+                return;
+            }
+
+            if (activeBoosts && activeBoosts.length >= 3) {
+                alert('❌ Ou ka sèlman gen 3 pwodwi boosté an menm tan.');
+                return;
+            }
+
+            const boostExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+            const { error } = await supD.from('user_products')
+                .update({ is_boosted: true, boost_expires_at: boostExpiresAt })
+                .eq('id', selectedProdId);
+
+            if (error) {
+                console.error('Erè lè aktive boost payant:', error);
+                alert('❌ Erè pandan activation boost la. Tanpri eseye ankò.');
+                return;
+            }
+
+            closeBoostModal();
+            loadAll();
+            alert('✅ Pwodwi a booste otomatikman pou 48h. API peman ap entegre byento.');
             return;
         }
         if (type === 'points') {
@@ -1063,120 +1067,6 @@
             return;
         }
         openBoostModal(id);
-    }
-    function sendProofWhatsApp() {
-        // Ouvri WhatsApp admin ak mesaj default
-        const adminPhone = '50948868964';
-        const msg = 'Bonjour admin, men prèv peman boost mwen. Tanpri verifye epi voye code la ban mwen.';
-        window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`,'_blank');
-    }
-    async function activateBoostWithCode() {
-        console.log('🚀 activateBoostWithCode appelé');
-        const code = document.getElementById('boost-code').value.trim().toUpperCase();
-        console.log('📝 Code:', code);
-        console.log('🆔 selectedProdId:', selectedProdId);
-
-        if (!selectedProdId) { alert('Opsyon boost la pa chwazi pwodwi a. Rekòmanse paj la epi eseye ankò.'); return; }
-        if (!code) { alert('Tanpri antre code ou resevwa a.'); return; }
-        if (code.length < 6) { alert('Code invalide. Contactez l’administrateur.'); return; }
-
-        // Vérifier si le code existe et appartient au vendeur
-        let { data: boostCode, error: codeError } = await supD
-            .from('boost_codes')
-            .select('*')
-            .eq('code', code)
-            .eq('seller_id', currentUser.id)
-            .maybeSingle();
-
-        if (codeError) {
-            console.error('Boost code query failed:', codeError);
-            alert('❌ Erè rezo pandan verifye code boost la. Tanpri eseye ankò.');
-            return;
-        }
-
-        if (!boostCode) {
-            // Fallback: chercher le code global si le seller_id ne correspond pas encore
-            const { data: fallbackCode, error: fallbackError } = await supD
-                .from('boost_codes')
-                .select('*')
-                .eq('code', code)
-                .maybeSingle();
-
-            if (fallbackError) {
-                console.error('Boost fallback query failed:', fallbackError);
-                alert('❌ Erè rezo pandan verifye code boost la. Tanpri eseye ankò.');
-                return;
-            }
-
-            if (!fallbackCode) {
-                alert('Code invalide ou pa jwenn. Tanpri verifye code ou a oswa kontakte admin.');
-                return;
-            }
-
-            boostCode = fallbackCode;
-        }
-
-        if (boostCode.status !== 'active') {
-            alert('Code sa a deja ekspire oswa itilize. Tanpri jwenn yon nouvo code.');
-            return;
-        }
-
-        if (boostCode.remaining_uses <= 0) {
-            alert('Code sa a deja itilize 3 fwa. Tanpri jwenn yon nouvo code.');
-            return;
-        }
-
-        const nowISOString = new Date().toISOString();
-        const { data: activeBoosts } = await supD.from('user_products')
-            .select('id')
-            .eq('seller_id', currentUser.id)
-            .eq('is_boosted', true)
-            .gt('boost_expires_at', nowISOString);
-
-        if (activeBoosts && activeBoosts.length >= 3) {
-            alert('❌ Ou ka sèlman gen 3 pwodwi boosté an menm tan.');
-            return;
-        }
-
-        const boostData = {
-            is_boosted: true,
-            boost_expires_at: new Date(Date.now() + 48*60*60*1000).toISOString(),
-            boost_code_id: boostCode.id
-        };
-        console.log('📦 Données boost:', boostData);
-
-        try {
-            // Décrémenter les utilisations restantes du code
-            const { error: updateCodeError } = await supD
-                .from('boost_codes')
-                .update({ 
-                    remaining_uses: boostCode.remaining_uses - 1,
-                    status: boostCode.remaining_uses - 1 <= 0 ? 'used' : 'active',
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', boostCode.id);
-
-            if (updateCodeError) {
-                console.error('❌ Erè maj kòd boost:', updateCodeError);
-                alert('❌ Erè lors de la mise à jour du code: ' + updateCodeError.message);
-                return;
-            }
-
-            // Mettre à jour le produit avec le boost
-            const { error } = await supD.from('user_products').update(boostData).eq('id', selectedProdId);
-            if (error) {
-                console.error('❌ Erè Supabase:', error);
-                alert('❌ Erè lors de l\'activation: ' + error.message);
-                return;
-            }
-            
-            const remaining = boostCode.remaining_uses - 1;
-            alert(`✅ Boost activé ! Code validé. Il reste ${remaining} utilisation(s) pour ce code.`);
-            closePaidBoostModal(); closeBoostModal(); loadAll();
-        } catch (err) {
-            console.error('❌ Erè catch:', err);
-            alert('❌ Erè: ' + err.message);
-        }
     }
     const supD = window.supabase.createClient(
         "https://letyferfjpxmstohvgcj.supabase.co",

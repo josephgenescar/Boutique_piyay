@@ -36,13 +36,11 @@
 
                 <input type="text" id="other-zone" placeholder="Précisez votre zone ici..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
 
+                <input type="text" id="customer-address" placeholder="Adrese Livrezon (Rèn, nimewo kay, etc.) *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
+
                 <!-- METÒD PEMAN AVEC RADIO BUTTONS -->
                 <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Mode de paiement</label>
                 <div style="margin-bottom: 15px;">
-                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                        <input type="radio" name="payment-method" value="manual" checked style="margin-right: 10px;">
-                        <span>💵 Paiement manuel (contactez le vendeur)</span>
-                    </label>
                     <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
                         <input type="radio" name="payment-method" value="MonCash" style="margin-right: 10px;">
                         <span>📲 Payer avec MonCash</span>
@@ -52,24 +50,24 @@
                         <span>📲 Payer avec NatCash</span>
                     </label>
                     <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                        <input type="radio" name="payment-method" value="Cash" style="margin-right: 10px;">
+                        <input type="radio" name="payment-method" value="Cash" checked style="margin-right: 10px;">
                         <span>💵 Cash à la livraison</span>
                     </label>
                 </div>
-                <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
-                    <b>Gid:</b> Choisissez MonCash, NatCash ou Cash selon votre mode de paiement. La commande sera enregistrée et le vendeur recevra les détails.
+
+                <!-- Boutons de paiement (affichage conditionnel) -->
+                <div id="paymentButtonsSection" style="margin-bottom: 15px; display: none; padding: 15px; background: #fff8f4; border-radius: 8px; border: 1px solid #fde2cd;">
+                    <p style="margin: 0 0 12px; font-size: 12px; font-weight: 700; color: #b45309;">Complétez le paiement:</p>
+                    <button type="button" id="moncashPayBtn" style="width: 100%; padding: 12px; margin-bottom: 8px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none;">
+                        ⚡ Payer avec MonCash
+                    </button>
+                    <button type="button" id="natcashPayBtn" style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none;">
+                        🔵 Payer avec NatCash
+                    </button>
                 </div>
 
-                <!-- ZÒN POU PREV PEMAN -->
-                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Preuve de paiement</label>
-                <div style="margin-bottom: 15px;">
-                    <button type="button" onclick="document.getElementById('payment-proof').click()" style="width: 100%; padding: 12px; border: 2px dashed #ddd; border-radius: 8px; background: #f9fafb; color: #64748b; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        📎 Choisir une preuve
-                    </button>
-                    <input type="file" id="payment-proof" accept="image/*" style="display: none;">
-                    <div id="proof-preview" style="margin-top: 10px; display: none;">
-                        <img id="proof-image" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
-                    </div>
+                <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
+                    <b>Gid:</b> MonCash ak NatCash ap redireksyone w pou konplete peman. Cash se lè w resevwa pwodwi a.
                 </div>
 
                 <button id="submitOrderBtn" onclick="submitOrder()" style="width: 100%; padding: 18px; background: #1f2937; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 5px 20px rgba(31, 41, 55, 0.25); display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -87,18 +85,34 @@
         else { otherInput.style.display = 'none'; }
     });
 
-    // Preview de la preuve de paiement
-    document.getElementById('payment-proof')?.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('proof-image').src = e.target.result;
-                document.getElementById('proof-preview').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+    // Afficher/masquer les boutons de paiement MonCash et NatCash
+    const paymentMethodRadios = document.querySelectorAll('input[name="payment-method"]');
+    const paymentButtonsSection = document.getElementById('paymentButtonsSection');
+    const moncashPayBtn = document.getElementById('moncashPayBtn');
+    const natcashPayBtn = document.getElementById('natcashPayBtn');
+
+    function updatePaymentButtons() {
+        const selectedMethod = document.querySelector('input[name="payment-method"]:checked')?.value;
+        
+        if (selectedMethod === 'MonCash') {
+            paymentButtonsSection.style.display = 'block';
+            moncashPayBtn.style.display = 'block';
+            natcashPayBtn.style.display = 'none';
+        } else if (selectedMethod === 'NatCash') {
+            paymentButtonsSection.style.display = 'block';
+            moncashPayBtn.style.display = 'none';
+            natcashPayBtn.style.display = 'block';
+        } else {
+            paymentButtonsSection.style.display = 'none';
         }
+    }
+
+    paymentMethodRadios.forEach(radio => {
+        radio.addEventListener('change', updatePaymentButtons);
     });
+
+    // Initialiser au chargement
+    updatePaymentButtons();
 </script>
 
 <style>
