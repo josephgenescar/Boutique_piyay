@@ -981,17 +981,33 @@ title: Sant Kontwòl Total - Boutique Piyay
     } catch (e) {
       console.warn('Unable to fetch shop name for delete confirmation.', e);
     }
-    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
+    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase tout komande nan\n- Efase tout klé referral\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
       return;
     }
 
     try {
+      console.log('Deleting referral keys for shop:', shopId);
+      const { error: refError } = await supA.from('referral_keys').delete().eq('used_by', shopId);
+      if (refError) console.warn('Warning deleting referral keys:', refError);
+
+      console.log('Deleting shop affiliates for shop:', shopId);
+      const { error: affError } = await supA.from('affiliates').delete().eq('user_id', shopId);
+      if (affError) console.warn('Warning deleting affiliates:', affError);
+
+      console.log('Deleting shop orders for shop:', shopId);
+      const { error: ordError } = await supA.from('orders').delete().eq('seller_id', shopId);
+      if (ordError) console.warn('Warning deleting orders:', ordError);
+
       console.log('Deleting shop products for shop:', shopId);
       const { error: prodError } = await supA.from('user_products').delete().eq('seller_id', shopId);
       if (prodError) {
         console.error('Error deleting shop products:', prodError);
         throw new Error(prodError.message || 'Failed to delete shop products');
       }
+
+      console.log('Deleting admin notifications for shop:', shopId);
+      const { error: notifError } = await supA.from('admin_notifications').delete().eq('seller_id', shopId);
+      if (notifError) console.warn('Warning deleting notifications:', notifError);
 
       console.log('Deleting shop profile for shop:', shopId);
       const { error: shopError } = await supA.from('profiles').delete().eq('id', shopId);
@@ -1001,7 +1017,7 @@ title: Sant Kontwòl Total - Boutique Piyay
       }
 
       console.log('Shop deleted successfully');
-      showToast(`✅ Boutik ${shopName} efase!`, 'success');
+      showToast(`✅ Boutik ${shopName} ak tout done li yo efase!`, 'success');
       fetchNewShops();
       loadAdminData();
     } catch (error) {
