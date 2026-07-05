@@ -665,6 +665,13 @@ title: Sant Kontwòl Total - Boutique Piyay
     if (!confirm("Efase pwodwi sa a definitivman?")) return;
 
     try {
+      console.log('Cleaning up orders referencing product:', id);
+      const { error: orderError } = await supA.from('orders').update({ product_id: null }).eq('product_id', id);
+      if (orderError) {
+        console.error('Error clearing order references:', orderError);
+        throw new Error(orderError.message || 'Failed to clear order references');
+      }
+
       console.log('Deleting product:', id);
       const { error } = await supA.from('user_products').delete().eq('id', id);
       if (error) {
