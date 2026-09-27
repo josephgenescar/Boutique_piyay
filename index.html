@@ -1058,110 +1058,93 @@ title: Akèy - Boutique Piyay
       }
       .btn-ad { padding: 10px 14px; font-size: 12px; }
     }
+    .home-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
+      align-items: center;
+      gap: 30px;
+      max-width: 1200px;
+      min-height: 330px;
+      margin: 22px auto 12px;
+      padding: 40px 48px;
+      overflow: hidden;
+      border-radius: 22px;
+      color: #fff;
+      background-color: #123c3a;
+      background-image: linear-gradient(135deg, #102d32 0%, #12514d 63%, #c84c38 100%);
+    }
+    .home-hero-copy { position: relative; z-index: 1; max-width: 690px; }
+    .home-hero h1 { margin: 0; max-width: 17ch; font-size: 42px; line-height: 1.1; font-weight: 900; }
+    .home-hero p { max-width: 600px; margin: 16px 0 24px; color: #e1f4ef; font-size: 16px; line-height: 1.65; }
+    .home-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .home-hero-actions a { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 18px; border-radius: 8px; color: #102d32; background: #fff; text-decoration: none; font-size: 14px; font-weight: 800; }
+    .home-hero-actions a:last-child { color: #fff; background: #e85b43; }
+    .home-hero-art { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 220px; overflow: hidden; pointer-events: none; }
+    .home-hero-art img { display: block; width: min(100%, 320px); height: 180px; object-fit: cover; filter: drop-shadow(0 18px 25px rgba(0,0,0,0.24)); opacity: 1; transition: opacity 0.28s ease; }
+    .home-trust-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; max-width: 1200px; margin: 0 auto; padding: 18px 16px; border-bottom: 1px solid #dce5e2; color: #243b39; }
+    .home-trust-list span { font-size: 13px; font-weight: 750; }
+    .home-trust-list span::before { content: '✓'; margin-right: 7px; color: #16846d; font-weight: 900; }
+    .home-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 1200px; margin: 0 auto 28px; padding: 18px 10px; border-bottom: 1px solid #dce5e2; }
+    .home-stat { padding: 5px 16px; text-align: center; border-right: 1px solid #dce5e2; }
+    .home-stat:last-child { border-right: 0; }
+    .home-stat strong { display: block; color: #123c3a; font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .home-stat span { display: block; margin-top: 4px; color: #536966; font-size: 12px; font-weight: 700; }
+    @media (max-width: 700px) {
+      .home-hero { grid-template-columns: 1fr; gap: 8px; min-height: 0; margin: 14px 12px 10px; padding: 28px 22px; }
+      .home-hero h1 { font-size: 31px; }
+      .home-hero p { font-size: 14px; }
+      .home-hero-art { min-height: 150px; }
+      .home-hero-art img { width: min(100%, 200px); height: 150px; }
+      .home-trust-list { justify-content: flex-start; gap: 10px 16px; }
+      .home-trust-list span { font-size: 12px; }
+      .home-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .home-stat { padding: 12px 8px; }
+      .home-stat:nth-child(2) { border-right: 0; }
+      .home-stat:nth-child(-n+2) { border-bottom: 1px solid #dce5e2; }
+    }
 </style>
+
+<section class="home-hero" aria-labelledby="home-hero-title">
+  <div class="home-hero-copy">
+    <h1 id="home-hero-title" data-i18n="home.title">Achetez et vendez tout ce dont vous avez besoin en Haïti.</h1>
+    <p data-i18n="home.subtitle">Créez votre boutique gratuitement, trouvez des clients et développez votre activité sur Boutique Piyay.</p>
+    <div class="home-hero-actions">
+      <a href="#user-market" data-i18n="home.buy_now">Acheter maintenant</a>
+      <a href="/vendre.html" data-i18n="home.sell_now">Commencer à vendre</a>
+    </div>
+  </div>
+  <div class="home-hero-art">
+    <img id="home-hero-product" src="/assets/images/logo.png" alt="Boutique Piyay">
+  </div>
+</section>
+<div class="home-trust-list" aria-label="Boutique Piyay trust signals">
+  <span data-i18n="home.trust_verified">Vendeurs vérifiés</span>
+  <span data-i18n="home.trust_payments">Paiements sécurisés</span>
+  <span data-i18n="home.trust_support">Assistance WhatsApp</span>
+  <span data-i18n="home.trust_protection">Protection des acheteurs</span>
+  <span data-i18n="home.trust_local">Marketplace haïtienne fiable</span>
+</div>
+<section class="home-stats" aria-label="Marketplace statistics">
+  <div class="home-stat"><strong id="home-stat-sellers" aria-busy="true">—</strong><span data-i18n="home.stats_sellers">Vendeurs actifs</span></div>
+  <div class="home-stat"><strong id="home-stat-products" aria-busy="true">—</strong><span data-i18n="home.stats_products">Produits disponibles</span></div>
+  <div class="home-stat"><strong id="home-stat-orders" aria-busy="true">—</strong><span data-i18n="home.stats_orders">Commandes</span></div>
+  <div class="home-stat"><strong id="home-stat-reviews" aria-busy="true">—</strong><span data-i18n="home.stats_reviews">Avis positifs</span></div>
+</section>
 
 <!-- ══════════════════════════════════════════════
      BWAT PRENSIPAL: PUB SLIDER + VEDÈT
 ══════════════════════════════════════════════ -->
-<div class="main-ads-box">
+<div class="main-ads-box" style="display:none;">
 
   <!-- AD SLIDER — youn pa youn, full width -->
   <div class="ad-slider-container">
     <div class="ad-slider-track" id="adSliderTrack">
-
-      <!-- BANNÈ 1 — KONEKTEM -->
-      <div class="ad-banner ad-green">
-        <div class="ad-scan-line"></div>
-        <div class="ad-inner">
-          <div class="ad-logo-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
-            <svg viewBox="0 0 48 48" fill="none" style="width:34px;height:34px;position:relative;z-index:1;">
-              <circle cx="24" cy="24" r="20" stroke="white" stroke-width="3.5" fill="none"/>
-              <circle cx="24" cy="24" r="5" fill="white"/>
-              <line x1="24" y1="4"  x2="24" y2="19" stroke="white" stroke-width="3" stroke-linecap="round"/>
-              <line x1="24" y1="29" x2="24" y2="44" stroke="white" stroke-width="3" stroke-linecap="round"/>
-              <line x1="4"  y1="24" x2="19" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
-              <line x1="29" y1="24" x2="44" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="ad-logo-texts">
-            <div class="ad-logo-name">Konek<span class="g">tem</span></div>
-            <div class="ad-logo-sub">Caisse intelligente haïtienne</div>
-          </div>
-          <div class="ad-divider"></div>
-          <div class="ad-text-block">
-            <div class="ad-text-label">Patnè Ofisyèl</div>
-            <div class="ad-slide-wrap">
-              <div class="ad-slides-inner">
-                <div class="ad-slide-item">La caisse qui <span class="hl">&nbsp;connecte&nbsp;</span> votre boutique</div>
-                <div class="ad-slide-item">Tout pour <span class="hl">&nbsp;vendre mieux&nbsp;</span> en Haïti</div>
-                <div class="ad-slide-item">Caisse, stock &amp; clients en <span class="hl">&nbsp;1 seule app&nbsp;</span></div>
-                <div class="ad-slide-item">La caisse qui <span class="hl">&nbsp;connecte&nbsp;</span> votre boutique</div>
-              </div>
-            </div>
-          </div>
-          <div class="ad-cta">
-            <a href="https://konektem.netlify.app" target="_blank" class="btn-ad green">Découvrir →</a>
-            <button class="btn-ad-close" onclick="hideAd('konektem')">✕</button>
-          </div>
-          <div class="ad-product-images">
-            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
-            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
-            <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
-          </div>
-        </div>
-      </div>
-
-      <!-- BANNÈ 2 — KAYLAKOU -->
-      <div class="ad-banner ad-blue">
-        <div class="ad-scan-line" style="background:linear-gradient(90deg,transparent,rgba(249,115,22,0.08),transparent);"></div>
-        <div class="ad-inner">
-          <div class="ad-logo-icon" style="background:linear-gradient(135deg,#f97316,#ea580c);">
-            <svg viewBox="0 0 48 48" fill="none" style="width:34px;height:34px;position:relative;z-index:1;">
-              <circle cx="24" cy="8" r="5" fill="white"/>
-              <line x1="24" y1="13" x2="24" y2="18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-              <polyline points="8,28 24,16 40,28" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <rect x="14" y="28" width="20" height="14" rx="1" stroke="white" stroke-width="2.5" fill="none"/>
-              <rect x="21" y="30" width="6"  height="6"  rx="0.5" stroke="white" stroke-width="2" fill="none"/>
-            </svg>
-          </div>
-          <div class="ad-logo-texts">
-            <div class="ad-logo-name"><span style="color:#4ade80;">KAY</span><span style="color:white;">LAKOU</span></div>
-            <div class="ad-logo-sub">Kay, Té, Konfians — Tout Ayiti</div>
-          </div>
-          <div class="ad-divider"></div>
-          <div class="ad-text-block">
-            <div class="ad-text-label" style="background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.3);color:#fb923c;">🏠 Imobilye</div>
-            <div class="ad-slide-wrap">
-              <div class="ad-slides-inner" style="animation-delay:-3s;">
-                <div class="ad-slide-item">Pi gwo <span class="hl">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
-                <div class="ad-slide-item">Kay, Té, <span class="hlo">&nbsp;Konfians&nbsp;</span> — Tout peyi a</div>
-                <div class="ad-slide-item">Solisyon biznis <span class="hl">&nbsp;nimerik&nbsp;</span> pou ou</div>
-                <div class="ad-slide-item">Pi gwo <span class="hl">&nbsp;vitrin imobilye&nbsp;</span> nan Ayiti</div>
-              </div>
-            </div>
-          </div>
-          <div class="ad-cta">
-            <a href="https://kaylakou.netlify.app" target="_blank" class="btn-ad orange">Vizite →</a>
-            <button class="btn-ad-close" onclick="hideAd('kaylakou')">✕</button>
-          </div>
-          <div class="ad-product-images">
-            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
-            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
-            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=100&h=100&fit=crop" alt="Product" class="ad-product-img">
-          </div>
-        </div>
-      </div>
-
       <!-- PWODWI BOOST MACHANN YO -->
       <div id="boosted-ads-container"></div>
 
     </div><!-- fin ad-slider-track -->
 
-    <!-- DOTS -->
-    <div class="ad-dots" id="adDots">
-      <button class="ad-dot active" onclick="adGoTo(0)"></button>
-      <button class="ad-dot"        onclick="adGoTo(1)"></button>
-    </div>
+    <div class="ad-dots" id="adDots"></div>
 
   </div><!-- fin ad-slider-container -->
 
@@ -1271,7 +1254,7 @@ title: Akèy - Boutique Piyay
 
 <script>
   /* ══ AD SLIDER ══ */
-  const adBanners   = ['konektem','kaylakou'];
+  const adBanners   = [];
   const hiddenAds   = new Set();
   let adCurrent     = 0;
   let adAutoplay    = null;
@@ -1309,10 +1292,16 @@ title: Akèy - Boutique Piyay
   }, { passive: true });
   document.addEventListener('DOMContentLoaded', updateAdVisibility);
 
+  function getVisibleAdSlides() {
+    const track = document.getElementById('adSliderTrack');
+    if (!track) return [];
+    return Array.from(track.children).filter(slide => getComputedStyle(slide).display !== 'none');
+  }
+
   function adGoTo(idx) {
     const track = document.getElementById('adSliderTrack');
     if (!track) return;
-    const totalSlides = track.children.length;
+    const totalSlides = getVisibleAdSlides().length;
     if (totalSlides === 0) return;
     adCurrent = (idx + totalSlides) % totalSlides;
     track.style.transform = `translateX(-${adCurrent * 100}%)`;
@@ -1392,6 +1381,45 @@ title: Akèy - Boutique Piyay
     }, 1000);
   }
 
+  let homeHeroSlideTimer = null;
+
+  function startHomeHeroSlideshow(products) {
+    const image = document.getElementById('home-hero-product');
+    const track = image?.parentElement;
+    const slides = (products || []).filter(product => product && product.image_url);
+    if (!image || !track || !slides.length) return;
+
+    let currentIndex = -1;
+    const showNextSlide = () => {
+      currentIndex = (currentIndex + 1) % slides.length;
+      const product = slides[currentIndex];
+      const preload = new Image();
+      preload.onload = () => {
+        image.style.opacity = '0';
+        window.setTimeout(() => {
+          image.alt = product.title || 'Boutique Piyay';
+          image.src = product.image_url;
+          image.style.opacity = '1';
+        }, 180);
+        if (slides.length > 1) homeHeroSlideTimer = window.setTimeout(showNextSlide, 4900);
+      };
+      preload.onerror = () => {
+        image.onerror = () => {
+          image.style.opacity = '0';
+          if (slides.length > 1) {
+            window.clearTimeout(homeHeroSlideTimer);
+            homeHeroSlideTimer = window.setTimeout(showNextSlide, 200);
+          }
+        };
+        if (slides.length > 1) showNextSlide();
+      };
+      preload.src = product.image_url;
+    };
+
+    if (homeHeroSlideTimer) window.clearTimeout(homeHeroSlideTimer);
+    showNextSlide();
+  }
+
   async function loadAllData() {
     if (!supabaseHome) return;
     try {
@@ -1407,10 +1435,21 @@ title: Akèy - Boutique Piyay
       const { data: feedbacks } = await supabaseHome
         .from('feedback')
         .select('product_id, rating');
+      const { count: orderCount } = await supabaseHome
+        .from('orders')
+        .select('id', { count: 'exact', head: true });
 
       allProducts = (prods   || []).filter(p => p.image_url && p.title && p.price);
       allSellers  = (sellers || []).filter(s => s.is_active_seller === true);
-      
+      document.getElementById('home-stat-sellers').textContent = allSellers.length.toLocaleString();
+      document.getElementById('home-stat-sellers').setAttribute('aria-busy', 'false');
+      document.getElementById('home-stat-products').textContent = allProducts.length.toLocaleString();
+      document.getElementById('home-stat-products').setAttribute('aria-busy', 'false');
+      document.getElementById('home-stat-orders').textContent = orderCount === null ? '—' : orderCount.toLocaleString();
+      document.getElementById('home-stat-orders').setAttribute('aria-busy', 'false');
+      const positiveReviews = (feedbacks || []).filter(feedback => Number(feedback.rating) >= 4).length;
+      document.getElementById('home-stat-reviews').textContent = positiveReviews.toLocaleString();
+      document.getElementById('home-stat-reviews').setAttribute('aria-busy', 'false');
       // Kalkile mwayèn rating pou chak pwodwi
       const ratingsMap = {};
       if (feedbacks) {
@@ -1460,6 +1499,10 @@ title: Akèy - Boutique Piyay
         }
         return false;
       });
+      const heroFeaturedProducts = Array.from(new Map(
+        [...activeBoosted, ...flashProds].map(product => [product.id, product])
+      ).values());
+      startHomeHeroSlideshow(heroFeaturedProducts.length ? heroFeaturedProducts : allProducts);
 
       if (flashProds.length > 0) {
         document.getElementById('flash-sale').style.display = 'block';
@@ -1516,6 +1559,7 @@ title: Akèy - Boutique Piyay
   function renderBoostedInBanner(list) {
     console.log('🎯 renderBoostedInBanner apele avek:', list.length, 'pwodwi');
     const container = document.getElementById('boosted-ads-container');
+    const adsBox = document.querySelector('.main-ads-box');
     console.log('📦 Container boosted-ads-container:', container);
     if (!container) {
       console.log('❌ Container boosted-ads-container pa trouve');
@@ -1524,11 +1568,13 @@ title: Akèy - Boutique Piyay
     if (list.length === 0) {
       container.innerHTML = '';
       container.style.display = 'none';
+      if (adsBox) adsBox.style.display = 'none';
       updateAdDots();
       console.log('⚠️ Pa gen pwodwi boost');
       return;
     }
     container.style.display = 'block';
+    if (adsBox) adsBox.style.display = '';
 
     // Prendre tous les produits boostés pour le banner horizontal
     const boostedProducts = list;
@@ -1594,7 +1640,7 @@ title: Akèy - Boutique Piyay
   function updateAdDots() {
     const track = document.getElementById('adSliderTrack');
     if (!track) return;
-    const totalSlides = track.children.length;
+    const totalSlides = getVisibleAdSlides().length;
     console.log('🔢 Total slides:', totalSlides);
     const dotsEl = document.getElementById('adDots');
     if (!dotsEl) return;

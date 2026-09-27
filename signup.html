@@ -56,7 +56,7 @@
         .auth-body { padding: 32px 36px 36px; }
 
         .role-label { font-size: 11px; font-weight: 800; color: var(--gray); text-transform: uppercase; margin-bottom: 12px; text-align: center; }
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+        .role-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 28px; }
         .role-option {
             padding: 14px 8px; border: 2px solid #f1f5f9;
             border-radius: var(--radius-sm); text-align: center;
@@ -71,6 +71,7 @@
         .form-group { margin-bottom: 16px; }
         .form-label { display: block; font-size: 11px; font-weight: 800; color: var(--gray); text-transform: uppercase; margin-bottom: 8px; }
         .form-input { width: 100%; padding: 13px 16px; border: 2px solid #f1f5f9; border-radius: var(--radius-sm); font-family: inherit; outline: none; transition: 0.2s; background: #fafbfc; }
+        textarea.form-input { min-height: 96px; resize: vertical; }
         .form-input:focus { border-color: var(--primary); background: white; }
 
         .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--gray); font-size: 11px; font-weight: 700; }
@@ -120,11 +121,6 @@
                 <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
             </div>
             <div class="form-group">
-                <label class="form-label">Kòd Referans *</label>
-                <input type="text" id="referralCode" class="form-input" placeholder="Antre kòd referans ou resevwa" required>
-                <small style="color: #64748b; font-size: 12px; display: block; margin-top: 8px;">Se sèlman moun ki gen kòd sa a ka kreye yon kont. Pa bay lòt moun kòd la.</small>
-            </div>
-            <div class="form-group">
                 <label class="form-label">Mot de passe *</label>
                 <input type="password" id="password" class="form-input" placeholder="Min. 8 caractères" required minlength="8">
             </div>
@@ -144,9 +140,17 @@
                     <label class="form-label">Adresse</label>
                     <input type="text" id="address" class="form-input" placeholder="ex : Port-au-Prince, Haïti">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Kategori pwodwi ou vle vann *</label>
+                    <input type="text" id="productCategories" class="form-input" placeholder="Egzanp: rad, manje, elektwonik" data-vendor-required required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kisa ou pwopoze vann? *</label>
+                    <textarea id="productDescription" class="form-input" placeholder="Dekri pwodwi ou yo ak boutik ou" data-vendor-required required></textarea>
+                </div>
             </div>
 
-            <button type="submit" id="btnSignup" class="btn-submit">CRÉER MON COMPTE</button>
+            <button type="submit" id="btnSignup" class="btn-submit">Soumettre ma demande de vendeur</button>
         </form>
 
         <div class="already-member">
@@ -164,13 +168,22 @@
     let currentRole = 'seller';
     const queryParams = new URLSearchParams(window.location.search);
     const initialRole = queryParams.get('role');
+    const referralAttribution = queryParams.get('ref') || localStorage.getItem('ref_code') || null;
+    if (queryParams.has('ref')) localStorage.setItem('ref_code', queryParams.get('ref'));
     const redirectTarget = queryParams.get('redirect') || (initialRole === 'affiliate' ? '/affiliate-dashboard.html' : '/');
 
     function setRole(role) {
         currentRole = role;
         document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
         document.getElementById('opt-' + role).classList.add('active');
-        document.getElementById('seller-fields').style.display = (role === 'seller') ? 'block' : 'none';
+        const sellerFields = document.getElementById('seller-fields');
+        sellerFields.style.display = (role === 'seller') ? 'block' : 'none';
+        sellerFields.querySelectorAll('[data-vendor-required]').forEach(field => {
+            field.required = role === 'seller';
+        });
+        document.getElementById('btnSignup').textContent = role === 'seller'
+            ? 'Soumettre ma demande de vendeur'
+            : 'Créer mon compte affilié';
         const loginLink = document.getElementById('loginRedirectLink');
         if (loginLink) {
             loginLink.href = '/login.html?redirect=' + encodeURIComponent(redirectTarget);
@@ -179,14 +192,6 @@
 
     if (initialRole === 'affiliate') {
         setRole('affiliate');
-    }
-
-    const storedRefCode = localStorage.getItem('ref_code');
-    if (storedRefCode) {
-        const referralField = document.getElementById('referralCode');
-        if (referralField && !referralField.value) {
-            referralField.value = storedRefCode;
-        }
     }
 
     async function handleSignup(e) {
@@ -198,58 +203,16 @@
         const email = document.getElementById('email').value.trim();
         const pass = document.getElementById('password').value;
         const fullName = document.getElementById('fullName').value.trim();
-        const referralCode = document.getElementById('referralCode').value.trim().toUpperCase();
-
-        // BOTH roles need referral code
-        if (!referralCode) {
-            alert("⚠️ Tanpri antre kòd referans la.");
-            btn.disabled = false;
-            btn.innerHTML = "CRÉER MON COMPTE";
-            return;
-        }
-
-        // Verify referral code is valid
-        const { data: referralKey, error: referralErr } = await supS
-            .from('referral_keys')
-            .select('id, code, used_at')
-            .eq('code', referralCode)
-            .maybeSingle();
-
-        console.log('=== REFERRAL DEBUG ===');
-        console.log('Kòd ou antre:', referralCode);
-        console.log('Referral data:', referralKey);
-        console.log('Referral error:', referralErr);
-        console.log('=====================');
-
-        if (referralErr) {
-            console.error('Referral query failed:', referralErr);
-            alert("❌ Erè rezo pandan verifye kòd referans lan. Tanpri eseye ankò.");
-            btn.disabled = false;
-            btn.innerHTML = "CRÉER MON COMPTE";
-            return;
-        }
-
-        if (!referralKey) {
-            alert("❌ Kòd referans la pa valab. Tanpri antre kòd ke ou resevwa.");
-            btn.disabled = false;
-            btn.innerHTML = "CRÉER MON COMPTE";
-            return;
-        }
-
-        if (referralKey.used_at) {
-            alert("❌ Kòd referans sa a deja itilize. Tanpri mande yon nouvo kòd.");
-            btn.disabled = false;
-            btn.innerHTML = "CRÉER MON COMPTE";
-            return;
-        }
-
         // Validate seller fields
         if (currentRole === 'seller') {
             const shopName = document.getElementById('shopName').value.trim();
-            if (!shopName) {
-                alert("⚠️ Tanpri ranpli non boutik la!");
+            const whatsapp = document.getElementById('whatsappNumber').value.trim();
+            const productCategories = document.getElementById('productCategories').value.trim();
+            const productDescription = document.getElementById('productDescription').value.trim();
+            if (!shopName || !whatsapp || !productCategories || !productDescription) {
+                alert("⚠️ Ranpli non boutik la, WhatsApp, kategori pwodwi ak deskripsyon pwopozisyon an.");
                 btn.disabled = false;
-                btn.innerHTML = "CRÉER MON COMPTE";
+                btn.innerHTML = "Soumettre ma demande de vendeur";
                 return;
             }
         }
@@ -258,93 +221,32 @@
             const { data: authData, error: authErr } = await supS.auth.signUp({
                 email,
                 password: pass,
-                options: { 
-                    data: { full_name: fullName, role: currentRole },
-                    emailConfirmTo: false
+                options: {
+                    data: {
+                        full_name: fullName,
+                        role: currentRole,
+                        shop_name: currentRole === 'seller' ? document.getElementById('shopName').value.trim() : null,
+                        whatsapp_number: currentRole === 'seller' ? document.getElementById('whatsappNumber').value.trim() : null,
+                        address: currentRole === 'seller' ? document.getElementById('address').value.trim() : null,
+                        product_categories: currentRole === 'seller' ? document.getElementById('productCategories').value.trim() : null,
+                        product_description: currentRole === 'seller' ? document.getElementById('productDescription').value.trim() : null,
+                        referral_code: currentRole === 'affiliate' ? referralAttribution : null
+                    },
                 }
             });
 
             if (authErr) throw authErr;
+            if (!authData.user) throw new Error('Kreyasyon kont lan pa retounen yon itilizatè.');
 
-            if (authData.user) {
-                const profileData = {
-                    id: authData.user.id,
-                    full_name: fullName,
-                    referral_code: referralCode,
-                    shop_name: (currentRole === 'seller') ? document.getElementById('shopName').value.trim() : null,
-                    whatsapp: (currentRole === 'seller') ? document.getElementById('whatsappNumber').value.trim() : null,
-                    address: (currentRole === 'seller') ? document.getElementById('address').value.trim() : null,
-                    email,
-                    role: currentRole,
-                    is_active_seller: currentRole === 'seller'
-                };
-
-                console.log('ProfileData:', profileData);
-                console.log('CurrentRole:', currentRole);
-
-                const { error: upsertError } = await supS.from('profiles').upsert([profileData]);
-
-                if (upsertError) {
-                    console.error('Erè nan upsert:', upsertError);
-                    alert("❌ Erè nan kreyasyon profile: " + upsertError.message);
-                    btn.disabled = false;
-                    btn.innerHTML = "CRÉER MON COMPTE";
-                    return;
-                }
-
-                // Mark referral code as used
-                const { error: markUsedError } = await supS
-                    .from('referral_keys')
-                    .update({ used_at: new Date().toISOString(), used_by: authData.user.id })
-                    .eq('id', referralKey.id)
-                    .is('used_at', null);
-
-                if (markUsedError) {
-                    console.error('Erè nan make kòd itilize:', markUsedError);
-                    alert("⚠️ Enskripsyon fèt, men gen yon pwoblèm sou verifye kòd referans lan. Tanpri kontakte administratè.");
-                    window.location.href = "/login.html";
-                    return;
-                }
-
-                // For AFFILIATES: generate their affiliate profile and referral code
-                if (currentRole === 'affiliate') {
-                    const newAffiliateCode = 'AFF-' + authData.user.id.substring(0, 8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
-
-                    const { data: affiliateData, error: createAffiliateError } = await supS.from('affiliates')
-                        .insert([{
-                            user_id: authData.user.id,
-                            referral_code: newAffiliateCode,
-                            balance: 0,
-                            total_referrals: 0
-                        }])
-                        .select('id')
-                        .single();
-
-                    if (createAffiliateError) {
-                        console.error('⚠️ Erè nan kreye affiliate:', createAffiliateError);
-                    } else {
-                        console.log('✅ Affiliate kreye ak kòd:', newAffiliateCode);
-                    }
-
-                    const referralAffiliateId = affiliateData?.id || null;
-                    const { error: createCodeError } = await supS.from('referral_keys').insert([{
-                        code: newAffiliateCode,
-                        created_by: authData.user.id,
-                        affiliate_id: referralAffiliateId,
-                        type: 'affiliate',
-                        created_at: new Date().toISOString()
-                    }]);
-
-                    if (createCodeError) {
-                        console.error('⚠️ Erè nan genere kòd referans pou affilié:', createCodeError);
-                    } else {
-                        console.log('✅ Kòd affilié kreye:', newAffiliateCode);
-                    }
-                }
-
-                console.log('Profile kreye avèk siksè');
-                alert("🎉 Compte créé ! Veuillez vérifier votre email.");
-                window.location.href = "/login.html?redirect=" + encodeURIComponent(redirectTarget);
+            if (currentRole === 'seller') {
+                alert('✅ Aplikasyon vandè ou a voye. Admin lan ap revize boutik ak pwodwi ou pwopoze yo anvan li aktive kont lan.');
+                const nextPage = authData.session
+                    ? '/vendor-application-status.html'
+                    : '/login.html?redirect=' + encodeURIComponent('/vendor-application-status.html');
+                window.location.href = nextPage;
+            } else {
+                alert('🎉 Kont afilye a kreye. Verifye imèl ou si sa nesesè.');
+                window.location.href = '/login.html?redirect=' + encodeURIComponent(redirectTarget);
             }
         } catch (err) {
             alert("❌ " + err.message);

@@ -1,26 +1,35 @@
--- SIMPLE FIX: Disable RLS pou Admin Panel
--- This allows admin to perform DELETE operations
+-- Restore row-level security on tables previously opened for the admin panel.
+-- Existing policies become active again when RLS is enabled.
 
--- ============================
--- DISABLE RLS ON ALL TABLES
--- ============================
-ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;
-ALTER TABLE user_products DISABLE ROW LEVEL SECURITY;
-ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
-ALTER TABLE affiliates DISABLE ROW LEVEL SECURITY;
-ALTER TABLE admin_notifications DISABLE ROW LEVEL SECURITY;
-ALTER TABLE admin_commissions DISABLE ROW LEVEL SECURITY;
-ALTER TABLE affiliate_transactions DISABLE ROW LEVEL SECURITY;
-ALTER TABLE affiliate_withdrawals DISABLE ROW LEVEL SECURITY;
-ALTER TABLE wallets DISABLE ROW LEVEL SECURITY;
-ALTER TABLE transactions DISABLE ROW LEVEL SECURITY;
-ALTER TABLE site_traffic DISABLE ROW LEVEL SECURITY;
-ALTER TABLE referral_keys DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.user_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.affiliates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.admin_notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.admin_commissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.affiliate_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.affiliate_withdrawals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.wallets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.site_traffic ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.referral_keys ENABLE ROW LEVEL SECURITY;
 
--- ============================
--- IMPORTANT NOTES:
--- ============================
--- 1. RLS now DISABLED on all tables - Admin can perform all operations
--- 2. If you want better security later, use policies with proper role checks
--- 3. For now, admin can DELETE, UPDATE, SELECT without restrictions
--- 4. To enable RLS again, use: ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
+ALTER VIEW IF EXISTS public.affiliate_stats SET (security_invoker = true);
+
+SELECT
+	c.relname AS table_name,
+	c.relrowsecurity AS rls_enabled,
+	count(p.policyname) AS policy_count
+FROM pg_class AS c
+JOIN pg_namespace AS n ON n.oid = c.relnamespace
+LEFT JOIN pg_policies AS p
+	ON p.schemaname = n.nspname
+	AND p.tablename = c.relname
+WHERE n.nspname = 'public'
+	AND c.relname IN (
+		'profiles', 'user_products', 'orders', 'affiliates',
+		'admin_notifications', 'admin_commissions', 'affiliate_transactions',
+		'affiliate_withdrawals', 'wallets', 'transactions', 'site_traffic', 'referral_keys'
+	)
+GROUP BY c.relname, c.relrowsecurity
+ORDER BY c.relname;

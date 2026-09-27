@@ -73,13 +73,6 @@ exports.handler = async (event) => {
         return { statusCode: 500, headers, body: JSON.stringify({ error: prodError.message || 'Failed to delete shop products' }) };
       }
 
-      console.log('Deleting referral keys for shop:', shopId);
-      const { error: referralError } = await supabase.from('referral_keys').delete().eq('used_by', shopId);
-      if (referralError) {
-        console.error('Error deleting referral keys:', referralError);
-        return { statusCode: 500, headers, body: JSON.stringify({ error: referralError.message || 'Failed to delete referral keys' }) };
-      }
-
       console.log('Deleting orders for seller or buyer shop:', shopId);
       const { error: sellerOrderError } = await supabase.from('orders').delete().eq('seller_id', shopId);
       if (sellerOrderError) {

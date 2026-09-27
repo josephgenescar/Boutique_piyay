@@ -1,0 +1,95 @@
+---
+layout: default
+title: Suivi demande vendeur - Boutique Piyay
+---
+
+<style>
+  .vendor-status-wrap { max-width: 760px; margin: 36px auto 72px; padding: 0 18px; }
+  .vendor-status-panel { padding: 28px; border-left: 4px solid #f59e0b; border-radius: 12px; background: #fff; box-shadow: 0 8px 30px rgba(15,23,42,0.08); }
+  .vendor-status-panel.approved { border-left-color: #10b981; }
+  .vendor-status-panel.rejected { border-left-color: #ef4444; }
+  .vendor-status-panel h1 { margin: 0 0 12px; color: #0f172a; font-size: 24px; }
+  .vendor-status-panel p { margin: 0 0 14px; color: #475569; line-height: 1.65; }
+  #vendor-admin-message { padding: 14px; border-radius: 8px; background: #f1f5f9; color: #0f172a; white-space: pre-wrap; }
+  .vendor-status-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .vendor-status-actions a, .vendor-status-actions button { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 16px; border: 0; border-radius: 8px; background: #0f172a; color: #fff; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+  .vendor-status-actions a.secondary, .vendor-status-actions button.secondary { background: #f1f5f9; color: #0f172a; }
+  @media (max-width: 600px) { .vendor-status-wrap { margin-top: 20px; } .vendor-status-panel { padding: 22px 18px; } }
+</style>
+
+<section class="vendor-status-wrap" aria-labelledby="vendor-status-title">
+  <div id="vendor-status-panel" class="vendor-status-panel">
+    <h1 id="vendor-status-title" data-i18n="vendor_application.title">Swiv aplikasyon vandè ou a</h1>
+    <p id="vendor-status-description" role="status" aria-live="polite" data-i18n="vendor_application.loading">Aplikasyon ou a ap chaje...</p>
+    <div id="vendor-admin-message-wrap" style="display:none;">
+      <p data-i18n="vendor_application.admin_message_label">Mesaj ekip Boutique Piyay la</p>
+      <div id="vendor-admin-message"></div>
+    </div>
+    <div class="vendor-status-actions">
+      <a id="vendor-dashboard-link" href="/dashboard.html" style="display:none;" data-i18n="vendor_application.dashboard">Louvri dashboard mwen</a>
+      <button type="button" class="secondary" onclick="loadVendorApplicationStatus()" data-i18n="vendor_application.refresh">Rafrechi estati a</button>
+      <a class="secondary" href="/" data-i18n="vendor_application.home">Retounen akèy la</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const vendorStatusSupabase = window.supabase.createClient(
+    'https://letyferfjpxmstohvgcj.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg'
+  );
+    let lastVendorApplicationNotice = null;
+
+  async function loadVendorApplicationStatus() {
+    const description = document.getElementById('vendor-status-description');
+    const panel = document.getElementById('vendor-status-panel');
+    const messageWrap = document.getElementById('vendor-admin-message-wrap');
+    const message = document.getElementById('vendor-admin-message');
+    const dashboardLink = document.getElementById('vendor-dashboard-link');
+
+    try {
+      if (window.loadTranslations) await window.loadTranslations();
+      const { data: { user }, error: userError } = await vendorStatusSupabase.auth.getUser();
+      if (userError || !user) {
+        window.location.href = '/login.html?redirect=' + encodeURIComponent('/vendor-application-status.html');
+        return;
+      }
+
+      const { data: application, error } = await vendorStatusSupabase
+        .from('vendor_applications')
+        .select('status, admin_message')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!application) {
+        description.textContent = window.t('vendor_application.not_found');
+        return;
+      }
+
+      const titleKey = `vendor_application.${application.status}_title`;
+      const messageKey = `vendor_application.${application.status}_message`;
+        const notice = `${application.status}:${application.admin_message || ''}`;
+        if (lastVendorApplicationNotice && notice !== lastVendorApplicationNotice) {
+          window.alert(`${window.t(titleKey)}\n\n${application.admin_message || window.t(messageKey)}`);
+        }
+        lastVendorApplicationNotice = notice;
+      document.getElementById('vendor-status-title').setAttribute('data-i18n', titleKey);
+      description.setAttribute('data-i18n', messageKey);
+      panel.classList.toggle('approved', application.status === 'approved');
+      panel.classList.toggle('rejected', application.status === 'rejected');
+      dashboardLink.style.display = application.status === 'approved' ? 'inline-flex' : 'none';
+
+      message.textContent = application.admin_message || '';
+      messageWrap.style.display = application.admin_message ? 'block' : 'none';
+      if (window.applyTranslations) window.applyTranslations();
+    } catch (error) {
+      description.textContent = `${window.t('vendor_application.load_error')} ${error.message}`;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadVendorApplicationStatus);
+    window.setInterval(() => {
+      if (!document.hidden) loadVendorApplicationStatus();
+    }, 30000);
+</script>

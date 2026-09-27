@@ -1089,8 +1089,14 @@
             }
 
             // Vérifier si l'utilisateur est un vendeur ou admin
-            const { data: profile } = await supD.from('profiles').select('role').eq('id', currentUser.id).single();
-            if (!profile || (profile.role !== 'seller' && profile.role !== 'admin')) {
+            const { data: profile } = await supD.from('profiles')
+                .select('role, is_active_seller')
+                .eq('id', currentUser.id)
+                .single();
+            if (profile?.role === 'pending_seller') {
+                return window.location.assign('/vendor-application-status.html');
+            }
+            if (!profile || (profile.role !== 'admin' && (profile.role !== 'seller' || profile.is_active_seller !== true))) {
                 alert("⚠️ Se sèlman vandè yo ka aksede dashboard sa a!");
                 return window.location.assign('/');
             }

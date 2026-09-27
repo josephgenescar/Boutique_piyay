@@ -25,136 +25,76 @@ title: Sant Kontwòl Total - Boutique Piyay
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 
-  /* ══════════════ LOGIN PAGE ══════════════ */
-  #admin-login-section {
-    min-height: 80vh; display: flex;
-    align-items: center; justify-content: center; padding: 40px 20px;
+  function escapeVendorApplicationText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
   }
 
-  .login-card {
-    width: 100%; max-width: 420px;
-    background: white; border-radius: 28px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-    overflow: hidden;
-  }
-  .login-header {
-    background: linear-gradient(135deg, var(--dark), #1e293b);
-    padding: 36px; text-align: center; position: relative; overflow: hidden;
-  }
-  .login-header::before {
-    content: '';
-    position: absolute; top: -60px; right: -60px;
-    width: 180px; height: 180px; border-radius: 50%;
-    background: var(--primary); opacity: 0.08;
-  }
-  .login-icon { font-size: 48px; position: relative; display: block; margin-bottom: 14px; }
-  .login-title { font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px; position: relative; }
-  .login-sub { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 500; position: relative; }
+  async function loadVendorApplications() {
+    const list = document.getElementById('vendor-applications-list');
+    if (!list) return;
+    list.textContent = window.t('admin.vendor_applications_loading');
 
-  .login-body { padding: 28px 32px 32px; }
-  .form-group { margin-bottom: 16px; }
-  .form-label { display: block; font-size: 11px; font-weight: 800; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-  .form-input {
-    width: 100%; padding: 13px 16px;
-    border: 2px solid #f1f5f9; border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 14px; font-weight: 500;
-    outline: none; transition: 0.2s; background: #fafbfc; color: var(--dark);
+    const { data, error } = await supA.from('vendor_applications')
+      .select('*')
+      .in('status', ['pending', 'needs_info'])
+      .order('created_at', { ascending: true });
+    if (error) {
+      list.textContent = error.code === 'PGRST205'
+        ? window.t('admin.vendor_applications_setup')
+        : `${window.t('admin.vendor_applications_error')} ${error.message}`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      list.textContent = window.t('admin.vendor_applications_empty');
+      const count = document.getElementById('vendor-application-count');
+      if (count) count.textContent = '0';
+      return;
+    }
+
+    const count = document.getElementById('vendor-application-count');
+    if (count) count.textContent = data.length;
+    list.innerHTML = data.map(application => `
+      <article class="vendor-application-card">
+        <h3>${escapeVendorApplicationText(application.shop_name)}</h3>
+        <p><strong>${window.t('admin.vendor_applicant')}:</strong> ${escapeVendorApplicationText(application.full_name)} · ${escapeVendorApplicationText(application.email)}</p>
+        <p><strong>${window.t('admin.vendor_whatsapp')}:</strong> ${escapeVendorApplicationText(application.whatsapp_number)}</p>
+        <p><strong>${window.t('admin.vendor_categories')}:</strong> ${escapeVendorApplicationText(application.product_categories)}</p>
+        <p><strong>${window.t('admin.vendor_proposal')}:</strong> ${escapeVendorApplicationText(application.product_description)}</p>
+        <p><strong>${window.t('admin.vendor_submitted')}:</strong> ${new Date(application.created_at).toLocaleString()}</p>
+        <label for="vendor-message-${application.id}">${window.t('admin.vendor_admin_message')}</label>
+        <textarea id="vendor-message-${application.id}" class="vendor-application-message" placeholder="${window.t('admin.vendor_admin_message_placeholder')}">${escapeVendorApplicationText(application.admin_message || '')}</textarea>
+        <div class="vendor-application-actions">
+          <button type="button" class="btn-action btn-approve" onclick="reviewVendorApplication('${application.id}','approved')">${window.t('admin.vendor_approve')}</button>
+          <button type="button" class="btn-action" onclick="reviewVendorApplication('${application.id}','needs_info')">${window.t('admin.vendor_request_info')}</button>
+          <button type="button" class="btn-action btn-reject" onclick="reviewVendorApplication('${application.id}','rejected')">${window.t('admin.vendor_reject')}</button>
+        </div>
+      </article>
+    `).join('');
   }
-  .form-input:focus { border-color: var(--dark); background: white; box-shadow: 0 0 0 4px rgba(15,23,42,0.06); }
 
-  .btn-login {
-    width: 100%; padding: 15px; background: var(--dark);
-    color: white; border: none; border-radius: var(--radius-sm);
-    font-family: inherit; font-weight: 900; font-size: 14px; cursor: pointer;
-    transition: 0.2s; box-shadow: 0 8px 20px rgba(15,23,42,0.2);
+  async function reviewVendorApplication(applicationId, status) {
+    const message = document.getElementById(`vendor-message-${applicationId}`)?.value.trim() || '';
+    if (status !== 'approved' && !message) {
+      showToast(window.t('admin.vendor_message_required'), 'error');
+      return;
+    }
+
+    const { error } = await supA.rpc('review_vendor_application', {
+      p_application_id: applicationId,
+      p_status: status,
+      p_admin_message: message || window.t('admin.vendor_default_approved_message')
+    });
+    if (error) {
+      showToast(`${window.t('admin.vendor_review_error')} ${error.message}`, 'error');
+      return;
+    }
+
+    showToast(window.t('admin.vendor_decision_saved'), 'success');
+    await loadVendorApplications();
+    await loadAdminData();
   }
-  .btn-login:hover:not(:disabled) { background: var(--dark-2); transform: translateY(-1px); }
-  .btn-login:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
-
-  /* ══════════════ DASHBOARD ══════════════ */
-  #admin-dashboard { display: none; }
-
-  .admin-wrap { max-width: 1280px; margin: 0 auto; padding: 28px 20px 80px; }
-
-  /* TOP BAR */
-  .admin-topbar {
-    background: white; border-radius: var(--radius); padding: 18px 24px;
-    display: flex; justify-content: space-between; align-items: center;
-    box-shadow: var(--shadow); margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
-  }
-  .topbar-left { display: flex; align-items: center; gap: 12px; }
-  .topbar-shield {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: linear-gradient(135deg, var(--dark), #334155);
-    display: flex; align-items: center; justify-content: center; font-size: 20px;
-  }
-  .topbar-title { font-size: 18px; font-weight: 900; color: var(--dark); letter-spacing: -0.3px; }
-  .topbar-sub { font-size: 11px; color: var(--gray); font-weight: 600; margin-top: 2px; }
-  .topbar-actions { display: flex; gap: 10px; }
-  .btn-topbar {
-    padding: 10px 18px; border-radius: var(--radius-sm); border: none;
-    font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s;
-  }
-  .btn-refresh { background: var(--light); color: var(--dark); }
-  .btn-refresh:hover { background: #e2e8f0; }
-  .btn-logout { background: #fee2e2; color: var(--primary); }
-  .btn-logout:hover { background: #fecaca; }
-
-  /* STAT GRID */
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .stat-card {
-    background: white; border-radius: var(--radius); padding: 22px;
-    box-shadow: var(--shadow); position: relative; overflow: hidden;
-  }
-  .stat-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 4px 0 0 4px; }
-  .stat-card.blue::after   { background: var(--blue); }
-  .stat-card.green::after  { background: var(--green); }
-  .stat-card.gold::after   { background: var(--gold); }
-  .stat-card.red::after    { background: var(--primary); }
-  .stat-icon { font-size: 22px; margin-bottom: 12px; display: block; }
-  .stat-val { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; color: var(--dark); display: block; }
-  .stat-lbl { font-size: 10px; font-weight: 800; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
-
-  /* TABS */
-  .tabs-bar {
-    background: white; border-radius: var(--radius); padding: 10px;
-    display: flex; gap: 6px; margin-bottom: 20px;
-    box-shadow: var(--shadow); overflow-x: auto; scrollbar-width: none;
-  }
-  .tabs-bar::-webkit-scrollbar { display: none; }
-  .tab-btn {
-    padding: 11px 20px; border: none; border-radius: var(--radius-sm);
-    background: none; color: var(--gray);
-    font-family: inherit; font-size: 13px; font-weight: 700;
-    cursor: pointer; white-space: nowrap; transition: 0.2s;
-  }
-  .tab-btn:hover { background: var(--light); color: var(--dark); }
-  .tab-btn.active { background: var(--dark); color: white; box-shadow: 0 4px 12px rgba(15,23,42,0.2); }
-
-  /* CARD */
-  .admin-card { background: white; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
-  .card-title { font-size: 15px; font-weight: 900; color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-
-  /* TABLE */
-  .admin-table { width: 100%; border-collapse: collapse; }
-  .admin-table th { padding: 12px 16px; border-bottom: 2px solid var(--light); color: var(--gray); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; text-align: left; white-space: nowrap; }
-  .admin-table td { padding: 14px 16px; border-bottom: 1px solid #f8fafc; font-size: 13px; vertical-align: middle; }
-  .admin-table tr:last-child td { border-bottom: none; }
-  .admin-table tr:hover td { background: #fafbfc; }
-
-  /* STATUS BADGES */
-  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-  .badge.active  { background: rgba(16,185,129,0.1); color: var(--green); }
-  .badge.blocked { background: rgba(239,68,68,0.1); color: #ef4444; }
-  .badge.pending { background: rgba(245,158,11,0.1); color: var(--gold); }
-
-  /* ACTION BTNS */
-  .btn-action {
-    padding: 7px 14px; border-radius: 8px; border: none;
-    font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.2s;
-  }
-  .btn-block   { background: #fee2e2; color: #ef4444; }
-  .btn-block:hover { background: #fecaca; }
   .btn-unblock { background: #dcfce7; color: #15803d; }
   .btn-unblock:hover { background: #bbf7d0; }
   .btn-delete { background: #fee2e2; color: #b91c1c; }
@@ -195,168 +135,78 @@ title: Sant Kontwòl Total - Boutique Piyay
 
   @media (max-width: 600px) {
     .stat-grid { grid-template-columns: 1fr 1fr; }
-    .prod-admin-grid { grid-template-columns: 1fr 1fr; }
-  }
+    function escapeVendorApplicationText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[character]);
+    }
 
-  .referral-card {
-    background: white;
-    border-radius: 24px;
-    padding: 28px;
-    margin-bottom: 32px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  }
-  .referral-heading { font-size: 18px; font-weight: 900; margin-bottom: 18px; color: #0f172a; }
-  .referral-note { color: #475569; font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
-  .referral-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; }
-  .referral-input { width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 16px; font-size: 14px; }
-  .referral-btn { border: none; border-radius: 16px; padding: 14px 18px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; }
-  .referral-btn.btn-primary { background: #2563eb; color: white; }
-  .referral-btn.btn-secondary { background: #f8fafc; color: #111827; border: 1px solid #cbd5e1; }
-  .referral-message { min-height: 24px; margin-top: 14px; font-size: 14px; color: #334155; }
-  .referral-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-  .referral-table th,
-  .referral-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; }
-  .referral-table th { font-weight: 700; color: #334155; }
-  .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-  .status-unused { background: #dcfce7; color: #166534; }
-  .status-used { background: #fee2e2; color: #b91c1c; }
-  @media (max-width: 760px) { .referral-grid { grid-template-columns: 1fr; } }
-</style>
+    async function loadVendorApplications() {
+      const list = document.getElementById('vendor-applications-list');
+      if (!list) return;
+      list.textContent = window.t('admin.vendor_applications_loading');
 
-<!-- ══ LOGIN ══ -->
-<div id="admin-login-section">
-  <div class="login-card">
-    <div class="login-header">
-      <span class="login-icon">🛡️</span>
-      <div class="login-title">Aksè Administratè</div>
-      <div class="login-sub">Antre enfòmasyon ou pou kontinye</div>
-    </div>
+      const { data, error } = await supA.from('vendor_applications')
+        .select('*')
+        .in('status', ['pending', 'needs_info'])
+        .order('created_at', { ascending: true });
+      if (error) {
+        list.textContent = error.code === 'PGRST205'
+          ? window.t('admin.vendor_applications_setup')
+          : `${window.t('admin.vendor_applications_error')} ${error.message}`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        list.textContent = window.t('admin.vendor_applications_empty');
+        const count = document.getElementById('vendor-application-count');
+        if (count) count.textContent = '0';
+        return;
+      }
 
-    <div class="login-body">
-      <div id="auth-step-1">
-        <div class="form-group">
-          <label class="form-label">Email Admin</label>
-          <input type="email" id="adminEmail" class="form-input" placeholder="admin@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Modpas</label>
-          <input type="password" id="adminPass" class="form-input" placeholder="••••••••">
-        </div>
-        <button onclick="handleAdminLogin()" id="loginBtn" class="btn-login">
-          🔐 KONEKTE
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+      const count = document.getElementById('vendor-application-count');
+      if (count) count.textContent = data.filter(application => application.status === 'pending').length;
+      list.innerHTML = data.map(application => `
+        <article class="vendor-application-card">
+          <h3>${escapeVendorApplicationText(application.shop_name)}</h3>
+          <p><strong>${window.t('admin.vendor_applicant')}:</strong> ${escapeVendorApplicationText(application.full_name)} · ${escapeVendorApplicationText(application.email)}</p>
+          <p><strong>${window.t('admin.vendor_whatsapp')}:</strong> ${escapeVendorApplicationText(application.whatsapp_number)}</p>
+          <p><strong>${window.t('admin.vendor_categories')}:</strong> ${escapeVendorApplicationText(application.product_categories)}</p>
+          <p><strong>${window.t('admin.vendor_proposal')}:</strong> ${escapeVendorApplicationText(application.product_description)}</p>
+          <p><strong>${window.t('admin.vendor_submitted')}:</strong> ${new Date(application.created_at).toLocaleString()}</p>
+          <label for="vendor-message-${application.id}">${window.t('admin.vendor_admin_message')}</label>
+          <textarea id="vendor-message-${application.id}" class="vendor-application-message" placeholder="${window.t('admin.vendor_admin_message_placeholder')}">${escapeVendorApplicationText(application.admin_message || '')}</textarea>
+          <div class="vendor-application-actions">
+            <button type="button" class="btn-action btn-approve" onclick="reviewVendorApplication('${application.id}','approved')">${window.t('admin.vendor_approve')}</button>
+            <button type="button" class="btn-action" onclick="reviewVendorApplication('${application.id}','needs_info')">${window.t('admin.vendor_request_info')}</button>
+            <button type="button" class="btn-action btn-reject" onclick="reviewVendorApplication('${application.id}','rejected')">${window.t('admin.vendor_reject')}</button>
+          </div>
+        </article>
+      `).join('');
+    }
 
-<!-- ══ DASHBOARD ══ -->
-<div id="admin-dashboard">
-  <div class="admin-wrap">
-    <!-- ADMIN: Zone pou jenere code boost -->
-    <div class="admin-card" style="margin-bottom:28px;">
-      <div class="card-title">🔑 Jenere Kòd Boost pou Vendeur</div>
-      <div style="margin-top:10px;color:#b91c1c;font-size:13px;font-weight:700;">Remak: sa a se yon <strong>kòd boost</strong>, li pa sèvi pou enskripsyon. Pou kòd signup, sèvi ak seksyon Kòd Referans anba an nan menm paj sa a.</div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap; margin-top:12px;">
-        <input type="text" id="boost-code-admin" class="form-input" style="max-width:200px;" placeholder="Kòd aleatwa" readonly>
-        <button onclick="document.getElementById('boost-code-admin').value = Math.random().toString(36).substr(2,8).toUpperCase();" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;">Jenere Kòd</button>
-        <button onclick="navigator.clipboard.writeText(document.getElementById('boost-code-admin').value);showToast('Kòd kopye!','success');" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;background:#10b981;">Kopye</button>
-        <button onclick="saveBoostCodeToDb()" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;background:#2563eb;color:white;">Sove Kòd</button>
-      </div>
-      <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye kòd boost la epi voye bay machann lan apre ou fin verifye peman li. Kòd sa yo sèvi pou pouse pwodwi yo, pa pou kreye kont.</div>
-      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-        <span style="color:#475569;font-size:13px;">Kòd referans signup yo kounye a anba seksyon estatistik yo sou menm paj sa a.</span>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;">
-        <label for="boost-seller-select" style="font-size:13px;font-weight:700;margin:0;">Chwazi Vendeur</label>
-        <select id="boost-seller-select" class="form-input" style="max-width:280px;min-width:220px;">
-          <option value="">Chwazi vendeur...</option>
-        </select>
-      </div>
-      <div style="margin-top:10px;color:#64748b;font-size:13px;"><strong>Peman machann</strong> : machann yo peye/ranmase selon sistèm platfòm an, epi yo resevwa kantite lòt la pou kont yo.</div>
-      <div style="color:#64748b;font-size:13px;"><strong>Objektif</strong> : tout peman sou dashboard la dwe swiv kondisyon platfòm sa a pou evite konfizyon.</div>
-    </div>
+    async function reviewVendorApplication(applicationId, status) {
+      const message = document.getElementById(`vendor-message-${applicationId}`)?.value.trim() || '';
+      if (status !== 'approved' && !message) {
+        showToast(window.t('admin.vendor_message_required'), 'error');
+        return;
+      }
 
-    <!-- TOP BAR -->
-    <div class="admin-topbar">
-      <div class="topbar-left">
-        <div class="topbar-shield">🛡️</div>
-        <div>
-          <div class="topbar-title">Sant Kontwòl Inivèsèl</div>
-          <div class="topbar-sub">Boutique Piyay — Admin Panel</div>
-        </div>
-      </div>
-      <div class="topbar-actions">
-        <button onclick="loadAdminData()" class="btn-topbar btn-refresh">🔄 Rafrechi</button>
-        <button onclick="handleAdminLogout()" class="btn-topbar btn-logout">Soti 🚪</button>
-      </div>
-    </div>
+      const { error } = await supA.rpc('review_vendor_application', {
+        p_application_id: applicationId,
+        p_status: status,
+        p_admin_message: message || window.t('admin.vendor_default_approved_message')
+      });
+      if (error) {
+        showToast(`${window.t('admin.vendor_review_error')} ${error.message}`, 'error');
+        return;
+      }
 
-    <!-- STATS -->
-    <div class="stat-grid">
-      <div class="stat-card blue">
-        <span class="stat-icon">👥</span>
-        <span class="stat-val" id="stat-sellers">0</span>
-        <div class="stat-lbl">Vendeur Total</div>
+      showToast(window.t('admin.vendor_decision_saved'), 'success');
+      await loadVendorApplications();
+      await loadAdminData();
+    }
+        <div id="vendor-applications-list" class="vendor-application-list" aria-live="polite"></div>
       </div>
-      <div class="stat-card green">
-        <span class="stat-icon">📦</span>
-        <span class="stat-val" id="stat-products">0</span>
-        <div class="stat-lbl">Pwodwi Live</div>
-      </div>
-      <div class="stat-card gold">
-        <span class="stat-icon">💸</span>
-        <span class="stat-val" id="stat-withdrawals">0</span>
-        <div class="stat-lbl">Demann Retrè</div>
-      </div>
-      <div class="stat-card red">
-        <span class="stat-icon">📈</span>
-        <span class="stat-val" id="stat-revenue">0</span>
-        <div class="stat-lbl">Revni (HTG)</div>
-      </div>
-    </div>
-
-    <div class="referral-card">
-      <div class="referral-heading">🔑 Jere Kòd Referans Signup</div>
-      <p class="referral-note">Jenere, sove, epi jere kòd referans pou nouvo enskripsyon sou paj <strong>signup.html</strong>. Kòd sa yo valab sèlman pou signup; yo pa dwe itilize kòm kòd boost pwodwi.</p>
-      <div class="referral-grid">
-        <input id="newReferralCode" class="referral-input" type="text" placeholder="Antre kòd oswa klike jenere">
-        <button id="generateReferralBtn" class="referral-btn btn-primary">Jenere</button>
-        <button id="copyReferralBtn" class="referral-btn btn-secondary">Kopye</button>
-      </div>
-      <div class="referral-grid" style="margin-top:16px; grid-template-columns: auto auto;">
-        <button id="saveReferralBtn" class="referral-btn btn-primary">Sove kòd</button>
-        <button id="refreshReferralBtn" class="referral-btn btn-secondary">Refrechi lis</button>
-      </div>
-      <div id="referralMessage" class="referral-message"></div>
-      <div style="overflow-x:auto;">
-        <table class="referral-table">
-          <thead>
-            <tr>
-              <th>Kòd</th>
-              <th>Estati</th>
-              <th>Itilize pa</th>
-              <th>Dat Itilizasyon</th>
-              <th>Aksyon</th>
-            </tr>
-          </thead>
-          <tbody id="referralKeysTableBody">
-            <tr><td colspan="5" style="color:#475569; padding:20px;">Chaje kòd...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs-bar">
-      <button onclick="showTab('tab-notifications')" class="tab-btn">🔔 Notifikasyon</button>
-      <button onclick="showTab('tab-commissions')" class="tab-btn">💰 Komisyon</button>
-      <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Vendeur & Disiplin</button>
-      <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
-      <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
-      <button onclick="showTab('tab-orders')" class="tab-btn">🛒 Tout Commande</button>
-      <button onclick="showTab('tab-new-shops')" class="tab-btn">🛒 Tout Boutik</button>
-      <button onclick="showTab('tab-traffic')" class="tab-btn">📊 Trafik</button>
     </div>
 
     <!-- TAB: NOTIFICATIONS -->
@@ -561,6 +411,11 @@ title: Sant Kontwòl Total - Boutique Piyay
       const { data: withdrawals } = await supA.from('affiliate_withdrawals').select('*').order('created_at', { ascending: false });
       const { data: notifications } = await supA.from('admin_notifications').select('*').order('created_at', { ascending: false });
       const { data: commissions } = await supA.from('admin_commissions').select('*').order('created_at', { ascending: false });
+      const { count: pendingVendorApplications } = await supA.from('vendor_applications')
+        .select('id', { count: 'exact', head: true })
+        .in('status', ['pending', 'needs_info']);
+      const applicationCount = document.getElementById('vendor-application-count');
+      if (applicationCount) applicationCount.textContent = pendingVendorApplications || 0;
 
       document.getElementById('stat-sellers').innerText    = users ? users.length : 0;
       document.getElementById('stat-products').innerText   = prods ? prods.length : 0;
@@ -700,6 +555,92 @@ title: Sant Kontwòl Total - Boutique Piyay
     loadAdminData();
   }
 
+  function flattenAdminTranslations(dictionary, prefix = '', entries = []) {
+    Object.entries(dictionary).forEach(([key, value]) => {
+      const translationKey = prefix ? `${prefix}.${key}` : key;
+      if (value && typeof value === 'object') {
+        flattenAdminTranslations(value, translationKey, entries);
+      } else if (typeof value === 'string') {
+        entries.push([translationKey, value]);
+      }
+    });
+    return entries;
+  }
+
+  function escapeTranslationHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+  }
+
+  function filterAdminTranslations() {
+    const query = document.getElementById('translation-search').value.trim().toLowerCase();
+    document.querySelectorAll('#translation-rows tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+    });
+  }
+
+  async function loadAdminTranslations() {
+    const language = document.getElementById('translation-language').value;
+    const status = document.getElementById('translation-status');
+    const rows = document.getElementById('translation-rows');
+    status.textContent = window.t('admin.translations_loading');
+
+    try {
+      const response = await fetch(`/locales/${language}.json`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const defaults = flattenAdminTranslations(await response.json());
+      const { data, error } = await supA.from('site_translations')
+        .select('translation_key, translation_value')
+        .eq('language', language);
+      const values = new Map(defaults);
+
+      if (!error && data) data.forEach(item => values.set(item.translation_key, item.translation_value));
+      rows.innerHTML = Array.from(values, ([key, value]) => `
+        <tr>
+          <td class="translation-key">${escapeTranslationHtml(key)}</td>
+          <td><textarea class="translation-value" rows="2" data-translation-key="${escapeTranslationHtml(key)}">${escapeTranslationHtml(value)}</textarea></td>
+        </tr>
+      `).join('');
+      rows.querySelectorAll('[data-translation-key]').forEach(input => { input.dataset.original = input.value; });
+      status.textContent = error ? window.t('admin.translations_missing_table') : window.t('admin.translations_ready');
+      filterAdminTranslations();
+    } catch (error) {
+      rows.innerHTML = '';
+      status.textContent = `${window.t('admin.translations_save_error')} ${error.message}`;
+    }
+  }
+
+  async function saveAdminTranslations() {
+    const language = document.getElementById('translation-language').value;
+    const status = document.getElementById('translation-status');
+    const changes = Array.from(document.querySelectorAll('#translation-rows [data-translation-key]'))
+      .filter(input => input.value !== input.dataset.original)
+      .map(input => ({
+        language,
+        translation_key: input.dataset.translationKey,
+        translation_value: input.value,
+        updated_at: new Date().toISOString()
+      }));
+
+    if (!changes.length) {
+      status.textContent = window.t('admin.translations_ready');
+      return;
+    }
+
+    const { error } = await supA.from('site_translations')
+      .upsert(changes, { onConflict: 'language,translation_key' });
+    if (error) {
+      status.textContent = `${window.t('admin.translations_save_error')} ${error.message}`;
+      return;
+    }
+
+    document.querySelectorAll('#translation-rows [data-translation-key]').forEach(input => {
+      input.dataset.original = input.value;
+    });
+    status.textContent = window.t('admin.translations_saved');
+  }
+
   function showTab(id) {
     document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -707,6 +648,8 @@ title: Sant Kontwòl Total - Boutique Piyay
     if (event) event.currentTarget.classList.add('active');
     if(id === 'tab-new-shops') fetchNewShops();
     if(id === 'tab-traffic') fetchTrafficData();
+    if(id === 'tab-translations') loadAdminTranslations();
+    if(id === 'tab-vendor-applications') loadVendorApplications();
   }
 
   async function fetchTrafficData() {
@@ -806,135 +749,75 @@ title: Sant Kontwòl Total - Boutique Piyay
     }
   }
 
-  async function fetchReferralKeys() {
-    const body = document.getElementById('referralKeysTableBody');
-    if (!body) return;
-    body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding:20px;">Chaje kòd...</td></tr>';
+  function escapeVendorApplicationText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+  }
 
-    const { data, error } = await supA.from('referral_keys').select('*').order('created_at', { ascending: false });
+  async function loadVendorApplications() {
+    const list = document.getElementById('vendor-applications-list');
+    if (!list) return;
+    list.textContent = window.t('admin.vendor_applications_loading');
+
+    const { data, error } = await supA.from('vendor_applications')
+      .select('*')
+      .in('status', ['pending', 'needs_info'])
+      .order('created_at', { ascending: true });
     if (error) {
-      body.innerHTML = `<tr><td colspan="5" style="color:#dc2626; padding:20px;">Erè: ${error.message}</td></tr>`;
+      list.textContent = error.code === 'PGRST205'
+        ? window.t('admin.vendor_applications_setup')
+        : `${window.t('admin.vendor_applications_error')} ${error.message}`;
       return;
     }
-
     if (!data || data.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding:20px;">Okenn kòd pa defini ankò.</td></tr>';
+      list.textContent = window.t('admin.vendor_applications_empty');
+      const count = document.getElementById('vendor-application-count');
+      if (count) count.textContent = '0';
       return;
     }
 
-    body.innerHTML = data.map(key => {
-      const status = key.used_at ? 'Itilize' : 'Pa itilize';
-      const statusClass = key.used_at ? 'status-used' : 'status-unused';
-      const usedBy = key.used_by || '-';
-      const usedAt = key.used_at ? new Date(key.used_at).toLocaleString() : '-';
-      return `
-        <tr>
-          <td style="font-weight:700;">${key.code}</td>
-          <td><span class="status-pill ${statusClass}">${status}</span></td>
-          <td>${usedBy}</td>
-          <td>${usedAt}</td>
-          <td><button class="referral-btn btn-secondary copy-row-btn" data-code="${key.code}">Kopye</button></td>
-        </tr>
-      `;
-    }).join('');
+    const count = document.getElementById('vendor-application-count');
+    if (count) count.textContent = data.filter(application => application.status === 'pending').length;
+    list.innerHTML = data.map(application => `
+      <article class="vendor-application-card">
+        <h3>${escapeVendorApplicationText(application.shop_name)}</h3>
+        <p><strong>${window.t('admin.vendor_applicant')}:</strong> ${escapeVendorApplicationText(application.full_name)} · ${escapeVendorApplicationText(application.email)}</p>
+        <p><strong>${window.t('admin.vendor_whatsapp')}:</strong> ${escapeVendorApplicationText(application.whatsapp_number)}</p>
+        <p><strong>${window.t('admin.vendor_categories')}:</strong> ${escapeVendorApplicationText(application.product_categories)}</p>
+        <p><strong>${window.t('admin.vendor_proposal')}:</strong> ${escapeVendorApplicationText(application.product_description)}</p>
+        <p><strong>${window.t('admin.vendor_submitted')}:</strong> ${new Date(application.created_at).toLocaleString()}</p>
+        <label for="vendor-message-${application.id}" data-i18n="admin.vendor_admin_message">${window.t('admin.vendor_admin_message')}</label>
+        <textarea id="vendor-message-${application.id}" class="vendor-application-message" data-i18n-placeholder="admin.vendor_admin_message_placeholder" placeholder="${window.t('admin.vendor_admin_message_placeholder')}">${escapeVendorApplicationText(application.admin_message || '')}</textarea>
+        <div class="vendor-application-actions">
+          <button type="button" class="btn-action btn-approve" onclick="reviewVendorApplication('${application.id}','approved')" data-i18n="admin.vendor_approve">${window.t('admin.vendor_approve')}</button>
+          <button type="button" class="btn-action" onclick="reviewVendorApplication('${application.id}','needs_info')" data-i18n="admin.vendor_request_info">${window.t('admin.vendor_request_info')}</button>
+          <button type="button" class="btn-action btn-reject" onclick="reviewVendorApplication('${application.id}','rejected')" data-i18n="admin.vendor_reject">${window.t('admin.vendor_reject')}</button>
+        </div>
+      </article>
+    `).join('');
   }
 
-  async function saveReferralKey(code) {
-    const message = document.getElementById('referralMessage');
-    if (!message) return;
-    message.style.color = '#334155';
-
-    if (!code) {
-      message.style.color = '#dc2626';
-      message.innerText = 'Tanpri antre oswa jenere yon kòd pou sove.';
+  async function reviewVendorApplication(applicationId, status) {
+    const message = document.getElementById(`vendor-message-${applicationId}`)?.value.trim() || '';
+    if (status !== 'approved' && !message) {
+      showToast(window.t('admin.vendor_message_required'), 'error');
       return;
     }
 
-    const { error } = await supA.from('referral_keys').insert([{ code: code.toUpperCase() }]);
-    if (error) {
-      message.style.color = '#dc2626';
-      message.innerText = error.code === '23505'
-        ? 'Kòd la deja egziste. Chwazi yon lòt kòd.'
-        : 'Erè: ' + error.message;
-      return;
-    }
-
-    message.style.color = '#16a34a';
-    message.innerText = 'Kòd la te sove avèk siksè.';
-    document.getElementById('newReferralCode').value = '';
-    fetchReferralKeys();
-  }
-
-  function initReferralSection() {
-    const generateBtn = document.getElementById('generateReferralBtn');
-    const copyBtn = document.getElementById('copyReferralBtn');
-    const saveBtn = document.getElementById('saveReferralBtn');
-    const refreshBtn = document.getElementById('refreshReferralBtn');
-
-    if (generateBtn) {
-      generateBtn.addEventListener('click', () => {
-        document.getElementById('newReferralCode').value = randomReferralCode();
-      });
-    }
-
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => {
-        const code = document.getElementById('newReferralCode').value.trim();
-        const message = document.getElementById('referralMessage');
-        if (!code) {
-          if (message) {
-            message.style.color = '#dc2626';
-            message.innerText = 'Tanpri jenere oswa antre yon kòd avan pou kopye li.';
-          }
-          return;
-        }
-        navigator.clipboard.writeText(code);
-        if (message) {
-          message.style.color = '#16a34a';
-          message.innerText = 'Kòd la kopye nan clipboard!';
-        }
-      });
-    }
-
-    if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
-        saveReferralKey(document.getElementById('newReferralCode').value.trim());
-      });
-    }
-
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', fetchReferralKeys);
-    }
-
-    document.addEventListener('click', function (event) {
-      if (!event.target.matches('.copy-row-btn')) return;
-      const code = event.target.dataset.code;
-      if (code) {
-        navigator.clipboard.writeText(code);
-        const message = document.getElementById('referralMessage');
-        if (message) {
-          message.style.color = '#16a34a';
-          message.innerText = `Kòd referans ${code} te kopye!`;
-        }
-      }
+    const { error } = await supA.rpc('review_vendor_application', {
+      p_application_id: applicationId,
+      p_status: status,
+      p_admin_message: message || window.t('admin.vendor_default_approved_message')
     });
-
-    fetchReferralKeys();
-  }
-
-  function randomReferralCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'PIYAY-';
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    if (error) {
+      showToast(`${window.t('admin.vendor_review_error')} ${error.message}`, 'error');
+      return;
     }
-    return code;
-  }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initReferralSection);
-  } else {
-    initReferralSection();
+    showToast(window.t('admin.vendor_decision_saved'), 'success');
+    await loadVendorApplications();
+    await loadAdminData();
   }
 
   function populateBoostSellerSelect(users) {
@@ -995,15 +878,11 @@ title: Sant Kontwòl Total - Boutique Piyay
     } catch (e) {
       console.warn('Unable to fetch shop name for delete confirmation.', e);
     }
-    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase tout komande nan\n- Efase tout klé referral\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
+    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase tout komande nan\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
       return;
     }
 
     try {
-      console.log('Deleting referral keys for shop:', shopId);
-      const { error: refError } = await supA.from('referral_keys').delete().eq('used_by', shopId);
-      if (refError) console.warn('Warning deleting referral keys:', refError);
-
       console.log('Deleting shop affiliates for shop:', shopId);
       const { error: affError } = await supA.from('affiliates').delete().eq('user_id', shopId);
       if (affError) console.warn('Warning deleting affiliates:', affError);

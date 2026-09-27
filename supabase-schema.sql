@@ -52,18 +52,6 @@ CREATE TABLE IF NOT EXISTS affiliates (
 );
 CREATE INDEX IF NOT EXISTS idx_affiliates_user_id ON affiliates(user_id);
 
-CREATE TABLE IF NOT EXISTS referral_keys (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  code text UNIQUE NOT NULL,
-  used_by uuid REFERENCES profiles(id),
-  used_at timestamptz,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS idx_referral_keys_code ON referral_keys(code);
-
-INSERT INTO referral_keys (code) VALUES ('PIYAYVIP2026') ON CONFLICT (code) DO NOTHING;
-
 CREATE TABLE IF NOT EXISTS affiliate_transactions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   affiliate_id uuid REFERENCES affiliates(id),
@@ -166,7 +154,9 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS affiliate_commission numeric(12,2) D
 
 CREATE INDEX IF NOT EXISTS idx_orders_affiliate_id ON orders(affiliate_id);
 
-CREATE OR REPLACE VIEW affiliate_stats AS
+CREATE OR REPLACE VIEW affiliate_stats
+WITH (security_invoker = true)
+AS
 SELECT
   a.user_id AS affiliate_id,
   a.referral_code,

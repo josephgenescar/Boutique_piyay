@@ -43,6 +43,15 @@ async function updateHeaderAuth() {
                 if (btnMerchantDash) btnMerchantDash.style.display = 'none';
                 if (navSellLink) navSellLink.style.display = 'none';
             }
+            // Pending vendors can return to their application status page.
+            else if (profile && profile.role === 'pending_seller') {
+                if (btnMerchantDash) {
+                    btnMerchantDash.style.display = 'flex';
+                    btnMerchantDash.href = '/vendor-application-status.html';
+                    btnMerchantDash.textContent = window.t ? window.t('nav.vendor_application') : '⏳ Aplikasyon';
+                }
+                if (navSellLink) navSellLink.style.display = 'none';
+            }
             // Si se yon afilye, montre bouton tablodbò afilye a
             else if (profile && profile.role === 'affiliate') {
                 if (btnMerchantDash) {
