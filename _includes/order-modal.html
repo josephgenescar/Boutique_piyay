@@ -1,148 +1,54 @@
-<!-- MODAL PANIER (POU TOUT PAJ) -->
-<div id="order-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 style="font-size: 20px; font-weight: 800;">Mon Panier 🛒</h2>
-            <button class="modal-close" onclick="closeOrderModal()">✕</button>
-        </div>
-
-        <div id="order-summary" class="modal-body">
-            <!-- Kontni ap parèt via JS -->
-        </div>
-
-        <div class="modal-footer" id="order-form-container" style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 15px;">
-            <div class="order-form">
-                <p style="font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">Détails de livraison</p>
-
-                <input type="text" id="customer-name" placeholder="Nom complet *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                <input type="tel" id="customer-phone" placeholder="Numéro de téléphone *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
-
-                <!-- LIS ZÒN KONPLÈ -->
-                <select id="delivery-zone" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
-                    <option value="">-- Choisissez une zone de livraison --</option>
-                    <option value="Pétion-Ville">Pétion-Ville</option>
-                    <option value="Delmas">Delmas</option>
-                    <option value="Port-au-Prince">Port-au-Prince</option>
-                    <option value="Carrefour">Carrefour</option>
-                    <option value="Tabarre">Tabarre</option>
-                    <option value="Kenscoff">Kenscoff</option>
-                    <option value="Cap-Haïtien">Cap-Haïtien</option>
-                    <option value="Gonaïves">Gonaïves</option>
-                    <option value="Saint-Marc">Saint-Marc</option>
-                    <option value="Jacmel">Jacmel</option>
-                    <option value="Cayes">Cayes</option>
-                    <option value="Lòt Zone">Lòt Zone (Ekri l anba)</option>
-                </select>
-
-                <input type="text" id="other-zone" placeholder="Précisez votre zone ici..." style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; display: none;">
-
-                <input type="text" id="customer-address" placeholder="Adrese Livrezon (Rèn, nimewo kay, etc.) *" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px;">
-
-                <!-- METÒD PEMAN AVEC RADIO BUTTONS -->
-                <label style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase;">Mode de paiement</label>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                        <input type="radio" name="payment-method" value="MonCash" style="margin-right: 10px;">
-                        <span>📲 Payer avec MonCash</span>
-                    </label>
-                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                        <input type="radio" name="payment-method" value="NatCash" style="margin-right: 10px;">
-                        <span>📲 Payer avec NatCash</span>
-                    </label>
-                    <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-                        <input type="radio" name="payment-method" value="Cash" checked style="margin-right: 10px;">
-                        <span>💵 Cash à la livraison</span>
-                    </label>
-                </div>
-
-                <!-- Boutons de paiement (affichage conditionnel) -->
-                <div id="paymentButtonsSection" style="margin-bottom: 15px; display: none; padding: 15px; background: #fff8f4; border-radius: 8px; border: 1px solid #fde2cd;">
-                    <p style="margin: 0 0 12px; font-size: 12px; font-weight: 700; color: #b45309;">Complétez le paiement:</p>
-                    <button type="button" id="moncashPayBtn" style="width: 100%; padding: 12px; margin-bottom: 8px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none;">
-                        ⚡ Payer avec MonCash
-                    </button>
-                    <button type="button" id="natcashPayBtn" style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: none;">
-                        🔵 Payer avec NatCash
-                    </button>
-                </div>
-
-                <div style="margin-bottom:10px; color:#64748b; font-size:13px;">
-                    <b>Gid:</b> MonCash ak NatCash ap redireksyone w pou konplete peman. Cash se lè w resevwa pwodwi a.
-                </div>
-
-                <button id="submitOrderBtn" onclick="submitOrder()" style="width: 100%; padding: 18px; background: #1f2937; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 5px 20px rgba(31, 41, 55, 0.25); display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    Valider la commande
-                </button>
-            </div>
-        </div>
-    </div>
+<div id="order-modal" class="cart-overlay" aria-hidden="true">
+  <section class="cart-sheet" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <header class="cart-header">
+      <div>
+        <p class="cart-eyebrow">BOUTIQUE PIYAY</p>
+        <h2 id="cart-title">Panier <span aria-hidden="true">🛒</span></h2>
+      </div>
+      <button class="cart-close" type="button" onclick="closeOrderModal()" aria-label="Fèmen panier">✕</button>
+    </header>
+    <p class="cart-note">Mete kantite yo ajou la a. Checkout ap verifye pri ak total aktyèl yo sou sèvè a.</p>
+    <div id="order-summary" class="cart-items" aria-live="polite"></div>
+    <footer class="cart-footer" id="order-form-container">
+      <div class="cart-total-row">
+        <span>Total verifye nan checkout</span>
+        <span id="cart-server-total">Ap kalkile sou sèvè…</span>
+      </div>
+      <p id="cart-quote-status" class="cart-quote-status" role="status"></p>
+      <button class="cart-checkout-button" id="cart-checkout-button" type="button" onclick="goToCheckout()" disabled>
+        Kontinye nan checkout <span aria-hidden="true">→</span>
+      </button>
+    </footer>
+  </section>
 </div>
 
-<script>
-    document.getElementById('delivery-zone')?.addEventListener('change', function() {
-        const otherInput = document.getElementById('other-zone');
-        if (this.value === 'Lòt Zone') { otherInput.style.display = 'block'; }
-        else { otherInput.style.display = 'none'; }
-    });
-
-    // Afficher/masquer les boutons de paiement MonCash et NatCash
-    const paymentMethodRadios = document.querySelectorAll('input[name="payment-method"]');
-    const paymentButtonsSection = document.getElementById('paymentButtonsSection');
-    const moncashPayBtn = document.getElementById('moncashPayBtn');
-    const natcashPayBtn = document.getElementById('natcashPayBtn');
-
-    function updatePaymentButtons() {
-        const selectedMethod = document.querySelector('input[name="payment-method"]:checked')?.value;
-        
-        if (selectedMethod === 'MonCash') {
-            paymentButtonsSection.style.display = 'block';
-            moncashPayBtn.style.display = 'block';
-            natcashPayBtn.style.display = 'none';
-        } else if (selectedMethod === 'NatCash') {
-            paymentButtonsSection.style.display = 'block';
-            moncashPayBtn.style.display = 'none';
-            natcashPayBtn.style.display = 'block';
-        } else {
-            paymentButtonsSection.style.display = 'none';
-        }
-    }
-
-    paymentMethodRadios.forEach(radio => {
-        radio.addEventListener('change', updatePaymentButtons);
-    });
-
-    // Initialiser au chargement
-    updatePaymentButtons();
-</script>
-
 <style>
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-.modal-content { background: white; width: 95%; max-width: 550px; border-radius: 25px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-close { background: #f3f4f6; border: none; font-size: 20px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-/* Carte produit */
-.cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #f1f5f9; border-radius: 12px; margin-bottom: 12px; background: #fafbfc; }
-.cart-item-image { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; }
-.cart-item-details { flex: 1; }
-.cart-item-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; color: #1e293b; }
-.cart-item-price { font-weight: 800; font-size: 16px; color: #ff4747; }
-.cart-item-quantity { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.qty-btn { width: 30px; height: 30px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-.qty-btn:hover { background: #f1f5f9; }
-.cart-item-delete { background: none; border: none; font-size: 18px; cursor: pointer; color: #ef4444; padding: 5px; }
-
-/* Ligne horizontale suggestion */
-.suggestion-line { display: flex; align-items: center; margin: 20px 0; color: #64748b; font-size: 13px; font-weight: 600; }
-.suggestion-line::before, .suggestion-line::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
-.suggestion-line span { padding: 0 15px; }
-
-/* Total */
-.cart-total { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 12px; }
-.cart-total-label { font-size: 14px; font-weight: 700; color: #64748b; }
-.cart-total-amount { font-size: 24px; font-weight: 900; color: #ff4747; }
-
-/* Radio buttons */
-input[type="radio"] { accent-color: #ff4747; width: 18px; height: 18px; }
-
+  .cart-overlay { position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(13,27,42,.52); backdrop-filter:blur(4px); }
+  .cart-overlay.is-open { display:flex; }
+  .cart-sheet { display:flex; flex-direction:column; width:min(100%,620px); max-height:min(88vh,780px); overflow:hidden; background:#fff; border:1px solid #e4e9ec; border-radius:18px; box-shadow:0 24px 70px rgba(15,35,45,.22); }
+  .cart-header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:22px 24px 14px; }
+  .cart-eyebrow { margin:0 0 4px; color:#176a59; font-size:10px; font-weight:800; letter-spacing:.12em; }
+  .cart-header h2 { margin:0; color:#172a2a; font-size:23px; font-weight:850; }
+  .cart-close { display:grid; place-items:center; width:42px; height:42px; border:1px solid #e4e9ec; border-radius:50%; background:#f7f9f8; color:#243b39; font-size:19px; cursor:pointer; }
+  .cart-note { margin:0; padding:0 24px 16px; color:#647477; font-size:13px; line-height:1.45; }
+  .cart-items { min-height:80px; padding:0 24px; overflow-y:auto; overscroll-behavior:contain; }
+  .cart-empty { display:grid; place-items:center; min-height:190px; color:#687a7d; text-align:center; }
+  .cart-empty strong { display:block; margin-bottom:5px; color:#243b39; font-size:16px; }
+  .cart-line { display:grid; grid-template-columns:72px minmax(0,1fr) auto; align-items:center; gap:14px; padding:13px 0; border-bottom:1px solid #edf0f1; }
+  .cart-line-image { width:72px; height:72px; border-radius:8px; object-fit:cover; background:#f1f4f3; }
+  .cart-line-main { min-width:0; }
+  .cart-line-title { display:block; overflow:hidden; color:#1e3131; font-size:14px; font-weight:750; text-overflow:ellipsis; white-space:nowrap; }
+  .cart-line-seller { display:block; margin-top:3px; color:#687a7d; font-size:12px; }
+  .cart-line-price { display:block; margin-top:7px; color:#9a5e12; font-size:12px; font-weight:700; }
+  .cart-line-controls { display:flex; align-items:center; gap:7px; margin-top:9px; }
+  .cart-qty-button { display:grid; place-items:center; width:30px; height:30px; border:1px solid #d7e0df; border-radius:6px; background:#fff; color:#23443f; font-size:17px; cursor:pointer; }
+  .cart-qty-value { min-width:20px; color:#243b39; text-align:center; font-size:13px; font-weight:700; }
+  .cart-remove-button { width:34px; height:34px; border:0; background:transparent; color:#a5453e; font-size:18px; cursor:pointer; }
+  .cart-footer { padding:16px 24px 22px; border-top:1px solid #e9eeed; background:#fbfcfb; }
+  .cart-total-row { display:flex; align-items:center; justify-content:space-between; gap:14px; color:#536966; font-size:13px; font-weight:700; }
+  .cart-total-row span:last-child { color:#172a2a; font-size:17px; font-weight:850; }
+  .cart-quote-status { min-height:18px; margin:6px 0 10px; color:#8b5e20; font-size:12px; }
+  .cart-checkout-button { display:flex; justify-content:center; align-items:center; gap:10px; width:100%; min-height:48px; border:0; border-radius:7px; background:#176a59; color:#fff; font-size:14px; font-weight:800; cursor:pointer; }
+  .cart-checkout-button:disabled { background:#aab9b6; cursor:not-allowed; }
+  @media(max-width:560px) { .cart-overlay { padding:0; align-items:flex-end; } .cart-sheet { width:100%; max-height:91vh; border-radius:16px 16px 0 0; } .cart-header { padding:18px 18px 12px; } .cart-note { padding:0 18px 13px; } .cart-items { padding:0 18px; } .cart-footer { padding:14px 18px calc(18px + env(safe-area-inset-bottom)); } .cart-line { grid-template-columns:60px minmax(0,1fr) auto; gap:10px; } .cart-line-image { width:60px; height:60px; } }
 </style>

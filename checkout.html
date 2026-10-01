@@ -46,6 +46,8 @@ title: Finaliser la Commande - Boutique Piyay
     .product-price { font-weight: 700; color: #ef4444; text-align: right; }
     .product-qty { color: #475569; text-align: center; }
     .summary-row.total { font-size: 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .manual-payment-panel { display: none; padding: 20px; border: 1px solid #fbbf24; border-radius: 12px; background: #fffbeb; }
+    .manual-payment-panel img { max-width: 180px; max-height: 180px; object-fit: contain; }
     @media (max-width: 980px) {
       .checkout-container, .checkout-content { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
@@ -106,7 +108,7 @@ title: Finaliser la Commande - Boutique Piyay
                   <div class="payment-icon">⚡</div>
                   <div class="payment-info">
                     <strong data-i18n="pages.checkout.payment_moncash">MonCash</strong>
-                    <p data-i18n="pages.checkout.payment_moncash_desc">Peye dirèk sou MonCash. Kòmand lan ap anrejistre otomatikman e vandè a pral resevwa notifikasyon.</p>
+                    <p data-i18n="pages.checkout.payment_moncash_desc">Peye Boutique Piyay, mete kòd BP kòmand lan kòm nòt, antre ID tranzaksyon an, epi tann verifikasyon admin.</p>
                   </div>
                 </div>
               </label>
@@ -116,7 +118,7 @@ title: Finaliser la Commande - Boutique Piyay
                   <div class="payment-icon">🔵</div>
                   <div class="payment-info">
                     <strong data-i18n="pages.checkout.payment_natcash">NatCash</strong>
-                    <p data-i18n="pages.checkout.payment_natcash_desc">Peye via NatCash. Kòmand lan ap anrejistre otomatikman e vandè a pral resevwa detay yo.</p>
+                    <p data-i18n="pages.checkout.payment_natcash_desc">Peye Boutique Piyay, mete kòd BP kòmand lan kòm nòt, antre ID tranzaksyon an, epi tann verifikasyon admin.</p>
                   </div>
                 </div>
               </label>
@@ -126,23 +128,40 @@ title: Finaliser la Commande - Boutique Piyay
                   <div class="payment-icon">💵</div>
                   <div class="payment-info">
                     <strong data-i18n="pages.checkout.payment_cod">Lè w resevwa (COD)</strong>
-                    <p data-i18n="pages.checkout.payment_cod_desc">Payer kach lè yo livre w pwodwi a.</p>
+                    <p data-i18n="pages.checkout.payment_cod_desc">Si opsyon an disponib, peye ajan livrezon Boutique Piyay la lè w resevwa pwodwi a.</p>
                   </div>
                 </div>
               </label>
             </div>
           </div>
 
-          <div class="form-actions">
-            <!-- OTP Section -->
-            <div id="otpSection" style="display:none; background:#fef3c7; padding:18px; border-radius:14px; margin-bottom:16px;">
-              <h3 style="margin-top:0; color:#b45309;">🔐 Konfime Peman w</h3>
-              <p style="color:#666; margin:10px 0;">Kod OTP ou: <strong id="otpCode" style="font-size:24px; color:#ef4444;">------</strong></p>
-              <p style="color:#666; margin:10px 0; font-size:14px;">Voye kod sa a bay vandè a oswa kopil paman ou</p>
-              <button type="button" class="btn-primary" id="btn-confirm-otp" style="margin-top:10px;">✅ Konfime</button>
+          <div class="manual-payment-panel" id="manualPaymentPanel">
+            <h2>Peman pou Boutique Piyay</h2>
+            <p id="paymentInstructionText">Tanpri voye montan egzak la sou nimewo platfòm nan, epi mete referans lan kòm nòt.</p>
+            <div class="info-row"><span>Montan egzak</span><strong id="manualPaymentAmount">0 HTG</strong></div>
+            <div class="info-row"><span>Nimewo peman Boutique Piyay</span><strong id="manualPaymentNumber">Ap chaje...</strong></div>
+            <div class="info-row"><span>Kòd referans pou nòt la</span><strong id="manualPaymentReference"></strong></div>
+            <img id="manualPaymentQr" alt="QR peman Boutique Piyay" hidden>
+            <p id="manualPaymentExpiry"></p>
+            <div class="form-group">
+              <label for="manualTransactionId">ID tranzaksyon an *</label>
+              <input id="manualTransactionId" type="text" maxlength="120" autocomplete="off" required>
             </div>
+            <div class="form-group" style="margin-top:14px;">
+              <label for="paymentProof">Foto konfimasyon (opsyonèl, PNG/JPG/WEBP, max 4 MB)</label>
+              <input id="paymentProof" type="file" accept="image/png,image/jpeg,image/webp">
+            </div>
+            <button type="button" class="btn-primary" id="submitManualPayment">Voye peman pou verifikasyon</button>
+            <p id="manualPaymentStatus" role="status"></p>
+          </div>
 
-            <!-- Payment Button (appears only after all fields filled) -->
+          <div id="cashPaymentPanel" class="manual-payment-panel" style="background:#f0fdf4;border-color:#86efac;">
+            <strong>Kòmand lan anrejistre kòm peman lè livrezon.</strong>
+            <p>Peye ajan livrezon Boutique Piyay la; pa peye founisè a dirèkteman. Pa gen lajan ki kredite founisè a anvan administratè a konfime Boutique Piyay resevwa peman an.</p>
+            <strong id="cashPaymentReference"></strong>
+          </div>
+
+          <div class="form-actions">
             <button type="button" class="btn-primary" id="btn-pay" style="width:100%; padding:20px; display:none;" data-i18n="pages.checkout.confirm_button">
               KONFIME & POURSUIVRE PEMAN →
             </button>
@@ -156,9 +175,9 @@ title: Finaliser la Commande - Boutique Piyay
               <strong data-i18n="pages.checkout.guide_title">Gid pou Peman:</strong><br>
               <span data-i18n="pages.checkout.guide_step_1">1. Ranpli enfòmasyon yo.</span><br>
               <span data-i18n="pages.checkout.guide_step_2">2. Chwazi MonCash, NatCash oswa Cash.</span><br>
-              <span data-i18n="pages.checkout.guide_step_3">3. Kòmand ou an ap anrejistre otomatikman e sistèm nan ap enfòme vandè a.</span><br>
-              <span data-i18n="pages.checkout.guide_step_4">4. Si w chwazi MonCash, ou pral redireksyone pou konplete peman an.</span><br>
-              <span data-i18n="pages.checkout.guide_step_5">5. Si w chwazi NatCash oswa Cash, ou pral resevwa konfimasyon sou paj sa a.</span><br>
+              <span data-i18n="pages.checkout.guide_step_3">3. Pou MonCash/NatCash, voye montan egzak la bay Boutique Piyay epi mete kòd BP a kòm nòt.</span><br>
+              <span data-i18n="pages.checkout.guide_step_4">4. Antre ID tranzaksyon an; prèv foto a opsyonèl.</span><br>
+              <span data-i18n="pages.checkout.guide_step_5">5. Admin verifye peman an anvan kòmand lan konfime.</span><br>
             </div>
           </div>
         </form>
@@ -187,6 +206,7 @@ title: Finaliser la Commande - Boutique Piyay
             <strong data-i18n="pages.checkout.total_label">Total pou peye</strong>
             <strong id="checkoutTotal" style="color:#ef4444;">0 HTG</strong>
           </div>
+          <p id="checkoutQuoteStatus" role="status" style="color:#64748b;font-size:13px;"></p>
           <div class="summary-card-note" data-i18n="pages.checkout.summary_note">Konfime detay yo, epi klike sou bouton an pou anrejistre kòmand lan otomatikman. Vandè a ap resevwa notifikasyon.</div>
         </div>
       </div>
@@ -202,11 +222,6 @@ function handleCheckoutSubmit(event) {
   } else {
     alert('Kòd checkout la pa jwenn. Tanpri rafrechi paj la.');
   }
-}
-
-// Generate 4-digit OTP
-function generateOTP() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 // Check if all required fields are filled
@@ -228,7 +243,7 @@ function updatePaymentVisibility() {
   
   if (isValid) {
     if (paymentSection) paymentSection.style.display = 'block';
-    if (payBtn) payBtn.style.display = 'block';
+    if (payBtn) payBtn.style.display = window.checkoutQuoteReady ? 'block' : 'none';
     if (validationMsg) validationMsg.style.display = 'none';
   } else {
     if (paymentSection) paymentSection.style.display = 'none';
@@ -244,43 +259,7 @@ function handlePaymentButtonClick() {
     return;
   }
   
-  // Generate OTP
-  const otp = generateOTP();
-  document.getElementById('currentOTP', otp);
-  
-  // Store OTP in data attribute for later verification
-  document.getElementById('btn-pay').dataset.otp = otp;
-  
-  // Show OTP section
-  document.getElementById('otpSection').style.display = 'block';
-  document.getElementById('otpCode').textContent = otp;
-  document.getElementById('btn-pay').style.display = 'none';
-  document.getElementById('paymentSection').style.display = 'none';
-  
-  // Scroll to OTP section
-  document.getElementById('otpSection').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Handle OTP confirmation
-function handleOTPConfirm() {
-  const btn = document.getElementById('btn-confirm-otp');
-  const originalText = btn.innerText;
-  
-  // Simulate OTP verification (in real app, send to backend)
-  btn.disabled = true;
-  btn.innerText = '⏳ Konfime...';
-  
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.innerText = originalText;
-    
-    // OTP verified - submit the order
-    if (typeof window.submitOrder === 'function') {
-      window.submitOrder();
-    } else {
-      alert('Kòd checkout la pa jwenn. Tanpri rafrechi paj la.');
-    }
-  }, 1500);
+  window.submitOrder();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -291,11 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById(id);
     if (input) {
       input.addEventListener('input', () => {
-        renderCheckoutSummary();
         updatePaymentVisibility();
       });
       input.addEventListener('change', () => {
-        renderCheckoutSummary();
         updatePaymentVisibility();
       });
     }
@@ -306,43 +283,125 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', handlePaymentButtonClick);
   }
   
-  const confirmOtpBtn = document.getElementById('btn-confirm-otp');
-  if (confirmOtpBtn) {
-    confirmOtpBtn.addEventListener('click', handleOTPConfirm);
-  }
-  
+  document.getElementById('submitManualPayment')?.addEventListener('click', submitManualPayment);
   // Initial visibility check
   updatePaymentVisibility();
 });
 
-function renderCheckoutSummary() {
+async function submitManualPayment() {
+  const transactionId = document.getElementById('manualTransactionId').value.trim();
+  const phone = document.getElementById('customer-phone').value.trim();
+  const status = document.getElementById('manualPaymentStatus');
+  const button = document.getElementById('submitManualPayment');
+  const order = window.marketplaceOrder;
+  if (!order || !transactionId || !phone) {
+    status.textContent = 'Antre ID tranzaksyon an ak menm telefòn ki nan kòmand lan.';
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = 'Ap voye peman an pou verifikasyon...';
+  try {
+    const file = document.getElementById('paymentProof').files[0];
+    let proof;
+    if (file) {
+      if (file.size > 4 * 1024 * 1024 || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+        throw new Error('Foto a dwe PNG, JPG oswa WEBP epi li pa dwe depase 4 MB.');
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      let binary = '';
+      for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+      }
+      proof = { data: btoa(binary) };
+    }
+    const response = await fetch('/.netlify/functions/marketplace-payments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'submit-payment', order_group_id: order.order_group_id,
+        customer_phone: phone, provider_transaction_id: transactionId, proof
+      })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Pa t kapab soumèt peman an.');
+    status.textContent = 'Peman an soumèt. Li pral pase nan verifikasyon admin anvan kòmand lan konfime.';
+    button.hidden = true;
+    localStorage.removeItem('boutique_piyay_cart');
+    localStorage.removeItem('bp_checkout_idempotency');
+    if (typeof refreshBadge === 'function') refreshBadge();
+    if (typeof drawCart === 'function') drawCart();
+  } catch (error) {
+    status.textContent = error.message;
+    button.disabled = false;
+  }
+}
+
+let checkoutQuoteRequest = 0;
+window.checkoutQuoteReady = false;
+
+async function renderCheckoutSummary() {
   const checkoutText = window.translations?.[window.currentLang]?.pages?.checkout || {};
   const cart = JSON.parse(localStorage.getItem('boutique_piyay_cart') || '[]');
   const container = document.getElementById('checkoutItems');
   const customerInfo = document.getElementById('checkoutCustomerInfo');
+  const totalDisplay = document.getElementById('checkoutTotal');
+  const quoteStatus = document.getElementById('checkoutQuoteStatus');
+  const requestId = ++checkoutQuoteRequest;
+  window.checkoutQuoteReady = false;
+  updatePaymentVisibility();
   const name = document.getElementById('customer-name')?.value.trim() || '';
   const phone = document.getElementById('customer-phone')?.value.trim() || '';
   const zone = document.getElementById('delivery-zone')?.value || '';
   const address = document.getElementById('customer-address')?.value.trim() || '';
 
-  let total = 0;
   if (cart.length === 0) {
-    container.innerHTML = `<div style="padding:20px; color:#666;">${checkoutText.empty_cart || 'Pa gen pwodwi nan panier.'}</div>`;
-    document.getElementById('checkoutTotal').textContent = '0 HTG';
-  } else {
-    container.innerHTML = cart.map(item => {
-      const qty = item.quantity || item.qty || 1;
-      const lineTotal = item.price * qty;
-      total += lineTotal;
-      return `
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
-          <span>${qty}x ${item.title}</span>
-          <span style="font-weight:700;">${lineTotal.toLocaleString()} HTG</span>
-        </div>
-      `;
-    }).join('');
-    document.getElementById('checkoutTotal').textContent = total.toLocaleString() + ' HTG';
+    container.textContent = checkoutText.empty_cart || 'Pa gen pwodwi nan panier.';
+    totalDisplay.textContent = '—';
+    quoteStatus.textContent = '';
+    if (name || phone || zone || address) customerInfo.style.display = 'block';
+    return;
   }
+
+  container.textContent = 'Ap verifye pri ak disponibilite pwodwi yo sou sèvè a…';
+  totalDisplay.textContent = 'Ap verifye…';
+  quoteStatus.textContent = 'Pri kliyan an te wè nan lis la ka chanje; checkout verifye pri aktyèl la.';
+  try {
+    const response = await fetch('/.netlify/functions/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'quote',
+        items: cart.map((item) => ({ product_id: item.id, quantity: Number(item.qty || item.quantity || 1) }))
+      })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Pa kapab verifye panier sa a.');
+    if (requestId !== checkoutQuoteRequest) return;
+
+    const fragment = document.createDocumentFragment();
+    result.quote.items.forEach((item) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;gap:14px;margin-bottom:12px;font-size:14px;';
+      const description = document.createElement('span');
+      description.textContent = `${item.quantity} × ${item.title} · ${item.seller_name}`;
+      const lineTotal = document.createElement('strong');
+      lineTotal.textContent = `${Number(item.line_total).toLocaleString('fr-HT')} HTG`;
+      row.append(description, lineTotal);
+      fragment.appendChild(row);
+    });
+    container.replaceChildren(fragment);
+    totalDisplay.textContent = `${Number(result.quote.total_amount).toLocaleString('fr-HT')} HTG`;
+    quoteStatus.textContent = 'Total kalkile nan baz done a; sèvè a ap verifye l ankò lè ou kreye kòmand lan.';
+    window.checkoutQuoteReady = true;
+  } catch (error) {
+    if (requestId !== checkoutQuoteRequest) return;
+    container.textContent = 'Retire atik ki pa disponib la oswa eseye ankò.';
+    totalDisplay.textContent = 'Pa disponib';
+    quoteStatus.textContent = error.message;
+    window.checkoutQuoteReady = false;
+  }
+  updatePaymentVisibility();
 
   if (name || phone || zone || address) {
     customerInfo.style.display = 'block';

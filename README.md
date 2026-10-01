@@ -23,7 +23,7 @@ Guide komplet pou amelyorasyon sit e-commerce Jekyll la
 - Thème de couleurs personnalisable
 
 ### 👨‍💼 Panel Admin Professionnel
-- **Netlify CMS** intégré avec interface intuitive
+- Dashboard admin et finances connecté à Supabase
 - Gestion complète des produits (images multiples, variants, stock)
 - Gestion des catégories avec icônes
 - Configuration du site centralisée
@@ -73,7 +73,7 @@ Guide komplet pou amelyorasyon sit e-commerce Jekyll la
 ```bash
 - Ruby 2.7+
 - Jekyll 4.0+
-- Node.js 14+ (pour Netlify CMS)
+- Node.js 20+ (fonctions Netlify)
 - Git
 ```
 
@@ -84,8 +84,9 @@ Copiez tous les fichiers fournis dans votre pwojè Jekyll existant:
 ```
 votre-projet/
 ├── admin/
-│   ├── config.yml          # Configuration Netlify CMS
-│   └── index.html          # Interface admin
+│   ├── admin.html          # Dashboard admin Supabase
+│   ├── finance.html        # Paiements et ledger
+│   └── login.html          # Connexion admin
 ├── _layouts/
 │   └── product.html        # Layout produit amélioré
 ├── assets/
@@ -120,24 +121,14 @@ defaults:
       published: true
 ```
 
-### Étape 3: Installer Netlify CMS
+### Étape 3: Accéder à l'administration
 
-1. Créez un compte sur [Netlify](https://netlify.com)
-2. Connectez votre repository GitHub
-3. Activez Netlify Identity:
-   - Site Settings → Identity → Enable Identity
-   - Registration preferences → Invite only (recommandé)
-   - External providers → Ajouterz Google/GitHub si désiré
-4. Activez Git Gateway:
-   - Settings → Identity → Services → Git Gateway → Enable
+Les fonctions d'administration utilisent les comptes et rôles Supabase existants:
 
-### Étape 4: Inviter Utilisateurs Admin
-
-Dans Netlify Dashboard:
-1. Identity → Invite users
-2. Entrez les emails des administrateurs
-3. Ils recevront un lien d'invitation
-4. Accès admin: `https://votre-site.netlify.app/admin`
+- Connexion: `/admin/login.html`
+- Dashboard admin: `/admin/admin.html`
+- Paiements, retraits et ledger: `/admin/finance.html`
+- Produits: `/admin/products.html`
 
 ---
 
@@ -146,8 +137,8 @@ Dans Netlify Dashboard:
 ### Accès au Panel Admin
 
 ```
-URL: https://votre-site.com/admin
-Ou localement: http://localhost:4000/admin
+URL: https://votre-site.com/admin/login.html
+Ou localement: http://localhost:4000/admin/login.html
 ```
 
 ### Structure du Panel
@@ -191,8 +182,9 @@ Configuration globale:
 
 ```
 admin/
-  config.yml          → Configuration CMS (produits, catégories, pages)
-  index.html          → Interface admin avec loading screen
+  admin.html          → Dashboard Supabase
+  finance.html        → Paiements, retraits et ledger
+  login.html          → Connexion admin
 
 _layouts/
   product.html        → Template produit avec:
@@ -490,12 +482,11 @@ console.log(localStorage.getItem('test'));
 
 ### Admin ne Charge pas
 
-**Cause:** Netlify Identity pas configuré
+**Cause:** Session Supabase absente ou compte sans rôle admin
 
 **Solution:**
-1. Vérifiez `admin/config.yml`
-2. Netlify Dashboard → Enable Identity
-3. Enable Git Gateway
+1. Connectez-vous via `/admin/login.html`
+2. Vérifiez que le profil Supabase possède le rôle `admin`
 
 ### Images ne S'affichent pas
 
@@ -525,7 +516,6 @@ jekyll build --trace
 
 ### Documentation
 - [Jekyll](https://jekyllrb.com/docs/)
-- [Netlify CMS](https://www.netlifycms.org/docs/)
 - [Liquid Template](https://shopify.github.io/liquid/)
 
 ### Support
@@ -578,7 +568,6 @@ Design by Rivayo-Tech
 ## 🙏 Crédits
 
 - Jekyll Framework
-- Netlify CMS
 - Design inspiré par les meilleures pratiques e-commerce
 - Icônes: Emojis natifs
 

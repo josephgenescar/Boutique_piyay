@@ -204,7 +204,6 @@ CREATE INDEX IF NOT EXISTS idx_order_group_id ON orders(order_group_id);
 ✅ `index.html` - loadAllData function (fiks poud produits)
 ✅ `assets/js/flash-sale-utils.js` - NOUVO file avec helper functions
 ✅ `SQL_SETUP.md` - Full SQL commands
-✅ `DEBUG_MARKETPLACE.html` - Debug page
 
 ---
 

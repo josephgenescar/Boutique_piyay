@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peman ak Ledger | Boutique Piyay</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { color-scheme: light; --ink:#202a36; --muted:#64717d; --line:#d8e0e5; --paper:#f4f6f4; --white:#fff; --red:#be3f34; --green:#257457; --gold:#b07a17; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.5 'Plus Jakarta Sans',sans-serif; }
+    header { background:#183c36; color:white; padding:22px max(20px,calc((100vw - 1180px)/2)); display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    header a { color:white; }
+    main { max-width:1180px; margin:28px auto; padding:0 20px; }
+    section { margin:0 0 30px; padding:20px 0; border-bottom:1px solid var(--line); }
+    h1,h2,h3,p { margin-top:0; } h1 { font-size:24px; margin-bottom:0; } h2 { font-size:19px; }
+    .subtle { color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+    .metric { border-top:3px solid #397c69; background:var(--white); padding:15px; }
+    .metric span { display:block; color:var(--muted); font-size:12px; }
+    .metric strong { display:block; font:700 22px 'Space Mono',monospace; margin-top:5px; }
+    .item { background:var(--white); border:1px solid var(--line); padding:16px; margin:10px 0; }
+    .item-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .proof { max-width:180px; max-height:180px; object-fit:contain; display:block; margin:12px 0; }
+    label { display:block; font-size:12px; font-weight:700; margin:10px 0 4px; }
+    input,select { min-height:40px; border:1px solid #aebcc2; border-radius:4px; background:white; padding:8px 10px; color:var(--ink); max-width:100%; }
+    input[type=number] { width:145px; }
+    button { border:0; border-radius:4px; background:#245d50; color:white; padding:10px 14px; font-weight:700; cursor:pointer; }
+    button.secondary { background:#e5ece9; color:#183c36; border:1px solid #b6c9c1; }
+    button.danger { background:var(--red); } button:disabled { opacity:.6; cursor:wait; }
+    .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:end; }
+    .controls label { margin:0; }
+    table { width:100%; border-collapse:collapse; background:white; font-size:13px; }
+    th,td { padding:10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:var(--muted); background:#edf1ef; }
+    .table-wrap { overflow:auto; }
+    .notice { padding:10px 12px; background:#fff6dc; border-left:3px solid var(--gold); margin:10px 0; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    #authMessage { padding:40px 0; }
+    @media(max-width:600px) { header { align-items:flex-start; flex-direction:column; } main { padding:0 14px; } section { padding:16px 0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1>Finans & Ledger</h1><span class="subtle" style="color:#d1ddd9;">Boutique Piyay · Admin</span></div>
+    <nav><a href="/admin/admin.html">Retounen Admin</a></nav>
+  </header>
+  <main>
+    <div id="authMessage">Ap verifye aksè...</div>
+    <div id="financeApp" hidden>
+      <section>
+        <h2>Peman pou verifye</h2>
+        <p class="subtle">Verifye tranzaksyon an nan kont ofisyèl Boutique Piyay la anvan ou konfime. Foto a se yon referans sèlman.</p>
+        <div id="paymentQueue"></div>
+      </section>
+      <section>
+        <h2>Demann retrè</h2>
+        <div id="payoutQueue"></div>
+      </section>
+      <section>
+        <h2>Ranbousman / ranvèsman</h2>
+        <p class="subtle">Sa kreye antre konpanse nan ledger la; li pa efase okenn liy.</p>
+        <div class="controls">
+          <label>Referans kòmand<input id="refundOrderGroup" placeholder="BP-XXXXXXXXXX"></label>
+          <label>Rezon<input id="refundReason" maxlength="500"></label>
+          <button class="danger" id="refundOrderButton" type="button">Kreye ranvèsman</button>
+        </div>
+      </section>
+      <section>
+        <h2>Paramèt peman</h2>
+        <form id="settingsForm" class="grid">
+          <div><label for="moncash_number">Nimewo MonCash platfòm</label><input id="moncash_number"></div>
+          <div><label for="moncash_qr_url">URL QR MonCash</label><input id="moncash_qr_url" type="url"></div>
+          <div><label for="natcash_number">Nimewo NatCash platfòm</label><input id="natcash_number"></div>
+          <div><label for="natcash_qr_url">URL QR NatCash</label><input id="natcash_qr_url" type="url"></div>
+          <div><label for="payment_expiry_hours">Ekspirasyon peman (è)</label><input id="payment_expiry_hours" type="number" min="1" max="168"></div>
+          <div><label for="refund_hold_days">Delè ranbousman (jou)</label><input id="refund_hold_days" type="number" min="0" max="90"></div>
+          <div><label for="minimum_payout">Minimòm retrè (HTG)</label><input id="minimum_payout" type="number" min="0" step="0.01"></div>
+          <div><label for="default_commission_rate">Komisyon platfòm (%)</label><input id="default_commission_rate" type="number" min="0" max="100" step="0.01"></div>
+          <div><label for="default_affiliate_rate">Pati afilye nan komisyon (%)</label><input id="default_affiliate_rate" type="number" min="0" max="100" step="0.01"></div>
+          <div style="align-self:end"><button type="submit">Anrejistre paramèt</button></div>
+        </form>
+      </section>
+      <section>
+        <h2>Règ komisyon espesyal</h2>
+        <form id="commissionForm" class="controls">
+          <label>Dimansyon<select id="commissionScope"><option value="category">Kategori</option><option value="product">Pwodwi ID</option><option value="supplier">Founisè ID</option></select></label>
+          <label>ID oswa non kategori<input id="commissionScopeId" required></label>
+          <label>Komisyon (%)<input id="commissionRate" type="number" min="0" max="100" step="0.01" required></label>
+          <button type="submit">Sove règ</button>
+        </form>
+      </section>
+      <section>
+        <h2>Rapò ledger</h2>
+        <div class="controls" style="margin-bottom:14px;">
+          <label>Depi<input id="reportFrom" type="date"></label>
+          <label>Jiska<input id="reportTo" type="date"></label>
+          <label>Metòd<select id="reportMethod"><option value="">Tout metòd</option><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="cash">Kach/lè livrezon</option><option value="bank">Bank</option></select></label>
+          <button id="loadReport" type="button">Afiche rapò</button>
+          <button id="downloadCsv" class="secondary" type="button">Ekspòte CSV</button>
+        </div>
+        <div class="grid" id="reportMetrics"></div>
+      </section>
+      <p id="pageStatus" class="subtle" role="status"></p>
+    </div>
+  </main>
+<script>
+  const SUP_URL = 'https://letyferfjpxmstohvgcj.supabase.co';
+  const SUP_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg';
+  const keyParts = SUP_KEY.split('.');
+  const sup = window.supabase.createClient(SUP_URL, [keyParts[0], ...keyParts.slice(-2)].join('.'));
+  let accessToken = '';
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
+  const money = (value) => `${Number(value || 0).toLocaleString()} HTG`;
+
+  async function api(url, options = {}) {
+    const response = await fetch(url, { ...options, headers: { Authorization: `Bearer ${accessToken}`, ...(options.headers || {}) } });
+    const contentType = response.headers.get('content-type') || '';
+    if (!response.ok) {
+      const data = contentType.includes('json') ? await response.json() : { error: await response.text() };
+      throw new Error(data.error || 'Demann lan echwe.');
+    }
+    return contentType.includes('json') ? response.json() : response.blob();
+  }
+  const post = (body) => api('/.netlify/functions/marketplace-payments', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+
+  async function init() {
+    const { data:{ session } } = await sup.auth.getSession();
+    if (!session) { location.href = '/admin/login.html'; return; }
+    accessToken = session.access_token;
+    const { data: profile } = await sup.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+    if (profile?.role !== 'admin') { document.getElementById('authMessage').textContent = 'Aksè admin obligatwa.'; return; }
+    document.getElementById('authMessage').hidden = true;
+    document.getElementById('financeApp').hidden = false;
+    document.getElementById('settingsForm').addEventListener('submit', saveSettings);
+    document.getElementById('commissionForm').addEventListener('submit', saveCommission);
+    document.getElementById('loadReport').addEventListener('click', loadReport);
+    document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
+    document.getElementById('refundOrderButton').addEventListener('click', refundOrder);
+    await loadAdmin();
+    await loadReport();
+  }
+
+  async function loadAdmin() {
+    const data = await api('/.netlify/functions/marketplace-payments?view=admin');
+    const payments = document.getElementById('paymentQueue');
+    payments.innerHTML = data.payments.length ? data.payments.map((payment) => `
+      <article class="item">
+        <div class="item-head"><strong>${esc(payment.order_group_id)} · ${money(payment.expected_amount)}</strong><span>${esc(payment.payment_method)} · ${esc(payment.payment_status)}</span></div>
+        <p>Referans kliyan an dwe mete: <b>${esc(payment.payment_reference)}</b><br>ID tranzaksyon: <b>${esc(payment.provider_transaction_id || 'Peman kach')}</b><br>Telefòn: ${esc(payment.customer_phone)}</p>
+        ${payment.proof_url ? `<a href="${esc(payment.proof_url)}" target="_blank" rel="noopener"><img class="proof" src="${esc(payment.proof_url)}" alt="Prèv peman prive"></a>` : '<p class="subtle">Pa gen foto prèv.</p>'}
+        <div class="actions"><button onclick="reviewPayment('${esc(payment.order_group_id)}','confirm')">${payment.payment_method === 'cash' ? 'Make kach la resevwa' : 'Konfime apre verifikasyon kont'}</button><button class="danger" onclick="reviewPayment('${esc(payment.order_group_id)}','reject')">Rejte</button></div>
+      </article>`).join('') : '<p class="subtle">Pa gen peman k ap tann verifikasyon.</p>';
+    document.getElementById('payoutQueue').innerHTML = data.payouts.length ? data.payouts.map((payout) => `
+      <article class="item"><div class="item-head"><strong>${esc(payout.account_type)} · ${money(payout.amount)}</strong><span>${esc(payout.method)} · ${esc(payout.status)}</span></div>
+      <p>Kont: ${esc(payout.destination)} · Demann: ${new Date(payout.requested_at).toLocaleString()}</p>
+      <div class="actions"><button onclick="reviewPayout('${payout.id}','approve')">Apwouve</button><button class="secondary" onclick="reviewPayout('${payout.id}','paid')">Make peye</button><button class="danger" onclick="reviewPayout('${payout.id}','reject')">Rejte</button></div></article>`).join('') : '<p class="subtle">Pa gen retrè k ap tann.</p>';
+    const settings = data.settings || {};
+    for (const key of ['moncash_number','moncash_qr_url','natcash_number','natcash_qr_url','payment_expiry_hours','refund_hold_days','minimum_payout']) document.getElementById(key).value = settings[key] ?? '';
+    document.getElementById('default_commission_rate').value = Number(settings.default_commission_rate || 0) * 100;
+    document.getElementById('default_affiliate_rate').value = Number(settings.default_affiliate_rate || 0) * 100;
+  }
+
+  async function reviewPayment(orderGroupId, decision) {
+    let reason = '';
+    if (decision === 'reject') { reason = prompt('Bay rezon rejè a:') || ''; if (!reason.trim()) return; }
+    if (decision === 'confirm' && !confirm('Èske ou verifye peman sa a dirèkteman nan kont ofisyèl Boutique Piyay la?')) return;
+    try { await post({ action:'review-payment', order_group_id:orderGroupId, decision, reason }); await loadAdmin(); setStatus('Revizyon peman an anrejistre.'); }
+    catch (error) { setStatus(error.message); }
+  }
+  async function reviewPayout(requestId, decision) {
+    const reference = decision === 'paid' ? prompt('Antre referans peman an:') : '';
+    if (decision === 'paid' && !reference) return;
+    const note = decision === 'reject' ? prompt('Rezon rejè a:') || '' : '';
+    try { await post({ action:'review-payout', request_id:requestId, decision, payment_reference:reference, note }); await loadAdmin(); setStatus('Demann retrè a mete ajou.'); }
+    catch (error) { setStatus(error.message); }
+  }
+  async function refundOrder() {
+    const orderGroupId = document.getElementById('refundOrderGroup').value.trim();
+    const reason = document.getElementById('refundReason').value.trim();
+    if (!orderGroupId || !reason || !confirm(`Konfime ranbousman pou ${orderGroupId}?`)) return;
+    try {
+      await post({ action:'refund-order', order_group_id:orderGroupId, reason });
+      setStatus('Antre ranvèsman an kreye; ledger la rete entak.');
+    } catch (error) { setStatus(error.message); }
+  }
+  async function saveSettings(event) {
+    event.preventDefault();
+    const settings = Object.fromEntries(['moncash_number','moncash_qr_url','natcash_number','natcash_qr_url','payment_expiry_hours','refund_hold_days','minimum_payout'].map((key) => [key, document.getElementById(key).value]));
+    settings.payment_expiry_hours = Number(settings.payment_expiry_hours);
+    settings.refund_hold_days = Number(settings.refund_hold_days);
+    settings.minimum_payout = Number(settings.minimum_payout);
+    settings.default_commission_rate = Number(document.getElementById('default_commission_rate').value) / 100;
+    settings.default_affiliate_rate = Number(document.getElementById('default_affiliate_rate').value) / 100;
+    try { await post({ action:'save-settings', settings }); setStatus('Paramèt peman yo sove.'); }
+    catch (error) { setStatus(error.message); }
+  }
+  async function saveCommission(event) {
+    event.preventDefault();
+    try {
+      await post({ action:'save-commission', scope:document.getElementById('commissionScope').value, scope_id:document.getElementById('commissionScopeId').value, commission_rate:Number(document.getElementById('commissionRate').value)/100 });
+      event.target.reset(); setStatus('Règ komisyon an sove.');
+    } catch (error) { setStatus(error.message); }
+  }
+  function reportQuery(format = '') {
+    const params = new URLSearchParams({ view:'report' });
+    const from = document.getElementById('reportFrom').value;
+    const to = document.getElementById('reportTo').value;
+    const method = document.getElementById('reportMethod').value;
+    if (from) params.set('from', new Date(`${from}T00:00:00`).toISOString());
+    if (to) params.set('to', new Date(`${to}T23:59:59`).toISOString());
+    if (method) params.set('method', method);
+    if (format) params.set('format', format);
+    return params.toString();
+  }
+  async function loadReport() {
+    try {
+      const data = await api(`/.netlify/functions/marketplace-payments?${reportQuery()}`);
+      const labels = [['Vant total',data.totals.total_sales],['Komisyon platfòm',data.totals.platform_commission],['Komisyon afilye',data.totals.affiliate_commission],['Dèt founisè (atant + disponib)',data.totals.supplier_due],['Retrè peye',data.totals.paid_out]];
+      document.getElementById('reportMetrics').innerHTML = labels.map(([label,value]) => `<div class="metric"><span>${esc(label)}</span><strong>${money(value)}</strong></div>`).join('');
+    } catch (error) { setStatus(error.message); }
+  }
+  async function downloadCsv() {
+    try {
+      const blob = await api(`/.netlify/functions/marketplace-payments?${reportQuery('csv')}`);
+      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'boutique-piyay-ledger.csv'; link.click(); URL.revokeObjectURL(link.href);
+    } catch (error) { setStatus(error.message); }
+  }
+  function setStatus(message) { document.getElementById('pageStatus').textContent = message; }
+  window.reviewPayment = reviewPayment;
+  window.reviewPayout = reviewPayout;
+  init().catch((error) => { document.getElementById('authMessage').textContent = error.message; });
+</script>
+</body>
+</html>

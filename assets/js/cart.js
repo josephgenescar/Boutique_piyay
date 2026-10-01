@@ -39,8 +39,7 @@ function getSupabaseClient() {
   if (window.supabaseMain) return window.supabaseMain;
   if (window.supabase) {
     const url = window.SUPABASE_URL || window.S_URL || window.SUP_URL || window.SUPABASE_URL;
-    // Utilise service role key pour contourner RLS si disponible
-    const key = window.SUPABASE_SERVICE_ROLE_KEY || window.SUPABASE_ANON_KEY || window.SUP_KEY || window.S_KEY || window.SUPABASE_KEY;
+    const key = window.SUPABASE_ANON_KEY || window.SUP_KEY || window.S_KEY || window.SUPABASE_KEY;
     if (url && key) {
       try {
         return window.supabase.createClient(url, key);
@@ -196,7 +195,8 @@ window.orderProduct = function(title, price, id, image, sellerId, sellerPhone, s
 window.openCart = function() {
   const m = document.getElementById('order-modal');
   if (m) {
-    m.style.display = 'flex';
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     drawCart();
   }
@@ -204,87 +204,175 @@ window.openCart = function() {
 
 function closeOrderModal() {
   const m = document.getElementById('order-modal');
-  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+  if (m) {
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
 }
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeOrderModal();
+});
+
+document.addEventListener('click', (event) => {
+  if (event.target?.id === 'order-modal') closeOrderModal();
+});
+
+let cartQuoteSequence = 0;
+window.cartQuoteReady = false;
 
 function drawCart() {
   const box = document.getElementById('order-summary');
-  if (!box) return;
-  let currentCart = getCart();
+  const footer = document.getElementById('order-form-container');
+  if (!box || !footer) return;
+  const cart = getCart();
+  const total = document.getElementById('cart-server-total');
+  const status = document.getElementById('cart-quote-status');
+  const checkoutButton = document.getElementById('cart-checkout-button');
+  window.cartQuoteReady = false;
 
-  if (currentCart.length === 0) {
-    box.innerHTML = `<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:50px;">🛒</div><p>Panier vide</p></div>`;
-    document.getElementById('order-form-container').style.display = 'none';
+  if (!cart.length) {
+    const empty = document.createElement('div');
+    empty.className = 'cart-empty';
+    empty.innerHTML = '<div><strong>Panier vid</strong><span>Ajoute pwodwi ou ta renmen achte yo.</span></div>';
+    box.replaceChildren(empty);
+    footer.hidden = true;
+    if (total) total.textContent = '—';
+    if (status) status.textContent = '';
     return;
   }
 
-  document.getElementById('order-form-container').style.display = 'block';
+  footer.hidden = false;
+  if (total) total.textContent = 'Ap verifye…';
+  if (status) status.textContent = 'Pri ak disponibilite yo verifye sou sèvè a.';
+  if (checkoutButton) checkoutButton.disabled = true;
 
-  // Group items by seller
-  let bySeller = {};
-  currentCart.forEach(it => {
-    const sid = it.sellerId || 'boutique-piyay';
-    if (!bySeller[sid]) bySeller[sid] = { items: [], phone: it.sellerPhone, sellerName: it.sellerName };
-    bySeller[sid].items.push(it);
+  const fragment = document.createDocumentFragment();
+  cart.forEach((item) => {
+    const line = document.createElement('article');
+    line.className = 'cart-line';
+    line.dataset.productId = String(item.id || '');
+
+    const image = document.createElement('img');
+    image.className = 'cart-line-image';
+    image.alt = '';
+    image.loading = 'lazy';
+    const imageUrl = String(item.img || item.image || '');
+    if (imageUrl.startsWith('/') && !imageUrl.startsWith('//')) image.src = imageUrl;
+    else {
+      try {
+        const parsed = new URL(imageUrl);
+        if (parsed.protocol === 'https:') image.src = parsed.href;
+      } catch { /* Keep the neutral empty image background. */ }
+    }
+    image.addEventListener('error', () => { image.src = '/assets/images/logo.png'; }, { once: true });
+
+    const main = document.createElement('div');
+    main.className = 'cart-line-main';
+    const title = document.createElement('strong');
+    title.className = 'cart-line-title';
+    title.textContent = String(item.title || 'Pwodwi');
+    const seller = document.createElement('span');
+    seller.className = 'cart-line-seller';
+    seller.textContent = String(item.sellerName || item.seller_name || 'Machann marketplace');
+    const price = document.createElement('span');
+    price.className = 'cart-line-price';
+    price.textContent = 'Pri: ap verifye sou sèvè a…';
+
+    const controls = document.createElement('div');
+    controls.className = 'cart-line-controls';
+    const minus = document.createElement('button');
+    minus.className = 'cart-qty-button';
+    minus.type = 'button';
+    minus.textContent = '−';
+    minus.setAttribute('aria-label', 'Retire youn');
+    minus.disabled = Number(item.qty || 1) <= 1;
+    minus.addEventListener('click', () => updateQty(item.id, -1));
+    const quantity = document.createElement('span');
+    quantity.className = 'cart-qty-value';
+    quantity.textContent = String(Number(item.qty || 1));
+    const plus = document.createElement('button');
+    plus.className = 'cart-qty-button';
+    plus.type = 'button';
+    plus.textContent = '+';
+    plus.setAttribute('aria-label', 'Ajoute youn');
+    plus.disabled = Number(item.qty || 1) >= 99;
+    plus.addEventListener('click', () => updateQty(item.id, 1));
+    controls.append(minus, quantity, plus);
+    main.append(title, seller, price, controls);
+
+    const remove = document.createElement('button');
+    remove.className = 'cart-remove-button';
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.setAttribute('aria-label', 'Retire pwodwi a nan panier');
+    remove.addEventListener('click', () => removeItem(item.id));
+    line.append(image, main, remove);
+    fragment.appendChild(line);
   });
+  box.replaceChildren(fragment);
+  refreshCartQuote(cart);
+}
 
-  let totalHTG = 0;
-  let html = `<style>
-    .seller-group { background: #ffffff; border-radius: 18px; padding: 20px; margin-bottom: 18px; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(15,23,42,0.06); }
-    .seller-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; }
-    .seller-name { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 900; color: #111827; }
-    .cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #f1f5f9; border-radius: 12px; margin-bottom: 12px; background: #fafbfc; }
-    .cart-item-image { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; }
-    .cart-item-details { flex: 1; }
-    .cart-item-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; color: #1e293b; }
-    .cart-item-price { font-weight: 800; font-size: 16px; color: #ff4747; }
-    .cart-item-quantity { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-    .qty-btn { width: 30px; height: 30px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-    .qty-btn:hover { background: #f1f5f9; }
-    .cart-item-delete { background: none; border: none; font-size: 18px; cursor: pointer; color: #ef4444; padding: 5px; }
-    .suggestion-line { display: flex; align-items: center; margin: 20px 0; color: #64748b; font-size: 13px; font-weight: 600; }
-    .suggestion-line::before, .suggestion-line::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
-    .suggestion-line span { padding: 0 15px; }
-    .cart-total { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 12px; }
-    .cart-total-label { font-size: 14px; font-weight: 700; color: #64748b; }
-    .cart-total-amount { font-size: 24px; font-weight: 900; color: #ff4747; }
-    .group-total { display:flex; justify-content:space-between; align-items:center; margin-top: 16px; padding: 14px 16px; background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0; font-weight: 900; color: #111827; }
-    .receipt-footer { margin-top:20px; text-align:right; font-size:18px; font-weight:900; padding: 16px; border-top: 2px solid #f1f5f9; color: #111827; }
-  </style>`;
-
-  Object.entries(bySeller).forEach(([sellerId, group]) => {
-    const sellerName = group.sellerName || 'Boutique Piyay';
-
-    html += `<div class="seller-group">
-      <div class="seller-header">
-        <span class="seller-name">🏪 ${sellerName}</span>
-      </div>`;
-
-    group.items.forEach(it => {
-      const sub = it.price * it.qty;
-      totalHTG += sub;
-      html += `
-        <div class="cart-item">
-          <img class="cart-item-image" src="${it.img}" onerror="this.src='/assets/images/logo.png'" alt="${it.title}">
-          <div class="cart-item-details">
-            <div class="cart-item-title">${it.title}</div>
-            <div class="cart-item-price">${it.price.toLocaleString()} HTG</div>
-            <div class="cart-item-quantity">
-              <button class="qty-btn" onclick="updateQty('${it.id}', -1)">-</button>
-              <span>${it.qty}</span>
-              <button class="qty-btn" onclick="updateQty('${it.id}', 1)">+</button>
-            </div>
-          </div>
-          <button class="cart-item-delete" onclick="removeItem('${it.id}')">🗑️</button>
-        </div>`;
+async function refreshCartQuote(cart) {
+  const requestId = ++cartQuoteSequence;
+  const status = document.getElementById('cart-quote-status');
+  const total = document.getElementById('cart-server-total');
+  const checkoutButton = document.getElementById('cart-checkout-button');
+  try {
+    const response = await fetch('/.netlify/functions/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'quote',
+        items: cart.map((item) => ({
+          product_id: item.id,
+          quantity: Number(item.qty || item.quantity || 1)
+        }))
+      })
     });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Nou pa ka verifye panier sa a.');
+    if (requestId !== cartQuoteSequence) return;
 
-    const sellerTotalDisplay = group.items.reduce((sum, it) => sum + (it.price * it.qty), 0).toLocaleString();
-    html += `<div class="group-total"><span>Total pou ${sellerName}</span><span>${sellerTotalDisplay} HTG</span></div></div>`;
-  });
+    const quote = result.quote;
+    const quotedLines = new Map((quote.items || []).map((line) => [line.product_id, line]));
+    document.querySelectorAll('.cart-line').forEach((line) => {
+      const quoted = quotedLines.get(line.dataset.productId);
+      const title = line.querySelector('.cart-line-title');
+      const seller = line.querySelector('.cart-line-seller');
+      const price = line.querySelector('.cart-line-price');
+      const image = line.querySelector('.cart-line-image');
+      if (!quoted) return;
+      if (title) title.textContent = quoted.title;
+      if (seller) seller.textContent = quoted.seller_name;
+      if (image && quoted.image_url) image.src = quoted.image_url;
+      if (price) {
+        price.textContent = `${quoted.quantity} × ${formatServerMoney(quoted.unit_price)} HTG · ${formatServerMoney(quoted.line_total)} HTG`;
+      }
+    });
+    if (total) total.textContent = `${formatServerMoney(quote.total_amount)} HTG`;
+    if (status) status.textContent = 'Total sa a sòti nan sèvè a; checkout ap verifye l ankò anvan kòmand lan.';
+    if (checkoutButton) checkoutButton.disabled = false;
+    window.cartQuoteReady = true;
+  } catch (error) {
+    if (requestId !== cartQuoteSequence) return;
+    if (total) total.textContent = 'Pa disponib';
+    if (status) status.textContent = 'Gen yon atik ki pa disponib oswa nou pa ka verifye pri yo. Retire atik la oswa eseye ankò.';
+    if (checkoutButton) checkoutButton.disabled = true;
+    window.cartQuoteReady = false;
+  }
+}
 
-  html += `<div class="receipt-footer">💰 TOTAL KOMÈS: ${totalHTG.toLocaleString()} HTG</div>`;
-  box.innerHTML = html;
+function formatServerMoney(value) {
+  return Number(value).toLocaleString('fr-HT', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function goToCheckout() {
+  if (!getCart().length || !window.cartQuoteReady) return;
+  closeOrderModal();
+  window.location.href = '/checkout.html';
 }
 
 function removeItem(id) {
@@ -297,7 +385,7 @@ function updateQty(id, change) {
   let currentCart = getCart();
   const item = currentCart.find(it => it.id === id);
   if (item) {
-    item.qty = Math.max(1, (item.qty || 1) + change);
+    item.qty = Math.min(99, Math.max(1, Number(item.qty || 1) + change));
     localStorage.setItem(CART_KEY, JSON.stringify(currentCart));
     refreshBadge(); drawCart();
   }
@@ -474,16 +562,13 @@ function generateReceipt(data) {
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-top: 10px;
-        }
         th {
           background:#f8fafc;
           padding: 12px;
-          text-align: left;
           font-weight: 800;
           color:#64748b;
           font-size:11px;
-          text-transform: uppercase;
+          document.getElementById('checkoutTotal').textContent = 'Kalkile sou sèvè nan pwochen etap la';
           letter-spacing:0.08em;
         }
         td {
@@ -978,6 +1063,85 @@ window.closeInvoice = function() {
   const invoiceContainer = document.getElementById('invoice-template');
   if (invoiceContainer) {
     invoiceContainer.style.display = 'none';
+  }
+};
+
+window.submitOrder = async function() {
+  const name = document.getElementById('customer-name')?.value.trim() || '';
+  const phone = document.getElementById('customer-phone')?.value.trim() || '';
+  const rawZone = document.getElementById('delivery-zone')?.value || '';
+  const zone = rawZone === 'Lòt Zone' ? document.getElementById('other-zone')?.value.trim() || '' : rawZone;
+  const address = document.getElementById('customer-address')?.value.trim() || '';
+  const method = document.querySelector('input[name="payment-method"]:checked')?.value || '';
+  const cart = getCart();
+  const button = document.getElementById('btn-pay');
+  if (!name || !phone || !zone || !address || !method || !cart.length) {
+    alert('Tanpri ranpli enfòmasyon livrezon yo epi verifye panier an.');
+    return;
+  }
+  if (window.marketplaceOrder) return;
+
+  button.disabled = true;
+  button.textContent = 'Ap kalkile epi anrejistre kòmand lan...';
+  try {
+    let idempotencyKey = localStorage.getItem('bp_checkout_idempotency');
+    if (!idempotencyKey) {
+      idempotencyKey = crypto.randomUUID();
+      localStorage.setItem('bp_checkout_idempotency', idempotencyKey);
+    }
+    const supabaseClient = getSupabaseClient();
+    const { data: { session } = {} } = supabaseClient?.auth?.getSession
+      ? await supabaseClient.auth.getSession()
+      : { data: {} };
+    const headers = { 'Content-Type': 'application/json' };
+    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+    const response = await fetch('/.netlify/functions/create-order', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        idempotency_key: idempotencyKey,
+        items: cart.map((item) => ({ product_id: item.id, quantity: Number(item.qty || item.quantity || 1) })),
+        customer: { name, phone, zone, address },
+        payment_method: method.toLowerCase(),
+        referral_code: localStorage.getItem('ref_code') || null
+      })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Pa t kapab kreye kòmand lan.');
+
+    const order = result.data;
+    window.marketplaceOrder = order;
+    document.getElementById('checkoutTotal').textContent = `${Number(order.total_amount).toLocaleString()} HTG`;
+    document.getElementById('paymentSection').style.display = 'none';
+    if (button) button.style.display = 'none';
+
+    if (['moncash', 'natcash'].includes(method.toLowerCase())) {
+      const details = result.payment || {};
+      document.getElementById('manualPaymentPanel').style.display = 'block';
+      document.getElementById('manualPaymentAmount').textContent = `${Number(order.total_amount).toLocaleString()} HTG`;
+      document.getElementById('manualPaymentReference').textContent = order.payment_reference;
+      document.getElementById('manualPaymentNumber').textContent = details.destination || 'Kontakte Boutique Piyay';
+      document.getElementById('paymentInstructionText').textContent = `Voye peman an sou ${method}, epi mete referans lan kòm nòt peman an.`;
+      document.getElementById('manualPaymentExpiry').textContent = `Kòmand lan ekspire: ${new Date(order.expires_at).toLocaleString()}`;
+      if (details.qr_url) {
+        const qr = document.getElementById('manualPaymentQr');
+        qr.src = details.qr_url;
+        qr.hidden = false;
+      }
+      window.scrollTo({ top: document.getElementById('manualPaymentPanel').offsetTop, behavior: 'smooth' });
+    } else {
+      document.getElementById('cashPaymentPanel').style.display = 'block';
+      document.getElementById('cashPaymentReference').textContent = `Referans kòmand: ${order.payment_reference} · Total: ${Number(order.total_amount).toLocaleString()} HTG`;
+      localStorage.removeItem(CART_KEY);
+      localStorage.removeItem('bp_checkout_idempotency');
+      refreshBadge();
+      drawCart();
+    }
+  } catch (error) {
+    if (error.message.includes('Idempotency key was reused')) localStorage.removeItem('bp_checkout_idempotency');
+    alert(`Erè: ${error.message}`);
+    button.disabled = false;
+    button.textContent = 'KONFIME & POURSUIVRE PEMAN →';
   }
 };
 

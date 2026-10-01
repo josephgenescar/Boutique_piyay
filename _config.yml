@@ -61,9 +61,3 @@ exclude:
   - vendor/
   - .netlify/
 
-# Konfigirasyon Netlify CMS
-netlify_cms:
-  admin_config_path: "admin/config.yml"
-  admin_index_path: "admin/index.html"
-  public_folder: "assets/images/uploads"
-  media_folder: "assets/images/uploads"

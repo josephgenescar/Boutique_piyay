@@ -1,22 +1,11 @@
 # 🎉 BOUTIQUE PIYAY - PAKÈT AMELYORASYON KONPLÈ
 
-## 📦 SA W RESEVWA A
+## 📦 ADMIN KI SÈVI KOUNYE A
 
-Mwen kreye pou ou yon sistèm konplè ak tout bagay ou bezwen pou amelyore sit Jekyll e-commerce ou a!
-
----
-
-## 📁 FICHYE YO (9 FICHYE TOTAL)
-
-### 1️⃣ **admin/config.yml** - Konfigirasyon Panel Admin
-- Sistèm konplè pou jere pwodwi, kategori, paj
-- Fòm ak validation
-- Support pou varyant, estok, imaj milti
-
-### 2️⃣ **admin/index.html** - Entèfas Admin
-- Loading screen pwofesyonèl
-- Preview pwodwi an tan reyèl
-- Design modèn ak Netlify CMS
+- `admin/login.html` — koneksyon Supabase
+- `admin/admin.html` — dashboard administratè
+- `admin/finance.html` — peman, retrè ak ledger
+- `admin/products.html` — jesyon pwodwi
 
 ### 3️⃣ **_layouts/product.html** - Template Pwodwi Amelyore
 - Galri imaj ak thumbnail
@@ -76,12 +65,9 @@ Mwen kreye pou ou yon sistèm konplè ak tout bagay ou bezwen pou amelyore sit J
 - ✅ Koulè personalizab
 
 ### 👨‍💼 Admin Panel
-- ✅ Netlify CMS entegre
-- ✅ Jesyon pwodwi konplè
-- ✅ Upload milti-imaj
-- ✅ Varyant pwodwi
-- ✅ Jesyon estok
-- ✅ Kategori ak ikòn
+- ✅ Dashboard admin Supabase
+- ✅ Jesyon pwodwi
+- ✅ Revizyon peman, retrè ak ledger
 
 ### 🛒 Sistèm Panier
 - ✅ Ajouter/retire/modifye
@@ -133,8 +119,8 @@ Li `CHECKLIST.md` pou detay konplè
 ### Etap 4: Deploy sou Netlify
 1. Push sou GitHub
 2. Konekte Netlify
-3. Aktive Netlify Identity
-4. Enable Git Gateway
+3. Mete `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY` ak `SITE_ORIGIN` nan anviwònman Netlify Functions. Kenbe kle yo server-side; pa mete yo nan HTML oswa JavaScript kliyan an.
+4. Bay kont admin lan wòl `admin` nan Supabase
 
 ### Etap 5: Teste
 - [ ] Admin panel fonksyone
@@ -266,7 +252,7 @@ cart.showNotification('✅ Pwodwi ajoute!', 'success');
 
 ### 💻 Teknoloji
 - Jekyll (rapid)
-- Netlify CMS (admin)
+- Supabase Admin (admin)
 - JavaScript vanilla (pa gen depandans)
 - LocalStorage (pesistans)
 
@@ -283,7 +269,6 @@ cart.showNotification('✅ Pwodwi ajoute!', 'success');
 
 ### Resous Siplemantè:
 - [Jekyll Docs](https://jekyllrb.com/docs/)
-- [Netlify CMS Docs](https://www.netlifycms.org/docs/)
 
 ---
 

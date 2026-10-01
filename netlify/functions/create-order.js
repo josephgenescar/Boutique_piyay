@@ -1,256 +1,164 @@
 const ws = require('ws');
 const { createClient } = require('@supabase/supabase-js');
-const webpush = require('web-push');
+const { getPaymentProvider } = require('./_payment-provider');
 
-const SUP_URL = 'https://letyferfjpxmstohvgcj.supabase.co';
-const SUP_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = SUP_KEY ? createClient(SUP_URL, SUP_KEY, { transport: ws }) : null;
-
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
-const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:genescarmike@gmail.com';
-
-if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
-  webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
-}
+const supabaseUrl = process.env.SUPABASE_URL || 'https://letyferfjpxmstohvgcj.supabase.co';
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = serviceKey ? createClient(supabaseUrl, serviceKey, { transport: ws }) : null;
+const allowedOrigins = (process.env.SITE_ORIGIN || 'https://boutique-piyay.netlify.app').split(',').map((origin) => origin.trim());
 
 exports.handler = async (event) => {
+  const requestOrigin = event.headers.origin || event.headers.Origin || '';
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0],
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin',
     'Content-Type': 'application/json'
   };
-
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers };
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Méthode non autorisée. Utilisez POST.' })
-    };
-  }
-
-  if (!supabase) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Serveur mal configuré : SUPABASE_SERVICE_ROLE_KEY manquant.' })
-    };
-  }
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers };
+  if (event.httpMethod !== 'POST') return respond(405, { error: 'Method not allowed' }, headers);
+  if (!supabase) return respond(500, { error: 'Payment service is not configured' }, headers);
 
   try {
-    const payload = event.body ? JSON.parse(event.body) : {};
-    const orders = Array.isArray(payload.orders) ? payload.orders : null;
-
-    if (!orders || orders.length === 0) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Payload invalide : orders est requis.' })
-      };
+    const body = JSON.parse(event.body || '{}');
+    const items = normalizeItems(body.items);
+    if (body.action === 'quote') {
+      const quote = await getOrderQuote(items);
+      return respond(200, { quote }, headers);
     }
 
-    const { data: insertedOrders, error } = await supabase
-      .from('orders')
-      .insert(orders)
-      .select();
+    const idempotencyKey = String(body.idempotency_key || '');
+    if (!/^[0-9a-f-]{36}$/i.test(idempotencyKey)) return respond(400, { error: 'A valid request ID is required' }, headers);
 
-    if (error) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: error.message, details: error.details })
-      };
+    const auth = await getIdentity(event.headers.authorization);
+    if (auth.error) return respond(401, { error: 'Invalid login session' }, headers);
+    const { data, error } = await supabase.rpc('create_marketplace_order', {
+      p_items: items,
+      p_customer_name: String(body.customer?.name || '').trim(),
+      p_customer_phone: String(body.customer?.phone || '').trim(),
+      p_customer_email: auth.user?.email || null,
+      p_delivery_zone: String(body.customer?.zone || '').trim(),
+      p_delivery_address: String(body.customer?.address || '').trim(),
+      p_payment_method: String(body.payment_method || '').toLowerCase(),
+      p_referral_code: typeof body.referral_code === 'string' ? body.referral_code.trim() : null,
+      p_customer_id: auth.user?.id || null,
+      p_idempotency_key: idempotencyKey
+    });
+    if (error) return respond(400, { error: error.message }, headers);
+    let payment = null;
+    if (['moncash', 'natcash'].includes(String(body.payment_method).toLowerCase())) {
+      const { data: settings, error: settingsError } = await supabase.from('payment_settings')
+        .select('moncash_number,moncash_qr_url,natcash_number,natcash_qr_url').eq('id', true).single();
+      if (settingsError) throw settingsError;
+      payment = await getPaymentProvider(body.payment_method).createPayment({
+        payment_method: String(body.payment_method).toLowerCase(),
+        total_amount: data.total_amount,
+        currency: data.currency,
+        payment_reference: data.payment_reference,
+        expires_at: data.expires_at
+      }, settings);
     }
-
-    const orderGroupId = orders[0]?.order_group_id || null;
-    const customerName = orders[0]?.customer_name || null;
-    const customerPhone = orders[0]?.customer_phone || null;
-    const customerEmail = orders[0]?.customer_email || null;
-    const paymentMethod = orders[0]?.payment_method || null;
-    const totalAmount = orders.reduce((sum, order) => sum + Number(order.amount || 0), 0);
-    const sellerOrderGroups = insertedOrders.reduce((groups, order) => {
-      if (!order.seller_id) return groups;
-      groups[order.seller_id] = groups[order.seller_id] || [];
-      groups[order.seller_id].push(order);
-      return groups;
-    }, {});
-
-    if (orderGroupId) {
-      await createAdminNotification(orderGroupId, customerName, customerPhone, customerEmail, paymentMethod, totalAmount, insertedOrders);
-    }
-
-    await Promise.all(Object.entries(sellerOrderGroups).map(([sellerId, sellerOrders]) =>
-      createSellerNotification(sellerId, orderGroupId, customerName, totalAmount, sellerOrders)
-    ));
-
-    await processAffiliateCommissions(insertedOrders);
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ data: insertedOrders })
-    };
-  } catch (err) {
-    console.error('Create order error:', err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: err.message })
-    };
+    return respond(201, { data, payment }, headers);
+  } catch (error) {
+    console.error('Create marketplace order failed:', error.message);
+    return respond(400, { error: 'Unable to create order' }, headers);
   }
 };
 
-async function createAdminNotification(orderGroupId, customerName, customerPhone, customerEmail, paymentMethod, totalAmount, insertedOrders) {
-  try {
-    await supabase.from('admin_notifications').insert({
-      type: 'new_order',
-      title: `Nouvo Komann ${orderGroupId}`,
-      message: `Nouvo komann pa ${customerName || 'yon kliyan'} pou ${totalAmount} HTG`,
-      data: {
-        order_group_id: orderGroupId,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        customer_email: customerEmail,
-        payment_method: paymentMethod,
-        total_amount: totalAmount,
-        items: insertedOrders.map((order) => ({ seller_id: order.seller_id, amount: order.amount, quantity: order.quantity, order_id: order.id }))
-      },
-      is_read: false
-    });
-  } catch (err) {
-    console.warn('Unable to create admin notification:', err.message || err);
-  }
+async function getIdentity(authorization = '') {
+  const token = authorization.replace(/^Bearer\s+/i, '').trim();
+  if (!token) return { user: null, error: false };
+  const { data, error } = await supabase.auth.getUser(token);
+  return { user: data?.user || null, error: Boolean(error || !data?.user) };
 }
 
-async function createSellerNotification(userId, orderGroupId, customerName, totalAmount, sellerOrders = []) {
-  const sellerAmount = sellerOrders.reduce((sum, order) => sum + Number(order.amount || 0), 0);
-  const sellerItems = sellerOrders.flatMap(order => {
-    try {
-      return Array.isArray(order.order_items) ? order.order_items : [];
-    } catch (err) {
-      return [];
+function respond(statusCode, payload, headers) {
+  return { statusCode, headers, body: JSON.stringify(payload) };
+}
+
+function normalizeItems(items) {
+  if (!Array.isArray(items) || items.length === 0 || items.length > 50) {
+    throw new Error('At least one valid order item is required');
+  }
+  const normalized = items.map((item) => ({
+    product_id: String(item?.product_id || ''),
+    quantity: Number(item?.quantity)
+  }));
+  if (normalized.some((item) => !/^[0-9a-f-]{36}$/i.test(item.product_id)
+    || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99)) {
+    throw new Error('Only product IDs and valid quantities are accepted');
+  }
+  const aggregated = new Map();
+  normalized.forEach((item) => {
+    aggregated.set(item.product_id, (aggregated.get(item.product_id) || 0) + item.quantity);
+  });
+  const result = [...aggregated].map(([product_id, quantity]) => ({ product_id, quantity }));
+  if (result.some((item) => item.quantity > 99)) throw new Error('Quantity exceeds the per-product limit');
+  return result;
+}
+
+async function getOrderQuote(items) {
+  if (!supabase) throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for price quotes');
+  const productIds = items.map((item) => item.product_id);
+  const { data: products, error } = await supabase.from('user_products')
+    .select('id,title,price,image_url,stock,is_approved,seller_id')
+    .in('id', productIds);
+  if (error) throw error;
+
+  const productsById = new Map((products || []).map((product) => [product.id, product]));
+  if (productIds.some((id) => !productsById.has(id))) throw new Error('One or more products are unavailable');
+
+  const lines = items.map((item) => {
+    const product = productsById.get(item.product_id);
+    const price = Number(product.price);
+    const stock = Number(product.stock);
+    if (product.is_approved !== true || !product.seller_id || !Number.isFinite(price) || price < 0 || stock < item.quantity) {
+      throw new Error(`Product unavailable or insufficient stock: ${item.product_id}`);
     }
+    const unitPriceCents = Math.round(price * 100);
+    return {
+      product_id: product.id,
+      seller_id: product.seller_id,
+      title: String(product.title || 'Produit'),
+      image_url: safeQuoteImage(product.image_url),
+      quantity: item.quantity,
+      unit_price: (unitPriceCents / 100).toFixed(2),
+      line_total: (unitPriceCents * item.quantity / 100).toFixed(2)
+    };
   });
 
-  try {
-    await supabase.from('notifications').insert({
-      user_id: userId,
-      type: 'new_order',
-      title: `Nouvo komann ${orderGroupId}`,
-      body: `Ou gen nouvo komann ${orderGroupId} pou ${sellerAmount} HTG soti nan ${customerName || 'yon kliyan'}.`,
-      data: {
-        order_group_id: orderGroupId,
-        customer_name: customerName,
-        amount: sellerAmount,
-        seller_items: sellerItems
-      },
-      read: false
-    });
-  } catch (err) {
-    console.warn('Unable to create seller notification record:', err.message || err);
+  const sellerIds = [...new Set(lines.map((line) => line.seller_id).filter(Boolean))];
+  let sellersById = {};
+  if (sellerIds.length) {
+    const { data: sellers, error: sellerError } = await supabase.from('profiles')
+      .select('id,shop_name,full_name').in('id', sellerIds);
+    if (sellerError) throw sellerError;
+    sellersById = Object.fromEntries((sellers || []).map((seller) => [seller.id, seller]));
   }
+  lines.forEach((line) => {
+    const seller = sellersById[line.seller_id];
+    line.seller_name = seller?.shop_name || seller?.full_name || 'Boutique Piyay';
+  });
 
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
-    return;
-  }
+  return {
+    currency: 'HTG',
+    items: lines,
+    total_amount: (lines.reduce((total, line) => total + Math.round(Number(line.line_total) * 100), 0) / 100).toFixed(2)
+  };
+}
 
+function safeQuoteImage(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  const imageUrl = value.trim();
+  if (imageUrl.startsWith('/assets/') && !imageUrl.startsWith('//')) return imageUrl;
   try {
-    const { data: subscriptions, error } = await supabase
-      .from('push_subscriptions')
-      .select('endpoint, p256dh, auth')
-      .eq('user_id', userId);
-
-    if (error || !subscriptions || subscriptions.length === 0) {
-      return;
-    }
-
-    const payload = JSON.stringify({
-      title: '🛍️ Nouvo Komann!',
-      body: `Ou gen yon nouvo komann ${orderGroupId} pou ${totalAmount} HTG.`,
-      type: 'new_order',
-      data: { order_group_id: orderGroupId, amount: totalAmount }
-    });
-
-    const results = await Promise.allSettled(
-      subscriptions.map((sub) =>
-        webpush.sendNotification(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload,
-          { TTL: 86400 }
-        )
-      )
-    );
-
-    const failedEndpoints = subscriptions
-      .filter((_, index) => results[index].status === 'rejected')
-      .map((_, index) => subscriptions[index].endpoint);
-
-    if (failedEndpoints.length > 0) {
-      await supabase.from('push_subscriptions').delete().in('endpoint', failedEndpoints);
-    }
-  } catch (err) {
-    console.warn('Unable to send push notification:', err.message || err);
+    const parsed = new URL(imageUrl);
+    return parsed.protocol === 'https:' ? parsed.href : '';
+  } catch {
+    return '';
   }
 }
 
-async function processAffiliateCommissions(insertedOrders) {
-  const affiliateOrders = insertedOrders.filter(order => order.affiliate_id);
-  if (!affiliateOrders.length) return;
-
-  const ordersByAffiliate = affiliateOrders.reduce((groups, order) => {
-    const affiliateId = order.affiliate_id;
-    groups[affiliateId] = groups[affiliateId] || [];
-    groups[affiliateId].push(order);
-    return groups;
-  }, {});
-
-  for (const [affiliateId, orders] of Object.entries(ordersByAffiliate)) {
-    const commissionTotal = orders.reduce((sum, order) => sum + Number(order.affiliate_commission || 0), 0);
-    if (commissionTotal <= 0) continue;
-
-    try {
-      const { data: affiliateRow, error: affiliateRowError } = await supabase
-        .from('affiliates')
-        .select('id,user_id,balance')
-        .eq('id', affiliateId)
-        .single();
-
-      if (affiliateRowError || !affiliateRow) {
-        console.warn('⚠️ Pa jwenn affiliate pou komisyon:', affiliateId, affiliateRowError);
-        continue;
-      }
-
-      const newBalance = Number(affiliateRow.balance || 0) + commissionTotal;
-      await supabase.from('affiliates').update({ balance: newBalance }).eq('id', affiliateId);
-
-      const transactions = orders.map(order => ({
-        affiliate_id: affiliateId,
-        amount: order.affiliate_commission,
-        type: 'order_commission',
-        description: `Komisyon pou komann ${order.order_group_id}`,
-        created_at: new Date().toISOString()
-      }));
-
-      await supabase.from('affiliate_transactions').insert(transactions);
-
-      await supabase.from('notifications').insert({
-        user_id: affiliateRow.user_id,
-        type: 'commission_earned',
-        title: `💰 Ou touche ${commissionTotal.toLocaleString()} HTG`,
-        body: `Yon komisyon te ajoute pou komann ${orders.map(o => o.order_group_id).join(', ')}.`,
-        data: {
-          order_group_ids: orders.map(o => o.order_group_id),
-          amount: commissionTotal
-        },
-        read: false
-      });
-    } catch (err) {
-      console.warn('⚠️ Erè processe komisyon affiliate:', err.message || err);
-    }
-  }
-}
+exports.normalizeItems = normalizeItems;
+exports.getOrderQuote = getOrderQuote;

@@ -37,8 +37,7 @@ mkdir -p _data
 ## 📁 ÉTAPE 2: Installation des Fichiers (30 min)
 
 ### 2.1 Fichiers Admin
-- [ ] Copiez `admin/config.yml` → `admin/config.yml`
-- [ ] Copiez `admin/index.html` → `admin/index.html`
+- [ ] Vérifiez `admin/login.html`, `admin/admin.html` et `admin/finance.html`
 
 ### 2.2 Layouts et Pages
 - [ ] Copiez `_layouts/product.html` → `_layouts/product.html`
@@ -84,14 +83,11 @@ defaults:
     values:
       layout: "category"
 
-# Exclude admin from build
-exclude:
-  - admin/config.yml
 ```
 
 - [ ] Collections ajoutées
 - [ ] Defaults configurés
-- [ ] Exclusions définies
+- [ ] Les pages admin restent incluses dans `_site`
 
 ### 3.2 Créer `_data/settings.yml`
 
@@ -128,34 +124,13 @@ shipping:
 
 ## 🎨 ÉTAPE 4: Intégration Frontend (20 min)
 
-### 4.1 Modifier le Layout Principal
+### 4.1 Vérifier la connexion Supabase
 
-Dans votre `_layouts/default.html` ou layout de base:
-
-**Avant `</head>`:**
-```html
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-```
-
-**Avant `</body>`:**
-```html
-<script src="/assets/js/cart.js"></script>
-<script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on("init", user => {
-    if (!user) {
-      window.netlifyIdentity.on("login", () => {
-        document.location.href = "/admin/";
-      });
-    }
-  });
-}
-</script>
-```
-
-- [ ] Scripts Netlify ajoutés
-- [ ] Script cart.js inclus
-- [ ] Initialisation configurée
+- [ ] Le layout charge le SDK Supabase et les scripts du site une seule fois
+- [ ] `SUPABASE_URL` pointe vers le même projet que les données produits
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` est configurée seulement dans Netlify Functions
+- [ ] `SITE_ORIGIN` correspond au domaine publié
+- [ ] L'admin se connecte via `/admin/login.html` avec un profil Supabase `admin`
 
 ### 4.2 Ajouterr le Panier au Header
 
@@ -225,25 +200,12 @@ git push origin main
 - [ ] Site créé sur Netlify
 - [ ] Premier déploiement réussi
 
-### 5.3 Configurer Netlify Identity
+### 5.3 Configurer les fonctions admin
 
-1. Dans Netlify Dashboard → Site settings
-2. Identity → Enable Identity
-3. Registration preferences:
-   - [ ] Cochez "Invite only"
-4. External providers (optionnel):
-   - [ ] Activez Google
-   - [ ] Activez GitHub
-5. Services → Git Gateway:
-   - [ ] Enable Git Gateway
-
-### 5.4 Inviter Administrateurs
-
-1. Identity → Invite users
-2. Entrez les emails:
-   - [ ] Votre email
-   - [ ] Autres admins
-3. Ils recevront un email d'invitation
+1. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in Netlify environment variables.
+2. Set `SITE_ORIGIN` to the deployed site origin.
+3. Confirm admin users have the `admin` role in Supabase.
+4. Open `/admin/login.html` and verify `/admin/finance.html` loads for an admin account.
 
 ---
 
@@ -258,8 +220,8 @@ git push origin main
 
 ### 6.2 Test Admin Panel
 
-1. Allez sur `https://votre-site.netlify.app/admin`
-2. Connectez-vous avec votre email
+1. Allez sur `https://votre-site.netlify.app/admin/login.html`
+2. Connectez-vous avec votre compte Supabase administrateur
 
 - [ ] Admin panel accessible
 - [ ] Interface charge
@@ -448,9 +410,9 @@ Première semaine:
 
 **Admin ne charge pas:**
 ```
-1. Vérifiez Netlify Identity activé
-2. Enable Git Gateway
-3. Videz cache navigateur (Ctrl+Shift+R)
+1. Vérifiez la session Supabase et le rôle `admin`
+2. Vérifiez les variables Netlify pour les fonctions
+3. Videz le cache navigateur (Ctrl+Shift+R)
 ```
 
 **Panier ne fonctionne pas:**

@@ -836,24 +836,32 @@
 
             <div class="wallet-stats">
                 <div class="wallet-stat-item">
-                    <div class="ws-val" style="color: var(--green);">0 HTG</div>
-                    <div class="ws-lbl" data-i18n="dashboard.total_income">💵 Total Rantre</div>
+                    <div class="ws-val" id="supplier-pending-balance" style="color: var(--gold);">0 HTG</div>
+                    <div class="ws-lbl">Balans an atant</div>
                 </div>
                 <div class="wallet-stat-item">
-                    <div class="ws-val" style="color: var(--blue);">0</div>
-                    <div class="ws-lbl" data-i18n="dashboard.completed_orders">📦 Commande terminée</div>
+                    <div class="ws-val" id="supplier-paid-out" style="color: var(--blue);">0 HTG</div>
+                    <div class="ws-lbl">Total ki deja peye</div>
                 </div>
             </div>
 
             <div class="wallet-card">
                 <div class="wallet-label" data-i18n="dashboard.available_balance">Balans Disponib</div>
                 <div class="wallet-bal" id="wall-balance">0 <span>HTG</span></div>
-                <div class="wallet-sub">Dènye mizajou: jodi a</div>
-                <div class="wallet-actions">
-                    <button class="wallet-btn primary" data-i18n="dashboard.withdraw">💸 Retire Lajan</button>
-                    <button class="wallet-btn secondary" data-i18n="dashboard.history">📊 Istwa</button>
+                <div class="wallet-actions" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;">
+                    <div><label for="payout-method">Metòd retrè</label><select class="form-input" id="payout-method"><option value="moncash">MonCash</option><option value="natcash">NatCash</option><option value="bank">Bank</option></select></div>
+                    <div><label for="payout-account-name">Non sou kont lan</label><input class="form-input" id="payout-account-name" maxlength="120"></div>
+                    <div><label for="payout-account-number">Nimewo/kont destinasyon</label><input class="form-input" id="payout-account-number" maxlength="120"></div>
+                    <button class="wallet-btn secondary" type="button" onclick="savePayoutSettings()">Sove metòd retrè</button>
+                    <div><label for="payout-request-amount">Montan pou mande (HTG)</label><input class="form-input" id="payout-request-amount" type="number" min="0.01" step="0.01"></div>
+                    <button class="wallet-btn primary" type="button" onclick="requestSupplierPayout()">Mande yon retrè</button>
                 </div>
             </div>
+            <h3 style="margin:24px 0 10px;">Vant mwen yo · montan nèt ak komisyon</h3>
+            <div id="supplier-sales-list" class="order-items-list"></div>
+            <h3 style="margin:24px 0 10px;">Istwa retrè</h3>
+            <div id="supplier-payout-history" class="order-items-list"></div>
+            <p id="supplier-finance-status" class="page-subtitle" role="status"></p>
         </div>
 
         <!-- ===== TAB: PROFIL ===== -->
@@ -972,17 +980,15 @@
             </div>
 
             <!-- Boost Payant -->
-            <div class="boost-opt" id="boost-paid-opt" onclick="processBoost('paid')">
+            <div class="boost-opt" id="boost-paid-opt" aria-disabled="true">
                 <div class="boost-opt-title">💳 Boost payant (100 HTG)</div>
-                <div class="boost-opt-sub">Peman otomatik ap vini byento. Pou kounye a, pwodwi a pral boosté pou 48h lè ou chwazi opsyon sa a.<br><br>
-                    <span style="color:#64748b;font-size:13px;">API peman an pral entegre pita pou verifye tranzaksyon yo.</span>
-                </div>
-                <span class="boost-opt-tag">OTOMATIK</span>
+                <div class="boost-opt-sub">Peman pou boost poko disponib. Pwodwi a pap aktive san peman konfime.</div>
+                <span class="boost-opt-tag">PA DISPONIB</span>
             </div>
-            <div class="boost-opt" id="boost-free-opt" onclick="processBoost('free')">
+            <div class="boost-opt" id="boost-free-opt" aria-disabled="true">
                 <div class="boost-opt-title">🏆 Nivo Rekonpans</div>
-                <div class="boost-opt-sub" id="boost-free-sub">Sèlman pou nivo Bronze, Argent oswa Or.</div>
-                <span class="boost-opt-tag" style="background:var(--green)">GRATIS</span>
+                <div class="boost-opt-sub" id="boost-free-sub">Boost gratis poko disponib.</div>
+                <span class="boost-opt-tag">PA DISPONIB</span>
             </div>
         </div>
         <button onclick="closeBoostModal()" style="margin-top:20px; background:none; border:none; color:var(--gray); font-weight:700; cursor:pointer;">Annuler</button>
@@ -1001,59 +1007,49 @@
 <script>
     async function processBoost(type) {
         if (type === 'paid') {
-            if (!selectedProdId) {
-                alert('Opsyon boost la pa chwazi pwodwi a. Rekòmanse paj la epi eseye ankò.');
-                return;
-            }
-
-            const nowISOString = new Date().toISOString();
-            const { data: activeBoosts, error: activeError } = await supD.from('user_products')
-                .select('id')
-                .eq('seller_id', currentUser.id)
-                .eq('is_boosted', true)
-                .gt('boost_expires_at', nowISOString);
-
-            if (activeError) {
-                console.error('Erè pandan rechèch boost aktif yo:', activeError);
-                alert('❌ Erè rezo. Tanpri eseye ankò.');
-                return;
-            }
-
-            if (activeBoosts && activeBoosts.length >= 3) {
-                alert('❌ Ou ka sèlman gen 3 pwodwi boosté an menm tan.');
-                return;
-            }
-
-            const boostExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
-            const { error } = await supD.from('user_products')
-                .update({ is_boosted: true, boost_expires_at: boostExpiresAt })
-                .eq('id', selectedProdId);
-
-            if (error) {
-                console.error('Erè lè aktive boost payant:', error);
-                alert('❌ Erè pandan activation boost la. Tanpri eseye ankò.');
-                return;
-            }
-
-            closeBoostModal();
-            loadAll();
-            alert('✅ Pwodwi a booste otomatikman pou 48h. API peman ap entegre byento.');
+            alert('Peman pou boost la poko disponib. Pa gen lajan ki dedwi epi pwodwi a pa aktive.');
             return;
         }
         if (type === 'points') {
-            const { data: prof } = await supD.from('profiles').select('points').eq('id', currentUser.id).single();
+            const [{ data: prof, error: profileError }, { data: activeBoosts, error: boostsError }] = await Promise.all([
+                supD.from('profiles').select('points').eq('id', currentUser.id).single(),
+                supD.from('user_products').select('id').eq('seller_id', currentUser.id).eq('is_boosted', true).gt('boost_expires_at', new Date().toISOString())
+            ]);
+            if (profileError || boostsError) {
+                alert('❌ Nou pa ka verifye pwen oswa boost aktif yo. Tanpri eseye ankò.');
+                return;
+            }
+            if ((activeBoosts || []).length >= 3) {
+                alert('❌ Ou ka sèlman gen 3 pwodwi boosté an menm tan.');
+                return;
+            }
             const points = prof?.points || 0;
             if (points < 50) {
                 alert('Ou pa gen ase points. Ou bezwen 50 points pou boost yon pwodwi.');
                 return;
             }
-            // Dedwi 50 points epi aktive boost
             const newPoints = points - 50;
             const boostExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
-            await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
-            await supD.from('user_products').update({ is_boosted: true, boost_expires_at: boostExpiresAt }).eq('id', selectedProdId);
+            const { data: deductedPoints, error: pointsError } = await supD.from('profiles')
+                .update({ points: newPoints }).eq('id', currentUser.id).eq('points', points).select('id').maybeSingle();
+            if (pointsError || !deductedPoints) {
+                alert('❌ Balans pwen an chanje. Rafrechi paj la epi eseye ankò.');
+                return;
+            }
+            const { data: boostedProduct, error: boostError } = await supD.from('user_products')
+                .update({ is_boosted: true, boost_expires_at: boostExpiresAt })
+                .eq('id', selectedProdId).eq('seller_id', currentUser.id).select('id').maybeSingle();
+            if (boostError || !boostedProduct) {
+                const { error: refundError } = await supD.from('profiles')
+                    .update({ points }).eq('id', currentUser.id).eq('points', newPoints);
+                if (refundError) console.error('Erè ranbousman pwen apre boost echwe:', refundError);
+                alert('❌ Boost la pa t aktive. Pwen yo te retounen si balans lan pa t chanje pandan sa.');
+                return;
+            }
             document.getElementById('stat-points').innerText = newPoints;
             document.getElementById('p-count').innerText = newPoints;
+            if (currentProfile) currentProfile.points = newPoints;
+            updateRewardUI(newPoints);
             closeBoostModal();
             loadAll();
             alert('✅ Pwodwi a booste ak siksè! 50 points retire.');
@@ -1107,22 +1103,26 @@
             loadFeedbacks();
             loadNotifications();
             syncPointsWithSales();
-            initChart();
         } catch (error) {
             console.error('Erè nan init():', error);
             alert("❌ Erè nan chajman dashboard: " + error.message);
         }
     }
 
-    function initChart() {
+    function initChart(orders) {
         const ctx = document.getElementById('salesChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Fev', 'Mas', 'Avr', 'Me', 'Jen'],
+                labels: Array.from({ length: 6 }, (_, index) => {
+                    const date = new Date();
+                    date.setDate(1);
+                    date.setMonth(date.getMonth() - 5 + index);
+                    return date.toLocaleDateString('fr-HT', { month: 'short' });
+                }),
                 datasets: [{
                     label: 'Vant (HTG)',
-                    data: [0, 0, 0, 0, 0, 0],
+                    data: Array.from({ length: 6 }, () => 0),
                     borderColor: '#ff4747',
                     backgroundColor: 'rgba(255,71,71,0.06)',
                     fill: true,
@@ -1141,29 +1141,36 @@
                 }
             }
         });
+        const now = new Date();
+        const monthlySales = Array.from({ length: 6 }, () => 0);
+        (orders || []).forEach((order) => {
+            if (order.payment_status !== 'paid') return;
+            const createdAt = new Date(order.created_at);
+            const monthsAgo = (now.getFullYear() - createdAt.getFullYear()) * 12 + now.getMonth() - createdAt.getMonth();
+            if (monthsAgo >= 0 && monthsAgo < monthlySales.length) {
+                monthlySales[monthlySales.length - 1 - monthsAgo] += Number(order.amount ?? order.total_amount ?? order.total_price ?? 0);
+            }
+        });
+        const salesChart = Chart.getChart(ctx);
+        salesChart.data.datasets[0].data = monthlySales;
+        salesChart.update();
     }
 
     async function syncPointsWithSales() {
         try {
-            const { data: orders } = await supD.from('orders').select('*').eq('seller_id', currentUser.id);
-            const { data: prof, error: profErr } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();
-
-            if (profErr || !prof) {
-                const { data: newProf } = await supD.from('profiles').insert([{ id: currentUser.id, full_name: currentUser.email.split('@')[0] }]).select().single();
-                currentProfile = newProf;
-            } else {
-                currentProfile = prof;
-            }
-
-            if (orders && currentProfile) {
-                // Bay 5 points pa kòmand
-                const newPoints = orders.length * 5;
-                await supD.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
-                document.getElementById('stat-points').innerText = newPoints;
-                document.getElementById('p-count').innerText = newPoints;
-                document.getElementById('stat-orders').innerText = orders.length;
-                updateRewardUI(newPoints);
-            }
+            const [{ data: orders, error: ordersError }, { data: prof, error: profileError }] = await Promise.all([
+                supD.from('orders').select('*').eq('seller_id', currentUser.id),
+                supD.from('profiles').select('*').eq('id', currentUser.id).single()
+            ]);
+            if (ordersError) throw ordersError;
+            if (profileError) throw profileError;
+            currentProfile = prof;
+            const points = Math.max(0, Number(prof.points) || 0);
+            document.getElementById('stat-points').innerText = points;
+            document.getElementById('p-count').innerText = points;
+            document.getElementById('stat-orders').innerText = (orders || []).length;
+            updateRewardUI(points);
+            initChart(orders || []);
         } catch (e) { console.error(e); }
     }
 
@@ -1206,26 +1213,27 @@
                 list.innerHTML = orders.map(o => {
                     const orderItems = parseOrderItems(o);
                     const totalAmount = getOrderTotal(o);
+                    const orderStatus = o.order_status || o.status || 'pending';
                     const groupedQuantity = orderItems.reduce((sum, item) => sum + Number(item.quantity || 1), 0) || Number(o.quantity || 0) || 1;
                     const itemBreakdown = orderItems.length > 0 ? orderItems.map(item => {
                         const qty = Number(item.quantity || 1);
-                        const unitPrice = Number(item.price || 0);
-                        const lineTotal = unitPrice * qty;
+                        const lineTotal = Number(item.line_total || 0);
                         return `<div class="order-line-item"><span>${qty} x ${item.title || 'Produit'}</span><span>${lineTotal.toLocaleString()} HTG</span></div>`;
                     }).join('') : `<div class="order-line-item"><span>${o.product_title || o.product_name || 'Produit'}</span><span>${Number(o.amount || 0).toLocaleString()} HTG</span></div>`;
 
                     return `
-                    <div class="order-card ${o.status || 'pending'}">
+                    <div class="order-card ${orderStatus}">
                         <div class="order-info">
                             <div class="order-id">KÒMAND #${o.id.substring(0,8)}</div>
                             <div class="order-title">${o.product_title || o.product_name || 'Pwodwi'}</div>
                             <div class="order-meta">Client: ${o.customer_name || o.customer_phone || o.customer_email || '—'} · <b>${totalAmount.toLocaleString()} HTG</b></div>
                             <div class="order-meta" style="margin-top:6px;">🛍️ ${groupedQuantity} article(s) commandé(s)</div>
                             <div class="order-items-list" style="margin-top:10px;">${itemBreakdown}</div>
-                            <div style="margin-top:8px;"><span class="order-status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
+                            <div style="margin-top:8px;"><span class="order-status-badge status-${orderStatus}">${orderStatus}</span></div>
                         </div>
                         <div>
-                            ${(o.status === 'pending' || !o.status) ? `<button class="btn-order-action" onclick="markAsDelivered('${o.id}')">🚚 Make kòm Livre</button>` : ''}
+                            ${orderStatus === 'paid' || (o.payment_method === 'cash' && o.payment_status === 'pending_payment' && orderStatus === 'pending') ? `<button class="btn-order-action" onclick="updateSellerOrderStatus('${o.id}','shipped')">📦 Make kòm anbake</button>` : ''}
+                            ${orderStatus === 'shipped' ? `<button class="btn-order-action" onclick="updateSellerOrderStatus('${o.id}','delivered')">✅ Konfime livrezon</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -1240,7 +1248,14 @@
 
     async function markAsDelivered(id) {
         if (!confirm("Èske ou livre pwodwi sa a?")) return;
-        await supD.from('orders').update({ status: 'delivered' }).eq('id', id);
+        const { data: { session } } = await supD.auth.getSession();
+        const response = await fetch('/.netlify/functions/marketplace-payments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
+            body: JSON.stringify({ action: 'set-order-status', order_id: id, status: 'delivered' })
+        });
+        const result = await response.json();
+        if (!response.ok) { alert(result.error || 'Pa kapab mete kòmand lan kòm livre.'); return; }
         
         // Envoi email au client
         try {
@@ -1307,6 +1322,22 @@
         }
         
         loadOrders();
+    }
+
+    async function updateSellerOrderStatus(orderId, status) {
+        const label = status === 'shipped' ? 'anbake' : 'livre';
+        if (!confirm(`Èske ou vle make kòmand lan kòm ${label}?`)) return;
+        try {
+            const { data: { session } } = await supD.auth.getSession();
+            const response = await fetch('/.netlify/functions/marketplace-payments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
+                body: JSON.stringify({ action: 'set-order-status', order_id: orderId, status })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Mizajou livrezon an echwe.');
+            await loadOrders();
+        } catch (error) { alert(error.message); }
     }
 
     async function loadFeedbacks() {
@@ -1605,6 +1636,66 @@
         document.querySelectorAll('.nav-item, .m-nav-btn').forEach(t => t.classList.remove('active'));
         document.getElementById('tab-' + tab).classList.add('active');
         if (el) el.classList.add('active');
+        if (tab === 'wallet') loadSellerFinance();
+    }
+
+    async function sellerFinanceRequest(url, body) {
+        const { data: { session } } = await supD.auth.getSession();
+        if (!session) throw new Error('Tanpri konekte ankò.');
+        const response = await fetch(url, {
+            method: body ? 'POST' : 'GET',
+            headers: { Authorization: `Bearer ${session.access_token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+            body: body ? JSON.stringify(body) : undefined
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Demann finans lan echwe.');
+        return result;
+    }
+
+    async function loadSellerFinance() {
+        const status = document.getElementById('supplier-finance-status');
+        try {
+            const data = await sellerFinanceRequest('/.netlify/functions/marketplace-payments?view=supplier');
+            const balance = data.balance || {};
+            const format = (amount) => `${Number(amount || 0).toLocaleString()} HTG`;
+            document.getElementById('supplier-pending-balance').textContent = format(balance.pending_balance);
+            document.getElementById('supplier-paid-out').textContent = format(balance.total_paid_out);
+            document.getElementById('wall-balance').innerHTML = `${Number(balance.available_balance || 0).toLocaleString()} <span>HTG</span>`;
+            if (data.payout_settings) {
+                document.getElementById('payout-method').value = data.payout_settings.method;
+                document.getElementById('payout-account-name').value = data.payout_settings.account_name || '';
+                document.getElementById('payout-account-number').value = data.payout_settings.account_number || '';
+            }
+            document.getElementById('supplier-sales-list').innerHTML = data.sales.length ? data.sales.map((sale) =>
+                `<div class="order-line-item"><span>${sale.quantity} × ${sale.product_id}<br><small>Komisyon: ${format(sale.commission_amount)}</small></span><strong>Nèt: ${format(sale.supplier_net)}</strong></div>`
+            ).join('') : '<p class="page-subtitle">Pa gen vant ki konfime ankò.</p>';
+            document.getElementById('supplier-payout-history').innerHTML = data.payouts.length ? data.payouts.map((payout) =>
+                `<div class="order-line-item"><span>${new Date(payout.requested_at).toLocaleDateString()} · ${payout.method}</span><strong>${format(payout.amount)} · ${payout.status}</strong></div>`
+            ).join('') : '<p class="page-subtitle">Pa gen demann retrè.</p>';
+        } catch (error) { status.textContent = error.message; }
+    }
+
+    async function savePayoutSettings() {
+        const status = document.getElementById('supplier-finance-status');
+        try {
+            await sellerFinanceRequest('/.netlify/functions/marketplace-payments', {
+                action: 'save-payout-settings', method: document.getElementById('payout-method').value,
+                account_name: document.getElementById('payout-account-name').value,
+                account_number: document.getElementById('payout-account-number').value
+            });
+            status.textContent = 'Destinasyon retrè a sove.';
+        } catch (error) { status.textContent = error.message; }
+    }
+
+    async function requestSupplierPayout() {
+        const amount = Number(document.getElementById('payout-request-amount').value);
+        const status = document.getElementById('supplier-finance-status');
+        try {
+            await sellerFinanceRequest('/.netlify/functions/marketplace-payments', { action: 'request-payout', amount });
+            document.getElementById('payout-request-amount').value = '';
+            status.textContent = 'Demann retrè a voye pou apwobasyon.';
+            await loadSellerFinance();
+        } catch (error) { status.textContent = error.message; }
     }
 
     function copyShopUrl() { navigator.clipboard.writeText(document.getElementById('shop-url-display').innerText).then(() => alert("Kopye!")); }

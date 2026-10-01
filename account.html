@@ -145,11 +145,13 @@ async function loadOrders(userId) {
 
   document.getElementById('statOrders').innerText = orders.length;
   list.innerHTML = orders.map(o => {
-    const status = o.status || 'pending';
+    const status = o.order_status || o.status || 'pending';
     let actionsHtml = '';
 
-    if (status === 'delivered') {
-      actionsHtml = `<button onclick="approveOrder('${o.id}', '${o.seller_id}', ${o.amount})" class="btn-action approve">✅ Aprouve Resepsyon</button>`;
+    if (status === 'shipped') {
+      actionsHtml = `<button onclick="approveOrder('${o.id}')" class="btn-action approve">✅ Konfime resepsyon</button>`;
+    } else if (status === 'delivered') {
+      actionsHtml = '<span>Livrezon konfime · balans lan ap tann delè sekirite a</span>';
     } else if (status === 'completed') {
       actionsHtml = `<a href="/pwodwi-machann.html?id=${o.product_id}" class="btn-action review">⭐ Bay Avis</a>`;
     }
@@ -174,18 +176,7 @@ async function loadOrders(userId) {
 async function approveOrder(orderId, sellerId, amount) {
   if (!confirm("Avez-vous bien reçu la commande ? Cela libérera les fonds au vendeur.")) return;
 
-  // 1. Make kòmand lan konplè
-  const { error: err1 } = await client.from('orders').update({ status: 'completed' }).eq('id', orderId);
-  if (err1) { alert(err1.message); return; }
-
-  // 2. Mizajou balans machann nan (Wallet)
-  // Nan yon sistèm reyèl, nou ta fè sa via yon Edge Function pou sekirite,
-  // men isit la nou pral chèche balans lan epi ajoute li.
-  const { data: profile } = await client.from('profiles').select('wallet_balance').eq('id', sellerId).single();
-  const currentBal = parseFloat(profile.wallet_balance || 0);
-  const newBal = currentBal + parseFloat(amount);
-
-  await client.from('profiles').update({ wallet_balance: newBal }).eq('id', sellerId);
+  return window.approveOrder(orderId);
 
   // 3. Envoi email au vendeur
   try {
@@ -256,6 +247,20 @@ async function approveOrder(orderId, sellerId, amount) {
   alert("✅ Merci ! La commande est terminée et les fonds ont été transférés au vendeur.");
   loadOrders();
 }
+
+window.approveOrder = async function(orderId) {
+  if (!confirm('Èske ou resevwa kòmand lan? Montan founisè a ap vin disponib apre delè ranbousman an.')) return;
+  const { data: { session } } = await client.auth.getSession();
+  const response = await fetch('/.netlify/functions/marketplace-payments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
+    body: JSON.stringify({ action: 'confirm-customer-delivery', order_id: orderId })
+  });
+  const result = await response.json();
+  if (!response.ok) { alert(result.error || 'Pa kapab konfime resepsyon an.'); return; }
+  alert('Resepsyon an konfime. Ledger la ap lage montan an apre delè sekirite a.');
+  loadOrders(session.user.id);
+};
 
 function handleLogout() { client.auth.signOut().then(() => location.reload()); }
 

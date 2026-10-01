@@ -7,17 +7,24 @@
   JEKYLL_ENV = "production"
   NODE_VERSION = "20"
 
+[functions]
+  included_files = ["ai-system-prompt.txt"]
+
 # ✅ NETLIFY FUNCTIONS (Priyorite)
 [[redirects]]
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-# ✅ NETLIFY CMS ADMIN
 [[redirects]]
-  from = "/admin/*"
-  to = "/admin/index.html"
-  status = 200
+  from = "/admin"
+  to = "/admin/login.html"
+  status = 302
+
+[[redirects]]
+  from = "/admin/"
+  to = "/admin/login.html"
+  status = 302
 
 # ❌ 404 TOUJOURS AN DERNIER
 [[redirects]]

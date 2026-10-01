@@ -2,7 +2,7 @@
 
 ## 📋 Aksès Admin (Admin Access)
 
-De (2) paj admin yo proteje pa **password authentication** (Dashboard + Products). CMS Netlify a pa proteje. Se SELMAN ou (the owner) ki gen drwa aksè.
+Dashboard admin lan verifye wòl Supabase la; paj finans lan verifye menm wòl sa a sou sèvè tou.
 
 ---
 
@@ -55,7 +55,7 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 - Onglet Konfigirasyon
 - Lyen rapid pou tout tool yo
 - **Rekit:** Login avèk modpas
-- **Lyen Rapid:** Products, CMS, Kategori, Compte Client
+- **Lyen Rapid:** Products, Peman & Ledger, Compte Client
 
 ### Gestion Produits (`/admin/products.html`) 🔐 PROTEJE
 - ➕ **Ajouter pwodwi** (Fil form)
@@ -63,11 +63,11 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 - 🔍 **Filtre Real-time search**
 - **Rekit:** Login avèk modpas
 
-### CMS Netlify (`/admin/index.html`) 🔓 LIBRE
-- Traditional CMS pou kòn, ofè, etc.
-- Synkronizasyon otomatik
-- **Rekit:** Sèvi Netlify Identity
-- **Di Atansyon:** Ou ka aksè direktman san modpas boutik
+### Finans (`/admin/finance.html`) 🔐 Supabase Admin
+- Verifye peman MonCash/NatCash ak peman kach
+- Apwouve/rejte retrè epi anrejistre referans peman
+- Konfigire nimewo/QR platfòm, delè ak komisyon
+- Wè rapò ledger ak ekspòte CSV
 
 ### Compte Client (`/admin/account.html`) 🔓 LIBRE
 - Enfòmasyon kont kliyan
@@ -82,7 +82,7 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 ✅ **Pwodèj Proteksyon (2 Paj):**
 - ✅ Admin Panel (`/admin/admin.html`) - Modpas oblije
 - ✅ Products (`/admin/products.html`) - Modpas oblije
-- ✅ CMS Netlify (`/admin/index.html`) - Sèvi Netlify Identity (pa modpas boutik)
+- ✅ Finans (`/admin/finance.html`) - Wòl admin Supabase obligatwa
 - ✅ Compte Client (`/admin/account.html`) - Libre pou kliyan
 
 **Mekanik Proteksyon:**
