@@ -28,7 +28,7 @@ async function updateHeaderAuth() {
             // Itilizatè konekte
             const { data: profile } = await supabaseAuth
                 .from('profiles')
-                .select('role')
+                .select('role, is_active_seller')
                 .eq('id', session.user.id)
                 .single();
 
@@ -62,13 +62,21 @@ async function updateHeaderAuth() {
                 if (navSellLink) navSellLink.style.display = 'none';
             }
             // Si se yon vandè, montre bouton dashboard la epi lyen "Vann pa w"
-            else if (profile && profile.role === 'seller') {
+            else if (profile && profile.role === 'seller' && profile.is_active_seller === true) {
                 if (btnMerchantDash) {
                     btnMerchantDash.style.display = 'flex';
                     btnMerchantDash.href = '/dashboard.html';
                     btnMerchantDash.textContent = '📊 Dashboard';
                 }
                 if (navSellLink) navSellLink.style.display = 'inline-block';
+            }
+            else if (profile && profile.role === 'seller') {
+                if (btnMerchantDash) {
+                    btnMerchantDash.style.display = 'flex';
+                    btnMerchantDash.href = '/vendor-application-status.html';
+                    btnMerchantDash.textContent = window.t ? window.t('nav.vendor_application') : '⏳ Aplikasyon';
+                }
+                if (navSellLink) navSellLink.style.display = 'none';
             }
             // Si pa gen profile ou wòl pa defini, pa montre okenn bouton kont
             else {

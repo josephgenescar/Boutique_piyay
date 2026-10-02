@@ -843,6 +843,10 @@
                     <div class="ws-val" id="supplier-paid-out" style="color: var(--blue);">0 HTG</div>
                     <div class="ws-lbl">Total ki deja peye</div>
                 </div>
+                <div class="wallet-stat-item">
+                    <div class="ws-val" id="supplier-pending-withdrawal" style="color: var(--gold);">0 HTG</div>
+                    <div class="ws-lbl">Demann retrè an pwosesis</div>
+                </div>
             </div>
 
             <div class="wallet-card">
@@ -854,6 +858,7 @@
                     <div><label for="payout-account-number">Nimewo/kont destinasyon</label><input class="form-input" id="payout-account-number" maxlength="120"></div>
                     <button class="wallet-btn secondary" type="button" onclick="savePayoutSettings()">Sove metòd retrè</button>
                     <div><label for="payout-request-amount">Montan pou mande (HTG)</label><input class="form-input" id="payout-request-amount" type="number" min="0.01" step="0.01"></div>
+                    <p id="supplier-minimum-payout" class="page-subtitle" style="grid-column:1/-1;"></p>
                     <button class="wallet-btn primary" type="button" onclick="requestSupplierPayout()">Mande yon retrè</button>
                 </div>
             </div>
@@ -1072,6 +1077,7 @@
     let currentUser = null;
     let currentProfile = null;
     let selectedProdId = null;
+    let supplierMinimumPayout = 100;
 
     async function init() {
         try {
@@ -1091,6 +1097,9 @@
                 .single();
             if (profile?.role === 'pending_seller') {
                 return window.location.assign('/vendor-application-status.html');
+            }
+            if (profile?.role === 'affiliate') {
+                return window.location.assign('/affiliate-dashboard.html');
             }
             if (!profile || (profile.role !== 'admin' && (profile.role !== 'seller' || profile.is_active_seller !== true))) {
                 alert("⚠️ Se sèlman vandè yo ka aksede dashboard sa a!");
@@ -1661,6 +1670,11 @@
             document.getElementById('supplier-pending-balance').textContent = format(balance.pending_balance);
             document.getElementById('supplier-paid-out').textContent = format(balance.total_paid_out);
             document.getElementById('wall-balance').innerHTML = `${Number(balance.available_balance || 0).toLocaleString()} <span>HTG</span>`;
+            const pendingWithdrawal = data.payouts.filter((payout) => ['requested', 'approved'].includes(payout.status)).reduce((total, payout) => total + Number(payout.amount || 0), 0);
+            document.getElementById('supplier-pending-withdrawal').textContent = format(pendingWithdrawal);
+            supplierMinimumPayout = Number(data.minimum_payout || 100);
+            document.getElementById('payout-request-amount').min = String(supplierMinimumPayout);
+            document.getElementById('supplier-minimum-payout').textContent = `Minimòm retrè: ${format(supplierMinimumPayout)} · Montan ki disponib: ${format(balance.available_balance)}`;
             if (data.payout_settings) {
                 document.getElementById('payout-method').value = data.payout_settings.method;
                 document.getElementById('payout-account-name').value = data.payout_settings.account_name || '';
@@ -1670,7 +1684,7 @@
                 `<div class="order-line-item"><span>${sale.quantity} × ${sale.product_id}<br><small>Komisyon: ${format(sale.commission_amount)}</small></span><strong>Nèt: ${format(sale.supplier_net)}</strong></div>`
             ).join('') : '<p class="page-subtitle">Pa gen vant ki konfime ankò.</p>';
             document.getElementById('supplier-payout-history').innerHTML = data.payouts.length ? data.payouts.map((payout) =>
-                `<div class="order-line-item"><span>${new Date(payout.requested_at).toLocaleDateString()} · ${payout.method}</span><strong>${format(payout.amount)} · ${payout.status}</strong></div>`
+                `<div class="order-line-item"><span>${new Date(payout.processed_at || payout.requested_at).toLocaleDateString()} · ${payout.method}<br><small>Destinasyon: ${payout.destination || 'Pa disponib'}${payout.payment_reference ? ` · Referans: ${payout.payment_reference}` : ''}${payout.note ? ` · Nòt: ${payout.note}` : ''}</small></span><strong>${format(payout.amount)} · ${payout.status}</strong></div>`
             ).join('') : '<p class="page-subtitle">Pa gen demann retrè.</p>';
         } catch (error) { status.textContent = error.message; }
     }
@@ -1690,6 +1704,10 @@
     async function requestSupplierPayout() {
         const amount = Number(document.getElementById('payout-request-amount').value);
         const status = document.getElementById('supplier-finance-status');
+        if (!Number.isFinite(amount) || amount < supplierMinimumPayout) {
+            status.textContent = `Montan retrè a dwe omwen ${supplierMinimumPayout.toLocaleString()} HTG.`;
+            return;
+        }
         try {
             await sellerFinanceRequest('/.netlify/functions/marketplace-payments', { action: 'request-payout', amount });
             document.getElementById('payout-request-amount').value = '';

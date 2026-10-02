@@ -236,7 +236,7 @@ title: Konekte - Boutique Piyay
         try {
           const result = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('role, is_active_seller')
             .eq('id', data.user.id)
             .single();
           profile = result.data;
@@ -248,58 +248,50 @@ title: Konekte - Boutique Piyay
         console.log('Profile:', profile);
         console.log('Profile error:', profileError);
 
-        // Si profile pa egziste, kreye li otomatikman
         if (profileError || !profile) {
-          console.log('Profile pa egziste, kreye li otomatikman');
-          // Tcheke si itilizatè a se yon vendeur (nan user_metadata oswa URL parameter)
-          const isSeller = data.user.user_metadata?.role === 'seller' || 
-                          new URLSearchParams(window.location.search).get('role') === 'seller';
-          
-          console.log('Is seller:', isSeller);
-          
-          const { error: insertError } = await supabaseClient
-            .from('profiles')
-            .insert([{
-              id: data.user.id,
-              email: data.user.email,
-              full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Utilisateur',
-              role: isSeller ? 'seller' : 'client',
-              is_active_seller: false
-            }]);
+          await supabaseClient.auth.signOut();
+          showToast('❌ Pwofil kont sa a pa disponib. Kontakte sipò pou verifye kont lan.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = 'Se connecter 🚀';
+          return;
+        }
 
-          if (insertError) {
-            console.error('Erè nan kreyasyon profile:', insertError);
-          } else {
-            console.log('Profile kreye avèk siksè');
-            // Rekipere profile a ankou apre kreyasyon
-            const { data: newProfile } = await supabaseClient
-              .from('profiles')
-              .select('role')
-              .eq('id', data.user.id)
-              .single();
-            profile = newProfile;
-            console.log('Profile apre kreyasyon:', profile);
+        const requestedRedirect = new URLSearchParams(window.location.search).get('redirect');
+        let safeRedirect = null;
+        let safeRedirectPath = null;
+        if (requestedRedirect) {
+          try {
+            const parsedRedirect = new URL(requestedRedirect, window.location.origin);
+            if (parsedRedirect.origin === window.location.origin) {
+              safeRedirectPath = parsedRedirect.pathname;
+              safeRedirect = `${parsedRedirect.pathname}${parsedRedirect.search}${parsedRedirect.hash}`;
+            }
+          } catch {
+            safeRedirect = null;
           }
         }
 
-        const redirect = new URLSearchParams(window.location.search).get('redirect');
+        let destination = '/';
+        if (profile.role === 'affiliate') {
+          destination = '/affiliate-dashboard.html';
+        } else if (profile.role === 'pending_seller' || (profile.role === 'seller' && profile.is_active_seller !== true)) {
+          destination = '/vendor-application-status.html';
+        } else if (profile.role === 'seller') {
+          destination = safeRedirect === '/vendre.html' || safeRedirect?.startsWith('/vendre.html?')
+            ? safeRedirect
+            : '/dashboard.html';
+        } else if (profile.role === 'admin') {
+          destination = '/dashboard.html';
+        } else {
+          const restrictedDestinations = ['/dashboard.html', '/affiliate-dashboard.html', '/vendre.html', '/vendor-application-status.html'];
+          const isAdminDestination = safeRedirectPath?.startsWith('/admin/');
+          destination = safeRedirect && !restrictedDestinations.includes(safeRedirectPath) && !isAdminDestination
+            ? safeRedirect
+            : '/';
+        }
 
         setTimeout(() => {
-          // Si utilisateur gen role 'affiliate', redirige li sou affiliate dashboard
-          if (profile && profile.role === 'affiliate') {
-            console.log('Redirection vers affiliate-dashboard.html');
-            window.location.href = redirect || '/affiliate-dashboard.html';
-          }
-          // Si c'est un vendeur oswa admin, rediriger vers dashboard
-          else if (profile && (profile.role === 'seller' || profile.role === 'admin')) {
-            console.log('Redirection vers dashboard.html');
-            window.location.href = redirect || '/dashboard.html';
-          }
-          // Sinon rediriger sou accueil
-          else {
-            console.log('Redirection vers page accueil');
-            window.location.href = redirect || '/';
-          }
+          window.location.href = destination;
         }, 1200);
       }
     };

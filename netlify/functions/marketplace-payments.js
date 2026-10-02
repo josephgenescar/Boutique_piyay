@@ -96,9 +96,10 @@ exports.handler = async (event) => {
     }
 
     if (action === 'save-affiliate-payout-settings') {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', identity.user.id).maybeSingle();
       const { data: affiliate } = await supabase.from('affiliates').select('id').eq('user_id', identity.user.id).maybeSingle();
       const method = String(body.method || '').toLowerCase();
-      if (!affiliate || !['moncash', 'natcash', 'bank'].includes(method)) return respond(400, { error: 'Affiliate account or method is invalid' }, headers);
+      if (profile?.role !== 'affiliate' || !affiliate || !['moncash', 'natcash', 'bank'].includes(method)) return respond(403, { error: 'Affiliate account or method is invalid' }, headers);
       const values = {
         affiliate_id: affiliate.id, method,
         account_name: String(body.account_name || '').trim().slice(0, 120),
@@ -205,22 +206,30 @@ async function getRequest(event, headers) {
   if (!identity.user) return respond(401, { error: 'Login required' }, headers);
 
   if (params.view === 'supplier') {
-    const [{ data: balance }, { data: payoutSettings }, { data: payouts }, { data: sales }] = await Promise.all([
+    const { data: profile } = await supabase.from('profiles').select('role,is_active_seller').eq('id', identity.user.id).maybeSingle();
+    if (profile?.role !== 'seller' || profile.is_active_seller !== true) return respond(403, { error: 'Active supplier account required' }, headers);
+    const [{ data: balance }, { data: payoutSettings }, { data: payouts }, { data: sales }, { data: paymentSettings }] = await Promise.all([
       supabase.from('supplier_balances').select('*').eq('supplier_id', identity.user.id).maybeSingle(),
       supabase.from('supplier_payout_settings').select('method,account_name,account_number').eq('supplier_id', identity.user.id).maybeSingle(),
       supabase.from('payout_requests').select('*').eq('supplier_id', identity.user.id).order('requested_at', { ascending: false }).limit(50),
-      supabase.from('order_items').select('id,order_id,order_group_id,product_id,quantity,unit_price,line_total,commission_amount,supplier_net,item_status,created_at').eq('supplier_id', identity.user.id).order('created_at', { ascending: false }).limit(100)
+      supabase.from('order_items').select('id,order_id,order_group_id,product_id,quantity,unit_price,line_total,commission_amount,supplier_net,item_status,created_at').eq('supplier_id', identity.user.id).order('created_at', { ascending: false }).limit(100),
+      supabase.from('payment_settings').select('minimum_payout').eq('id', true).single()
     ]);
-    return respond(200, { balance: balance || { pending_balance: 0, available_balance: 0, total_paid_out: 0 }, payout_settings: payoutSettings, payouts: payouts || [], sales: sales || [] }, headers);
+    return respond(200, { balance: balance || { pending_balance: 0, available_balance: 0, total_paid_out: 0 }, payout_settings: payoutSettings, payouts: payouts || [], sales: sales || [], minimum_payout: Number(paymentSettings?.minimum_payout || 100) }, headers);
   }
   if (params.view === 'affiliate') {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', identity.user.id).maybeSingle();
+    if (profile?.role !== 'affiliate') return respond(403, { error: 'Affiliate account required' }, headers);
     const { data: affiliate } = await supabase.from('affiliates').select('id,referral_code').eq('user_id', identity.user.id).maybeSingle();
     if (!affiliate) return respond(403, { error: 'Affiliate account required' }, headers);
-    const [{ data: balance }, { data: payoutSettings }, { data: payouts }] = await Promise.all([
+    const [{ data: balance }, { data: payoutSettings }, { data: payouts }, { count: clickCount, error: clickError }, { data: paymentSettings }] = await Promise.all([
       supabase.from('affiliate_balances').select('*').eq('affiliate_id', affiliate.id).maybeSingle(),
       supabase.from('affiliate_payout_settings').select('method,account_name,account_number').eq('affiliate_id', affiliate.id).maybeSingle(),
-      supabase.from('payout_requests').select('*').eq('affiliate_id', affiliate.id).order('requested_at', { ascending: false }).limit(50)
+      supabase.from('payout_requests').select('*').eq('affiliate_id', affiliate.id).order('requested_at', { ascending: false }).limit(50),
+      supabase.from('affiliate_click_visitors').select('affiliate_id', { count: 'exact', head: true }).eq('affiliate_id', affiliate.id),
+      supabase.from('payment_settings').select('minimum_payout').eq('id', true).single()
     ]);
+    if (clickError) console.error('Affiliate visit count unavailable:', clickError.message);
     const [transactions, referredOrders] = await Promise.all([
       fetchAllRows((offset, end) => supabase.from('ledger_reporting')
         .select('id,amount,entry_type,reverses_entry_type,effective_status,created_at,note')
@@ -237,24 +246,102 @@ async function getRequest(event, headers) {
     const pendingWithdrawal = (payouts || []).filter((payout) => ['requested', 'approved'].includes(payout.status))
       .reduce((sum, payout) => sum + Number(payout.amount), 0);
     const sales = new Set(referredOrders.map((item) => item.order_group_id)).size;
-    return respond(200, { affiliate, balance: balance || { pending_balance: 0, available_balance: 0, total_paid_out: 0 }, payout_settings: payoutSettings, payouts: payouts || [], transactions: transactions.slice(0, 50), total_commission: totalCommission, pending_withdrawal: pendingWithdrawal, sales }, headers);
+    return respond(200, { affiliate, balance: balance || { pending_balance: 0, available_balance: 0, total_paid_out: 0 }, payout_settings: payoutSettings, payouts: payouts || [], transactions: transactions.slice(0, 50), total_commission: totalCommission, pending_withdrawal: pendingWithdrawal, sales, clicks: clickError ? null : (clickCount || 0), minimum_payout: Number(paymentSettings?.minimum_payout || 100) }, headers);
   }
 
   if (!await isAdmin(identity.user.id)) return respond(403, { error: 'Admin access required' }, headers);
   if (params.view === 'admin') {
-    const [{ data: payments, error: paymentError }, { data: payouts, error: payoutError }, { data: settings }] = await Promise.all([
+    const [{ data: payments, error: paymentError }, { data: settings }, { data: payoutHistory, error: historyError }, supplierBalanceRows, affiliateBalanceRows] = await Promise.all([
       supabase.from('marketplace_payments').select('*').or('payment_status.eq.pending_verification,and(payment_status.eq.pending_payment,payment_method.eq.cash)').order('created_at', { ascending: true }).limit(100),
-      supabase.from('payout_requests').select('*').in('status', ['requested', 'approved']).order('requested_at', { ascending: true }).limit(100),
-      supabase.from('payment_settings').select('*').eq('id', true).single()
+      supabase.from('payment_settings').select('*').eq('id', true).single(),
+      supabase.from('payout_requests').select('*').in('status', ['paid', 'rejected']).order('requested_at', { ascending: false }).limit(100),
+      fetchAllRows((offset, end) => supabase.from('supplier_balances').select('supplier_id,pending_balance,available_balance,total_paid_out').order('supplier_id').range(offset, end)),
+      fetchAllRows((offset, end) => supabase.from('affiliate_balances').select('affiliate_id,pending_balance,available_balance,total_paid_out').order('affiliate_id').range(offset, end))
     ]);
     if (paymentError) throw paymentError;
-    if (payoutError) throw payoutError;
+    if (historyError) throw historyError;
+
+    const payouts = await fetchAllRows((offset, end) => supabase.from('payout_requests')
+      .select('*').in('status', ['requested', 'approved']).order('requested_at', { ascending: true }).order('id').range(offset, end));
+    const supplierIds = [...new Set([...payouts, ...(payoutHistory || [])].map((payout) => payout.supplier_id).filter(Boolean))];
+    const affiliateIds = [...new Set([...payouts, ...(payoutHistory || [])].map((payout) => payout.affiliate_id).filter(Boolean))];
+    const [supplierProfilesResult, affiliateAccountsResult] = await Promise.all([
+      supplierIds.length
+        ? supabase.from('profiles').select('id,full_name,email,shop_name').in('id', supplierIds)
+        : Promise.resolve({ data: [], error: null }),
+      affiliateIds.length
+        ? supabase.from('affiliates').select('id,user_id,referral_code').in('id', affiliateIds)
+        : Promise.resolve({ data: [], error: null })
+    ]);
+    if (supplierProfilesResult.error) throw supplierProfilesResult.error;
+    if (affiliateAccountsResult.error) throw affiliateAccountsResult.error;
+
+    const affiliateAccounts = affiliateAccountsResult.data || [];
+    const affiliateUserIds = [...new Set(affiliateAccounts.map((affiliate) => affiliate.user_id).filter(Boolean))];
+    const affiliateProfilesResult = affiliateUserIds.length
+      ? await supabase.from('profiles').select('id,full_name,email').in('id', affiliateUserIds)
+      : { data: [], error: null };
+    if (affiliateProfilesResult.error) throw affiliateProfilesResult.error;
+
+    const supplierProfilesById = new Map((supplierProfilesResult.data || []).map((profile) => [profile.id, profile]));
+    const affiliateAccountsById = new Map(affiliateAccounts.map((affiliate) => [affiliate.id, affiliate]));
+    const affiliateProfilesById = new Map((affiliateProfilesResult.data || []).map((profile) => [profile.id, profile]));
+    const supplierBalancesById = new Map((supplierBalanceRows || []).map((balance) => [balance.supplier_id, balance]));
+    const affiliateBalancesById = new Map((affiliateBalanceRows || []).map((balance) => [balance.affiliate_id, balance]));
+    const payoutTotals = {
+      supplier: { pending_balance: 0, available_balance: 0, total_paid_out: 0, requested_payouts: 0, approved_payouts: 0, open_payouts: 0, total_owed: 0 },
+      affiliate: { pending_balance: 0, available_balance: 0, total_paid_out: 0, requested_payouts: 0, approved_payouts: 0, open_payouts: 0, total_owed: 0 }
+    };
+    for (const balance of supplierBalanceRows || []) {
+      payoutTotals.supplier.pending_balance += Number(balance.pending_balance || 0);
+      payoutTotals.supplier.available_balance += Number(balance.available_balance || 0);
+      payoutTotals.supplier.total_paid_out += Number(balance.total_paid_out || 0);
+    }
+    for (const balance of affiliateBalanceRows || []) {
+      payoutTotals.affiliate.pending_balance += Number(balance.pending_balance || 0);
+      payoutTotals.affiliate.available_balance += Number(balance.available_balance || 0);
+      payoutTotals.affiliate.total_paid_out += Number(balance.total_paid_out || 0);
+    }
+    const enrichPayout = (payout) => {
+      const isAffiliate = payout.account_type === 'affiliate';
+      const affiliate = isAffiliate ? affiliateAccountsById.get(payout.affiliate_id) : null;
+      const profile = isAffiliate
+        ? affiliateProfilesById.get(affiliate?.user_id)
+        : supplierProfilesById.get(payout.supplier_id);
+      const balance = isAffiliate
+        ? affiliateBalancesById.get(payout.affiliate_id)
+        : supplierBalancesById.get(payout.supplier_id);
+      return {
+        ...payout,
+        owner_name: profile?.full_name || profile?.shop_name || profile?.email || null,
+        owner_email: profile?.email || null,
+        shop_name: profile?.shop_name || null,
+        referral_code: affiliate?.referral_code || null,
+        pending_balance: Number(balance?.pending_balance || 0),
+        available_balance: Number(balance?.available_balance || 0),
+        total_paid_out: Number(balance?.total_paid_out || 0)
+      };
+    };
+    const detailedPayouts = payouts.map(enrichPayout);
+    const detailedPayoutHistory = (payoutHistory || []).map(enrichPayout);
+    for (const payout of detailedPayouts) {
+      const totals = payoutTotals[payout.account_type];
+      if (!totals) continue;
+      const amount = Number(payout.amount || 0);
+      totals.open_payouts += amount;
+      if (payout.status === 'requested') totals.requested_payouts += amount;
+      if (payout.status === 'approved') totals.approved_payouts += amount;
+    }
+    for (const totals of Object.values(payoutTotals)) {
+      totals.total_owed = totals.pending_balance + totals.available_balance + totals.open_payouts;
+    }
+
     const rows = await Promise.all((payments || []).map(async (payment) => {
       if (!payment.payment_proof_path) return { ...payment, proof_url: null };
       const { data } = await supabase.storage.from('payment-proofs').createSignedUrl(payment.payment_proof_path, 300);
       return { ...payment, proof_url: data?.signedUrl || null };
     }));
-    return respond(200, { payments: rows, payouts: payouts || [], settings }, headers);
+    return respond(200, { payments: rows, payouts: detailedPayouts, payout_history: detailedPayoutHistory, payout_totals: payoutTotals, settings }, headers);
   }
   if (params.view === 'report') return await getReport(params, headers);
   return respond(400, { error: 'Unknown view' }, headers);

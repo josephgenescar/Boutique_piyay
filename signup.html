@@ -154,7 +154,7 @@
         </form>
 
         <div class="already-member">
-            Vous avez déjà un compte ? <a id="loginRedirectLink" href="/login.html?redirect=/affiliate-dashboard.html">Se connecter ici →</a>
+            Vous avez déjà un compte ? <a id="loginRedirectLink" href="/login.html?redirect=/vendor-application-status.html">Se connecter ici →</a>
         </div>
     </div>
 </div>
@@ -169,8 +169,22 @@
     const queryParams = new URLSearchParams(window.location.search);
     const initialRole = queryParams.get('role');
     const referralAttribution = queryParams.get('ref') || localStorage.getItem('ref_code') || null;
-    if (queryParams.has('ref')) localStorage.setItem('ref_code', queryParams.get('ref'));
-    const redirectTarget = queryParams.get('redirect') || (initialRole === 'affiliate' ? '/affiliate-dashboard.html' : '/');
+    if (queryParams.has('ref')) {
+        localStorage.setItem('ref_code', queryParams.get('ref'));
+        let visitorId = localStorage.getItem('bp_affiliate_visitor_id');
+        if (!visitorId) {
+            visitorId = window.crypto?.randomUUID?.() || 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+                const random = Math.random() * 16 | 0;
+                return (char === 'x' ? random : (random & 3 | 8)).toString(16);
+            });
+            localStorage.setItem('bp_affiliate_visitor_id', visitorId);
+        }
+        fetch('/.netlify/functions/affiliate-click', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ referral_code: queryParams.get('ref'), visitor_id: visitorId })
+        }).catch(() => {});
+    }
 
     function setRole(role) {
         currentRole = role;
@@ -186,7 +200,8 @@
             : 'Créer mon compte affilié';
         const loginLink = document.getElementById('loginRedirectLink');
         if (loginLink) {
-            loginLink.href = '/login.html?redirect=' + encodeURIComponent(redirectTarget);
+            const roleDestination = role === 'affiliate' ? '/affiliate-dashboard.html' : '/vendor-application-status.html';
+            loginLink.href = '/login.html?redirect=' + encodeURIComponent(roleDestination);
         }
     }
 
@@ -246,7 +261,9 @@
                 window.location.href = nextPage;
             } else {
                 alert('🎉 Kont afilye a kreye. Verifye imèl ou si sa nesesè.');
-                window.location.href = '/login.html?redirect=' + encodeURIComponent(redirectTarget);
+                window.location.href = authData.session
+                    ? '/affiliate-dashboard.html'
+                    : '/login.html?redirect=' + encodeURIComponent('/affiliate-dashboard.html');
             }
         } catch (err) {
             alert("❌ " + err.message);

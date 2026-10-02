@@ -53,6 +53,21 @@
       "stats_orders": "Commandes",
       "stats_reviews": "Avis positifs"
     },
+  "onboarding": {
+    "title": "Bienvenue sur Boutique Piyay",
+    "intro": "Choisissez ce qui vous amène ici pour découvrir la prochaine étape adaptée.",
+    "close": "Fermer le guide",
+    "vendor_title": "Je souhaite vendre sur la plateforme",
+    "vendor_text": "Préparez les informations de votre boutique, votre contact WhatsApp, vos catégories et la description de vos produits. Notre équipe examinera votre demande. Fournissez des informations exactes, présentez les produits tels qu'ils sont et traitez vos clients avec respect.",
+    "vendor_cta": "Commencer ma candidature",
+    "affiliate_title": "Je souhaite promouvoir la plateforme",
+    "affiliate_text": "Découvrez le fonctionnement du programme, créez votre compte affilié et partagez votre lien sans tromper les gens ni envoyer de spam. Les commissions dépendent des ventes validées selon les conditions du programme.",
+    "affiliate_cta": "Découvrir le programme affilié",
+    "customer_title": "Je souhaite découvrir et acheter",
+    "customer_text": "Parcourez les catégories, comparez les produits et les prix, puis choisissez ce qui vous convient. Vous pouvez explorer le marché sans créer de compte au préalable.",
+    "customer_cta": "Parcourir les produits",
+    "dismiss": "Je préfère explorer par moi-même"
+  },
   "market": {
     "title": "Marché 🚀",
     "sellers": "Vendeurs",

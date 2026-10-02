@@ -53,6 +53,21 @@
       "stats_orders": "Kòmand",
       "stats_reviews": "Bon nòt kliyan"
     },
+  "onboarding": {
+    "title": "Byenvini sou Boutique Piyay",
+    "intro": "Chwazi sa k mennen w isit la, n ap montre w bon pwochen etap la.",
+    "close": "Fèmen gid la",
+    "vendor_title": "Mwen vle vann sou platfòm nan",
+    "vendor_text": "Prepare enfòmasyon boutik ou, kontak WhatsApp ou, kategori ak deskripsyon pwodwi yo. Ekip la ap revize demann ou an. Bay bon enfòmasyon, prezante pwodwi yo jan yo ye, epi respekte kliyan yo.",
+    "vendor_cta": "Kòmanse aplikasyon an",
+    "affiliate_title": "Mwen vle fè pwomosyon kòm afilye",
+    "affiliate_text": "Aprann kijan pwogram nan fonksyone, kreye kont afilye ou, epi pataje lyen pa w la san twonpe moun ni fè spam. Komisyon depann de lavant ki valide dapre kondisyon pwogram nan.",
+    "affiliate_cta": "Dekouvri pwogram afilye a",
+    "customer_title": "Mwen vin dekouvri epi achte",
+    "customer_text": "Gade kategori yo, konpare pwodwi ak pri, epi chwazi sa ki bon pou ou. Ou ka eksplore mache a san ou pa kreye yon kont anvan.",
+    "customer_cta": "Eksplore pwodwi yo",
+    "dismiss": "M ap eksplore pou kont mwen"
+  },
   "market": {
     "title": "Mache 🚀",
     "sellers": "Vandè",

@@ -1089,6 +1089,23 @@ title: Akèy - Boutique Piyay
     .home-stat:last-child { border-right: 0; }
     .home-stat strong { display: block; color: #123c3a; font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
     .home-stat span { display: block; margin-top: 4px; color: #536966; font-size: 12px; font-weight: 700; }
+    .first-visit-guide { width: min(780px, calc(100% - 32px)); max-width: none; max-height: min(78vh, 640px); padding: 0; overflow: auto; border: 0; border-radius: 8px; color: #172a2a; background: #f7faf8; box-shadow: 0 24px 80px rgba(6, 28, 26, 0.28); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .first-visit-guide::backdrop { background: rgba(10, 31, 30, 0.68); backdrop-filter: blur(4px); }
+    .guide-content { padding: 34px; }
+    .guide-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
+    .guide-heading h2 { margin: 0 0 8px; color: #123c3a; font-family: 'Sora', sans-serif; font-size: 26px; line-height: 1.2; }
+    .guide-heading p { max-width: 650px; margin: 0; color: #536966; font-size: 14px; line-height: 1.65; }
+    .guide-close { flex: 0 0 40px; width: 40px; height: 40px; border: 1px solid #dce5e2; border-radius: 8px; background: #fff; color: #253b38; font-size: 24px; line-height: 1; cursor: pointer; }
+    .guide-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .guide-option { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 20px; border: 1px solid #dce5e2; border-top: 4px solid #16846d; border-radius: 6px; background: #fff; }
+    .guide-option:nth-child(2) { border-top-color: #e85b43; }
+    .guide-option:nth-child(3) { border-top-color: #276b82; }
+    .guide-option h3 { margin: 0 0 10px; color: #123c3a; font-size: 17px; }
+    .guide-option p { flex: 1; margin: 0 0 18px; color: #536966; font-size: 13px; line-height: 1.7; }
+    .guide-option a { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; width: 100%; padding: 8px 12px; border-radius: 6px; color: #fff; background: #123c3a; text-align: center; text-decoration: none; font-size: 13px; font-weight: 800; }
+    .guide-option:nth-child(2) a { background: #c84c38; }
+    .guide-option:nth-child(3) a { background: #276b82; }
+    .guide-skip { display: block; margin: 20px auto 0; padding: 8px 12px; border: 0; background: transparent; color: #536966; font: inherit; font-size: 13px; font-weight: 700; text-decoration: underline; cursor: pointer; }
     @media (max-width: 700px) {
       .home-hero { grid-template-columns: 1fr; gap: 8px; min-height: 0; margin: 14px 12px 10px; padding: 28px 22px; }
       .home-hero h1 { font-size: 31px; }
@@ -1101,8 +1118,65 @@ title: Akèy - Boutique Piyay
       .home-stat { padding: 12px 8px; }
       .home-stat:nth-child(2) { border-right: 0; }
       .home-stat:nth-child(-n+2) { border-bottom: 1px solid #dce5e2; }
+      .guide-content { padding: 22px 18px; }
+      .guide-heading { gap: 12px; margin-bottom: 18px; }
+      .guide-heading h2 { font-size: 21px; }
+      .guide-options { grid-template-columns: 1fr; }
+      .guide-option { padding: 17px; }
+      .guide-option p { margin-bottom: 12px; }
     }
 </style>
+
+<dialog class="first-visit-guide" id="first-visit-guide" aria-labelledby="guide-title" aria-describedby="guide-intro">
+  <div class="guide-content">
+    <div class="guide-heading">
+      <div>
+        <h2 id="guide-title" data-i18n="onboarding.title">Byenvini sou Boutique Piyay</h2>
+        <p id="guide-intro" data-i18n="onboarding.intro">Chwazi sa k mennen w isit la, n ap montre w bon pwochen etap la.</p>
+      </div>
+      <button class="guide-close" type="button" aria-label="Close guide" data-i18n-attr="aria-label:onboarding.close" onclick="document.getElementById('first-visit-guide').close()">&times;</button>
+    </div>
+    <div class="guide-options">
+      <section class="guide-option">
+        <h3 data-i18n="onboarding.vendor_title">Mwen vle vann sou platfòm nan</h3>
+        <p data-i18n="onboarding.vendor_text">Prepare enfòmasyon boutik ou, kontak WhatsApp ou, kategori ak deskripsyon pwodwi yo. Ekip la ap revize demann ou an. Bay bon enfòmasyon, prezante pwodwi yo jan yo ye, epi respekte kliyan yo.</p>
+        <a href="/signup.html?role=seller&amp;redirect=%2Fvendor-application-status.html" data-i18n="onboarding.vendor_cta">Kòmanse aplikasyon an</a>
+      </section>
+      <section class="guide-option">
+        <h3 data-i18n="onboarding.affiliate_title">Mwen vle fè pwomosyon kòm afilye</h3>
+        <p data-i18n="onboarding.affiliate_text">Aprann kijan pwogram nan fonksyone, kreye kont afilye ou, epi pataje lyen pa w la san twonpe moun ni fè spam. Komisyon depann de lavant ki valide dapre kondisyon pwogram nan.</p>
+        <a href="/affiliate.html" data-i18n="onboarding.affiliate_cta">Dekouvri pwogram afilye a</a>
+      </section>
+      <section class="guide-option">
+        <h3 data-i18n="onboarding.customer_title">Mwen vin dekouvri epi achte</h3>
+        <p data-i18n="onboarding.customer_text">Gade kategori yo, konpare pwodwi ak pri, epi chwazi sa ki bon pou ou. Ou ka eksplore mache a san ou pa kreye yon kont anvan.</p>
+        <a href="#user-market" data-i18n="onboarding.customer_cta">Eksplore pwodwi yo</a>
+      </section>
+    </div>
+    <button class="guide-skip" type="button" data-i18n="onboarding.dismiss" onclick="document.getElementById('first-visit-guide').close()">M ap eksplore pou kont mwen</button>
+  </div>
+</dialog>
+<script>
+  (() => {
+    const guide = document.getElementById('first-visit-guide');
+    const storageKey = 'boutique-piyay:welcome-guide:v1';
+    if (!guide) return;
+
+    guide.addEventListener('close', () => {
+      try { localStorage.setItem(storageKey, 'seen'); } catch {}
+    });
+    guide.querySelectorAll('.guide-option a').forEach((link) => {
+      link.addEventListener('click', () => guide.close());
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (!localStorage.getItem(storageKey)) guide.showModal();
+      } catch {
+        guide.showModal();
+      }
+    }, { once: true });
+  })();
+</script>
 
 <section class="home-hero" aria-labelledby="home-hero-title">
   <div class="home-hero-copy">
