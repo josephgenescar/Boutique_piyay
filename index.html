@@ -1647,33 +1647,32 @@ title: Akèy - Boutique Piyay
       console.log('⚠️ Pa gen pwodwi boost');
       return;
     }
+    container.classList.add('ad-banner', 'boosted-product');
     container.style.display = 'block';
     if (adsBox) adsBox.style.display = '';
 
-    // Prendre tous les produits boostés pour le banner horizontal
     const boostedProducts = list;
     console.log('✅ Pwodwi boost pou afiche:', boostedProducts);
 
     stopBoostedBannerAutoplay();
-    container.innerHTML = `
-      <div class="mkt-prod-grid">
-        ${boostedProducts.map(p => {
-          const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
-          const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
-          return `
-            <div class="mkt-prod-card">
-              <a href="/pwodwi-machann.html?id=${p.id}">
-                <img class="mkt-prod-img" src="${p.image_url}" alt="${p.title}"
-                     onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
-              </a>
-              <div class="mkt-prod-name">${p.title}</div>
-              <div class="mkt-prod-price">${p.price} HTG</div>
-              <button class="btn-add-light" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g,"\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
-                🛒 <span data-i18n="cart.add">Ajouter</span>
-              </button>
-            </div>`;
-        }).join('')}
-      </div>`;
+    container.innerHTML = boostedProducts.map(p => {
+      const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g, '');
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      return `
+        <article class="boosted-product-item">
+          <a href="/pwodwi-machann.html?id=${p.id}">
+            <img class="boosted-product-img" src="${p.image_url}" alt="${p.title}"
+                 onerror="this.src='https://ui-avatars.com/api/?name=P&background=f1f5f9&color=cbd5e1'">
+          </a>
+          <div class="boosted-product-info">
+            <div class="boosted-product-title">${p.title}</div>
+            <div class="boosted-product-price">${p.price} <span>HTG</span></div>
+            <button class="btn-ad boosted-product-cta" onclick="if(window.orderProduct) orderProduct('${p.title.replace(/'/g, "\\'")}','${p.price}','${p.id}','${p.image_url}','${p.seller_id}','${phone}','${sellerName}')">
+              🛒 <span data-i18n="cart.add">Ajouter</span>
+            </button>
+          </div>
+        </article>`;
+    }).join('');
 
     console.log('🎨 Container HTML apres update:', container.innerHTML);
     updateAdDots();
@@ -1681,28 +1680,23 @@ title: Akèy - Boutique Piyay
   }
 
   function startBoostedBannerAutoplay() {
-    const banner = document.querySelector('.ad-banner.boosted-product');
+    const banner = document.querySelector('#boosted-ads-container.ad-banner.boosted-product');
     if (!banner) return;
     clearInterval(boostedBannerAutoplay);
     boostedBannerAutoplay = null;
 
-    const contentWidth = banner.scrollWidth;
-    const visibleWidth = banner.clientWidth;
-    if (contentWidth <= visibleWidth) return;
+    if (banner.scrollWidth <= banner.clientWidth) return;
 
-    let scrollPos = 0;
     banner.onmouseenter = stopBoostedBannerAutoplay;
     banner.onmouseleave = startBoostedBannerAutoplay;
 
     boostedBannerAutoplay = setInterval(() => {
-      if (!banner) return;
-      const maxScroll = contentWidth - visibleWidth;
-      if (scrollPos >= maxScroll) {
-        scrollPos = 0;
-      } else {
-        scrollPos = Math.min(scrollPos + visibleWidth * 0.9, maxScroll);
-      }
-      banner.scrollTo({ left: scrollPos, behavior: 'smooth' });
+      const maxScroll = banner.scrollWidth - banner.clientWidth;
+      if (maxScroll <= 0) return;
+      const nextScroll = banner.scrollLeft >= maxScroll - 1
+        ? 0
+        : Math.min(banner.scrollLeft + banner.clientWidth * 0.9, maxScroll);
+      banner.scrollTo({ left: nextScroll, behavior: 'smooth' });
     }, 4300);
   }
 
