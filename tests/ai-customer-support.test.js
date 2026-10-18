@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
+const path = require('node:path');
 const {
   normalizeMessage,
   safeImageUrl,
@@ -8,6 +10,20 @@ const {
   loadSystemPrompt,
   handler
 } = require('../netlify/functions/ai-chat');
+
+test('AI function initializes Supabase Realtime with Node-compatible WebSocket transport', () => {
+  const functionPath = path.resolve(__dirname, '../netlify/functions/ai-chat.js');
+  const result = spawnSync(process.execPath, ['-e', `require(${JSON.stringify(functionPath)})`], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      SUPABASE_URL: 'https://example.supabase.co',
+      SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key'
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+});
 
 test('customer payment guidance says pay Boutique Piyay, not the seller', () => {
   const creoleReply = getSupportReply('Kijan m peye ak MonCash?', 'ht').toLowerCase();

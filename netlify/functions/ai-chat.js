@@ -1,10 +1,13 @@
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('node:fs');
 const path = require('node:path');
+const WebSocket = require('ws');
 
 const supabaseUrl = process.env.SUPABASE_URL || 'https://letyferfjpxmstohvgcj.supabase.co';
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = serviceKey ? createClient(supabaseUrl, serviceKey) : null;
+const supabase = serviceKey
+  ? createClient(supabaseUrl, serviceKey, { realtime: { transport: WebSocket } })
+  : null;
 const allowedOrigins = (process.env.SITE_ORIGIN || 'https://boutique-piyay.netlify.app')
   .split(',').map((origin) => origin.trim());
 const requestCounts = new Map();
