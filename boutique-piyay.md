@@ -14,7 +14,7 @@ review_count: 127
 sales_count: 340
 followers: 89
 response_rate: 99
-response_time: "< 30 min"
+response_time: "&lt; 30 min"
 shipping_info: "Livraison nan tout Ayiti ann 24-48h"
 return_policy: "7 jou garanti oswa ranbousman"
 specialties: "Abiman, Kosmetik, Elektronik"
