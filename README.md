@@ -544,7 +544,7 @@ Créez des tutoriels pour votre équipe:
 
 ### Optimisations
 - [ ] Lazy loading images
-- [ ] Service Worker (PWA)
+- [x] Service Worker (PWA)
 - [ ] Compression images
 - [ ] CDN pour assets
 - [ ] SEO optimization

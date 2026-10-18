@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ff4747">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Boutique Piyay">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -22,7 +25,7 @@
     <!-- Favicon & App Icons -->
     <link rel="shortcut icon" href="{{ '/assets/images/logo.png' | relative_url }}">
     <link rel="icon" type="image/png" href="{{ '/assets/images/logo.png' | relative_url }}">
-    <link rel="apple-touch-icon" href="{{ '/assets/images/logo.png' | relative_url }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ '/assets/images/pwa-192.png' | relative_url }}">
 
     {% seo %}
 
@@ -46,6 +49,28 @@
       .wsb-desc { display: block; font-size: 11px; color: #666; }
       .wsb-close { background: none; border: none; color: #ccc; cursor: pointer; font-size: 18px; padding: 0; }
 
+      #pwa-install-banner {
+        display: flex; align-items: center; gap: 14px; max-width: 900px; margin: 14px auto;
+        padding: 14px 18px; border: 1px solid #ffe0e0; border-radius: 16px;
+        background: linear-gradient(110deg, #fff7f7, #fff); box-shadow: 0 6px 20px rgba(15,23,42,.08);
+      }
+      #pwa-install-banner[hidden], #pwa-install-help[hidden] { display: none; }
+      .pwa-install-icon { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 12px; }
+      .pwa-install-copy { flex: 1; min-width: 0; }
+      .pwa-install-title { display: block; margin-bottom: 3px; color: #111827; font-size: 15px; font-weight: 800; }
+      .pwa-install-description, #pwa-install-help { color: #475569; font-size: 13px; line-height: 1.5; }
+      #pwa-install-help { margin: 7px 0 0; }
+      .pwa-install-actions { display: flex; align-items: center; gap: 8px; }
+      #pwa-install-button {
+        border: 0; border-radius: 10px; padding: 11px 16px; background: #ff4747;
+        color: white; cursor: pointer; font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap;
+      }
+      #pwa-install-button:hover { background: #e63838; }
+      #pwa-install-close {
+        border: 0; padding: 6px; background: transparent; color: #64748b;
+        cursor: pointer; font-size: 22px; line-height: 1;
+      }
+
       /* WhatsApp Floating Button */
       .whatsapp-float {
         position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px;
@@ -58,6 +83,11 @@
 
       @media (max-width: 480px) {
         #welcome-social-bar { left: 10px; right: 10px; bottom: 90px; max-width: calc(100% - 20px); }
+        #pwa-install-banner { align-items: flex-start; gap: 10px; margin: 10px; padding: 12px; }
+        .pwa-install-icon { width: 40px; height: 40px; flex-basis: 40px; }
+        .pwa-install-title { font-size: 14px; }
+        .pwa-install-description, #pwa-install-help { font-size: 12px; }
+        #pwa-install-button { padding: 9px 11px; font-size: 12px; }
         .whatsapp-float { width: 50px; height: 50px; bottom: 15px; right: 15px; font-size: 25px; }
       }
 
@@ -93,6 +123,19 @@
 
       <!-- Header -->
       {% include header.html %}
+
+      <section id="pwa-install-banner" aria-label="Enstale Boutique Piyay" hidden>
+        <img class="pwa-install-icon" src="{{ '/assets/images/pwa-192.png' | relative_url }}" alt="">
+        <div class="pwa-install-copy">
+          <strong class="pwa-install-title">Telechaje Boutique Piyay</strong>
+          <div class="pwa-install-description">Enstale l sou telefòn ou pou jwenn aksè pi rapid ak yon eksperyans pi bèl.</div>
+          <p id="pwa-install-help" hidden></p>
+        </div>
+        <div class="pwa-install-actions">
+          <button id="pwa-install-button" type="button">Enstale app la</button>
+          <button id="pwa-install-close" type="button" aria-label="Fèmen envit enstalasyon an">&times;</button>
+        </div>
+      </section>
 
       <!-- Content -->
       <main class="page-content" style="flex: 1;">
@@ -138,24 +181,73 @@
     <script src="{{ '/assets/js/i18n.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 
     <script>
+      const pwaInstallBanner = document.getElementById('pwa-install-banner');
+      const pwaInstallButton = document.getElementById('pwa-install-button');
+      const pwaInstallHelp = document.getElementById('pwa-install-help');
+      const pwaInstallDismissKey = 'piyay-install-dismissed';
+      const isIosDevice = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches
+        || navigator.standalone === true;
+      let deferredInstallPrompt = null;
+
+      const hidePwaInstallBanner = () => {
+        pwaInstallBanner.hidden = true;
+      };
+
+      if (!isStandaloneApp && !sessionStorage.getItem(pwaInstallDismissKey)) {
+        if (isIosDevice) {
+          pwaInstallButton.textContent = 'Kijan pou ajoute l?';
+          pwaInstallHelp.textContent = 'Nan Safari, peze Pataje (kare ak flèch anlè a), chwazi “Add to Home Screen” oswa “Ajoute sou ekran dakèy”, epi peze “Add” oswa “Ajoute”.';
+          pwaInstallBanner.hidden = false;
+        }
+      }
+
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        if (!isStandaloneApp && !sessionStorage.getItem(pwaInstallDismissKey)) {
+          pwaInstallBanner.hidden = false;
+        }
+      });
+
+      pwaInstallButton.addEventListener('click', async () => {
+        if (isIosDevice && !deferredInstallPrompt) {
+          pwaInstallHelp.hidden = !pwaInstallHelp.hidden;
+          pwaInstallButton.setAttribute('aria-expanded', String(!pwaInstallHelp.hidden));
+          return;
+        }
+
+        if (!deferredInstallPrompt) return;
+
+        const installPrompt = deferredInstallPrompt;
+        deferredInstallPrompt = null;
+        await installPrompt.prompt();
+        await installPrompt.userChoice;
+        sessionStorage.setItem(pwaInstallDismissKey, 'true');
+        hidePwaInstallBanner();
+      });
+
+      document.getElementById('pwa-install-close').addEventListener('click', () => {
+        sessionStorage.setItem(pwaInstallDismissKey, 'true');
+        hidePwaInstallBanner();
+      });
+
+      window.addEventListener('appinstalled', hidePwaInstallBanner);
+
       // Service Worker Registration with automatic update logic
       if ('serviceWorker' in navigator) {
+        let refreshing = false;
+
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(reg => {
-            reg.onupdatefound = () => {
-              const installingWorker = reg.installing;
-              installingWorker.onstatechange = () => {
-                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Nouvo vèsyon disponib! Fòse rafrechi.
-                  window.location.reload();
-                }
-              };
-            };
+          navigator.serviceWorker.register('/sw.js').catch(error => {
+            console.error('Service worker registration failed:', error);
           });
         });
 
         // Fòse rafrechi lè Service Worker a chanje
         navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
           window.location.reload();
         });
       }

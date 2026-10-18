@@ -1,14 +1,17 @@
-const CACHE_NAME = 'piyay-v2'; // Chanje vèsyon pou fòse update
-const ASSETS = [
-  '/',
+const CACHE_NAME = 'piyay-v3';
+const PRECACHE_URLS = [
+  '/offline.html',
+  '/manifest.json',
   '/assets/css/style.css',
   '/assets/js/main.js',
-  '/assets/images/logo.png'
+  '/assets/images/logo.png',
+  '/assets/images/pwa-192.png',
+  '/assets/images/pwa-512.png'
 ];
 
 const TYPE_ICONS = {
-  new_product: '/icons/icon-192.png',
-  product_updated: '/icons/icon-192.png',
+  new_product: '/assets/images/pwa-192.png',
+  product_updated: '/assets/images/pwa-192.png',
 };
 
 const TYPE_ACTIONS = {
@@ -16,21 +19,18 @@ const TYPE_ACTIONS = {
   product_updated: [{ action: 'view', title: 'Wè pwodwi' }],
 };
 
-// Install: Sere asèt yo
 self.addEventListener('install', (event) => {
-  self.skipWaiting(); // Fòse nouvo SW la pran plas imedyatman
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
   );
 });
 
-// Activate: Netwaye vye kach
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      );
+      const oldCaches = keys.filter((key) => key.startsWith('piyay-') && key !== CACHE_NAME);
+      return Promise.all(oldCaches.map((key) => caches.delete(key)));
     })
   );
 });
@@ -48,8 +48,8 @@ self.addEventListener('push', (event) => {
   const { title, body, type, data = {} } = payload;
   const options = {
     body: body ?? '',
-    icon: TYPE_ICONS[type] ?? '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
+    icon: TYPE_ICONS[type] ?? '/assets/images/pwa-192.png',
+    badge: '/assets/images/pwa-192.png',
     tag: type ?? 'general',
     data: { url: data.click_url ?? 'https://boutique-piyay.netlify.app', ...data },
     actions: TYPE_ACTIONS[type] ?? [],
@@ -79,23 +79,39 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch: Lojik "Network First" (Chèche nan entènèt anvan)
 self.addEventListener('fetch', (event) => {
-  // Nou pa sere apèl Supabase yo nan kach
-  if (event.request.url.includes('supabase.co')) {
-    return event.respondWith(fetch(event.request));
+  const request = event.request;
+  const requestUrl = new URL(request.url);
+
+  if (request.method !== 'GET' || requestUrl.origin !== self.location.origin) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(async () => {
+        const offlinePage = await caches.match('/offline.html');
+        return offlinePage ?? Response.error();
+      })
+    );
+    return;
   }
 
+  if (!['style', 'script', 'image', 'font'].includes(request.destination)) return;
+
+  const cacheKey = `${requestUrl.origin}${requestUrl.pathname}`;
   event.respondWith(
-    fetch(event.request)
-      .then((res) => {
-        // Si entènèt mache, nou sere yon kopi nan kach la (sèlman pou GET)
-        if (event.request.method === 'GET') {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cachedResponse = await cache.match(cacheKey);
+
+      try {
+        const response = await fetch(request);
+        if (response.ok && response.type === 'basic') {
+          event.waitUntil(cache.put(cacheKey, response.clone()));
         }
-        return res;
-      })
-      .catch(() => caches.match(event.request)) // Si pa gen entènèt, pran nan kach
+        return response;
+      } catch (error) {
+        if (cachedResponse) return cachedResponse;
+        throw error;
+      }
+    })
   );
 });
