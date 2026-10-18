@@ -68,6 +68,24 @@
         box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: 600;
       }
     </style>
+    <script>
+      document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        const key = event.key.toLowerCase();
+        const hasControlModifier = event.ctrlKey || event.metaKey;
+        const opensDevTools = (event.ctrlKey && event.shiftKey && ['i', 'j', 'c', 'k'].includes(key))
+          || (event.metaKey && event.altKey && ['i', 'j', 'c'].includes(key));
+        const opensSource = hasControlModifier && key === 'u';
+
+        if (event.key === 'F12' || opensDevTools || opensSource) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }, true);
+    </script>
   </head>
   <body style="background-color: #f4f4f4; margin: 0; padding: 0;">
     <div id="toast"></div>
