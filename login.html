@@ -223,12 +223,13 @@ title: Konekte - Boutique Piyay
       if (error) {
         console.error('Erreur de connexion:', error);
         console.error('Error details:', JSON.stringify(error, null, 2));
-        showToast('❌ ' + error.message + ' (Code: ' + error.status + ')', 'error');
+        const isPendingSeller = error.code === 'user_banned' || /banned/i.test(error.message || '');
+        showToast(isPendingSeller
+          ? '⏳ Demann vandè ou a poko apwouve. Ou ap kapab konekte apre admin nan aktive kont lan.'
+          : '❌ ' + error.message + ' (Code: ' + error.status + ')', 'error');
         btn.disabled = false;
         btn.innerHTML = 'Se connecter 🚀';
       } else {
-        showToast('✅ Succès ! Redirection...', 'success');
-
         // Vérifier le rôle de l'utilisateur
         let profile = null;
         let profileError = null;
@@ -256,6 +257,16 @@ title: Konekte - Boutique Piyay
           return;
         }
 
+        if (profile.role === 'pending_seller' || (profile.role === 'seller' && profile.is_active_seller !== true)) {
+          await supabaseClient.auth.signOut({ scope: 'local' });
+          showToast('⏳ Demann vandè ou a toujou an atant. Ou p ap kapab konekte anvan admin nan apwouve li.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = 'Se connecter 🚀';
+          return;
+        }
+
+        showToast('✅ Succès ! Redirection...', 'success');
+
         const requestedRedirect = new URLSearchParams(window.location.search).get('redirect');
         let safeRedirect = null;
         let safeRedirectPath = null;
@@ -274,8 +285,6 @@ title: Konekte - Boutique Piyay
         let destination = '/';
         if (profile.role === 'affiliate') {
           destination = '/affiliate-dashboard.html';
-        } else if (profile.role === 'pending_seller' || (profile.role === 'seller' && profile.is_active_seller !== true)) {
-          destination = '/vendor-application-status.html';
         } else if (profile.role === 'seller') {
           destination = safeRedirect === '/vendre.html' || safeRedirect?.startsWith('/vendre.html?')
             ? safeRedirect

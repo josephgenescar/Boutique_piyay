@@ -19,6 +19,14 @@ CREATE TABLE IF NOT EXISTS public.vendor_applications (
 CREATE INDEX IF NOT EXISTS idx_vendor_applications_status_created
   ON public.vendor_applications(status, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS public.registration_email_notifications (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  status text NOT NULL CHECK (status IN ('sending', 'sent', 'failed')),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.registration_email_notifications ENABLE ROW LEVEL SECURITY;
+
 CREATE OR REPLACE FUNCTION public.is_boutique_admin()
 RETURNS boolean
 LANGUAGE sql
@@ -165,6 +173,12 @@ BEGIN
     END IF;
   END IF;
 
+  IF requested_role = 'seller' THEN
+    UPDATE auth.users
+    SET banned_until = now() + interval '100 years'
+    WHERE id = NEW.id;
+  END IF;
+
   RETURN NEW;
 END;
 $$;
@@ -211,6 +225,12 @@ WHERE profile.role = 'affiliate'
     SELECT 1 FROM public.affiliates AS affiliate WHERE affiliate.user_id = profile.id
   );
 
+UPDATE auth.users AS auth_user
+SET banned_until = now() + interval '100 years'
+FROM public.profiles AS profile
+WHERE profile.id = auth_user.id
+  AND profile.role = 'pending_seller';
+
 CREATE OR REPLACE FUNCTION public.review_vendor_application(
   p_application_id uuid,
   p_status text,
@@ -218,40 +238,51 @@ CREATE OR REPLACE FUNCTION public.review_vendor_application(
 )
 RETURNS void
 LANGUAGE plpgsql
-SECURITY INVOKER
-SET search_path = public, pg_temp
+SECURITY DEFINER
+SET search_path = ''
 AS $$
 DECLARE
   application_user_id uuid;
 BEGIN
+  IF NOT public.is_boutique_admin() THEN
+    RAISE EXCEPTION 'Only administrators can review vendor applications.';
+  END IF;
+
   IF p_status NOT IN ('approved', 'needs_info', 'rejected') THEN
     RAISE EXCEPTION 'Invalid vendor application status.';
   END IF;
 
   SELECT user_id INTO application_user_id
-  FROM public.vendor_applications
-  WHERE id = p_application_id
+  FROM public.vendor_applications AS application
+  WHERE application.id = p_application_id
   FOR UPDATE;
 
   IF application_user_id IS NULL THEN
     RAISE EXCEPTION 'Vendor application not found.';
   END IF;
 
-  UPDATE public.vendor_applications
+  UPDATE public.vendor_applications AS application
   SET status = p_status,
       admin_message = NULLIF(BTRIM(p_admin_message), ''),
-      reviewed_at = now(),
+      reviewed_at = pg_catalog.now(),
       reviewed_by = auth.uid()
-  WHERE id = p_application_id;
+  WHERE application.id = p_application_id;
+
+  UPDATE auth.users
+  SET banned_until = CASE
+    WHEN p_status = 'approved' THEN NULL
+    ELSE pg_catalog.now() + interval '100 years'
+  END
+  WHERE id = application_user_id;
 
   IF p_status = 'approved' THEN
-    UPDATE public.profiles
+    UPDATE public.profiles AS profile
     SET role = 'seller', is_active_seller = true
-    WHERE id = application_user_id;
+    WHERE profile.id = application_user_id;
   ELSE
-    UPDATE public.profiles
+    UPDATE public.profiles AS profile
     SET role = 'pending_seller', is_active_seller = false
-    WHERE id = application_user_id;
+    WHERE profile.id = application_user_id;
   END IF;
 END;
 $$;

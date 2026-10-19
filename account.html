@@ -118,13 +118,37 @@ async function handleLogin() {
   const msg = document.getElementById('authMsg');
 
   const { data, error } = await client.auth.signInWithPassword({ email, password: pass });
-  if (error) { msg.innerText = error.message; msg.style.display = 'block'; }
+  if (error) {
+    msg.innerText = error.code === 'user_banned' || /banned/i.test(error.message || '')
+      ? 'Demann vandè ou a poko apwouve. Ou ap kapab konekte apre admin nan aktive kont lan.'
+      : error.message;
+    msg.style.display = 'block';
+  }
   else { checkUser(); }
 }
 
 async function checkUser() {
   const { data: { user } } = await client.auth.getUser();
   if (user) {
+    const { data: profile, error: profileError } = await client
+      .from('profiles')
+      .select('role, is_active_seller')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (profileError) {
+      console.error('Unable to verify account role:', profileError);
+      document.getElementById('authMsg').innerText = 'Nou pa kapab verifye estati kont lan. Tanpri eseye ankò.';
+      document.getElementById('authMsg').style.display = 'block';
+      await client.auth.signOut({ scope: 'local' });
+      return;
+    }
+    if (profile?.role === 'pending_seller' || (profile?.role === 'seller' && profile.is_active_seller !== true)) {
+      await client.auth.signOut({ scope: 'local' });
+      document.getElementById('authMsg').innerText = 'Demann vandè ou a toujou an atant. Ou p ap kapab konekte anvan admin nan apwouve li.';
+      document.getElementById('authMsg').style.display = 'block';
+      return;
+    }
+
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     document.getElementById('welcomeName').innerText = "Bonjour " + (user.user_metadata.full_name || 'Client') + "! 👋";

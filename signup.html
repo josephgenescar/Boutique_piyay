@@ -209,6 +209,18 @@
         setRole('affiliate');
     }
 
+    async function notifyAdminOfRegistration(userId) {
+        const response = await fetch('/.netlify/functions/notify-registration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        });
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error || 'Avi imel la pa t kapab voye.');
+        }
+    }
+
     async function handleSignup(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSignup');
@@ -259,14 +271,42 @@
             if (!authData.user) throw new Error('Kreyasyon kont lan pa retounen yon itilizatè.');
 
             if (currentRole === 'seller') {
-                alert('✅ Aplikasyon vandè ou a voye. Admin lan ap revize boutik ak pwodwi ou pwopoze yo anvan li aktive kont lan.');
-                const nextPage = authData.session
-                    ? '/vendor-application-status.html'
-                    : '/login.html?redirect=' + encodeURIComponent('/vendor-application-status.html');
-                window.location.href = nextPage;
+                let sessionError = null;
+                if (authData.session) {
+                    const { error } = await supS.auth.signOut({ scope: 'local' });
+                    sessionError = error;
+                    if (sessionError) console.error('Unable to sign out pending seller:', sessionError);
+                }
+
+                let notificationError = null;
+                try {
+                    await notifyAdminOfRegistration(authData.user.id);
+                } catch (error) {
+                    notificationError = error.message;
+                    console.error('Registration notification failed:', error);
+                }
+
+                if (sessionError) {
+                    throw new Error('Demann lan anrejistre, men nou pa t kapab fèmen sesyon an. Tanpri kontakte administratè a tousuit.');
+                }
+
+                alert(notificationError
+                    ? '✅ Demann vandè ou a anrejistre epi li rete an atant. Men avi imel la pa t kapab voye bay admin nan; tanpri kontakte admin nan pou fè l konnen.'
+                    : '✅ Demann vandè ou a anrejistre. Li rete an atant; ou p ap kapab konekte jiskaske admin nan apwouve li. Admin nan resevwa yon avi imel.');
+                window.location.href = '/';
             } else {
+                let notificationError = null;
+                try {
+                    await notifyAdminOfRegistration(authData.user.id);
+                } catch (error) {
+                    notificationError = error.message;
+                    console.error('Registration notification failed:', error);
+                }
+
                 const hasSession = Boolean(authData.session);
-                alert(hasSession
+                alert(notificationError
+                    ? 'Kont afilye ou kreye. Men avi imel la pa t kapab voye bay admin nan.'
+                    : hasSession
                     ? '🎉 Kont afilye ou kreye. N ap ouvri tablo afilye ou kounye a.'
                     : '🎉 Kont afilye ou kreye. Verifye imèl ou si sa nesesè, epi konekte. Apre sa, n ap ouvri tablo afilye ou dirèkteman.');
                 window.location.href = hasSession

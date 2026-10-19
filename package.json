@@ -7,6 +7,7 @@
     "@supabase/supabase-js": "^2.39.3",
     "axios": "^1.6.0",
     "imagekit": "^6.0.0",
+    "nodemailer": "^10.1.7",
     "postgres": "^3.4.3",
     "web-push": "^3.6.6",
     "ws": "^8.21.0"

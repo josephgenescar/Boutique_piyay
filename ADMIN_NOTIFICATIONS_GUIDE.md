@@ -6,13 +6,28 @@ Ce guide explique comment configurer le système de notifications email automati
 
 Le système envoie automatiquement des emails à l'admin (josephgenescar@gmail.com) lorsque:
 - 🛒 Une nouvelle commande est passée
-- 🏪 Un nouveau vendeur s'inscrit
+- 🏪 Une nouvelle demande vendeur est soumise
 - 📦 Un nouveau produit est ajouté
 - ✋ Un produit demande une approbation
 - 💰 Un vendeur demande un retrait
 - 💳 Un vendeur paie son abonnement
 
 ## Étapes d'Installation
+
+### Avis par email pour chaque nouvelle inscription
+
+La fonction Netlify `notify-registration` envoie à l'administrateur les informations de chaque nouvelle inscription vendeur ou affilié, une seule fois par compte. Supabase bloque aussi la connexion des vendeurs en attente; l'approbation dans le tableau admin débloque leur compte. Les comptes affiliés ne nécessitent pas cette approbation. L'envoi utilise Gmail SMTP et ne nécessite pas de domaine personnalisé.
+
+Utilisez un compte Gmail pour l'envoi. Activez la validation en deux étapes sur ce compte Google, puis créez un mot de passe d'application dans les paramètres de sécurité Google. Utilisez ce mot de passe d'application, pas le mot de passe Gmail habituel.
+
+Dans Netlify, ouvrez **Site configuration > Environment variables > Add a variable** et ajoutez:
+
+- `ADMIN_EMAIL`: l'adresse qui doit recevoir les notifications
+- `GMAIL_USER`: l'adresse Gmail qui enverra les notifications
+- `GMAIL_APP_PASSWORD`: le mot de passe d'application Google (gardez-le secret)
+- `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`: les variables Supabase utilisées par les fonctions Netlify
+
+Après avoir enregistré les variables, redéployez le site. Exécutez aussi le fichier `supabase-schema-vendor-applications.sql` dans Supabase SQL Editor pour créer la table d'idempotence des notifications et appliquer les règles de demande vendeur et le blocage de connexion.
 
 ### 1. Exécuter le script SQL dans Supabase
 
@@ -54,9 +69,9 @@ supabase functions deploy admin-notification
 supabase functions deploy admin-notification-listener
 ```
 
-### 3. Configurer les variables d'environnement
+### 3. Variables des anciennes notifications Supabase (hors nouvelles inscriptions)
 
-Assurez-vous que ces variables d'environnement sont configurées dans Supabase:
+Ces variables concernent les fonctions Supabase de notifications existantes, et non l'avis d'inscription envoyé par Gmail SMTP ci-dessus:
 
 - `SUPABASE_URL`: Votre URL Supabase
 - `SUPABASE_SERVICE_ROLE_KEY`: Votre service role key
@@ -145,9 +160,9 @@ Les templates HTML sont dans les fonctions `generate*Email()` dans `admin-notifi
 
 ### Emails ne sont pas envoyés
 
-1. Vérifiez que `RESEND_API_KEY` est correctement configuré
-2. Vérifiez les logs dans Supabase Edge Functions
-3. Testez manuellement la fonction `send-email`
+1. Pour les nouvelles inscriptions, vérifiez dans Netlify `ADMIN_EMAIL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`.
+2. Vérifiez les logs de la fonction Netlify `notify-registration`; pour utiliser Gmail SMTP, le mot de passe d'application Google et la validation en deux étapes doivent être actifs.
+3. Pour les anciennes notifications Supabase, vérifiez `RESEND_API_KEY` et les logs Supabase Edge Functions.
 
 ### Triggers ne fonctionnent pas
 
