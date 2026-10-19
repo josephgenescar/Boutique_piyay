@@ -270,7 +270,7 @@ async function getRequest(event, headers) {
         ? supabase.from('profiles').select('id,full_name,email,shop_name').in('id', supplierIds)
         : Promise.resolve({ data: [], error: null }),
       affiliateIds.length
-        ? supabase.from('affiliates').select('id,user_id,referral_code').in('id', affiliateIds)
+        ? supabase.from('affiliates').select('id,user_id').in('id', affiliateIds)
         : Promise.resolve({ data: [], error: null })
     ]);
     if (supplierProfilesResult.error) throw supplierProfilesResult.error;
@@ -316,7 +316,6 @@ async function getRequest(event, headers) {
         owner_name: profile?.full_name || profile?.shop_name || profile?.email || null,
         owner_email: profile?.email || null,
         shop_name: profile?.shop_name || null,
-        referral_code: affiliate?.referral_code || null,
         pending_balance: Number(balance?.pending_balance || 0),
         available_balance: Number(balance?.available_balance || 0),
         total_paid_out: Number(balance?.total_paid_out || 0)

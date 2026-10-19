@@ -94,6 +94,15 @@ description: Devenez affilié Boutique Piyay et gagnez des commissions rapides p
   .section-nav a { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; background: #f8fafc; color: var(--dark); border-radius: 999px; text-decoration: none; font-size: 0.95rem; font-weight: 700; border: 1px solid transparent; transition: all 0.2s ease; }
   .section-nav a:hover { background: rgba(255, 71, 71, 0.08); border-color: rgba(255, 71, 71, 0.16); }
   .final-cta p { margin: 10px 0 0; color: #475569; line-height: 1.8; }
+  .affiliate-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 26px 30px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .affiliate-intro h2 { margin: 0 0 10px; font-size: 1.4rem; }
+  .affiliate-intro p { margin: 0; color: #475569; line-height: 1.8; max-width: 760px; }
+  .affiliate-intro-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .affiliate-intro-actions a { text-decoration: none; text-align: center; }
+  @media (max-width: 760px) {
+    .affiliate-intro { grid-template-columns: 1fr; padding: 22px; }
+    .affiliate-intro-actions { display: grid; }
+  }
 
   .link-button { display: inline-flex; align-items: center; justify-content: center; padding: 16px 24px; border-radius: 999px; background: #10b981; color: white; text-decoration: none; font-weight: 900; transition: transform 0.25s ease; }
   .link-button:hover { transform: translateY(-2px); }
@@ -120,7 +129,7 @@ description: Devenez affilié Boutique Piyay et gagnez des commissions rapides p
       <h1 class="hero-heading" data-i18n="pages.affiliate.hero_title">Devenez Affilié Boutique Piyay — Gagnez à Chaque Vente</h1>
       <p class="section-subtitle" data-i18n="pages.affiliate.hero_subtitle">Rejoignez un programme simple et honnête. Partagez votre lien, suivez les ventes, et recevez vos commissions rapidement sur MonCash ou NatCash.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="document.querySelector('#form-inscription').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.hero_cta">S'inscrire Maintenant</button>
+        <a class="btn-primary" href="/signup.html?role=affiliate&redirect=%2Faffiliate-dashboard.html" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;" data-i18n="pages.affiliate.hero_cta">S'inscrire Maintenant</a>
         <button class="btn-secondary" onclick="document.querySelector('#comment-ca-marche').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.hero_cta_secondary">Comment ça marche</button>
       </div>
       <div class="hero-stats">
@@ -144,12 +153,24 @@ description: Devenez affilié Boutique Piyay et gagnez des commissions rapides p
   </section>
 
   <nav class="section-nav" aria-label="Affiliate sections">
+    <a href="#sa-ki-afilyasyon-ye" onclick="document.querySelector('#sa-ki-afilyasyon-ye').scrollIntoView({ behavior: 'smooth' })">Sa afilyasyon an ye</a>
     <a href="#comment-ca-marche" onclick="document.querySelector('#comment-ca-marche').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_steps">Comment ça marche</a>
     <a href="#commission-structure" onclick="document.querySelector('#commission-structure').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_commission">Commission</a>
     <a href="#form-inscription" onclick="document.querySelector('#form-inscription').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_signup">Inscription</a>
     <a href="#apercu-dashboard" onclick="document.querySelector('#apercu-dashboard').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_preview">Aperçu</a>
     <a href="#faq-section" onclick="document.querySelector('#faq-section').scrollIntoView({ behavior: 'smooth' })" data-i18n="pages.affiliate.nav_faq">FAQ</a>
   </nav>
+
+  <section class="section affiliate-intro" id="sa-ki-afilyasyon-ye">
+    <div>
+      <h2>Sa afilyasyon Boutique Piyay la ye?</h2>
+      <p>Afilyasyon se yon fason pou touche komisyon lè ou pataje lyen pa ou epi yon moun achte sou Boutique Piyay atravè lyen sa a. Li gratis pou enskri. Ou ka swiv klik, vant ak komisyon ou nan tablo afilye prive pa ou. Ou resevwa komisyon sèlman lè vant lan konfime; kondisyon peman yo parèt nan kont ou.</p>
+    </div>
+    <div class="affiliate-intro-actions">
+      <a class="btn-primary" href="/signup.html?role=affiliate&redirect=%2Faffiliate-dashboard.html">Kreye kont afilye</a>
+      <a class="btn-secondary" href="/login.html?redirect=%2Faffiliate-dashboard.html">Mwen deja afilye — konekte</a>
+    </div>
+  </section>
 
   <section class="section" id="comment-ca-marche">
     <div class="section-title" data-i18n="pages.affiliate.steps_title">Comment ça marche</div>
@@ -353,4 +374,3 @@ description: Devenez affilié Boutique Piyay et gagnez des commissions rapides p
     }, 100);
   });
 </script>
-

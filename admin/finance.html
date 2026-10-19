@@ -182,7 +182,7 @@
       const accountType = isAffiliate ? 'Afilye' : 'Vandè';
       const earningsSource = isAffiliate ? 'Komisyon sou lavant ki fèt ak lyen afilye a' : 'Revni nèt sou lavant pwodwi vandè a';
       const accountDetail = isAffiliate
-        ? `Kòd referans: ${esc(payout.referral_code || 'Pa disponib')}`
+        ? ''
         : `Boutik: ${esc(payout.shop_name || 'Pa gen non boutik')}`;
       const actions = payout.status === 'requested'
         ? `<button onclick="reviewPayout('${esc(payout.id)}','approve')">Apwouve</button><button class="danger" onclick="reviewPayout('${esc(payout.id)}','reject')">Rejte</button>`

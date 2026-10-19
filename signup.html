@@ -260,8 +260,11 @@
                     : '/login.html?redirect=' + encodeURIComponent('/vendor-application-status.html');
                 window.location.href = nextPage;
             } else {
-                alert('🎉 Kont afilye a kreye. Verifye imèl ou si sa nesesè.');
-                window.location.href = authData.session
+                const hasSession = Boolean(authData.session);
+                alert(hasSession
+                    ? '🎉 Kont afilye ou kreye. N ap ouvri tablo afilye ou kounye a.'
+                    : '🎉 Kont afilye ou kreye. Verifye imèl ou si sa nesesè, epi konekte. Apre sa, n ap ouvri tablo afilye ou dirèkteman.');
+                window.location.href = hasSession
                     ? '/affiliate-dashboard.html'
                     : '/login.html?redirect=' + encodeURIComponent('/affiliate-dashboard.html');
             }

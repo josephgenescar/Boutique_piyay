@@ -41,18 +41,11 @@
       <button onclick="showTab('tab-products')" id="btn-products">📦 Pwodwi</button>
       <button onclick="showTab('tab-sellers')" id="btn-sellers">🏪 Machan + Pwodwi</button>
       <button onclick="showTab('tab-new-shops')" id="btn-new-shops">🆕 Boutik Resan</button>
-      <button onclick="showTab('tab-stats')" id="btn-referrals">🎟️ Kòd Referans</button>
+      <button onclick="showTab('tab-applications')" id="btn-applications">📝 Aplikasyon Machann</button>
       <button onclick="window.location.href='/admin/finance.html'" style="background:#0f766e;">💳 Peman & Ledger</button>
       <button onclick="handleLogout()" style="background: #ef4444;">🚪 Dekonekte</button>
     </div>
   </header>
-  <div style="margin-bottom: 20px; font-size: 14px; color: #475569;">
-    Kòd referans pou nouvo signup yo kounye a jwenn dirèkteman nan tab "Stats".
-  </div>
-  <div style="margin-bottom: 20px;padding:16px;border-radius:16px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;max-width:760px;">
-    Kòd referans yo pa gen ankò yon paj separe; yo entegre nan seksyon estatistik yo.
-  </div>
-
   <div id="tab-stats" class="tab-body">
     <div class="stats-grid">
       <div class="stat-card">
@@ -102,6 +95,13 @@
       </table>
     </div>
   </div>
+
+  <div id="tab-applications" class="tab-body" style="display:none;">
+    <div class="card">
+      <div class="section-title">Aplikasyon Machann k ap tann apwobasyon</div>
+      <div id="vendor-applications-list" aria-live="polite">N ap chaje aplikasyon yo...</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -124,9 +124,8 @@
       
       if (error) {
         console.warn('Erreur lors de la lecture du profil:', error.message);
-        // Si RLS bloque, essayer quand même (l'admin pourrait être authentifié)
-        document.body.style.display = 'block';
-        loadStats();
+        await sb.auth.signOut();
+        window.location.href = '/admin/login.html';
         return;
       }
       
@@ -141,8 +140,8 @@
       }
     } catch (err) {
       console.error('Erreur d\'authentification:', err.message);
-      // En cas d'erreur, afficher la page mais montrer un avertissement
-      document.body.style.display = 'block';
+      await sb.auth.signOut();
+      window.location.href = '/admin/login.html';
       alert('⚠️ Avertissement: ' + err.message);
     }
   }
@@ -165,6 +164,7 @@
     if(id === 'tab-products') fetchProducts();
     if(id === 'tab-sellers') fetchSellers();
     if(id === 'tab-new-shops') fetchNewShops();
+    if(id === 'tab-applications') fetchVendorApplications();
   }
 
   async function loadStats() {
@@ -180,6 +180,75 @@
     } catch (err) {
       console.error('Erreur loadStats:', err);
     }
+  }
+
+  async function fetchVendorApplications() {
+    const list = document.getElementById('vendor-applications-list');
+    list.innerHTML = 'N ap chaje aplikasyon yo...';
+    try {
+      const { data: applications, error } = await sb.from('vendor_applications')
+        .select('id,email,full_name,shop_name,whatsapp_number,address,product_categories,product_description,status,admin_message,created_at')
+        .in('status', ['pending', 'needs_info'])
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      if (!applications?.length) {
+        list.innerHTML = '<p style="color:#64748b;">Pa gen aplikasyon machann k ap tann apwobasyon.</p>';
+        return;
+      }
+      list.innerHTML = applications.map(application => `
+        <article style="padding:18px;margin-bottom:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+            <div>
+              <h3 style="margin:0 0 6px;">${escapeAdminHtml(application.shop_name || application.full_name || 'Nouvo machann')}</h3>
+              <p style="margin:4px 0;color:#475569;">${escapeAdminHtml(application.full_name || 'Non pa disponib')} · ${escapeAdminHtml(application.email || 'Imèl pa disponib')}</p>
+              <p style="margin:4px 0;color:#475569;">Estati: ${application.status === 'needs_info' ? 'Plis enfòmasyon nesesè' : 'An atant'}</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn" style="background:#dcfce7;color:#166534;" onclick="reviewVendorApplication('${application.id}','approved')">✅ Apwouve epi aktive</button>
+              <button class="btn btn-delete" onclick="reviewVendorApplication('${application.id}','rejected')">❌ Refize</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 18px;margin-top:12px;">
+            <p style="margin:4px 0;color:#475569;"><strong>WhatsApp:</strong> ${escapeAdminHtml(application.whatsapp_number || 'Pa bay')}</p>
+            <p style="margin:4px 0;color:#475569;"><strong>Adrès:</strong> ${escapeAdminHtml(application.address || 'Pa bay')}</p>
+            <p style="margin:4px 0;color:#475569;"><strong>Kategori pwodwi:</strong> ${escapeAdminHtml(application.product_categories || 'Pa bay')}</p>
+            <p style="margin:4px 0;color:#475569;"><strong>Pwopozisyon:</strong> ${escapeAdminHtml(application.product_description || 'Pa bay')}</p>
+            <p style="margin:4px 0;color:#475569;"><strong>Dat:</strong> ${escapeAdminHtml(new Date(application.created_at).toLocaleString('fr-FR'))}</p>
+            ${application.admin_message ? `<p style="margin:4px 0;color:#475569;"><strong>Dènye nòt:</strong> ${escapeAdminHtml(application.admin_message)}</p>` : ''}
+          </div>
+        </article>
+      `).join('');
+    } catch (error) {
+      console.error('Unable to load vendor applications:', error);
+      list.innerHTML = `<p role="alert" style="color:#b91c1c;">Nou pa kapab chaje aplikasyon yo: ${escapeAdminHtml(error.message)}. Verifye tab la ak règleman aksè admin yo.</p>`;
+    }
+  }
+
+  async function reviewVendorApplication(applicationId, status) {
+    const action = status === 'approved' ? 'apwouve aplikasyon sa a epi aktive kont machann nan' : 'refize aplikasyon sa a';
+    if (!confirm(`Èske ou vle ${action}?`)) return;
+    const adminMessage = status === 'rejected'
+      ? (window.prompt('Bay yon rezon pou refi a (opsyonèl):') || '')
+      : '';
+    try {
+      const { error } = await sb.rpc('review_vendor_application', {
+        p_application_id: applicationId,
+        p_status: status,
+        p_admin_message: adminMessage
+      });
+      if (error) throw error;
+      alert(status === 'approved' ? 'Aplikasyon apwouve; kont machann nan aktive.' : 'Aplikasyon an refize.');
+      await Promise.all([fetchVendorApplications(), fetchUsers()]);
+    } catch (error) {
+      console.error('Vendor application review failed:', error);
+      alert('Nou pa kapab trete aplikasyon an: ' + error.message);
+    }
+  }
+
+  function escapeAdminHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
   }
 
   async function fetchUsers() {

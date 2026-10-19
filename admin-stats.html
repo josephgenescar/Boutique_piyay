@@ -22,6 +22,87 @@ title: Sant Kontwòl Total - Boutique Piyay
     --shadow: 0 4px 20px rgba(0,0,0,0.06);
   }
 
+  async function fetchVendorApplications() {
+    const list = document.getElementById('vendor-applications-list');
+    const tabButton = document.getElementById('applications-tab-button');
+    const stat = document.getElementById('stat-applications');
+    if (!list) return;
+    list.innerHTML = 'N ap chaje aplikasyon yo…';
+
+    const { data: applications, error } = await supA.from('vendor_applications')
+      .select('id,user_id,email,full_name,shop_name,whatsapp_number,address,product_categories,product_description,status,admin_message,created_at')
+      .in('status', ['pending', 'needs_info'])
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Unable to load vendor applications:', error);
+      list.innerHTML = `<p role="alert" style="color:#b91c1c;">Nou pa kapab chaje aplikasyon yo: ${escapeAdminHtml(error.message)}. Verifye tab vendor_applications ak règleman aksè admin yo.</p>`;
+      if (tabButton) tabButton.textContent = '📝 Aplikasyon Machann';
+      if (stat) stat.textContent = '—';
+      return;
+    }
+
+    const pendingApplications = applications || [];
+    if (stat) stat.textContent = pendingApplications.length;
+    if (tabButton) tabButton.textContent = `📝 Aplikasyon Machann (${pendingApplications.length})`;
+    if (!pendingApplications.length) {
+      list.innerHTML = '<p style="color:#64748b;">Pa gen aplikasyon machann k ap tann apwobasyon.</p>';
+      return;
+    }
+
+    list.innerHTML = pendingApplications.map((application) => `
+      <article class="application-card">
+        <div class="application-head">
+          <div>
+            <h3>${escapeAdminHtml(application.shop_name || application.full_name || 'Nouvo machann')}</h3>
+            <p>${escapeAdminHtml(application.full_name || 'Non pa disponib')} · ${escapeAdminHtml(application.email || 'Imèl pa disponib')}</p>
+            <p>Estati: <span class="badge pending">${application.status === 'needs_info' ? 'Plis enfòmasyon nesesè' : 'An atant'}</span></p>
+          </div>
+          <div class="application-actions">
+            <button type="button" onclick="reviewVendorApplication('${application.id}', 'approved')" class="btn-action btn-approve">✅ Apwouve epi aktive</button>
+            <button type="button" onclick="reviewVendorApplication('${application.id}', 'rejected')" class="btn-action btn-reject">❌ Refize</button>
+          </div>
+        </div>
+        <div class="application-details">
+          <p><strong>WhatsApp:</strong> ${escapeAdminHtml(application.whatsapp_number || 'Pa bay')}</p>
+          <p><strong>Adrès:</strong> ${escapeAdminHtml(application.address || 'Pa bay')}</p>
+          <p><strong>Kategori pwodwi:</strong> ${escapeAdminHtml(application.product_categories || 'Pa bay')}</p>
+          <p><strong>Pwopozisyon:</strong> ${escapeAdminHtml(application.product_description || 'Pa bay')}</p>
+          <p><strong>Dat aplikasyon:</strong> ${escapeAdminHtml(new Date(application.created_at).toLocaleString('fr-FR'))}</p>
+          ${application.admin_message ? `<p><strong>Dènye nòt admin:</strong> ${escapeAdminHtml(application.admin_message)}</p>` : ''}
+        </div>
+      </article>
+    `).join('');
+  }
+
+  async function reviewVendorApplication(applicationId, status) {
+    const action = status === 'approved' ? 'apwouve aplikasyon sa a epi aktive kont machann nan' : 'refize aplikasyon sa a';
+    if (!confirm(`Èske ou vle ${action}?`)) return;
+    const adminMessage = status === 'rejected'
+      ? (window.prompt('Bay yon rezon pou refi a (opsyonèl):') || '')
+      : '';
+
+    try {
+      const { error } = await supA.rpc('review_vendor_application', {
+        p_application_id: applicationId,
+        p_status: status,
+        p_admin_message: adminMessage
+      });
+      if (error) throw error;
+      showToast(status === 'approved' ? '✅ Aplikasyon apwouve; kont machann nan aktive.' : 'Aplikasyon an refize.', 'success');
+      await loadAdminData();
+    } catch (error) {
+      console.error('Vendor application review failed:', error);
+      showToast(`❌ Nou pa kapab trete aplikasyon an: ${error.message}`, 'error');
+    }
+  }
+
+  function escapeAdminHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 
@@ -198,29 +279,14 @@ title: Sant Kontwòl Total - Boutique Piyay
     .prod-admin-grid { grid-template-columns: 1fr 1fr; }
   }
 
-  .referral-card {
-    background: white;
-    border-radius: 24px;
-    padding: 28px;
-    margin-bottom: 32px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  }
-  .referral-heading { font-size: 18px; font-weight: 900; margin-bottom: 18px; color: #0f172a; }
-  .referral-note { color: #475569; font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
-  .referral-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; }
-  .referral-input { width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 16px; font-size: 14px; }
-  .referral-btn { border: none; border-radius: 16px; padding: 14px 18px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; }
-  .referral-btn.btn-primary { background: #2563eb; color: white; }
-  .referral-btn.btn-secondary { background: #f8fafc; color: #111827; border: 1px solid #cbd5e1; }
-  .referral-message { min-height: 24px; margin-top: 14px; font-size: 14px; color: #334155; }
-  .referral-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-  .referral-table th,
-  .referral-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; }
-  .referral-table th { font-weight: 700; color: #334155; }
-  .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-  .status-unused { background: #dcfce7; color: #166534; }
-  .status-used { background: #fee2e2; color: #b91c1c; }
-  @media (max-width: 760px) { .referral-grid { grid-template-columns: 1fr; } }
+  .application-list { display: grid; gap: 14px; }
+  .application-card { padding: 18px; border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; }
+  .application-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .application-head h3 { margin: 0 0 5px; color: var(--dark); font-size: 15px; }
+  .application-head p, .application-details p { margin: 4px 0; color: #475569; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .application-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; margin-top: 12px; }
+  .application-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 640px) { .application-details { grid-template-columns: 1fr; } }
 </style>
 
 <!-- ══ LOGIN ══ -->
@@ -256,7 +322,7 @@ title: Sant Kontwòl Total - Boutique Piyay
     <!-- ADMIN: Zone pou jenere code boost -->
     <div class="admin-card" style="margin-bottom:28px;">
       <div class="card-title">🔑 Jenere Kòd Boost pou Vendeur</div>
-      <div style="margin-top:10px;color:#b91c1c;font-size:13px;font-weight:700;">Remak: sa a se yon <strong>kòd boost</strong>, li pa sèvi pou enskripsyon. Pou kòd signup, sèvi ak seksyon Kòd Referans anba an nan menm paj sa a.</div>
+      <div style="margin-top:10px;color:#b91c1c;font-size:13px;font-weight:700;">Remak: sa a se yon <strong>kòd boost</strong>, li pa sèvi pou enskripsyon.</div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap; margin-top:12px;">
         <input type="text" id="boost-code-admin" class="form-input" style="max-width:200px;" placeholder="Kòd aleatwa" readonly>
         <button onclick="document.getElementById('boost-code-admin').value = Math.random().toString(36).substr(2,8).toUpperCase();" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;">Jenere Kòd</button>
@@ -264,9 +330,6 @@ title: Sant Kontwòl Total - Boutique Piyay
         <button onclick="saveBoostCodeToDb()" class="btn-login" style="width:auto;padding:10px 18px;font-size:13px;background:#2563eb;color:white;">Sove Kòd</button>
       </div>
       <div style="margin-top:10px;color:#64748b;font-size:13px;">Kopye kòd boost la epi voye bay machann lan apre ou fin verifye peman li. Kòd sa yo sèvi pou pouse pwodwi yo, pa pou kreye kont.</div>
-      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-        <span style="color:#475569;font-size:13px;">Kòd referans signup yo kounye a anba seksyon estatistik yo sou menm paj sa a.</span>
-      </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;">
         <label for="boost-seller-select" style="font-size:13px;font-weight:700;margin:0;">Chwazi Vendeur</label>
         <select id="boost-seller-select" class="form-input" style="max-width:280px;min-width:220px;">
@@ -309,6 +372,11 @@ title: Sant Kontwòl Total - Boutique Piyay
         <span class="stat-val" id="stat-withdrawals">0</span>
         <div class="stat-lbl">Demann Retrè</div>
       </div>
+      <div class="stat-card gold">
+        <span class="stat-icon">📝</span>
+        <span class="stat-val" id="stat-applications">0</span>
+        <div class="stat-lbl">Aplikasyon Machann An Atant</div>
+      </div>
       <div class="stat-card red">
         <span class="stat-icon">📈</span>
         <span class="stat-val" id="stat-revenue">0</span>
@@ -316,41 +384,10 @@ title: Sant Kontwòl Total - Boutique Piyay
       </div>
     </div>
 
-    <div class="referral-card">
-      <div class="referral-heading">🔑 Jere Kòd Referans Signup</div>
-      <p class="referral-note">Jenere, sove, epi jere kòd referans pou nouvo enskripsyon sou paj <strong>signup.html</strong>. Kòd sa yo valab sèlman pou signup; yo pa dwe itilize kòm kòd boost pwodwi.</p>
-      <div class="referral-grid">
-        <input id="newReferralCode" class="referral-input" type="text" placeholder="Antre kòd oswa klike jenere">
-        <button id="generateReferralBtn" class="referral-btn btn-primary">Jenere</button>
-        <button id="copyReferralBtn" class="referral-btn btn-secondary">Kopye</button>
-      </div>
-      <div class="referral-grid" style="margin-top:16px; grid-template-columns: auto auto;">
-        <button id="saveReferralBtn" class="referral-btn btn-primary">Sove kòd</button>
-        <button id="refreshReferralBtn" class="referral-btn btn-secondary">Refrechi lis</button>
-      </div>
-      <div id="referralMessage" class="referral-message"></div>
-      <div style="overflow-x:auto;">
-        <table class="referral-table">
-          <thead>
-            <tr>
-              <th>Kòd</th>
-              <th>Estati</th>
-              <th>Itilize pa</th>
-              <th>Dat Itilizasyon</th>
-              <th>Aksyon</th>
-            </tr>
-          </thead>
-          <tbody id="referralKeysTableBody">
-            <tr><td colspan="5" style="color:#475569; padding:20px;">Chaje kòd...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- TABS -->
     <div class="tabs-bar">
       <button onclick="showTab('tab-notifications')" class="tab-btn">🔔 Notifikasyon</button>
-      <button onclick="showTab('tab-commissions')" class="tab-btn">💰 Komisyon</button>
+      <button onclick="showTab('tab-applications')" class="tab-btn" id="applications-tab-button">📝 Aplikasyon Machann (0)</button>
       <button onclick="showTab('tab-sellers')" class="tab-btn">👥 Vendeur & Disiplin</button>
       <button onclick="showTab('tab-all-products')" class="tab-btn">📦 Tout Pwodwi</button>
       <button onclick="showTab('tab-withdrawals')" class="tab-btn">💰 Jere Retrè</button>
@@ -374,18 +411,11 @@ title: Sant Kontwòl Total - Boutique Piyay
       </div>
     </div>
 
-    <!-- TAB: COMMISSIONS -->
-    <div id="tab-commissions" class="tab-content" style="display:none;">
+    <!-- TAB: VENDOR APPLICATIONS -->
+    <div id="tab-applications" class="tab-content" style="display:none;">
       <div class="admin-card">
-        <div class="card-title">💰 Komisyon Referral</div>
-        <div style="overflow-x:auto;">
-          <table class="admin-table">
-            <thead>
-              <tr><th>Kòd</th><th>Non Itilizatè</th><th>Email</th><th>Montan</th><th>Dati</th><th>Estati</th></tr>
-            </thead>
-            <tbody id="commissions-list"></tbody>
-          </table>
-        </div>
+        <div class="card-title">📝 Aplikasyon Machann k ap tann apwobasyon</div>
+        <div id="vendor-applications-list" class="application-list" aria-live="polite">N ap chaje aplikasyon yo…</div>
       </div>
     </div>
 
@@ -560,12 +590,12 @@ title: Sant Kontwòl Total - Boutique Piyay
       const { data: orders } = await supA.from('orders').select('*');
       const { data: withdrawals } = await supA.from('affiliate_withdrawals').select('*').order('created_at', { ascending: false });
       const { data: notifications } = await supA.from('admin_notifications').select('*').order('created_at', { ascending: false });
-      const { data: commissions } = await supA.from('admin_commissions').select('*').order('created_at', { ascending: false });
 
       document.getElementById('stat-sellers').innerText    = users ? users.length : 0;
       document.getElementById('stat-products').innerText   = prods ? prods.length : 0;
       document.getElementById('stat-withdrawals').innerText = (withdrawals || []).filter(w => w.status === 'pending').length;
       document.getElementById('stat-revenue').innerText    = (orders || []).reduce((a, o) => a + (o.total_price || 0), 0) + " HTG";
+      await fetchVendorApplications();
 
       // Chaje notifikasyon yo
       document.getElementById('notifications-list').innerHTML = (notifications || []).map(n => `
@@ -579,18 +609,6 @@ title: Sant Kontwòl Total - Boutique Piyay
           </td>
         </tr>
       `).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;">Pa gen notifikasyon</td></tr>';
-
-      // Chaje komisyon yo
-      document.getElementById('commissions-list').innerHTML = (commissions || []).map(c => `
-        <tr>
-          <td><span class="badge active">${c.referral_f}</span></td>
-          <td>${c.referred_user_name || 'N/A'}</td>
-          <td>${c.referred_user_email || 'N/A'}</td>
-          <td><span class="badge active">${c.commission_amount} HTG</span></td>
-          <td>${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
-          <td><span class="badge ${c.is_paid ? 'active' : 'pending'}">${c.is_paid ? '✅ Peye' : '⏳ An atann'}</span></td>
-        </tr>
-      `).join('') || '<tr><td colspan="6" style="text-align:center;padding:20px;">Pa gen komisyon</td></tr>';
 
       document.getElementById('sellers-list').innerHTML = (users || []).map(u => `
         <tr>
@@ -699,6 +717,7 @@ title: Sant Kontwòl Total - Boutique Piyay
     document.getElementById(id).style.display = 'block';
     if (event) event.currentTarget.classList.add('active');
     if(id === 'tab-new-shops') fetchNewShops();
+    if(id === 'tab-applications') fetchVendorApplications();
     if(id === 'tab-traffic') fetchTrafficData();
   }
 
@@ -799,137 +818,6 @@ title: Sant Kontwòl Total - Boutique Piyay
     }
   }
 
-  async function fetchReferralKeys() {
-    const body = document.getElementById('referralKeysTableBody');
-    if (!body) return;
-    body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding:20px;">Chaje kòd...</td></tr>';
-
-    const { data, error } = await supA.from('referral_keys').select('*').order('created_at', { ascending: false });
-    if (error) {
-      body.innerHTML = `<tr><td colspan="5" style="color:#dc2626; padding:20px;">Erè: ${error.message}</td></tr>`;
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="color:#475569; padding:20px;">Okenn kòd pa defini ankò.</td></tr>';
-      return;
-    }
-
-    body.innerHTML = data.map(key => {
-      const status = key.used_at ? 'Itilize' : 'Pa itilize';
-      const statusClass = key.used_at ? 'status-used' : 'status-unused';
-      const usedBy = key.used_by || '-';
-      const usedAt = key.used_at ? new Date(key.used_at).toLocaleString() : '-';
-      return `
-        <tr>
-          <td style="font-weight:700;">${key.code}</td>
-          <td><span class="status-pill ${statusClass}">${status}</span></td>
-          <td>${usedBy}</td>
-          <td>${usedAt}</td>
-          <td><button class="referral-btn btn-secondary copy-row-btn" data-code="${key.code}">Kopye</button></td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  async function saveReferralKey(code) {
-    const message = document.getElementById('referralMessage');
-    if (!message) return;
-    message.style.color = '#334155';
-
-    if (!code) {
-      message.style.color = '#dc2626';
-      message.innerText = 'Tanpri antre oswa jenere yon kòd pou sove.';
-      return;
-    }
-
-    const { error } = await supA.from('referral_keys').insert([{ code: code.toUpperCase() }]);
-    if (error) {
-      message.style.color = '#dc2626';
-      message.innerText = error.code === '23505'
-        ? 'Kòd la deja egziste. Chwazi yon lòt kòd.'
-        : 'Erè: ' + error.message;
-      return;
-    }
-
-    message.style.color = '#16a34a';
-    message.innerText = 'Kòd la te sove avèk siksè.';
-    document.getElementById('newReferralCode').value = '';
-    fetchReferralKeys();
-  }
-
-  function initReferralSection() {
-    const generateBtn = document.getElementById('generateReferralBtn');
-    const copyBtn = document.getElementById('copyReferralBtn');
-    const saveBtn = document.getElementById('saveReferralBtn');
-    const refreshBtn = document.getElementById('refreshReferralBtn');
-
-    if (generateBtn) {
-      generateBtn.addEventListener('click', () => {
-        document.getElementById('newReferralCode').value = randomReferralCode();
-      });
-    }
-
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => {
-        const code = document.getElementById('newReferralCode').value.trim();
-        const message = document.getElementById('referralMessage');
-        if (!code) {
-          if (message) {
-            message.style.color = '#dc2626';
-            message.innerText = 'Tanpri jenere oswa antre yon kòd avan pou kopye li.';
-          }
-          return;
-        }
-        navigator.clipboard.writeText(code);
-        if (message) {
-          message.style.color = '#16a34a';
-          message.innerText = 'Kòd la kopye nan clipboard!';
-        }
-      });
-    }
-
-    if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
-        saveReferralKey(document.getElementById('newReferralCode').value.trim());
-      });
-    }
-
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', fetchReferralKeys);
-    }
-
-    document.addEventListener('click', function (event) {
-      if (!event.target.matches('.copy-row-btn')) return;
-      const code = event.target.dataset.code;
-      if (code) {
-        navigator.clipboard.writeText(code);
-        const message = document.getElementById('referralMessage');
-        if (message) {
-          message.style.color = '#16a34a';
-          message.innerText = `Kòd referans ${code} te kopye!`;
-        }
-      }
-    });
-
-    fetchReferralKeys();
-  }
-
-  function randomReferralCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'PIYAY-';
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initReferralSection);
-  } else {
-    initReferralSection();
-  }
-
   function populateBoostSellerSelect(users) {
     const selector = document.getElementById('boost-seller-select');
     if (!selector) return;
@@ -988,15 +876,11 @@ title: Sant Kontwòl Total - Boutique Piyay
     } catch (e) {
       console.warn('Unable to fetch shop name for delete confirmation.', e);
     }
-    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase tout komande nan\n- Efase tout klé referral\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
+    if (!confirm(`⚠️ ATANSYON: Ou sèten ou vle efase boutik ${shopName}?\n\nSa pral:\n- Efase tout pwodwi boutik nan\n- Efase tout komande nan\n- Efase boutik nan sistèm nan\n- AKSYON SA PA KA ANNULE!`)) {
       return;
     }
 
     try {
-      console.log('Deleting referral keys for shop:', shopId);
-      const { error: refError } = await supA.from('referral_keys').delete().eq('used_by', shopId);
-      if (refError) console.warn('Warning deleting referral keys:', refError);
-
       console.log('Deleting shop affiliates for shop:', shopId);
       const { error: affError } = await supA.from('affiliates').delete().eq('user_id', shopId);
       if (affError) console.warn('Warning deleting affiliates:', affError);

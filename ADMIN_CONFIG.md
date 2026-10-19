@@ -52,6 +52,7 @@ Kontakte develop la pou yo fè chanjman an, oswa:
 
 ### Admin Panel (`/admin/admin.html`) 🔐 PROTEJE - **PRINCIPAL**
 - Dashboard avèk estatistik
+- Onglet pou revize, apwouve, oswa refize aplikasyon machann yo
 - Onglet Konfigirasyon
 - Lyen rapid pou tout tool yo
 - **Rekit:** Login avèk modpas

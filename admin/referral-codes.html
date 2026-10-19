@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Kòd Referans — Boutique Piyay</title>
+  <title>Admin — Boutique Piyay</title>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
     body { margin: 0; font-family: Inter, sans-serif; background: #eef2ff; color: #0f172a; }
@@ -41,19 +41,11 @@
   </style>
 </head>
 <body>
-  <div class="page-wrap">
-    <div class="card">
-      <h1>Page Referans Retire</h1>
-      <p>Kòd referans yo kounye a jere dirèkteman nan <strong>admin-stats.html</strong>. Paj sa a pa itilize ankò.</p>
-      <p>Paj sa a ap redireksyonnen ou otomatikman nan admin stats nan kèk segond.</p>
-      <div class="redirect-note">Si redireksyon an pa mache, klike <a href="/admin-stats.html">isit la pou ale nan Admin Stats</a>.</div>
-    </div>
-  </div>
-
+  <p>Redireksyon nan panèl administrasyon an…</p>
   <script>
     setTimeout(() => {
-      window.location.href = '/admin-stats.html';
-    }, 2500);
+      window.location.replace('/admin-stats.html');
+    }, 0);
   </script>
 </body>
 </html>
