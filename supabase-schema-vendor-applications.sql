@@ -110,13 +110,22 @@ BEGIN
     COALESCE(applicant_name, NEW.email),
     CASE WHEN requested_role = 'seller' THEN 'pending_seller' ELSE 'affiliate' END,
     false,
-    NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'shop_name'), ''),
-    NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'whatsapp_number'), ''),
-    NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'address'), '')
+    CASE WHEN requested_role = 'seller' THEN NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'shop_name'), '') ELSE NULL END,
+    CASE WHEN requested_role = 'seller' THEN NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'whatsapp_number'), '') ELSE NULL END,
+    CASE WHEN requested_role = 'seller' THEN NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'address'), '') ELSE NULL END
   )
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE SET
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    role = EXCLUDED.role,
+    is_active_seller = false,
+    shop_name = EXCLUDED.shop_name,
+    whatsapp_number = EXCLUDED.whatsapp_number,
+    address = EXCLUDED.address;
 
   IF requested_role = 'seller' THEN
+    DELETE FROM public.affiliates WHERE user_id = NEW.id;
+
     INSERT INTO public.vendor_applications (
       user_id, email, full_name, shop_name, whatsapp_number, address,
       product_categories, product_description
@@ -130,15 +139,30 @@ BEGIN
       NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'product_categories'), ''),
       NULLIF(BTRIM(NEW.raw_user_meta_data ->> 'product_description'), '')
     )
-    ON CONFLICT (user_id) DO NOTHING;
+    ON CONFLICT (user_id) DO UPDATE SET
+      email = EXCLUDED.email,
+      full_name = EXCLUDED.full_name,
+      shop_name = EXCLUDED.shop_name,
+      whatsapp_number = EXCLUDED.whatsapp_number,
+      address = EXCLUDED.address,
+      product_categories = EXCLUDED.product_categories,
+      product_description = EXCLUDED.product_description,
+      status = 'pending',
+      admin_message = NULL,
+      reviewed_at = NULL,
+      reviewed_by = NULL;
   ELSE
-    INSERT INTO public.affiliates (user_id, referral_code, balance, total_referrals)
-    VALUES (
-      NEW.id,
-      'AFF-' || UPPER(SUBSTRING(REPLACE(NEW.id::text, '-', ''), 1, 12)),
-      0,
-      0
-    );
+    DELETE FROM public.vendor_applications WHERE user_id = NEW.id;
+
+    IF NOT EXISTS (SELECT 1 FROM public.affiliates WHERE user_id = NEW.id) THEN
+      INSERT INTO public.affiliates (user_id, referral_code, balance, total_referrals)
+      VALUES (
+        NEW.id,
+        'AFF-' || UPPER(SUBSTRING(REPLACE(NEW.id::text, '-', ''), 1, 12)),
+        0,
+        0
+      );
+    END IF;
   END IF;
 
   RETURN NEW;
@@ -148,10 +172,44 @@ $$;
 REVOKE ALL ON FUNCTION public.handle_boutique_signup() FROM PUBLIC, anon, authenticated;
 
 DROP TRIGGER IF EXISTS on_auth_user_created_boutique_piyay ON auth.users;
-CREATE TRIGGER on_auth_user_created_boutique_piyay
+DROP TRIGGER IF EXISTS zzzzzzzzzzzzzz_boutique_signup_role_guard ON auth.users;
+CREATE TRIGGER zzzzzzzzzzzzzz_boutique_signup_role_guard
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_boutique_signup();
+
+DELETE FROM public.vendor_applications AS application
+USING auth.users AS auth_user, public.profiles AS profile
+WHERE application.user_id = auth_user.id
+  AND profile.id = auth_user.id
+  AND auth_user.raw_user_meta_data ->> 'role' = 'affiliate'
+  AND profile.role IN ('pending_seller', 'seller')
+  AND COALESCE(profile.is_active_seller, false) = false;
+
+UPDATE public.profiles AS profile
+SET role = 'affiliate',
+    is_active_seller = false,
+    shop_name = NULL,
+    whatsapp_number = NULL,
+    address = NULL
+FROM auth.users AS auth_user
+WHERE profile.id = auth_user.id
+  AND auth_user.raw_user_meta_data ->> 'role' = 'affiliate'
+  AND profile.role IN ('pending_seller', 'seller')
+  AND COALESCE(profile.is_active_seller, false) = false;
+
+INSERT INTO public.affiliates (user_id, referral_code, balance, total_referrals)
+SELECT profile.id,
+       'AFF-' || UPPER(SUBSTRING(REPLACE(profile.id::text, '-', ''), 1, 12)),
+       0,
+       0
+FROM public.profiles AS profile
+JOIN auth.users AS auth_user ON auth_user.id = profile.id
+WHERE profile.role = 'affiliate'
+  AND auth_user.raw_user_meta_data ->> 'role' = 'affiliate'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.affiliates AS affiliate WHERE affiliate.user_id = profile.id
+  );
 
 CREATE OR REPLACE FUNCTION public.review_vendor_application(
   p_application_id uuid,

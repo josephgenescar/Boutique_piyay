@@ -43,7 +43,7 @@
 <body>
   <header>
     <div><h1>Finans & Ledger</h1><span class="subtle" style="color:#d1ddd9;">Boutique Piyay · Admin</span></div>
-    <nav><a href="/admin/admin.html">Retounen Admin</a></nav>
+    <nav><a href="/admin-stats.html">Retounen nan Dashboard Admin</a></nav>
   </header>
   <main>
     <div id="authMessage">Ap verifye aksè...</div>
@@ -131,7 +131,7 @@
 
   async function init() {
     const { data:{ session } } = await sup.auth.getSession();
-    if (!session) { location.href = '/admin/login.html'; return; }
+    if (!session) { location.href = '/admin-stats.html'; return; }
     accessToken = session.access_token;
     const { data: profile } = await sup.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
     if (profile?.role !== 'admin') { document.getElementById('authMessage').textContent = 'Aksè admin obligatwa.'; return; }

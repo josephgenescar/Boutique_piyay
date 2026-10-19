@@ -2,10 +2,10 @@
 
 ## 📦 ADMIN KI SÈVI KOUNYE A
 
-- `admin/login.html` — koneksyon Supabase
-- `admin/admin.html` — dashboard administratè
+- `admin-stats.html` — sèl dashboard/koneksyon admin, wòl Supabase `admin` obligatwa
+- `admin/admin.html`, `admin/login.html` ak `admin/products.html` — ansyen adrès ki redirije sou dashboard admin lan
 - `admin/finance.html` — peman, retrè ak ledger
-- `admin/products.html` — jesyon pwodwi
+- Jesyon pwodwi ak aplikasyon vandè disponib nan `admin-stats.html`
 
 ### 3️⃣ **_layouts/product.html** - Template Pwodwi Amelyore
 - Galri imaj ak thumbnail

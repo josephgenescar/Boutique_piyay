@@ -233,20 +233,25 @@
         }
 
         try {
+            const signupMetadata = {
+                full_name: fullName,
+                role: currentRole
+            };
+            if (currentRole === 'seller') {
+                signupMetadata.shop_name = document.getElementById('shopName').value.trim();
+                signupMetadata.whatsapp_number = document.getElementById('whatsappNumber').value.trim();
+                signupMetadata.address = document.getElementById('address').value.trim();
+                signupMetadata.product_categories = document.getElementById('productCategories').value.trim();
+                signupMetadata.product_description = document.getElementById('productDescription').value.trim();
+            } else {
+                signupMetadata.referral_code = referralAttribution;
+            }
+
             const { data: authData, error: authErr } = await supS.auth.signUp({
                 email,
                 password: pass,
                 options: {
-                    data: {
-                        full_name: fullName,
-                        role: currentRole,
-                        shop_name: currentRole === 'seller' ? document.getElementById('shopName').value.trim() : null,
-                        whatsapp_number: currentRole === 'seller' ? document.getElementById('whatsappNumber').value.trim() : null,
-                        address: currentRole === 'seller' ? document.getElementById('address').value.trim() : null,
-                        product_categories: currentRole === 'seller' ? document.getElementById('productCategories').value.trim() : null,
-                        product_description: currentRole === 'seller' ? document.getElementById('productDescription').value.trim() : null,
-                        referral_code: currentRole === 'affiliate' ? referralAttribution : null
-                    },
+                    data: signupMetadata,
                 }
             });
 

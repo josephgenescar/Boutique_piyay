@@ -125,10 +125,9 @@ defaults:
 
 Les fonctions d'administration utilisent les comptes et rôles Supabase existants:
 
-- Connexion: `/admin/login.html`
-- Dashboard admin: `/admin/admin.html`
+- Dashboard/connexion admin (Supabase, wòl admin obligatwa): `/admin-stats.html`
 - Paiements, retraits et ledger: `/admin/finance.html`
-- Produits: `/admin/products.html`
+- Gestion utilisateurs, vendeurs, applications, produits et commandes: `/admin-stats.html`
 
 ---
 
@@ -137,8 +136,8 @@ Les fonctions d'administration utilisent les comptes et rôles Supabase existant
 ### Accès au Panel Admin
 
 ```
-URL: https://votre-site.com/admin/login.html
-Ou localement: http://localhost:4000/admin/login.html
+URL: https://votre-site.com/admin-stats.html
+Ou localement: http://localhost:4000/admin-stats.html
 ```
 
 ### Structure du Panel
@@ -485,7 +484,7 @@ console.log(localStorage.getItem('test'));
 **Cause:** Session Supabase absente ou compte sans rôle admin
 
 **Solution:**
-1. Connectez-vous via `/admin/login.html`
+1. Connectez-vous via `/admin-stats.html`
 2. Vérifiez que le profil Supabase possède le rôle `admin`
 
 ### Images ne S'affichent pas

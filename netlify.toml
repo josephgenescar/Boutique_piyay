@@ -18,13 +18,33 @@
 
 [[redirects]]
   from = "/admin"
-  to = "/admin/login.html"
+  to = "/admin-stats.html"
   status = 302
 
 [[redirects]]
   from = "/admin/"
-  to = "/admin/login.html"
+  to = "/admin-stats.html"
   status = 302
+
+[[redirects]]
+  from = "/admin/admin.html"
+  to = "/admin-stats.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin/login.html"
+  to = "/admin-stats.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin/products.html"
+  to = "/admin-stats.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin/referral-codes.html"
+  to = "/admin-stats.html"
+  status = 301
 
 # ❌ 404 TOUJOURS AN DERNIER
 [[redirects]]

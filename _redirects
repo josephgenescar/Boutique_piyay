@@ -1,8 +1,12 @@
 # Netlify Redirects for Boutique Piyay
 
-# Admin root goes to the current Supabase admin login; subpages remain static pages.
-/admin                      /admin/login.html   302
-/admin/                     /admin/login.html   302
+# All legacy admin entry points use the single authenticated admin dashboard.
+/admin                      /admin-stats.html   302
+/admin/                     /admin-stats.html   302
+/admin/admin.html            /admin-stats.html   301
+/admin/login.html            /admin-stats.html   301
+/admin/products.html         /admin-stats.html   301
+/admin/referral-codes.html   /admin-stats.html   301
 /api/v1/*                   /.netlify/functions/:splat   200
 
 # Catch-all for SPA routing

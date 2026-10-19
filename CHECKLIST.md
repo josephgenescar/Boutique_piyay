@@ -37,7 +37,7 @@ mkdir -p _data
 ## 📁 ÉTAPE 2: Installation des Fichiers (30 min)
 
 ### 2.1 Fichiers Admin
-- [ ] Vérifiez `admin/login.html`, `admin/admin.html` et `admin/finance.html`
+- [ ] Vérifiez `admin-stats.html` et `admin/finance.html`
 
 ### 2.2 Layouts et Pages
 - [ ] Copiez `_layouts/product.html` → `_layouts/product.html`
@@ -130,7 +130,7 @@ shipping:
 - [ ] `SUPABASE_URL` pointe vers le même projet que les données produits
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` est configurée seulement dans Netlify Functions
 - [ ] `SITE_ORIGIN` correspond au domaine publié
-- [ ] L'admin se connecte via `/admin/login.html` avec un profil Supabase `admin`
+- [ ] L'admin se connecte via `/admin-stats.html` avec un profil Supabase `admin`
 
 ### 4.2 Ajouterr le Panier au Header
 
@@ -205,7 +205,7 @@ git push origin main
 1. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in Netlify environment variables.
 2. Set `SITE_ORIGIN` to the deployed site origin.
 3. Confirm admin users have the `admin` role in Supabase.
-4. Open `/admin/login.html` and verify `/admin/finance.html` loads for an admin account.
+4. Open `/admin-stats.html` and verify `/admin/finance.html` loads for an admin account.
 
 ---
 
@@ -220,7 +220,7 @@ git push origin main
 
 ### 6.2 Test Admin Panel
 
-1. Allez sur `https://votre-site.netlify.app/admin/login.html`
+1. Allez sur `https://votre-site.netlify.app/admin-stats.html`
 2. Connectez-vous avec votre compte Supabase administrateur
 
 - [ ] Admin panel accessible
