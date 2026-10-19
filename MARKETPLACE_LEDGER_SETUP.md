@@ -11,6 +11,8 @@
 7. Sign in as an admin and open `/admin/finance.html`. Configure platform MonCash/NatCash numbers or QR image URLs, expiry hours, refund hold days, minimum payout, and commission rates.
 8. The hourly job is named `marketplace-ledger-hourly`. For an immediate test, an authorized database administrator can run `SELECT public.run_marketplace_ledger_jobs();`.
 
+The admin orders tab can archive all orders, including pending and approved ones, from its active list. Archiving preserves the order, payment, and append-only ledger records; it does not erase financial history. The RPC and archive columns are installed by `supabase-schema-marketplace-ledger.sql`.
+
 ## Money Rules
 
 - Amounts are HTG `numeric(12,2)`. PostgreSQL `round(numeric, 2)` rounds half away from zero.

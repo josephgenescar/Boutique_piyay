@@ -225,6 +225,12 @@ title: Sant Kontwòl Total - Boutique Piyay
   .boost-seller { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; align-items: center; }
   .boost-seller label { font-size: 13px; font-weight: 800; }
   .boost-policy { display: grid; gap: 6px; margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #f8fafc; color: var(--gray); font-size: 13px; line-height: 1.5; }
+  .orders-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .orders-card-header .card-title { margin-bottom: 0; }
+  .btn-archive-orders { border: 0; border-radius: 10px; padding: 11px 16px; background: #fff1f2; color: #b91c1c; font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: .2s; }
+  .btn-archive-orders:hover:not(:disabled) { background: #ffe4e6; }
+  .btn-archive-orders:disabled { opacity: .6; cursor: wait; }
+  .orders-archive-note { margin: -8px 0 18px; color: var(--gray); font-size: 12px; line-height: 1.6; }
   @media (max-width: 640px) { .application-details { grid-template-columns: 1fr; } }
 </style>
 
@@ -380,7 +386,11 @@ title: Sant Kontwòl Total - Boutique Piyay
     <!-- TAB: ORDERS -->
     <div id="tab-orders" class="tab-content" style="display:none;">
       <div class="admin-card">
-        <div class="card-title">🛒 Tout Commande</div>
+        <div class="orders-card-header">
+          <div class="card-title">🛒 Tout kòmand</div>
+          <button type="button" id="archive-all-orders-button" class="btn-archive-orders" onclick="archiveAllOrders()">Retire tout kòmand yo nan lis la</button>
+        </div>
+        <p class="orders-archive-note">Sa ap retire tout kòmand nan lis admin nan, kèlkeswa estati yo. Istorik peman ak ledger la ap rete konsève.</p>
         <div style="overflow-x:auto;">
           <table class="admin-table">
             <thead>
@@ -688,13 +698,15 @@ title: Sant Kontwòl Total - Boutique Piyay
           </td>
         </tr>`).join('');
 
-      document.getElementById('orders-list').innerHTML = (orders || []).map(o => `
+      const visibleOrders = (orders || []).filter(order => !order.admin_archived_at);
+      document.getElementById('orders-list').innerHTML = visibleOrders.map(o => `
         <tr>
           <td><span style="font-family:'Space Mono',monospace;font-size:11px;">${o.id ? o.id.slice(0,8)+'...' : '—'}</span></td>
           <td>${o.customer_name || o.customer_phone || '—'}</td>
           <td><b>${o.total_price || o.amount || 0} HTG</b></td>
           <td><span class="badge ${o.status === 'completed' ? 'active' : o.status === 'pending' ? 'pending' : 'blocked'}">${o.status || 'pending'}</span></td>
-        </tr>`).join('');
+        </tr>`).join('') ||
+        '<tr><td colspan="4" style="text-align:center;padding:24px;color:#64748b;">Pa gen kòmand aktif pou montre.</td></tr>';
 
     } catch(e) { console.error(e); showToast('❌ Erè chajman done', 'error'); }
   }
@@ -703,6 +715,30 @@ title: Sant Kontwòl Total - Boutique Piyay
     await supA.from('profiles').update({ is_active_seller: !status }).eq('id', id);
     showToast(status ? '🔒 Vendeur bloke' : '🔓 Vendeur debloke', 'success');
     loadAdminData();
+  }
+
+  async function archiveAllOrders() {
+    const confirmed = window.confirm(
+      'Èske ou vle retire TOUT kòmand yo nan lis admin nan, kit yo an atant kit yo apwouve?\n\n' +
+      'Kòmand yo ap rete achive pou sekirite. Dosye peman ak ledger la pap efase.'
+    );
+    if (!confirmed) return;
+
+    const button = document.getElementById('archive-all-orders-button');
+    button.disabled = true;
+    button.textContent = '⏳ N ap retire kòmand yo...';
+    try {
+      const { data: archivedCount, error } = await supA.rpc('archive_all_admin_orders');
+      if (error) throw error;
+      showToast(`✅ ${archivedCount || 0} kòmand retire nan lis admin nan.`, 'success');
+      await loadAdminData();
+    } catch (error) {
+      console.error('Unable to archive all admin orders:', error);
+      showToast(`❌ Nou pa kapab retire kòmand yo nan lis la: ${error.message}`, 'error');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Retire tout kòmand yo nan lis la';
+    }
   }
 
   async function deleteProduct(id) {

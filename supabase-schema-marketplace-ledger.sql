@@ -12,12 +12,16 @@ ALTER TABLE public.orders
   ADD COLUMN IF NOT EXISTS payment_proof_path text,
   ADD COLUMN IF NOT EXISTS paid_at timestamptz,
   ADD COLUMN IF NOT EXISTS expires_at timestamptz,
-  ADD COLUMN IF NOT EXISTS order_status text DEFAULT 'pending';
+  ADD COLUMN IF NOT EXISTS order_status text DEFAULT 'pending',
+  ADD COLUMN IF NOT EXISTS admin_archived_at timestamptz,
+  ADD COLUMN IF NOT EXISTS admin_archived_by uuid REFERENCES public.profiles(id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_provider_transaction_id_unique
   ON public.orders(provider_transaction_id) WHERE provider_transaction_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_orders_payment_review
   ON public.orders(payment_status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_active_admin_list
+  ON public.orders(created_at DESC) WHERE admin_archived_at IS NULL;
 
 CREATE TABLE IF NOT EXISTS public.payment_settings (
   id boolean PRIMARY KEY DEFAULT true CHECK (id),
@@ -174,6 +178,48 @@ CREATE TABLE IF NOT EXISTS public.audit_log (
   details jsonb NOT NULL DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE OR REPLACE FUNCTION public.archive_all_admin_orders()
+RETURNS integer
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  archived_count integer;
+  admin_id uuid := auth.uid();
+BEGIN
+  IF admin_id IS NULL OR NOT EXISTS (
+    SELECT 1
+    FROM public.profiles AS profile
+    WHERE profile.id = admin_id
+      AND profile.role = 'admin'
+  ) THEN
+    RAISE EXCEPTION 'Only administrators can archive all orders.';
+  END IF;
+
+  UPDATE public.orders
+  SET admin_archived_at = pg_catalog.now(),
+      admin_archived_by = admin_id
+  WHERE admin_archived_at IS NULL;
+
+  GET DIAGNOSTICS archived_count = ROW_COUNT;
+
+  INSERT INTO public.audit_log(actor_id, action, entity_type, entity_id, details)
+  VALUES (
+    admin_id,
+    'admin_orders_archived',
+    'order',
+    'all',
+    pg_catalog.jsonb_build_object('archived_count', archived_count)
+  );
+
+  RETURN archived_count;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.archive_all_admin_orders() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.archive_all_admin_orders() TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.audit_marketplace_settings_change()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
