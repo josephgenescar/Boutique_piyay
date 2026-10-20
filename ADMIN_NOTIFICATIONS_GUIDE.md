@@ -16,15 +16,16 @@ Le système envoie automatiquement des emails à l'admin (josephgenescar@gmail.c
 
 ### Avis par email pour chaque nouvelle inscription
 
-La fonction Netlify `notify-registration` envoie à l'administrateur les informations de chaque nouvelle inscription vendeur ou affilié, une seule fois par compte. Supabase bloque aussi la connexion des vendeurs en attente; l'approbation dans le tableau admin débloque leur compte. Les comptes affiliés ne nécessitent pas cette approbation. L'envoi utilise Gmail SMTP et ne nécessite pas de domaine personnalisé.
+La fonction Netlify `notify-registration` envoie à l'administrateur les informations de chaque nouvelle inscription vendeur ou affilié, une seule fois par compte. Supabase bloque aussi la connexion des vendeurs en attente; l'approbation dans le tableau admin débloque leur compte. Les comptes affiliés ne nécessitent pas cette approbation. L'envoi utilise l'API transactionnelle de Brevo.
 
-Utilisez un compte Gmail pour l'envoi. Activez la validation en deux étapes sur ce compte Google, puis créez un mot de passe d'application dans les paramètres de sécurité Google. Utilisez ce mot de passe d'application, pas le mot de passe Gmail habituel.
+Dans Brevo, créez une clé API v3 et vérifiez l'adresse d'expéditeur dans les paramètres des expéditeurs. Un domaine personnalisé n'est pas forcément nécessaire si Brevo vous permet de vérifier une adresse d'expéditeur. L'adresse expéditrice doit toutefois être validée par Brevo.
 
 Dans Netlify, ouvrez **Site configuration > Environment variables > Add a variable** et ajoutez:
 
 - `ADMIN_EMAIL`: l'adresse qui doit recevoir les notifications
-- `GMAIL_USER`: l'adresse Gmail qui enverra les notifications
-- `GMAIL_APP_PASSWORD`: le mot de passe d'application Google (gardez-le secret)
+- `BREVO_API_KEY`: la clé API Brevo (gardez-la secrète)
+- `BREVO_SENDER_EMAIL`: l'adresse d'expéditeur vérifiée dans Brevo
+- `BREVO_SENDER_NAME` (facultatif): nom affiché comme expéditeur, par exemple `Boutique Piyay`
 - `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`: les variables Supabase utilisées par les fonctions Netlify
 
 Après avoir enregistré les variables, redéployez le site. Exécutez aussi le fichier `supabase-schema-vendor-applications.sql` dans Supabase SQL Editor pour créer la table d'idempotence des notifications et appliquer les règles de demande vendeur et le blocage de connexion.
@@ -71,7 +72,7 @@ supabase functions deploy admin-notification-listener
 
 ### 3. Variables des anciennes notifications Supabase (hors nouvelles inscriptions)
 
-Ces variables concernent les fonctions Supabase de notifications existantes, et non l'avis d'inscription envoyé par Gmail SMTP ci-dessus:
+Ces variables concernent les anciennes fonctions Supabase de notifications, et non l'avis d'inscription envoyé par l'API Brevo via Netlify ci-dessus:
 
 - `SUPABASE_URL`: Votre URL Supabase
 - `SUPABASE_SERVICE_ROLE_KEY`: Votre service role key
@@ -160,8 +161,8 @@ Les templates HTML sont dans les fonctions `generate*Email()` dans `admin-notifi
 
 ### Emails ne sont pas envoyés
 
-1. Pour les nouvelles inscriptions, vérifiez dans Netlify `ADMIN_EMAIL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`.
-2. Vérifiez les logs de la fonction Netlify `notify-registration`; pour utiliser Gmail SMTP, le mot de passe d'application Google et la validation en deux étapes doivent être actifs.
+1. Pour les nouvelles inscriptions, vérifiez dans Netlify `ADMIN_EMAIL`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`.
+2. Vérifiez les logs de la fonction Netlify `notify-registration`; l'adresse `BREVO_SENDER_EMAIL` doit être vérifiée dans Brevo.
 3. Pour les anciennes notifications Supabase, vérifiez `RESEND_API_KEY` et les logs Supabase Edge Functions.
 
 ### Triggers ne fonctionnent pas

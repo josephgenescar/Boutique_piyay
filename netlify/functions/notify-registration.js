@@ -1,6 +1,5 @@
 const ws = require('ws');
 const { createClient } = require('@supabase/supabase-js');
-const nodemailer = require('nodemailer');
 
 function respond(statusCode, body) {
   return {
@@ -40,22 +39,22 @@ exports.handler = async (event) => {
   const requiredEnvironment = [
     'SUPABASE_URL',
     'SUPABASE_SERVICE_ROLE_KEY',
-    'GMAIL_USER',
-    'GMAIL_APP_PASSWORD',
+    'BREVO_API_KEY',
+    'BREVO_SENDER_EMAIL',
     'ADMIN_EMAIL',
   ];
   const missingEnvironment = requiredEnvironment.filter((name) => !process.env[name]);
   if (missingEnvironment.length) {
     console.error('Registration email configuration is missing:', missingEnvironment.join(', '));
-    return respond(500, { error: 'Gmail SMTP is not configured.' });
+    return respond(500, { error: 'Brevo email is not configured.' });
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(process.env.ADMIN_EMAIL.trim())) {
     console.error('ADMIN_EMAIL is not a valid email address.');
-    return respond(500, { error: 'Gmail SMTP is not configured.' });
+    return respond(500, { error: 'Brevo email is not configured.' });
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(process.env.GMAIL_USER.trim())) {
-    console.error('GMAIL_USER is not a valid email address.');
-    return respond(500, { error: 'Gmail SMTP is not configured.' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(process.env.BREVO_SENDER_EMAIL.trim())) {
+    console.error('BREVO_SENDER_EMAIL is not a valid email address.');
+    return respond(500, { error: 'Brevo email is not configured.' });
   }
 
   const supabase = createClient(
@@ -163,23 +162,34 @@ exports.handler = async (event) => {
   const siteUrl = (process.env.URL || 'https://boutique-piyay.netlify.app').replace(/\/+$/, '');
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.GMAIL_USER.trim(),
-        pass: process.env.GMAIL_APP_PASSWORD.replace(/\s/g, ''),
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
+      body: JSON.stringify({
+        sender: {
+          name: process.env.BREVO_SENDER_NAME?.trim() || 'Boutique Piyay',
+          email: process.env.BREVO_SENDER_EMAIL.trim(),
+        },
+        to: [{ email: process.env.ADMIN_EMAIL.trim() }],
+        subject: isSellerApplication
+          ? `Nouvo demann machann: ${application.shop_name}`
+          : `Nouvo enskripsyon afilye: ${name}`,
+        htmlContent: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#1e293b"><h2>${isSellerApplication ? 'Nouvo demann machann ap tann apwobasyon' : 'Nouvo moun enskri kòm afilye'}</h2>${detailHtml}<p>Konekte sou <a href="${siteUrl}/admin-stats.html">panèl administratè a</a>${isSellerApplication ? ' pou revize aplikasyon an' : ''}.</p></div>`,
+      }),
     });
-    await transporter.sendMail({
-      from: `"Boutique Piyay" <${process.env.GMAIL_USER.trim()}>`,
-      to: process.env.ADMIN_EMAIL.trim(),
-      subject: isSellerApplication
-        ? `Nouvo demann machann: ${application.shop_name}`
-        : `Nouvo enskripsyon afilye: ${name}`,
-      html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#1e293b"><h2>${isSellerApplication ? 'Nouvo demann machann ap tann apwobasyon' : 'Nouvo moun enskri kòm afilye'}</h2>${detailHtml}<p>Konekte sou <a href="${siteUrl}/admin-stats.html">panèl administratè a</a>${isSellerApplication ? ' pou revize aplikasyon an' : ''}.</p></div>`,
-    });
+
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      console.error('Brevo rejected registration email:', errorDetails);
+      await supabase.from('registration_email_notifications')
+        .update({ status: 'failed', updated_at: new Date().toISOString() })
+        .eq('user_id', userId);
+      return respond(502, { error: 'Brevo could not deliver the registration notice.' });
+    }
 
     const { error: updateError } = await supabase.from('registration_email_notifications')
       .update({ status: 'sent', updated_at: new Date().toISOString() })
@@ -190,7 +200,7 @@ exports.handler = async (event) => {
     }
     return respond(200, { success: true });
   } catch (error) {
-    console.error('Unable to send registration email through Gmail SMTP:', error);
+    console.error('Unable to send registration email through Brevo:', error);
     await supabase.from('registration_email_notifications')
       .update({ status: 'failed', updated_at: new Date().toISOString() })
       .eq('user_id', userId);

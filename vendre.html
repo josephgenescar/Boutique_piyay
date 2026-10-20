@@ -361,27 +361,41 @@ title: Vann yon Pwodwi - Boutique Piyay
 
     async function submitProduct() {
         const title = document.getElementById('prodTitle').value.trim();
-        const price = document.getElementById('prodPrice').value;
+        const price = Number(document.getElementById('prodPrice').value);
         const cat = document.getElementById('prodCat').value;
         const desc = document.getElementById('prodDesc').value.trim();
         const file = document.getElementById('prodImage').files[0];
         const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
 
-        if (!title || !price || !cat || !desc || !file) {
+        if (!title || !Number.isFinite(price) || price <= 0 || !cat || !desc || !file) {
              alert("Tanpri ranpli tout chan yo!"); return;
+        }
+        if (!file.type.startsWith('image/')) {
+            alert("Tanpri chwazi yon fichye imaj.");
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Foto a twò gwo. Limit la se 5 MB.");
+            return;
         }
 
         btn.disabled = true;
-        document.getElementById('statusMsg').innerText = "⏳ Piblikasyon an kòmanse...";
-        document.getElementById('statusMsg').style.display = 'block';
+        status.className = 'status-msg loading';
+        status.textContent = "⏳ Piblikasyon an kòmanse...";
+        status.style.display = 'block';
 
         try {
-            const { data: { user } } = await supV.auth.getUser();
+            const { data: { user }, error: authError } = await supV.auth.getUser();
+            if (authError) throw authError;
             if (!user) throw new Error("Ou dwe konekte!");
 
-            // Upload to ImageKit
             const authRes = await fetch("/.netlify/functions/auth");
             const authData = await authRes.json();
+            if (!authRes.ok || !authData.publicKey || !authData.signature || !authData.token || !authData.expire) {
+                throw new Error(authData.error || "Nou pa kapab otorize chajman foto a. Verifye konfigirasyon ImageKit la nan Netlify.");
+            }
+
             const formData = new FormData();
             formData.append("file", file);
             formData.append("publicKey", authData.publicKey);
@@ -392,33 +406,43 @@ title: Vann yon Pwodwi - Boutique Piyay
 
             const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", { method: "POST", body: formData });
             const uploadData = await uploadRes.json();
+            if (!uploadRes.ok || !uploadData.url) {
+                const uploadError = uploadData.message || uploadData.help || uploadData.error;
+                throw new Error(uploadError
+                    ? `ImageKit pa t aksepte foto a: ${uploadError}`
+                    : "ImageKit pa t bay yon lyen pou foto a. Verifye limit oswa kredi kont ImageKit ou.");
+            }
 
-            // Save to Supabase
-            const { data: insertedProducts, error: dbErr } = await supV.from('user_products').insert([{
+            const { data: product, error: dbErr } = await supV.from('user_products').insert({
                 title,
-                price: parseFloat(price),
+                price,
                 category: cat,
                 description: desc,
                 image_url: uploadData.url,
                 seller_id: user.id,
                 is_approved: true,
                 created_at: new Date().toISOString()
-            }]);
+            }).select('id').single();
 
             if (dbErr) throw dbErr;
+            status.className = 'status-msg success';
+            status.textContent = "✅ Pwodwi a pibliye. N ap mennen w sou dashboard la...";
             alert("🎉 Pwodwi pibliye ak siksè!");
 
-            const productId = insertedProducts?.[0]?.id;
-            if (productId && window.sendProductBroadcast) {
+            if (product?.id && window.sendProductBroadcast) {
                 window.sendProductBroadcast('new_product', {
-                    product_id: productId,
+                    product_id: product.id,
                     product_name: title,
                 });
             }
 
             window.location.href = "/dashboard.html";
         } catch (err) {
-            alert("❌ Erè: " + err.message);
+            const message = err.message || "Erè enkoni pandan piblikasyon an.";
+            status.className = 'status-msg error';
+            status.textContent = `❌ ${message}`;
+            console.error('Product publishing failed:', err);
+            alert("❌ Erè: " + message);
             btn.disabled = false;
         }
     }

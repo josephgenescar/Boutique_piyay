@@ -1438,14 +1438,21 @@
     }
 
     async function loadAll() {
-        let { data: prods } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+        const grid = document.getElementById('prods-grid');
+        let { data: prods, error: productsError } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+        if (productsError) {
+            console.error('Erè nan chaje pwodwi machann nan:', productsError);
+            grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">⚠️</div><div class="empty-title"></div></div>';
+            grid.querySelector('.empty-title').textContent = `Nou pa kapab chaje pwodwi yo: ${productsError.message}`;
+            prods = [];
+        }
         const flashExpired = await clearExpiredFlashSales(prods);
         const boostExpired = await clearExpiredBoosts(prods);
         if (flashExpired || boostExpired) {
-            const refreshed = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
-            prods = refreshed.data;
+            const { data: refreshed, error: refreshError } = await supD.from('user_products').select('*').eq('seller_id', currentUser.id);
+            if (refreshError) console.error('Erè nan rechaje pwodwi machann nan:', refreshError);
+            else prods = refreshed;
         }
-        const grid = document.getElementById('prods-grid');
         if (prods && prods.length > 0) {
             grid.innerHTML = prods.map(p => {
                 const now = new Date();
@@ -1481,6 +1488,8 @@
                     </div>
                 </div>`;
             }).join('');
+        } else if (!productsError) {
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📦</div><div class="empty-title">Ou poko pibliye okenn pwodwi.</div><button class="btn-add" style="margin-top:16px;" onclick="goToVendre()">➕ Pibliye yon pwodwi</button></div>`;
         }
 
         const { data: prof } = await supD.from('profiles').select('*').eq('id', currentUser.id).single();

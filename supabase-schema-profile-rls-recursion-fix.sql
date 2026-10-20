@@ -59,4 +59,38 @@ CREATE POLICY "Admin can delete products" ON public.user_products
 DROP POLICY IF EXISTS "Moun loge ka ajoute pwodwi" ON public.user_products;
 CREATE POLICY "Moun loge ka ajoute pwodwi" ON public.user_products
   FOR INSERT TO authenticated
-  WITH CHECK (seller_id = auth.uid() OR public.is_boutique_admin());
+  WITH CHECK (
+    public.is_boutique_admin()
+    OR (
+      seller_id = auth.uid()
+      AND EXISTS (
+        SELECT 1 FROM public.profiles
+        WHERE id = auth.uid()
+          AND role = 'seller'
+          AND is_active_seller = true
+      )
+    )
+  );
+
+DROP POLICY IF EXISTS "Sellers can view own products" ON public.user_products;
+CREATE POLICY "Sellers can view own products" ON public.user_products
+  FOR SELECT TO authenticated
+  USING (seller_id = auth.uid());
+
+DROP POLICY IF EXISTS "Sellers can update own products" ON public.user_products;
+CREATE POLICY "Sellers can update own products" ON public.user_products
+  FOR UPDATE TO authenticated
+  USING (seller_id = auth.uid())
+  WITH CHECK (seller_id = auth.uid());
+
+DROP POLICY IF EXISTS "Public can view approved products from active sellers" ON public.user_products;
+CREATE POLICY "Public can view approved products from active sellers" ON public.user_products
+  FOR SELECT TO anon, authenticated
+  USING (
+    is_approved = true
+    AND EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE id = user_products.seller_id
+        AND is_active_seller = true
+    )
+  );
