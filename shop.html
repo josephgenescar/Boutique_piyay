@@ -308,7 +308,7 @@ permalink: /shop/
         grid.innerHTML = visibleProducts.map(p => {
             const sellerId = p.seller_id || '';
             const sellerPhone = (p.whatsapp_number || p.whatsapp || '').toString().replace(/[^0-9]/g, '');
-            const sellerName = (p.seller_name || p.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
+            const sellerName = (p.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
             const description = (p.description || p.short_description || '').substring(0, 96);
             const displayDesc = description ? description : 'Dekouvri pwodwi sa a soti nan vandè nou an.';
             const categoryLabel = p.category || 'Boutique';

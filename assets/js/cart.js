@@ -148,7 +148,7 @@ async function resolveSellerPhoneFallbacks(sellers) {
       group.phone = resolvedPhone;
     }
     if (!group.sellerName || group.sellerName === 'Boutique Piyay') {
-      group.sellerName = prof.shop_name || prof.full_name || group.sellerName;
+      group.sellerName = prof.shop_name || group.sellerName;
     }
   });
 
@@ -830,7 +830,7 @@ window.submitOrder = async function() {
           const sellerProfile = profilesById[group.sellerId] || {};
           const sellerEmail = sellerProfile.email;
           const sellerPhone = sellerProfile.whatsapp || group.sellerPhone || '';
-          const sellerName = sellerProfile.shop_name || sellerProfile.full_name || group.sellerName || 'Boutique Piyay';
+          const sellerName = sellerProfile.shop_name || group.sellerName || 'Boutique Piyay';
 
           // Push notifications are handled server-side in `create-order`.
           // Do not call `send-notification` from client (would require exposing internal secret).

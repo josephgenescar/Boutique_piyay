@@ -31,11 +31,17 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS facebook_url text;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_active_seller boolean DEFAULT false;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referral_code text;
 
--- Fill missing shop_name for active sellers already registered before shop_name was added
-UPDATE profiles
-SET shop_name = full_name
-WHERE is_active_seller = true
-  AND (shop_name IS NULL OR shop_name = '');
+-- Restore the actual shop name from signup metadata; never substitute a person's name.
+UPDATE public.profiles AS profile
+SET shop_name = NULLIF(BTRIM(auth_user.raw_user_meta_data ->> 'shop_name'), '')
+FROM auth.users AS auth_user
+WHERE auth_user.id = profile.id
+  AND profile.is_active_seller = true
+  AND NULLIF(BTRIM(auth_user.raw_user_meta_data ->> 'shop_name'), '') IS NOT NULL
+  AND (
+    NULLIF(BTRIM(profile.shop_name), '') IS NULL
+    OR BTRIM(profile.shop_name) = BTRIM(COALESCE(profile.full_name, ''))
+  );
 
 CREATE INDEX IF NOT EXISTS idx_profiles_is_active_seller ON profiles(is_active_seller);
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);

@@ -1434,7 +1434,7 @@ title: Akèy - Boutique Piyay
     sellerMap = {};
     allSellers.forEach(s => {
       sellerMap[s.id] = {
-        full_name:        s.full_name        || 'Boutique Piyay',
+        shop_name:        s.shop_name        || 'Boutik',
         whatsapp_number:  s.whatsapp_number  || s.whatsapp || '50948868964'
       };
     });
@@ -1596,7 +1596,7 @@ title: Akèy - Boutique Piyay
 
     const items = featured.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g, '');
-      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
       
       // Genere etoile rating
       let ratingHTML = '';
@@ -1657,7 +1657,7 @@ title: Akèy - Boutique Piyay
     stopBoostedBannerAutoplay();
     container.innerHTML = boostedProducts.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g, '');
-      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
       return `
         <article class="boosted-product-item">
           <a href="/pwodwi-machann.html?id=${p.id}">
@@ -1788,7 +1788,7 @@ title: Akèy - Boutique Piyay
     }
     const featured = list.slice(0, 4);
     row.innerHTML = featured.map(s => {
-      const sellerDisplayName = s.shop_name || s.full_name || 'Boutik';
+      const sellerDisplayName = s.shop_name || 'Boutik';
       const initial = (sellerDisplayName || 'B').charAt(0).toUpperCase();
       return `
         <a class="featured-seller-card" href="/boutik-machann.html?id=${s.id}">
@@ -1812,7 +1812,7 @@ title: Akèy - Boutique Piyay
       const sProds = allProducts.filter(p => String(p.seller_id) === String(s.id) && p.image_url).slice(0,4);
       let previews = sProds.map(p => `<div class="preview-img"><img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📦'"></div>`).join('');
       for (let i = sProds.length; i < 4; i++) previews += `<div class="preview-img">📦</div>`;
-      const sellerDisplayName = s.shop_name || s.full_name || 'Boutik';
+      const sellerDisplayName = s.shop_name || 'Boutik';
       const initial       = (sellerDisplayName || 'M').charAt(0).toUpperCase();
       const avatarContent = s.avatar_url
         ? `<img src="${s.avatar_url}" onerror="this.style.display='none';this.parentElement.innerText='${initial}'">`
@@ -1842,7 +1842,7 @@ title: Akèy - Boutique Piyay
     }
     grid.innerHTML = list.map(p => {
       const phone = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
-      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
       
       // Genere etoile rating
       let ratingHTML = '';
@@ -1874,7 +1874,7 @@ title: Akèy - Boutique Piyay
       const valNew = parseFloat(p.price);
       const disc   = (valOld > valNew) ? Math.round(((valOld-valNew)/valOld)*100) : 0;
       const phone  = ((sellerMap[p.seller_id]?.whatsapp_number) || '50948868964').replace(/[^0-9]/g,'');
-      const sellerName = (sellerMap[p.seller_id]?.shop_name || sellerMap[p.seller_id]?.full_name || 'Boutique Piyay').replace(/'/g, "\\'");
+      const sellerName = (sellerMap[p.seller_id]?.shop_name || 'Boutique Piyay').replace(/'/g, "\\'");
       
       // Genere etoile rating
       let ratingHTML = '';
@@ -1977,7 +1977,7 @@ title: Akèy - Boutique Piyay
             String(newestProduct.image_url || ''),
             String(newestProduct.seller_id || ''),
             String((sellerMap[newestProduct.seller_id]?.whatsapp_number || '50948868964')).replace(/[^0-9]/g, ''),
-            String(sellerMap[newestProduct.seller_id]?.shop_name || sellerMap[newestProduct.seller_id]?.full_name || 'Boutique Piyay')
+            String(sellerMap[newestProduct.seller_id]?.shop_name || 'Boutique Piyay')
           );
         } else {
           window.location.href = `/pwodwi-machann.html?id=${newestProduct.id}`;

@@ -225,6 +225,24 @@ WHERE profile.role = 'affiliate'
     SELECT 1 FROM public.affiliates AS affiliate WHERE affiliate.user_id = profile.id
   );
 
+UPDATE public.profiles AS profile
+SET shop_name = COALESCE(
+  NULLIF(BTRIM(application.shop_name), ''),
+  NULLIF(BTRIM(auth_user.raw_user_meta_data ->> 'shop_name'), '')
+)
+FROM auth.users AS auth_user
+LEFT JOIN public.vendor_applications AS application ON application.user_id = auth_user.id
+WHERE profile.id = auth_user.id
+  AND profile.role IN ('seller', 'pending_seller')
+  AND COALESCE(
+    NULLIF(BTRIM(application.shop_name), ''),
+    NULLIF(BTRIM(auth_user.raw_user_meta_data ->> 'shop_name'), '')
+  ) IS NOT NULL
+  AND (
+    NULLIF(BTRIM(profile.shop_name), '') IS NULL
+    OR BTRIM(profile.shop_name) = BTRIM(COALESCE(profile.full_name, ''))
+  );
+
 UPDATE auth.users AS auth_user
 SET banned_until = now() + interval '100 years'
 FROM public.profiles AS profile

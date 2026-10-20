@@ -138,7 +138,7 @@ async function getOrderQuote(items) {
   }
   lines.forEach((line) => {
     const seller = sellersById[line.seller_id];
-    line.seller_name = seller?.shop_name || seller?.full_name || 'Boutique Piyay';
+    line.seller_name = seller?.shop_name || 'Boutique Piyay';
   });
 
   return {
