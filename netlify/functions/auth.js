@@ -1,4 +1,4 @@
-const ImageKit = require('@imagekit/nodejs');
+const ImageKit = require('imagekit');
 
 exports.handler = async (event, context) => {
   const publicKey = (process.env.IMAGEKIT_PUBLIC_KEY || "").trim();

@@ -3,7 +3,6 @@
     "minify:site": "node scripts/minify-site.mjs"
   },
   "dependencies": {
-    "@imagekit/nodejs": "^7.9.1",
     "@supabase/supabase-js": "^2.39.3",
     "axios": "^1.6.0",
     "imagekit": "^6.0.0",
