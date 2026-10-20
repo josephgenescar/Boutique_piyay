@@ -89,6 +89,8 @@ title: Boutik Vendeur - Boutique Piyay
     .bm-section-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .bm-section-hdr h2 { font-size: 18px; font-weight: 900; color: var(--dark); margin: 0; }
     .bm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 18px; }
+    .bm-state { grid-column: 1 / -1; padding: 32px 20px; background: white; border-radius: var(--radius); color: var(--gray); text-align: center; line-height: 1.6; }
+    .bm-state.error { color: #b91c1c; }
     .bm-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1.5px solid #f8fafc; display: flex; flex-direction: column; }
     .bm-card-img-wrap { position: relative; aspect-ratio: 1; overflow: hidden; }
     .bm-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -121,7 +123,9 @@ title: Boutik Vendeur - Boutique Piyay
         <div class="bm-section-hdr">
             <h2>📦 Pwodwi Boutik la</h2>
         </div>
-        <div class="bm-grid" id="seller-products-grid"></div>
+        <div class="bm-grid" id="seller-products-grid" aria-live="polite">
+          <div class="bm-state">⏳ N ap chaje pwodwi boutik la...</div>
+        </div>
     </div>
 </div>
 
@@ -129,7 +133,16 @@ title: Boutik Vendeur - Boutique Piyay
     async function loadSellerShop() {
       const grid = document.getElementById('seller-products-grid');
       const sellerId = new URLSearchParams(window.location.search).get('id');
-      if (!sellerId) return;
+      const showState = (message, isError = false) => {
+        const state = document.createElement('div');
+        state.className = `bm-state${isError ? ' error' : ''}`;
+        state.textContent = message;
+        grid.replaceChildren(state);
+      };
+      if (!sellerId) {
+        showState('Nou pa jwenn id boutik la.', true);
+        return;
+      }
 
       const supV = window.supabase.createClient(
         "https://letyferfjpxmstohvgcj.supabase.co",
@@ -137,25 +150,44 @@ title: Boutik Vendeur - Boutique Piyay
       );
 
       try {
-        const { data: prof } = await supV.from('profiles').select('*').eq('id', sellerId.trim()).single();
-        if (prof) {
-          const sellerDisplayName = prof.shop_name || 'Boutik';
-          document.getElementById('sellerName').innerText = sellerDisplayName;
-          document.getElementById('sellerLoc').innerText  = "📍 " + (prof.address || 'Ayiti');
-          if (prof.avatar_url) {
-            document.getElementById('sellerInitialWrap').innerHTML = `<img src="${prof.avatar_url}">`;
-          }
+        const { data: prof, error: profileError } = await supV.from('profiles')
+          .select('*')
+          .eq('id', sellerId.trim())
+          .single();
+        if (profileError) throw profileError;
+        if (!prof || prof.is_active_seller !== true) {
+          showState('Boutik sa a pa disponib pou kounye a.');
+          return;
         }
 
-        const { data: products } = await supV.from('user_products').select('*').eq('seller_id', sellerId.trim()).order('created_at', { ascending: false });
-        if (products && prof) {
-          document.getElementById('prodCount').innerText = products.length;
-          const sellerPhone = (prof.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
-          const sellerName = prof.shop_name || 'Boutique Piyay';
-          grid.innerHTML = products.map(p => {
-            const safeT = (p.title || '').replace(/'/g, "\\'");
-            const safeImg = (p.image_url || '').replace(/'/g, "\\'");
-            return `
+        const sellerDisplayName = prof.shop_name || 'Boutik';
+        document.getElementById('sellerName').innerText = sellerDisplayName;
+        document.getElementById('sellerLoc').innerText  = "📍 " + (prof.address || 'Ayiti');
+        if (prof.avatar_url) {
+          const avatar = document.createElement('img');
+          avatar.src = prof.avatar_url;
+          avatar.alt = sellerDisplayName;
+          document.getElementById('sellerInitialWrap').replaceChildren(avatar);
+        }
+
+        const { data: products, error: productsError } = await supV.from('user_products')
+          .select('*')
+          .eq('seller_id', sellerId.trim())
+          .eq('is_approved', true)
+          .order('created_at', { ascending: false });
+        if (productsError) throw productsError;
+        document.getElementById('prodCount').innerText = products.length;
+        if (!products.length) {
+          showState('Boutik sa a poko gen pwodwi pibliye ki disponib.');
+          return;
+        }
+
+        const sellerPhone = (prof.whatsapp_number || '50948868964').replace(/[^0-9]/g, '');
+        const sellerName = prof.shop_name || 'Boutique Piyay';
+        grid.innerHTML = products.map(p => {
+          const safeT = (p.title || '').replace(/'/g, "\\'");
+          const safeImg = (p.image_url || '').replace(/'/g, "\\'");
+          return `
               <div class="bm-card">
                 <div class="bm-card-img-wrap"><a href="/pwodwi-machann.html?id=${p.id}"><img class="bm-card-img" src="${p.image_url}"></a></div>
                 <div class="bm-card-body">
@@ -164,9 +196,11 @@ title: Boutik Vendeur - Boutique Piyay
                   <button class="btn-bm-add" onclick="if(window.orderProduct) window.orderProduct('${safeT}','${p.price}','${p.id}','${safeImg}','${sellerId}','${sellerPhone}','${sellerName}')">🛒 Achte</button>
                 </div>
               </div>`;
-          }).join('');
-        }
-      } catch(e) { console.error(e); }
+        }).join('');
+      } catch(e) {
+        console.error('Erè nan chajman boutik vandè a:', e);
+        showState(`Nou pa kapab chaje pwodwi yo: ${e.message}`, true);
+      }
     }
     document.addEventListener('DOMContentLoaded', loadSellerShop);
 </script>
