@@ -159,17 +159,57 @@ async function checkUser() {
 }
 
 async function loadOrders(userId) {
-  const { data: orders } = await client.from('orders').select('*').eq('customer_email', (await client.auth.getUser()).data.user.email);
   const list = document.getElementById('ordersList');
+  const { data: { user }, error: userError } = await client.auth.getUser();
+  if (userError || !user) {
+    list.innerHTML = '<div role="alert" style="padding:30px; text-align:center; color:#b42318;">Nou pa kapab chaje kòmann ou yo. Tanpri konekte ankò.</div>';
+    return;
+  }
+  const { data: orders, error: ordersError } = await client.from('orders')
+    .select('*')
+    .eq('customer_email', user.email);
+  if (ordersError) {
+    console.error('Unable to load customer orders:', ordersError);
+    list.innerHTML = '<div role="alert" style="padding:30px; text-align:center; color:#b42318;">Nou pa kapab chaje kòmann ou yo. Tanpri eseye ankò.</div>';
+    return;
+  }
 
   if (!orders || orders.length === 0) {
     list.innerHTML = '<div style="padding:30px; text-align:center; color:#888;">Okenn kòmand poko.</div>';
     return;
   }
 
+  const contactsByOrder = new Map();
+  let contactsUnavailable = false;
+  if (orders.some((order) => order.payment_status === 'paid' && order.order_status !== 'cancelled')) {
+    try {
+      const { data: { session }, error: sessionError } = await client.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) throw new Error('Login required');
+      const response = await fetch('/.netlify/functions/marketplace-payments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ action: 'get-customer-order-contacts' })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Order contacts unavailable');
+      (result.contacts || []).forEach((contact) => contactsByOrder.set(contact.order_id, contact));
+    } catch (error) {
+      console.error('Unable to load seller contacts for customer orders:', error);
+      contactsUnavailable = true;
+    }
+  }
+
   document.getElementById('statOrders').innerText = orders.length;
-  list.innerHTML = orders.map(o => {
+  const contactNotice = contactsUnavailable
+    ? '<div role="status" style="padding:12px 20px; color:#8a5b00; background:#fff8e6;">Kontak WhatsApp machann yo pa disponib kounye a. Tanpri rechaje paj la pou eseye ankò.</div>'
+    : '';
+  list.innerHTML = contactNotice + orders.map(o => {
     const status = o.order_status || o.status || 'pending';
+    const safeStatus = escapeCustomerHtml(status);
     let actionsHtml = '';
 
     if (status === 'shipped') {
@@ -177,16 +217,27 @@ async function loadOrders(userId) {
     } else if (status === 'delivered') {
       actionsHtml = '<span>Livrezon konfime · balans lan ap tann delè sekirite a</span>';
     } else if (status === 'completed') {
-      actionsHtml = `<a href="/pwodwi-machann.html?id=${o.product_id}" class="btn-action review">⭐ Bay Avis</a>`;
+      actionsHtml = `<a href="/pwodwi-machann.html?id=${encodeURIComponent(o.product_id || '')}" class="btn-action review">⭐ Bay Avis</a>`;
+    }
+
+    const contact = contactsByOrder.get(o.id);
+    if (o.payment_status === 'paid' && status !== 'cancelled') {
+      if (contact?.whatsapp_number) {
+        const message = `Bonjou ${contact.seller_name}, mwen ekri nou pou kòmand ${contact.order_group_id}${contact.product_title ? ` sou ${contact.product_title}` : ''}. Tanpri ede m ak kòmand mwen an.`;
+        const whatsappUrl = `https://wa.me/${contact.whatsapp_number}?text=${encodeURIComponent(message)}`;
+        actionsHtml += `<a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-action" style="background:#168a50;">💬 Pale ak ${escapeCustomerHtml(contact.seller_name)} sou WhatsApp</a>`;
+      } else if (contactsByOrder.has(o.id)) {
+        actionsHtml += '<span style="font-size:.8rem; color:#666;">Machann nan poko mete nimewo WhatsApp li.</span>';
+      }
     }
 
     return `
       <div class="order-item">
         <div class="order-info">
-          <div class="order-title">Commande #${o.id.substring(0,8)}</div>
-          <div style="font-size:0.8rem; color:#666;">Pwodwi: ${o.product_name || 'N/A'} · <b>${o.amount} HTG</b></div>
+          <div class="order-title">Kòmand #${escapeCustomerHtml(String(o.id || '').substring(0,8))}</div>
+          <div style="font-size:0.8rem; color:#666;">Pwodwi: ${escapeCustomerHtml(o.product_title || o.product_name || 'N/A')} · <b>${escapeCustomerHtml(o.amount)} HTG</b></div>
           <div style="margin-top:5px;">
-            <span class="order-status status-${status}">${status}</span>
+            <span class="order-status status-${safeStatus}">${safeStatus}</span>
           </div>
         </div>
         <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
@@ -195,6 +246,12 @@ async function loadOrders(userId) {
       </div>
     `;
   }).join('');
+}
+
+function escapeCustomerHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[character]);
 }
 
 async function approveOrder(orderId, sellerId, amount) {

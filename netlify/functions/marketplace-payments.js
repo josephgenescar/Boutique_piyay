@@ -31,6 +31,39 @@ exports.handler = async (event) => {
     if (action === 'submit-payment') return await submitPayment(body, headers);
     if (!identity.user) return respond(401, { error: 'Login required' }, headers);
 
+    if (action === 'get-customer-order-contacts') {
+      const orders = await fetchAllRows((offset, end) => supabase.from('orders')
+        .select('id,order_group_id,seller_id,product_title,order_status')
+        .eq('buyer_id', identity.user.id)
+        .eq('payment_status', 'paid')
+        .order('created_at', { ascending: false })
+        .range(offset, end));
+
+      const eligibleOrders = orders.filter((order) => order.order_status !== 'cancelled');
+      const sellerIds = [...new Set(eligibleOrders.map((order) => order.seller_id).filter(Boolean))];
+      let sellersById = new Map();
+      if (sellerIds.length) {
+        const { data: sellers, error: sellersError } = await supabase.from('profiles')
+          .select('id,shop_name,full_name,whatsapp_number,whatsapp')
+          .in('id', sellerIds);
+        if (sellersError) throw sellersError;
+        sellersById = new Map((sellers || []).map((seller) => [seller.id, seller]));
+      }
+
+      const contacts = eligibleOrders.map((order) => {
+        const seller = sellersById.get(order.seller_id);
+        return {
+          order_id: order.id,
+          order_group_id: order.order_group_id,
+          product_title: order.product_title,
+          seller_name: seller?.shop_name || seller?.full_name || 'Machann',
+          whatsapp_number: normalizeWhatsAppNumber(seller?.whatsapp_number)
+            || normalizeWhatsAppNumber(seller?.whatsapp)
+        };
+      });
+      return respond(200, { contacts }, headers);
+    }
+
     if (action === 'review-payment' || action === 'review-payout' || action === 'save-settings' || action === 'save-commission' || action === 'refund-order') {
       if (!await isAdmin(identity.user.id)) return respond(403, { error: 'Admin access required' }, headers);
     }
@@ -446,6 +479,13 @@ function respond(statusCode, payload, headers) {
   return { statusCode, headers, body: JSON.stringify(payload) };
 }
 
+function normalizeWhatsAppNumber(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  const normalized = digits.startsWith('00') ? digits.slice(2) : digits;
+  if (normalized.length === 8) return `509${normalized}`;
+  return /^\d{10,15}$/.test(normalized) ? normalized : null;
+}
+
 async function fetchAllRows(buildQuery) {
   const rows = [];
   for (let offset = 0; ; offset += 1000) {
@@ -455,3 +495,5 @@ async function fetchAllRows(buildQuery) {
     if (!data || data.length < 1000) return rows;
   }
 }
+
+exports.normalizeWhatsAppNumber = normalizeWhatsAppNumber;
