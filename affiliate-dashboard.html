@@ -5,151 +5,209 @@ description: Votre espace affilié privé — liens, commissions et paiements
 ---
 
 <style>
-  .affiliate-dashboard {
-    --affiliate-primary: #e94343;
-    --affiliate-ink: #172b4d;
-    --affiliate-muted: #64748b;
-    --affiliate-border: #e7edf4;
+  .ad {
+    --red: #ed4545;
+    --red-deep: #c92f2f;
+    --ink: #0f1b2d;
+    --ink-2: #3b4a5e;
+    --muted: #5b6b7e;
+    --line: #e6ebf2;
+    --paper: #f6f8fb;
+    --soft: #fff1f0;
+    --mint: #12a572;
+    --amber: #b7791f;
     max-width: 1180px;
-    margin: 36px auto 72px;
+    margin: 28px auto 80px;
     padding: 0 20px;
-    color: var(--affiliate-ink);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    line-height: 1.55;
   }
-  .affiliate-header, .affiliate-panel, .affiliate-stat {
-    background: #fff;
-    border: 1px solid var(--affiliate-border);
-    border-radius: 20px;
-    box-shadow: 0 12px 34px rgba(15, 23, 42, .06);
+  .ad *, .ad *::before, .ad *::after { box-sizing: border-box; }
+  .ad svg { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ad button:focus-visible, .ad a:focus-visible, .ad input:focus-visible, .ad select:focus-visible {
+    outline: 3px solid #ed454555; outline-offset: 2px;
   }
-  .affiliate-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 26px 30px;
-    margin-bottom: 22px;
+  .ad [hidden] { display: none !important; }
+
+  /* Header */
+  .ad-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 20px; }
+  .ad-who { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .ad-avatar {
+    display: grid; flex: 0 0 52px; width: 52px; height: 52px; place-items: center;
+    border-radius: 18px; background: var(--ink); color: #fff; font-size: 1.2rem; font-weight: 800;
   }
-  .affiliate-header h1 { margin: 0 0 6px; font-size: clamp(1.5rem, 3vw, 2rem); }
-  .affiliate-header p { margin: 0; color: var(--affiliate-muted); line-height: 1.6; }
-  .affiliate-header-copy { display: flex; align-items: center; gap: 16px; }
-  .affiliate-mark {
-    display: grid;
-    flex: 0 0 52px;
-    width: 52px;
-    height: 52px;
-    place-items: center;
-    border-radius: 16px;
-    background: #fff0ef;
-    font-size: 25px;
+  .ad-top h1 { margin: 0; font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
+  .ad-top p { margin: 3px 0 0; color: var(--muted); font-size: .92rem; overflow-wrap: anywhere; }
+  .ad-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px;
+    padding: 11px 20px; border: 1px solid transparent; border-radius: 14px;
+    background: var(--red); color: #fff; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer;
+    transition: background .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .affiliate-logout, .affiliate-button {
-    border: 0;
-    border-radius: 12px;
-    padding: 12px 18px;
-    background: var(--affiliate-primary);
-    color: #fff;
-    font: inherit;
-    font-weight: 800;
-    cursor: pointer;
+  .ad-btn:hover { background: var(--red-deep); }
+  .ad-btn:disabled { opacity: .55; cursor: not-allowed; }
+  .ad-btn-ghost { border-color: var(--line); background: #fff; color: var(--ink-2); }
+  .ad-btn-ghost:hover { background: var(--paper); }
+  .ad-btn-light { background: #fff; color: var(--ink); }
+  .ad-btn-light:hover { background: #fff1f0; }
+  .ad-btn-wa { background: #17a34a; }
+  .ad-btn-wa:hover { background: #12853c; }
+  .ad-btn-small { min-height: 36px; padding: 6px 12px; border-radius: 10px; font-size: .84rem; }
+
+  /* Tabs */
+  .ad-tabs {
+    display: inline-flex; gap: 4px; max-width: 100%; overflow-x: auto; margin: 0 0 20px; padding: 5px;
+    border: 1px solid var(--line); border-radius: 16px; background: var(--paper); scrollbar-width: none;
   }
-  .affiliate-logout { background: #fff; color: #334155; border: 1px solid var(--affiliate-border); white-space: nowrap; }
-  .affiliate-logout:hover { background: #f8fafc; }
-  .affiliate-button:hover { background: #d93636; }
-  .affiliate-button:disabled, .affiliate-logout:disabled { opacity: .65; cursor: wait; }
-  .affiliate-tabs {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 8px;
-    margin-bottom: 18px;
-    border: 1px solid var(--affiliate-border);
-    border-radius: 16px;
-    background: #fff;
+  .ad-tabs::-webkit-scrollbar { display: none; }
+  .ad-tab {
+    min-height: 42px; padding: 9px 18px; border: 0; border-radius: 12px; background: transparent;
+    color: var(--muted); font: inherit; font-weight: 700; white-space: nowrap; cursor: pointer;
+    transition: background .15s ease, color .15s ease;
   }
-  .affiliate-tab {
-    min-height: 44px;
-    padding: 10px 18px;
-    border: 0;
-    border-radius: 11px;
-    background: transparent;
-    color: #475569;
-    font: inherit;
-    font-weight: 800;
-    white-space: nowrap;
-    cursor: pointer;
+  .ad-tab:hover { color: var(--ink); }
+  .ad-tab[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 2px 8px rgba(15, 27, 45, .1); }
+
+  .ad-panel h2 { margin: 0 0 6px; font-size: 1.3rem; font-weight: 800; letter-spacing: -.025em; }
+  .ad-intro { margin: 0 0 22px; color: var(--muted); line-height: 1.7; }
+
+  /* Balance hero */
+  .ad-balance { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; margin: 0 0 16px; }
+  .ad-bal-main {
+    position: relative; overflow: hidden; padding: clamp(22px, 4vw, 34px); border-radius: 26px; color: #fff;
+    background: radial-gradient(520px 300px at 100% 0%, #ed4545cc 0%, #ed454500 65%), var(--ink);
   }
-  .affiliate-tab[aria-selected="true"] { background: #fff0ef; color: #c73535; }
-  .affiliate-panel { padding: 26px; }
-  .affiliate-panel h2 { margin: 0 0 8px; font-size: 1.25rem; }
-  .affiliate-panel-intro { margin: 0 0 22px; color: var(--affiliate-muted); line-height: 1.65; }
-  .affiliate-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
-  .affiliate-stat { padding: 18px; box-shadow: none; }
-  .affiliate-stat-label { display: block; margin-bottom: 10px; color: var(--affiliate-muted); font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
-  .affiliate-stat strong { font-size: clamp(1.15rem, 2.5vw, 1.65rem); overflow-wrap: anywhere; }
-  .affiliate-overview-grid, .affiliate-history-grid, .affiliate-payout-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
-  .affiliate-card { padding: 22px; border: 1px solid var(--affiliate-border); border-radius: 16px; background: #fff; }
-  .affiliate-card h3 { margin: 0 0 12px; font-size: 1.05rem; }
-  .affiliate-referral-link { margin: 0 0 16px; padding: 14px; border-radius: 12px; background: #f8fafc; color: #2856a6; overflow-wrap: anywhere; line-height: 1.6; }
-  .affiliate-form-grid { display: grid; gap: 14px; }
-  .affiliate-field { display: grid; gap: 7px; color: #334155; font-size: .9rem; font-weight: 700; }
-  .affiliate-field input, .affiliate-field select {
-    width: 100%;
-    min-height: 46px;
-    padding: 10px 12px;
-    border: 1px solid #d7e0ea;
-    border-radius: 10px;
-    background: #fff;
-    color: #172b4d;
-    font: inherit;
+  .ad-bal-main > * { position: relative; }
+  .ad-bal-label { margin: 0; color: #b9c4d3; font-size: .9rem; font-weight: 600; }
+  .ad-bal-amount { margin: 6px 0 18px; font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 800; letter-spacing: -.045em; line-height: 1.05; overflow-wrap: anywhere; }
+  .ad-progress { height: 8px; overflow: hidden; border-radius: 999px; background: #ffffff26; }
+  .ad-progress span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #ff8a7f, #ed4545); transition: width .6s ease; }
+  .ad-bal-hint { margin: 10px 0 20px; color: #c9d3e0; font-size: .88rem; line-height: 1.6; }
+  .ad-bal-side { display: grid; gap: 16px; }
+  .ad-mini { padding: 20px 22px; border: 1px solid var(--line); border-radius: 22px; background: #fff; }
+  .ad-mini span { display: block; color: var(--muted); font-size: .86rem; font-weight: 600; }
+  .ad-mini strong { display: block; margin: 4px 0 4px; font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; overflow-wrap: anywhere; }
+  .ad-mini small { color: var(--muted); font-size: .8rem; line-height: 1.5; }
+
+  /* Stats */
+  .ad-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+  .ad-stat { padding: 18px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+  .ad-stat-ico { display: grid; width: 38px; height: 38px; margin-bottom: 14px; place-items: center; border-radius: 12px; background: var(--soft); color: var(--red-deep); font-size: 18px; }
+  .ad-stat span { display: block; color: var(--muted); font-size: .84rem; font-weight: 600; }
+  .ad-stat strong { display: block; margin-top: 2px; font-size: clamp(1.15rem, 2.4vw, 1.55rem); font-weight: 800; letter-spacing: -.03em; overflow-wrap: anywhere; }
+
+  /* Cards */
+  .ad-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+  .ad-grid-even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ad-card { padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: #fff; }
+  .ad-card h3 { margin: 0 0 6px; font-size: 1.08rem; font-weight: 800; letter-spacing: -.015em; }
+  .ad-card > .ad-sub { margin: 0 0 16px; color: var(--muted); font-size: .9rem; line-height: 1.65; }
+  .ad-link-box {
+    display: flex; align-items: center; gap: 10px; margin: 0 0 14px; padding: 6px 6px 6px 16px;
+    border: 1px solid var(--line); border-radius: 16px; background: var(--paper);
   }
-  .affiliate-help, .affiliate-muted { color: var(--affiliate-muted); font-size: .9rem; line-height: 1.6; }
-  .affiliate-message { min-height: 22px; margin: 0; color: #334155; line-height: 1.5; }
-  .affiliate-message[data-state="error"] { color: #b42318; }
-  .affiliate-message[data-state="success"] { color: #15803d; }
-  .affiliate-detail-list { display: grid; gap: 12px; margin: 0; }
-  .affiliate-detail-list div { display: flex; justify-content: space-between; gap: 12px; }
-  .affiliate-detail-list dt { color: var(--affiliate-muted); }
-  .affiliate-detail-list dd { margin: 0; text-align: right; font-weight: 800; overflow-wrap: anywhere; }
-  .affiliate-records { display: grid; gap: 10px; }
-  .affiliate-record { padding: 15px; border: 1px solid var(--affiliate-border); border-radius: 12px; background: #f8fafc; }
-  .affiliate-record-top { display: flex; justify-content: space-between; gap: 12px; font-weight: 800; }
-  .affiliate-record p { margin: 8px 0 0; color: #475569; line-height: 1.55; overflow-wrap: anywhere; }
-  .affiliate-notice { padding: 20px; border: 1px solid #fed7d7; border-radius: 16px; background: #fff7f6; color: #8c2727; }
-  .affiliate-notice h2 { margin: 0 0 8px; }
-  .affiliate-notice p { margin: 0 0 14px; line-height: 1.6; }
-  .affiliate-notice a { color: #b42318; font-weight: 800; }
-  .affiliate-loading { padding: 24px; color: var(--affiliate-muted); }
-  [hidden] { display: none !important; }
+  .ad-link-box p { flex: 1; min-width: 0; margin: 0; color: #2856a6; font-size: .92rem; font-weight: 600; overflow-wrap: anywhere; line-height: 1.5; }
+  .ad-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .ad-code { display: inline-block; margin-top: 16px; padding: 6px 12px; border-radius: 999px; background: var(--soft); color: var(--red-deep); font-size: .84rem; font-weight: 700; }
+  .ad-tips { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .ad-tips li { display: flex; gap: 12px; color: var(--ink-2); font-size: .92rem; line-height: 1.6; }
+  .ad-tips svg { margin-top: 3px; color: var(--mint); font-size: 18px; }
+
+  /* Forms */
+  .ad-form { display: grid; gap: 16px; }
+  .ad-field { display: grid; gap: 7px; color: var(--ink-2); font-size: .9rem; font-weight: 700; }
+  .ad-field input, .ad-field select {
+    width: 100%; min-height: 50px; padding: 11px 14px; border: 1px solid #d5dee9; border-radius: 14px;
+    background: #fff; color: var(--ink); font: inherit; font-weight: 600;
+  }
+  .ad-field input:focus, .ad-field select:focus { border-color: var(--red); }
+  .ad-amount { display: flex; gap: 8px; }
+  .ad-amount input { flex: 1; min-width: 0; }
+  .ad-help, .ad-muted { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.65; }
+  .ad-message { min-height: 22px; margin: 0; color: var(--ink-2); font-size: .92rem; line-height: 1.55; }
+  .ad-message[data-state="error"] { color: #b42318; }
+  .ad-message[data-state="success"] { color: #15803d; }
+  .ad-details { display: grid; gap: 0; margin: 0; }
+  .ad-details div { display: flex; justify-content: space-between; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .ad-details div:last-child { border-bottom: 0; }
+  .ad-details dt { color: var(--muted); }
+  .ad-details dd { margin: 0; text-align: right; font-weight: 800; overflow-wrap: anywhere; }
+
+  /* Records */
+  .ad-records { display: grid; gap: 10px; }
+  .ad-record { padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); }
+  .ad-record-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-weight: 800; }
+  .ad-record p { margin: 6px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.55; overflow-wrap: anywhere; }
+  .ad-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #e7f6ef; color: #0e7a55; font-size: .78rem; font-weight: 800; }
+  .ad-badge[data-tone="wait"] { background: #fdf3dc; color: var(--amber); }
+  .ad-badge[data-tone="bad"] { background: #fde8e6; color: #b42318; }
+  .ad-badge[data-tone="info"] { background: #e8eefb; color: #2856a6; }
+  .ad-empty { padding: 26px 18px; border: 1px dashed #cfd9e5; border-radius: 16px; text-align: center; color: var(--muted); line-height: 1.7; }
+  .ad-empty strong { display: block; margin-bottom: 2px; color: var(--ink); }
+
+  /* States */
+  .ad-notice { padding: 24px; border: 1px solid #f8c9c4; border-radius: 22px; background: #fff7f6; color: #8c2727; }
+  .ad-notice h2 { margin: 0 0 8px; font-size: 1.2rem; }
+  .ad-notice p { margin: 0 0 14px; line-height: 1.65; }
+  .ad-notice a { color: #b42318; font-weight: 800; }
+  .ad-skeleton { display: grid; gap: 14px; }
+  .ad-skeleton i { display: block; border-radius: 22px; background: linear-gradient(90deg, #eef2f7 25%, #f7f9fc 50%, #eef2f7 75%); background-size: 200% 100%; animation: ad-shimmer 1.4s infinite linear; }
+  .ad-skeleton i:nth-child(1) { height: 46px; width: 360px; max-width: 100%; border-radius: 16px; }
+  .ad-skeleton i:nth-child(2) { height: 190px; }
+  .ad-skeleton i:nth-child(3) { height: 110px; }
+  @keyframes ad-shimmer { to { background-position: -200% 0; } }
+
+  .ad-toast {
+    position: fixed; left: 50%; bottom: 28px; z-index: 50; max-width: calc(100vw - 32px);
+    padding: 13px 20px; border-radius: 14px; background: var(--ink); color: #fff; font-weight: 700; font-size: .92rem;
+    box-shadow: 0 18px 40px -12px rgba(15, 27, 45, .5);
+    transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+  }
+  .ad-toast[data-show="true"] { opacity: 1; transform: translate(-50%, 0); }
+  .ad-toast[data-state="error"] { background: #b42318; }
+  .ad-toast[data-state="success"] { background: #0e7a55; }
+
   @media (max-width: 900px) {
-    .affiliate-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ad-balance, .ad-grid, .ad-grid-even { grid-template-columns: 1fr; }
+    .ad-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 620px) {
-    .affiliate-dashboard { margin-top: 18px; padding: 0 12px; }
-    .affiliate-header { align-items: flex-start; padding: 20px; }
-    .affiliate-header-copy { align-items: flex-start; gap: 12px; }
-    .affiliate-mark { flex-basis: 42px; width: 42px; height: 42px; }
-    .affiliate-logout { padding: 10px 12px; font-size: .85rem; }
-    .affiliate-panel { padding: 18px; }
-    .affiliate-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .affiliate-stat { padding: 14px; }
-    .affiliate-overview-grid, .affiliate-history-grid, .affiliate-payout-grid { grid-template-columns: 1fr; }
+    .ad { margin-top: 16px; padding: 0 12px; }
+    .ad-avatar { flex-basis: 44px; width: 44px; height: 44px; border-radius: 14px; }
+    .ad-card { padding: 20px; border-radius: 20px; }
+    .ad-stat { padding: 14px; }
+    .ad-btn-logout span { display: none; }
+    .ad-tabs { display: flex; }
+    .ad-tab { flex: 1; padding: 9px 12px; }
+    .ad-link-box { flex-direction: column; align-items: stretch; padding: 14px; }
+    .ad-link-box .ad-btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ad *, .ad *::before, .ad *::after { animation: none !important; transition-duration: .01ms !important; }
   }
 </style>
 
-<main class="affiliate-dashboard">
-  <header class="affiliate-header">
-    <div class="affiliate-header-copy">
-      <span class="affiliate-mark" aria-hidden="true">📊</span>
+<main class="ad">
+  <header class="ad-top">
+    <div class="ad-who">
+      <span class="ad-avatar" id="adAvatar" aria-hidden="true">P</span>
       <div>
         <h1>Tablo afilye mwen</h1>
-        <p>Jere lyen ou, swiv komisyon ou epi mande retrè an sekirite.</p>
+        <p id="adWho">Jere lyen ou, swiv komisyon ou epi mande retrè an sekirite.</p>
       </div>
     </div>
-    <button type="button" class="affiliate-logout" id="affiliateLogout">Dekonekte</button>
+    <button type="button" class="ad-btn ad-btn-ghost ad-btn-logout" id="affiliateLogout" aria-label="Dekonekte">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Dekonekte</span>
+    </button>
   </header>
-  <div id="affiliate-content" class="affiliate-loading" role="status" aria-live="polite">N ap chaje enfòmasyon kont afilye ou…</div>
+
+  <div id="affiliate-content" role="status" aria-live="polite" aria-label="N ap chaje enfòmasyon kont afilye ou">
+    <div class="ad-skeleton" aria-hidden="true"><i></i><i></i><i></i></div>
+  </div>
 </main>
+
+<div class="ad-toast" id="adToast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -157,6 +215,18 @@ description: Votre espace affilié privé — liens, commissions et paiements
   const AFFILIATE_SUP_KEY = "******";
   const sup = window.supabase.createClient(AFFILIATE_SUP_URL, AFFILIATE_SUP_KEY);
   let referralLinkText = '';
+  let activeAffiliateTab = 0;
+  let toastTimer = null;
+
+  const ICONS = {
+    sales: '<svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12zM6 6 5 3H2M9 20h.01M18 20h.01"/></svg>',
+    visitors: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+    commission: '<svg viewBox="0 0 24 24"><path d="M3 3v18h18M19 9l-5 5-4-4-3 3"/></svg>',
+    paid: '<svg viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4M4 6v12a2 2 0 0 0 2 2h14v-4M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>',
+    check: '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+    copy: '<svg viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    chat: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/></svg>'
+  };
 
   async function loadAffiliateDashboard() {
     const container = document.getElementById('affiliate-content');
@@ -202,7 +272,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
       showAffiliateNotice(
         'Nou pa kapab chaje tablo afilye a',
         error.message || 'Gen yon pwoblèm pandan n ap chaje enfòmasyon ou yo. Tanpri eseye ankò.',
-        '<button type="button" class="affiliate-button" onclick="loadAffiliateDashboard()">Eseye ankò</button>'
+        '<button type="button" class="ad-btn" onclick="loadAffiliateDashboard()">Eseye ankò</button>'
       );
     }
   }
@@ -221,98 +291,146 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const minimumPayout = Number(finance.minimum_payout || 100);
     const uniqueVisitors = finance.clicks === null || finance.clicks === undefined
       ? '—' : Number(finance.clicks).toLocaleString('fr-FR');
+    const canWithdraw = availableBalance >= minimumPayout;
+    const progress = minimumPayout > 0 ? Math.min(100, Math.round((availableBalance / minimumPayout) * 100)) : 100;
+    const remaining = Math.max(0, minimumPayout - availableBalance);
+
+    const displayName = session.user.user_metadata?.full_name || session.user.email || '';
+    const whoEl = document.getElementById('adWho');
+    const avatarEl = document.getElementById('adAvatar');
+    if (whoEl && displayName) whoEl.textContent = `Bonjou, ${displayName}`;
+    if (avatarEl && displayName) avatarEl.textContent = displayName.trim().charAt(0).toUpperCase();
 
     container.className = '';
     container.removeAttribute('role');
+    container.removeAttribute('aria-label');
     container.innerHTML = `
-      <div class="affiliate-tabs" role="tablist" aria-label="Onglet tablo afilye">
-        <button class="affiliate-tab" id="tab-summary" type="button" role="tab" aria-selected="true" aria-controls="panel-summary">Apèsi</button>
-        <button class="affiliate-tab" id="tab-payout" type="button" role="tab" aria-selected="false" aria-controls="panel-payout" tabindex="-1">Retrè ak peman</button>
-        <button class="affiliate-tab" id="tab-history" type="button" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1">Istwa aktivite</button>
+      <div class="ad-tabs" role="tablist" aria-label="Onglet tablo afilye">
+        <button class="ad-tab affiliate-tab" id="tab-summary" type="button" role="tab" aria-selected="true" aria-controls="panel-summary">Apèsi</button>
+        <button class="ad-tab affiliate-tab" id="tab-payout" type="button" role="tab" aria-selected="false" aria-controls="panel-payout" tabindex="-1">Retrè ak peman</button>
+        <button class="ad-tab affiliate-tab" id="tab-history" type="button" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1">Istwa aktivite</button>
       </div>
 
-      <section class="affiliate-panel" id="panel-summary" role="tabpanel" aria-labelledby="tab-summary">
-        <h2>Rezime kont ou</h2>
-        <p class="affiliate-panel-intro">Men jan lyen ou ak komisyon ou yo ap mache.</p>
-        <div class="affiliate-stats">
-          <div class="affiliate-stat"><span class="affiliate-stat-label">Vant</span><strong>${Number(finance.sales || 0).toLocaleString('fr-FR')}</strong></div>
-          <div class="affiliate-stat"><span class="affiliate-stat-label">Vizitè inik</span><strong>${uniqueVisitors}</strong></div>
-          <div class="affiliate-stat"><span class="affiliate-stat-label">Komisyon total</span><strong>${formatCurrency(totalCommission)}</strong></div>
-          <div class="affiliate-stat"><span class="affiliate-stat-label">Disponib pou retrè</span><strong>${formatCurrency(availableBalance)}</strong></div>
-          <div class="affiliate-stat"><span class="affiliate-stat-label">Ou deja resevwa</span><strong>${formatCurrency(totalPaidOut)}</strong></div>
-        </div>
-        <div class="affiliate-overview-grid">
-          <article class="affiliate-card">
-            <h3>Lyen afilye pèsonèl ou</h3>
-            <p class="affiliate-referral-link" id="affiliateReferralLink"></p>
-            <button class="affiliate-button" type="button" id="copyReferralButton">Kopye lyen an</button>
+      <section class="ad-panel" id="panel-summary" role="tabpanel" aria-labelledby="tab-summary">
+        <div class="ad-balance">
+          <article class="ad-bal-main">
+            <p class="ad-bal-label">Disponib pou retrè</p>
+            <p class="ad-bal-amount">${formatCurrency(availableBalance)}</p>
+            <div class="ad-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-label="Pwogrè pou rive minimòm retrè a"><span style="width:${progress}%"></span></div>
+            <p class="ad-bal-hint">${canWithdraw
+              ? `Ou rive minimòm lan (${formatCurrency(minimumPayout)}). Ou ka mande retrè kounye a.`
+              : `Li rete ${formatCurrency(remaining)} pou w rive minimòm retrè a (${formatCurrency(minimumPayout)}).`}</p>
+            <button type="button" class="ad-btn ad-btn-light" id="goToPayout">Mande yon retrè</button>
           </article>
-          <article class="affiliate-card">
-            <h3>Komisyon k ap tann</h3>
-            <p><strong>${formatCurrency(pendingCommission)}</strong></p>
-            <p class="affiliate-muted">Komisyon sa yo poko vin disponib pou retrè.</p>
+          <div class="ad-bal-side">
+            <article class="ad-mini"><span>Komisyon k ap tann</span><strong>${formatCurrency(pendingCommission)}</strong><small>Poko disponib pou retrè.</small></article>
+            <article class="ad-mini"><span>Retrè an pwosesis</span><strong>${formatCurrency(pendingWithdrawal)}</strong><small>Demann ki deja voye yo.</small></article>
+          </div>
+        </div>
+
+        <div class="ad-stats">
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.sales}</span><span>Vant</span><strong>${Number(finance.sales || 0).toLocaleString('fr-FR')}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.visitors}</span><span>Vizitè inik</span><strong>${uniqueVisitors}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.commission}</span><span>Komisyon total</span><strong>${formatCurrency(totalCommission)}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.paid}</span><span>Ou deja resevwa</span><strong>${formatCurrency(totalPaidOut)}</strong></div>
+        </div>
+
+        <div class="ad-grid">
+          <article class="ad-card">
+            <h3>Lyen afilye pèsonèl ou</h3>
+            <p class="ad-sub">Pataje lyen sa a. Chak moun ki enskri ak li asosye ak kont ou.</p>
+            <div class="ad-link-box">
+              <p id="affiliateReferralLink"></p>
+              <button class="ad-btn" type="button" id="copyReferralButton">${ICONS.copy}Kopye</button>
+            </div>
+            <div class="ad-row">
+              <a class="ad-btn ad-btn-wa ad-btn-small" id="shareWhatsapp" target="_blank" rel="noopener noreferrer">${ICONS.chat}Voye sou WhatsApp</a>
+            </div>
+            <span class="ad-code">Kòd referans: ${escapeHtml(affiliate.referral_code)}</span>
+          </article>
+          <article class="ad-card">
+            <h3>Pou w pataje byen</h3>
+            <ul class="ad-tips">
+              <li>${ICONS.check}<span>Di sa w reyèlman panse sou pwodwi a.</span></li>
+              <li>${ICONS.check}<span>Pa fè spam, epi pa pwomèt rabè oswa revni ki pa konfime.</span></li>
+              <li>${ICONS.check}<span>Voye lyen an bay moun ki gen entèrè nan pwodwi a.</span></li>
+            </ul>
           </article>
         </div>
       </section>
 
-      <section class="affiliate-panel" id="panel-payout" role="tabpanel" aria-labelledby="tab-payout" hidden>
+      <section class="ad-panel" id="panel-payout" role="tabpanel" aria-labelledby="tab-payout" hidden>
         <h2>Retrè ak peman</h2>
-        <p class="affiliate-panel-intro">Sove kote ou vle resevwa peman an epi mande retrè lè balans ou rive nan minimòm lan.</p>
-        <div class="affiliate-payout-grid">
-          <article class="affiliate-card">
+        <p class="ad-intro">Sove kote ou vle resevwa peman an epi mande retrè lè balans ou rive nan minimòm lan.</p>
+        <div class="ad-grid ad-grid-even">
+          <article class="ad-card">
             <h3>Mande yon retrè</h3>
-            <form id="withdrawalForm" class="affiliate-form-grid">
-              <label class="affiliate-field" for="withdrawalAmount">Montan (HTG)
-                <input type="number" id="withdrawalAmount" min="${minimumPayout}" max="${availableBalance}" step="1" value="${availableBalance >= minimumPayout ? minimumPayout : ''}" required>
+            <p class="ad-sub">Minimòm: ${formatCurrency(minimumPayout)} · Disponib: ${formatCurrency(availableBalance)}</p>
+            <form id="withdrawalForm" class="ad-form">
+              <label class="ad-field" for="withdrawalAmount">Montan (HTG)
+                <span class="ad-amount">
+                  <input type="number" id="withdrawalAmount" min="${minimumPayout}" max="${availableBalance}" step="1" value="${canWithdraw ? minimumPayout : ''}" required>
+                  <button type="button" class="ad-btn ad-btn-ghost" id="withdrawAll" ${canWithdraw ? '' : 'disabled'}>Tout</button>
+                </span>
               </label>
-              <p class="affiliate-help">Minimòm: ${formatCurrency(minimumPayout)} · Disponib: ${formatCurrency(availableBalance)}</p>
-              <label class="affiliate-field" for="withdrawalMethod">Metòd peman
+              <label class="ad-field" for="withdrawalMethod">Metòd peman
                 <select id="withdrawalMethod">
                   <option value="moncash">MonCash</option>
                   <option value="natcash">NatCash</option>
                   <option value="bank">Kont labank</option>
                 </select>
               </label>
-              <label class="affiliate-field" for="withdrawalAccountName">Non ki sou kont lan
+              <label class="ad-field" for="withdrawalAccountName">Non ki sou kont lan
                 <input type="text" id="withdrawalAccountName" maxlength="120" required>
               </label>
-              <label class="affiliate-field" for="withdrawalNumber"><span id="withdrawalDestinationLabel">Nimewo MonCash</span>
+              <label class="ad-field" for="withdrawalNumber"><span id="withdrawalDestinationLabel">Nimewo MonCash</span>
                 <input type="text" id="withdrawalNumber" maxlength="120" placeholder="509XXXXXXXX" required>
               </label>
-              <button type="submit" class="affiliate-button" id="withdrawalSubmit" ${availableBalance < minimumPayout ? 'disabled' : ''}>Mande retrè</button>
-              <p id="withdrawalMessage" class="affiliate-message" role="status" aria-live="polite"></p>
+              <button type="submit" class="ad-btn" id="withdrawalSubmit" ${canWithdraw ? '' : 'disabled'}>Mande retrè</button>
+              <p id="withdrawalMessage" class="ad-message" role="status" aria-live="polite">${canWithdraw ? '' : `Ou ka mande retrè lè balans ou rive ${formatCurrency(minimumPayout)}.`}</p>
             </form>
           </article>
-          <article class="affiliate-card">
+          <article class="ad-card">
             <h3>Balans ak detay</h3>
-            <dl class="affiliate-detail-list">
+            <dl class="ad-details">
               <div><dt>Balans disponib</dt><dd>${formatCurrency(availableBalance)}</dd></div>
               <div><dt>Komisyon k ap tann</dt><dd>${formatCurrency(pendingCommission)}</dd></div>
               <div><dt>Retrè an pwosesis</dt><dd>${formatCurrency(pendingWithdrawal)}</dd></div>
+              <div><dt>Total ou deja resevwa</dt><dd>${formatCurrency(totalPaidOut)}</dd></div>
               <div><dt>Kòd referans</dt><dd>${escapeHtml(affiliate.referral_code)}</dd></div>
             </dl>
           </article>
         </div>
       </section>
 
-      <section class="affiliate-panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+      <section class="ad-panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
         <h2>Istwa aktivite</h2>
-        <p class="affiliate-panel-intro">Gade dènye komisyon ak demann retrè ki sou kont pa ou.</p>
-        <div class="affiliate-history-grid">
-          <article class="affiliate-card"><h3>Dènye komisyon</h3><div class="affiliate-records">${renderTransactions(transactions)}</div></article>
-          <article class="affiliate-card"><h3>Demann retrè</h3><div class="affiliate-records">${renderWithdrawals(withdrawals)}</div></article>
+        <p class="ad-intro">Gade dènye komisyon ak demann retrè ki sou kont pa ou.</p>
+        <div class="ad-grid ad-grid-even">
+          <article class="ad-card"><h3>Dènye komisyon</h3><div class="ad-records">${renderTransactions(transactions)}</div></article>
+          <article class="ad-card"><h3>Demann retrè</h3><div class="ad-records">${renderWithdrawals(withdrawals)}</div></article>
         </div>
       </section>
     `;
 
     document.getElementById('affiliateReferralLink').textContent = referralLink;
+    document.getElementById('shareWhatsapp').href =
+      `https://wa.me/?text=${encodeURIComponent(`Gade Boutique Piyay, ou ka jwenn bon pwodwi la: ${referralLink}`)}`;
     document.getElementById('withdrawalMethod').value = finance.payout_settings?.method || 'moncash';
     document.getElementById('withdrawalAccountName').value =
       finance.payout_settings?.account_name || session.user.user_metadata?.full_name || '';
     document.getElementById('withdrawalNumber').value = finance.payout_settings?.account_number || '';
     updateAffiliateDestinationLabel();
     initializeAffiliateTabs();
+    activateAffiliateTab(activeAffiliateTab);
     document.getElementById('copyReferralButton').addEventListener('click', copyReferralLink);
+    document.getElementById('goToPayout').addEventListener('click', () => {
+      activateAffiliateTab(1);
+      document.getElementById('tab-payout').focus();
+    });
+    document.getElementById('withdrawAll').addEventListener('click', () => {
+      document.getElementById('withdrawalAmount').value = Math.floor(availableBalance);
+    });
     document.getElementById('withdrawalMethod').addEventListener('change', updateAffiliateDestinationLabel);
     document.getElementById('withdrawalForm').addEventListener('submit', (event) => {
       event.preventDefault();
@@ -338,6 +456,8 @@ description: Votre espace affilié privé — liens, commissions et paiements
 
   function activateAffiliateTab(index) {
     const tabs = [...document.querySelectorAll('.affiliate-tab')];
+    if (!tabs.length) return;
+    activeAffiliateTab = index;
     tabs.forEach((tab, tabIndex) => {
       const active = tabIndex === index;
       tab.setAttribute('aria-selected', String(active));
@@ -350,7 +470,18 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const container = document.getElementById('affiliate-content');
     container.className = '';
     container.removeAttribute('role');
-    container.innerHTML = `<div class="affiliate-notice"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${actionMarkup || ''}</div>`;
+    container.removeAttribute('aria-label');
+    container.innerHTML = `<div class="ad-notice"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${actionMarkup || ''}</div>`;
+  }
+
+  function showToast(text, state) {
+    const toast = document.getElementById('adToast');
+    if (!toast) return;
+    toast.textContent = text;
+    toast.dataset.state = state || '';
+    toast.dataset.show = 'true';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.dataset.show = 'false'; }, 3200);
   }
 
   function updateAffiliateDestinationLabel() {
@@ -362,22 +493,46 @@ description: Votre espace affilié privé — liens, commissions et paiements
     input.placeholder = method === 'bank' ? 'Antre nimewo kont labank ou' : '509XXXXXXXX';
   }
 
+  function statusBadge(status) {
+    const raw = String(status || '').trim();
+    const key = raw.toLowerCase();
+    const map = {
+      pending: ['An atant', 'wait'],
+      requested: ['An atant', 'wait'],
+      processing: ['An pwosesis', 'info'],
+      approved: ['Apwouve', 'info'],
+      paid: ['Peye', 'ok'],
+      completed: ['Peye', 'ok'],
+      success: ['Peye', 'ok'],
+      rejected: ['Rejte', 'bad'],
+      failed: ['Echwe', 'bad'],
+      cancelled: ['Anile', 'bad'],
+      canceled: ['Anile', 'bad']
+    };
+    const [text, tone] = map[key] || [raw || 'Anrejistre', 'info'];
+    return `<span class="ad-badge" data-tone="${tone}">${escapeHtml(text)}</span>`;
+  }
+
   function renderTransactions(transactions) {
-    if (!transactions.length) return '<p class="affiliate-muted">Pa gen komisyon pou kounye a.</p>';
+    if (!transactions.length) {
+      return '<div class="ad-empty"><strong>Poko gen komisyon</strong>Pataje lyen ou. Lè yon vant valide, komisyon an ap parèt isit la.</div>';
+    }
     return transactions.map((transaction) => `
-      <article class="affiliate-record">
-        <div class="affiliate-record-top"><span>${escapeHtml(transaction.entry_type || 'Komisyon')}</span><span>${formatCurrency(transaction.amount)}</span></div>
+      <article class="ad-record">
+        <div class="ad-record-top"><span>${escapeHtml(transaction.entry_type || 'Komisyon')}</span><span>${formatCurrency(transaction.amount)}</span></div>
         <p>${escapeHtml(transaction.note || 'Komisyon pou vant')} · ${formatDate(transaction.created_at)}</p>
       </article>
     `).join('');
   }
 
   function renderWithdrawals(withdrawals) {
-    if (!withdrawals.length) return '<p class="affiliate-muted">Pa gen demann retrè pou kounye a.</p>';
+    if (!withdrawals.length) {
+      return '<div class="ad-empty"><strong>Pa gen demann retrè</strong>Lè w mande yon retrè, ou ap swiv estati li isit la.</div>';
+    }
     return withdrawals.map((withdrawal) => `
-      <article class="affiliate-record">
-        <div class="affiliate-record-top"><span>${escapeHtml(withdrawal.method || 'Peman')}</span><span>${formatCurrency(withdrawal.amount)}</span></div>
-        <p>${escapeHtml(withdrawal.status || 'Anrejistre')} · ${formatDate(withdrawal.requested_at || withdrawal.created_at)}</p>
+      <article class="ad-record">
+        <div class="ad-record-top"><span>${escapeHtml(withdrawal.method || 'Peman')}</span><span>${formatCurrency(withdrawal.amount)}</span></div>
+        <p>${statusBadge(withdrawal.status)} ${formatDate(withdrawal.requested_at || withdrawal.created_at)}</p>
         ${withdrawal.destination ? `<p>Destinasyon: ${escapeHtml(withdrawal.destination)}</p>` : ''}
         ${withdrawal.note ? `<p>${escapeHtml(withdrawal.note)}</p>` : ''}
       </article>
@@ -420,8 +575,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
       });
       const payoutResult = await payoutResponse.json();
       if (!payoutResponse.ok) throw new Error(payoutResult.error || 'Demann retrè a pa t reyisi.');
-      message.dataset.state = 'success';
-      message.textContent = 'Demann retrè ou anrejistre. Balans disponib la rezève.';
+      showToast('Demann retrè ou anrejistre. Balans disponib la rezève.', 'success');
       await loadAffiliateDashboard();
     } catch (error) {
       console.error('Affiliate payout request failed:', error);
@@ -435,7 +589,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const referralLink = `${window.location.origin}/signup.html?ref=${encodeURIComponent(referralLinkText)}`;
     try {
       await navigator.clipboard.writeText(referralLink);
-      window.alert('Lyen afilye a kopye.');
+      showToast('Lyen afilye a kopye.', 'success');
     } catch (error) {
       console.error('Unable to copy affiliate link:', error);
       window.prompt('Kopye lyen afilye ou a:', referralLink);
