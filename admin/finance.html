@@ -80,8 +80,8 @@
           <div><label for="payment_expiry_hours">Ekspirasyon peman (è)</label><input id="payment_expiry_hours" type="number" min="1" max="168"></div>
           <div><label for="refund_hold_days">Delè ranbousman (jou)</label><input id="refund_hold_days" type="number" min="0" max="90"></div>
           <div><label for="minimum_payout">Minimòm retrè (HTG)</label><input id="minimum_payout" type="number" min="0" step="0.01"></div>
-          <div><label for="default_commission_rate">Komisyon platfòm (%)</label><input id="default_commission_rate" type="number" min="0" max="100" step="0.01"></div>
-          <div><label for="default_affiliate_rate">Pati afilye nan komisyon (%)</label><input id="default_affiliate_rate" type="number" min="0" max="100" step="0.01"></div>
+          <div><label for="default_commission_rate">Komisyon platfòm sou pri pwodwi (%)</label><input id="default_commission_rate" type="number" min="0" max="100" step="0.01"></div>
+          <div><label for="default_affiliate_rate">Komisyon afilye sou pri pwodwi (%)</label><input id="default_affiliate_rate" type="number" min="0" max="100" step="0.01"></div>
           <div style="align-self:end"><button type="submit">Anrejistre paramèt</button></div>
         </form>
       </section>
@@ -90,7 +90,7 @@
         <form id="commissionForm" class="controls">
           <label>Dimansyon<select id="commissionScope"><option value="category">Kategori</option><option value="product">Pwodwi ID</option><option value="supplier">Founisè ID</option></select></label>
           <label>ID oswa non kategori<input id="commissionScopeId" required></label>
-          <label>Komisyon (%)<input id="commissionRate" type="number" min="0" max="100" step="0.01" required></label>
+          <label>Komisyon platfòm sou pri pwodwi (%)<input id="commissionRate" type="number" min="0" max="100" step="0.01" required></label>
           <button type="submit">Sove règ</button>
         </form>
       </section>

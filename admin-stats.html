@@ -478,38 +478,57 @@ title: Sant Kontwòl Total - Boutique Piyay
     if (!list) return;
     list.innerHTML = 'N ap chaje aplikasyon yo…';
 
-    const { data: applications, error } = await supA.from('vendor_applications')
-      .select('id,user_id,email,full_name,shop_name,whatsapp_number,address,product_categories,product_description,status,admin_message,created_at')
-      .in('status', ['pending', 'needs_info'])
-      .order('created_at', { ascending: true });
+    const [{ data: applications, error }, { data: registrationPayments, error: paymentError }] = await Promise.all([
+      supA.from('vendor_applications')
+        .select('id,user_id,email,full_name,shop_name,whatsapp_number,address,product_categories,product_description,status,admin_message,created_at')
+        .in('status', ['pending', 'needs_info', 'rejected'])
+        .order('created_at', { ascending: true }),
+      supA.from('vendor_registration_payments')
+        .select('id,application_id,order_id,expected_amount,status,provider_transaction_id,refund_reference,created_at,paid_at')
+        .order('created_at', { ascending: false }).limit(300)
+    ]);
 
-    if (error) {
-      console.error('Unable to load vendor applications:', error);
-      list.innerHTML = `<p role="alert" style="color:#b91c1c;">Nou pa kapab chaje aplikasyon yo: ${escapeAdminHtml(error.message)}. Verifye tab vendor_applications ak règleman aksè admin yo.</p>`;
+    if (error || paymentError) {
+      const loadError = error || paymentError;
+      console.error('Unable to load vendor applications or registration payments:', loadError);
+      list.innerHTML = `<p role="alert" style="color:#b91c1c;">Nou pa kapab chaje aplikasyon oswa peman machann yo: ${escapeAdminHtml(loadError.message)}. Verifye tab vendor_applications, vendor_registration_payments ak règleman aksè admin yo.</p>`;
       if (tabButton) tabButton.textContent = '📝 Aplikasyon Machann';
       if (stat) stat.textContent = '—';
       return;
     }
 
     const pendingApplications = applications || [];
-    if (stat) stat.textContent = pendingApplications.length;
-    if (tabButton) tabButton.textContent = `📝 Aplikasyon Machann (${pendingApplications.length})`;
+    const actionableCount = pendingApplications.filter((application) => ['pending', 'needs_info'].includes(application.status)).length;
+    if (stat) stat.textContent = actionableCount;
+    if (tabButton) tabButton.textContent = `📝 Aplikasyon Machann (${actionableCount})`;
     if (!pendingApplications.length) {
       list.innerHTML = '<p style="color:#64748b;">Pa gen aplikasyon machann k ap tann apwobasyon.</p>';
       return;
     }
+    const paymentByApplication = new Map();
+    (registrationPayments || []).forEach((payment) => {
+      if (!paymentByApplication.has(payment.application_id)) paymentByApplication.set(payment.application_id, payment);
+    });
 
-    list.innerHTML = pendingApplications.map((application) => `
+    list.innerHTML = pendingApplications.map((application) => {
+      const payment = paymentByApplication.get(application.id);
+      const paymentStatus = payment?.status || 'unpaid';
+      const canApprove = paymentStatus === 'paid' && ['pending', 'needs_info'].includes(application.status);
+      const showRefundAction = paymentStatus === 'refund_due';
+      return `
       <article class="application-card">
         <div class="application-head">
           <div>
             <h3>${escapeAdminHtml(application.shop_name || application.full_name || 'Nouvo machann')}</h3>
             <p>${escapeAdminHtml(application.full_name || 'Non pa disponib')} · ${escapeAdminHtml(application.email || 'Imèl pa disponib')}</p>
-            <p>Estati: <span class="badge pending">${application.status === 'needs_info' ? 'Plis enfòmasyon nesesè' : 'An atant'}</span></p>
+            <p>Estati: <span class="badge pending">${application.status === 'needs_info' ? 'Plis enfòmasyon nesesè' : application.status === 'rejected' ? 'Refize' : 'An atant'}</span></p>
+            <p>Frè enskripsyon (1,000 HTG): <strong>${payment ? escapeAdminHtml(payment.status) : 'Poko peye'}</strong>${payment?.provider_transaction_id ? ` · Tranzaksyon: ${escapeAdminHtml(payment.provider_transaction_id)}` : ''}</p>
+            ${showRefundAction ? '<p style="color:#b91c1c;">Ranbouse 1,000 HTG la nan MonCash anvan ou make ranbousman an fèt. Pa gen komisyon afilye ki kredite.</p>' : ''}
           </div>
           <div class="application-actions">
-            <button type="button" onclick="reviewVendorApplication('${application.id}', 'approved')" class="btn-action btn-approve">✅ Apwouve epi aktive</button>
-            <button type="button" onclick="reviewVendorApplication('${application.id}', 'rejected')" class="btn-action btn-reject">❌ Refize</button>
+            ${showRefundAction ? `<button type="button" onclick="recordVendorRegistrationRefund('${payment.id}')" class="btn-action btn-approve">✅ Make ranbousman an fèt</button>` : ''}
+            ${['pending', 'needs_info'].includes(application.status) ? `<button type="button" onclick="reviewVendorApplication('${application.id}', 'approved')" class="btn-action btn-approve" ${canApprove ? '' : 'disabled title="Verifye peman 1,000 HTG la anvan apwobasyon."'}>✅ Apwouve epi aktive</button>
+            <button type="button" onclick="reviewVendorApplication('${application.id}', 'rejected')" class="btn-action btn-reject">❌ Refize</button>` : ''}
           </div>
         </div>
         <div class="application-details">
@@ -521,7 +540,8 @@ title: Sant Kontwòl Total - Boutique Piyay
           ${application.admin_message ? `<p><strong>Dènye nòt admin:</strong> ${escapeAdminHtml(application.admin_message)}</p>` : ''}
         </div>
       </article>
-    `).join('');
+    `;
+    }).join('');
   }
 
   async function reviewVendorApplication(applicationId, status) {
@@ -543,6 +563,27 @@ title: Sant Kontwòl Total - Boutique Piyay
     } catch (error) {
       console.error('Vendor application review failed:', error);
       showToast(`❌ Nou pa kapab trete aplikasyon an: ${error.message}`, 'error');
+    }
+
+    async function recordVendorRegistrationRefund(paymentId) {
+      const reference = window.prompt('Apre ou fin voye 1,000 HTG la tounen, antre referans tranzaksyon ranbousman an:');
+      if (!reference || reference.trim().length < 4) {
+        showToast('Antre yon referans ranbousman valab apre transfè a fin fèt.', 'error');
+        return;
+      }
+      if (!confirm('Èske ou deja voye ranbousman 1,000 HTG la sou MonCash?')) return;
+      try {
+        const { error } = await supA.rpc('mark_vendor_registration_refunded', {
+          p_payment_id: paymentId,
+          p_refund_reference: reference.trim()
+        });
+        if (error) throw error;
+        showToast('Ranbousman an anrejistre.', 'success');
+        await fetchVendorApplications();
+      } catch (error) {
+        console.error('Vendor registration refund recording failed:', error);
+        showToast(`❌ Nou pa kapab anrejistre ranbousman an: ${error.message}`, 'error');
+      }
     }
   }
 

@@ -26,7 +26,7 @@ exports.handler = async (event) => {
 
     const body = JSON.parse(event.body || '{}');
     const action = String(body.action || '');
-    const identity = await getIdentity(event.headers.authorization);
+    const identity = await getIdentity(getHeaderValue(event.headers, 'authorization'));
 
     if (action === 'submit-payment') return await submitPayment(body, headers);
     if (!identity.user) return respond(401, { error: 'Login required' }, headers);
@@ -199,6 +199,16 @@ exports.handler = async (event) => {
       if (update.refund_hold_days !== undefined && (update.refund_hold_days < 0 || update.refund_hold_days > 90)) return respond(400, { error: 'Refund hold must be between 0 and 90 days' }, headers);
       if (update.minimum_payout !== undefined && update.minimum_payout < 0) return respond(400, { error: 'Minimum payout cannot be negative' }, headers);
       if (['default_commission_rate', 'default_affiliate_rate'].some((key) => update[key] !== undefined && (update[key] < 0 || update[key] > 1))) return respond(400, { error: 'Commission rates must be between 0 and 100 percent' }, headers);
+      if (update.default_commission_rate !== undefined || update.default_affiliate_rate !== undefined) {
+        const { data: currentSettings, error: settingsError } = await supabase.from('payment_settings')
+          .select('default_commission_rate,default_affiliate_rate').eq('id', true).single();
+        if (settingsError) throw settingsError;
+        const platformRate = update.default_commission_rate ?? Number(currentSettings.default_commission_rate);
+        const affiliateRate = update.default_affiliate_rate ?? Number(currentSettings.default_affiliate_rate);
+        if (platformRate + affiliateRate > 1) {
+          return respond(400, { error: 'Platform and affiliate fees cannot exceed the product amount' }, headers);
+        }
+      }
       update.updated_at = new Date().toISOString();
       update.updated_by = identity.user.id;
       const { error } = await supabase.from('payment_settings').update(update).eq('id', true);
@@ -212,6 +222,12 @@ exports.handler = async (event) => {
       const rate = Number(body.commission_rate);
       if (!['category', 'product', 'supplier'].includes(scope) || !scopeId || !Number.isFinite(rate) || rate < 0 || rate > 1) {
         return respond(400, { error: 'Invalid commission rule' }, headers);
+      }
+      const { data: settings, error: settingsError } = await supabase.from('payment_settings')
+        .select('default_affiliate_rate').eq('id', true).single();
+      if (settingsError) throw settingsError;
+      if (rate + Number(settings.default_affiliate_rate) > 1) {
+        return respond(400, { error: 'Platform and affiliate fees cannot exceed the product amount' }, headers);
       }
       const { error } = await supabase.from('commission_settings').upsert({
         scope, scope_id: scopeId, commission_rate: rate, updated_by: identity.user.id, updated_at: new Date().toISOString()
@@ -235,7 +251,7 @@ async function getRequest(event, headers) {
     if (error) throw error;
     return respond(200, { settings: data }, headers);
   }
-  const identity = await getIdentity(event.headers.authorization);
+  const identity = await getIdentity(getHeaderValue(event.headers, 'authorization'));
   if (!identity.user) return respond(401, { error: 'Login required' }, headers);
 
   if (params.view === 'supplier') {
@@ -263,23 +279,53 @@ async function getRequest(event, headers) {
       supabase.from('payment_settings').select('minimum_payout').eq('id', true).single()
     ]);
     if (clickError) console.error('Affiliate visit count unavailable:', clickError.message);
-    const [transactions, referredOrders] = await Promise.all([
+    const [transactions, referredOrders, eligibleProducts, vendorReferralsResult] = await Promise.all([
       fetchAllRows((offset, end) => supabase.from('ledger_reporting')
         .select('id,amount,entry_type,reverses_entry_type,effective_status,created_at,note')
         .eq('account_type', 'affiliate').eq('account_id', affiliate.id)
         .order('created_at', { ascending: false }).order('id', { ascending: false }).range(offset, end)),
       fetchAllRows((offset, end) => supabase.from('order_items').select('id,order_group_id')
-        .eq('affiliate_id', affiliate.id).order('id', { ascending: true }).range(offset, end))
+        .eq('affiliate_id', affiliate.id).order('id', { ascending: true }).range(offset, end)),
+      fetchAllRows((offset, end) => supabase.from('user_products')
+        .select('id,title,price,category,stock,image_url,seller_id')
+        .eq('is_approved', true).gt('stock', 0).order('created_at', { ascending: false }).range(offset, end)),
+      supabase.from('vendor_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('referred_by_affiliate_id', affiliate.id).eq('status', 'approved')
     ]);
+    if (vendorReferralsResult.error) throw vendorReferralsResult.error;
+    const sellerIds = [...new Set(eligibleProducts.map((product) => product.seller_id).filter(Boolean))];
+    let activeSellerIds = new Set();
+    if (sellerIds.length) {
+      const { data: activeSellers, error: activeSellersError } = await supabase.from('profiles')
+        .select('id').in('id', sellerIds).eq('is_active_seller', true);
+      if (activeSellersError) throw activeSellersError;
+      activeSellerIds = new Set((activeSellers || []).map((seller) => seller.id));
+    }
+    const activeProducts = eligibleProducts
+      .filter((product) => activeSellerIds.has(product.seller_id));
     const totalCommission = (transactions || []).reduce((sum, entry) => {
-      if (entry.entry_type === 'affiliate_commission') return sum + Number(entry.amount);
-      if (entry.entry_type === 'refund' && entry.reverses_entry_type === 'affiliate_commission') return sum + Number(entry.amount);
+      if (['affiliate_commission', 'vendor_referral_commission'].includes(entry.entry_type)) return sum + Number(entry.amount);
+      if (entry.entry_type === 'refund' && ['affiliate_commission', 'vendor_referral_commission'].includes(entry.reverses_entry_type)) return sum + Number(entry.amount);
       return sum;
     }, 0);
     const pendingWithdrawal = (payouts || []).filter((payout) => ['requested', 'approved'].includes(payout.status))
       .reduce((sum, payout) => sum + Number(payout.amount), 0);
     const sales = new Set(referredOrders.map((item) => item.order_group_id)).size;
-    return respond(200, { affiliate, balance: balance || { pending_balance: 0, available_balance: 0, total_paid_out: 0 }, payout_settings: payoutSettings, payouts: payouts || [], transactions: transactions.slice(0, 50), total_commission: totalCommission, pending_withdrawal: pendingWithdrawal, sales, clicks: clickError ? null : (clickCount || 0), minimum_payout: Number(paymentSettings?.minimum_payout || 100) }, headers);
+    return respond(200, {
+      affiliate,
+      balance: balance || { pending_balance: 0, available_balance: 0, total_paid_out: 0 },
+      payout_settings: payoutSettings,
+      payouts: payouts || [],
+      transactions: transactions.slice(0, 50),
+      total_commission: totalCommission,
+      pending_withdrawal: pendingWithdrawal,
+      sales,
+      vendor_referrals: vendorReferralsResult.count || 0,
+      products: activeProducts,
+      clicks: clickError ? null : (clickCount || 0),
+      minimum_payout: Number(paymentSettings?.minimum_payout || 100)
+    }, headers);
   }
 
   if (!await isAdmin(identity.user.id)) return respond(403, { error: 'Admin access required' }, headers);
@@ -446,8 +492,8 @@ async function getReport(params, headers) {
     if (entry.entry_type === 'refund' && entry.reverses_entry_type === 'sale') result.total_sales -= amount;
     if (entry.entry_type === 'commission') result.platform_commission += amount;
     if (entry.entry_type === 'refund' && entry.reverses_entry_type === 'commission') result.platform_commission += amount;
-    if (entry.entry_type === 'affiliate_commission') result.affiliate_commission += amount;
-    if (entry.entry_type === 'refund' && entry.reverses_entry_type === 'affiliate_commission') result.affiliate_commission += amount;
+    if (['affiliate_commission', 'vendor_referral_commission'].includes(entry.entry_type)) result.affiliate_commission += amount;
+    if (entry.entry_type === 'refund' && ['affiliate_commission', 'vendor_referral_commission'].includes(entry.reverses_entry_type)) result.affiliate_commission += amount;
     if (entry.account_type === 'supplier' && ['pending', 'available'].includes(entry.effective_status)) result.supplier_due += amount;
     if (entry.entry_type === 'payout' && entry.account_type !== 'platform' && entry.effective_status === 'paid') result.paid_out += Math.abs(amount);
     return result;
@@ -479,6 +525,12 @@ function respond(statusCode, payload, headers) {
   return { statusCode, headers, body: JSON.stringify(payload) };
 }
 
+function getHeaderValue(headers, name) {
+  const header = Object.entries(headers || {})
+    .find(([headerName]) => headerName.toLowerCase() === name.toLowerCase());
+  return header?.[1] || '';
+}
+
 function normalizeWhatsAppNumber(value) {
   const digits = String(value || '').replace(/\D/g, '');
   const normalized = digits.startsWith('00') ? digits.slice(2) : digits;
@@ -497,3 +549,4 @@ async function fetchAllRows(buildQuery) {
 }
 
 exports.normalizeWhatsAppNumber = normalizeWhatsAppNumber;
+exports.getHeaderValue = getHeaderValue;

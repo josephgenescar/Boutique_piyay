@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS public.payment_settings (
   payment_expiry_hours integer NOT NULL DEFAULT 24 CHECK (payment_expiry_hours BETWEEN 1 AND 168),
   refund_hold_days integer NOT NULL DEFAULT 5 CHECK (refund_hold_days BETWEEN 0 AND 90),
   minimum_payout numeric(12,2) NOT NULL DEFAULT 100 CHECK (minimum_payout >= 0),
-  default_commission_rate numeric(7,4) NOT NULL DEFAULT 0.1500 CHECK (default_commission_rate BETWEEN 0 AND 1),
+  default_commission_rate numeric(7,4) NOT NULL DEFAULT 0.0750 CHECK (default_commission_rate BETWEEN 0 AND 1),
   default_affiliate_rate numeric(7,4) NOT NULL DEFAULT 0.1000 CHECK (default_affiliate_rate BETWEEN 0 AND 1),
   updated_at timestamptz NOT NULL DEFAULT now(),
   updated_by uuid REFERENCES public.profiles(id)
@@ -92,16 +92,82 @@ CREATE TABLE IF NOT EXISTS public.order_items (
   affiliate_amount numeric(12,2) NOT NULL DEFAULT 0,
   supplier_net numeric(12,2) NOT NULL,
   item_status text NOT NULL DEFAULT 'pending',
-  created_at timestamptz NOT NULL DEFAULT now(),
-  CHECK (line_total = commission_amount + supplier_net),
-  CHECK (affiliate_amount <= commission_amount)
+  created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE public.order_items DROP CONSTRAINT IF EXISTS order_items_fee_allocation_check;
+ALTER TABLE public.order_items DROP CONSTRAINT IF EXISTS order_items_commission_amount_nonnegative;
+ALTER TABLE public.order_items DROP CONSTRAINT IF EXISTS order_items_affiliate_amount_nonnegative;
+ALTER TABLE public.order_items DROP CONSTRAINT IF EXISTS order_items_supplier_net_nonnegative;
+DO $$
+DECLARE constraint_row record;
+BEGIN
+  FOR constraint_row IN
+    SELECT conname
+    FROM pg_constraint
+    WHERE conrelid = 'public.order_items'::regclass
+      AND contype = 'c'
+      AND (
+        pg_get_constraintdef(oid) LIKE '%line_total = commission_amount + supplier_net%'
+        OR pg_get_constraintdef(oid) LIKE '%affiliate_amount <= commission_amount%'
+      )
+  LOOP
+    EXECUTE format('ALTER TABLE public.order_items DROP CONSTRAINT %I', constraint_row.conname);
+  END LOOP;
+END;
+$$;
+ALTER TABLE public.order_items
+  ADD CONSTRAINT order_items_fee_allocation_check
+    CHECK (line_total = commission_amount + affiliate_amount + supplier_net),
+  ADD CONSTRAINT order_items_commission_amount_nonnegative CHECK (commission_amount >= 0),
+  ADD CONSTRAINT order_items_affiliate_amount_nonnegative CHECK (affiliate_amount >= 0),
+  ADD CONSTRAINT order_items_supplier_net_nonnegative CHECK (supplier_net >= 0);
 CREATE INDEX IF NOT EXISTS idx_order_items_supplier ON public.order_items(supplier_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_group ON public.order_items(order_group_id);
 
+CREATE OR REPLACE FUNCTION public.allocate_marketplace_item_commissions()
+RETURNS trigger LANGUAGE plpgsql SET search_path = public, pg_temp AS $$
+DECLARE v_affiliate_rate numeric(7,4);
+BEGIN
+  SELECT default_affiliate_rate INTO v_affiliate_rate
+  FROM public.payment_settings WHERE id = true;
+  v_affiliate_rate := COALESCE(v_affiliate_rate, 0.10);
+  NEW.affiliate_rate := CASE WHEN NEW.affiliate_id IS NULL THEN 0 ELSE v_affiliate_rate END;
+  NEW.affiliate_amount := CASE
+    WHEN NEW.affiliate_id IS NULL THEN 0
+    ELSE round(NEW.line_total * v_affiliate_rate, 2)
+  END;
+  NEW.supplier_net := NEW.line_total - NEW.commission_amount - NEW.affiliate_amount;
+  IF NEW.supplier_net < 0 THEN
+    RAISE EXCEPTION 'Platform and affiliate fees exceed the product amount';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS allocate_marketplace_item_commissions ON public.order_items;
+CREATE TRIGGER allocate_marketplace_item_commissions
+  BEFORE INSERT ON public.order_items
+  FOR EACH ROW EXECUTE FUNCTION public.allocate_marketplace_item_commissions();
+
+CREATE OR REPLACE FUNCTION public.sync_order_affiliate_commission()
+RETURNS trigger LANGUAGE plpgsql SET search_path = public, pg_temp AS $$
+BEGIN
+  UPDATE public.orders
+  SET affiliate_commission = (
+    SELECT COALESCE(sum(affiliate_amount), 0)
+    FROM public.order_items WHERE order_id = NEW.order_id
+  )
+  WHERE id = NEW.order_id;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS sync_order_affiliate_commission ON public.order_items;
+CREATE TRIGGER sync_order_affiliate_commission
+  AFTER INSERT ON public.order_items
+  FOR EACH ROW EXECUTE FUNCTION public.sync_order_affiliate_commission();
+
 CREATE TABLE IF NOT EXISTS public.ledger_entries (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  entry_type text NOT NULL CHECK (entry_type IN ('sale', 'commission', 'affiliate_commission', 'supplier_credit', 'payout', 'refund', 'adjustment')),
+  entry_type text NOT NULL CHECK (entry_type IN ('sale', 'commission', 'affiliate_commission', 'vendor_referral_commission', 'supplier_credit', 'payout', 'refund', 'adjustment')),
   account_type text NOT NULL CHECK (account_type IN ('platform', 'supplier', 'affiliate')),
   account_id uuid,
   order_id uuid REFERENCES public.orders(id),
@@ -114,9 +180,28 @@ CREATE TABLE IF NOT EXISTS public.ledger_entries (
   note text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE public.ledger_entries DROP CONSTRAINT IF EXISTS ledger_entries_entry_type_check;
+ALTER TABLE public.ledger_entries
+  ADD CONSTRAINT ledger_entries_entry_type_check
+  CHECK (entry_type IN ('sale', 'commission', 'affiliate_commission', 'vendor_referral_commission', 'supplier_credit', 'payout', 'refund', 'adjustment'));
 ALTER TABLE public.ledger_entries ADD COLUMN IF NOT EXISTS reversal_of uuid REFERENCES public.ledger_entries(id);
 CREATE INDEX IF NOT EXISTS idx_ledger_account_status ON public.ledger_entries(account_type, account_id, status, created_at);
 CREATE INDEX IF NOT EXISTS idx_ledger_order ON public.ledger_entries(order_id, order_item_id);
+
+CREATE OR REPLACE FUNCTION public.normalize_marketplace_commission_entry()
+RETURNS trigger LANGUAGE plpgsql SET search_path = public, pg_temp AS $$
+BEGIN
+  IF NEW.entry_type = 'commission' AND NEW.order_item_id IS NOT NULL THEN
+    SELECT commission_amount INTO NEW.amount
+    FROM public.order_items WHERE id = NEW.order_item_id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS normalize_marketplace_commission_entry ON public.ledger_entries;
+CREATE TRIGGER normalize_marketplace_commission_entry
+  BEFORE INSERT ON public.ledger_entries
+  FOR EACH ROW EXECUTE FUNCTION public.normalize_marketplace_commission_entry();
 
 CREATE TABLE IF NOT EXISTS public.ledger_entry_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -223,15 +308,19 @@ GRANT EXECUTE ON FUNCTION public.archive_all_admin_orders() TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.audit_marketplace_settings_change()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
-DECLARE v_actor uuid; v_entity text; v_action text;
+DECLARE v_actor uuid; v_entity text; v_entity_id text; v_action text;
 BEGIN
   v_actor := NEW.updated_by;
   v_entity := TG_TABLE_NAME;
   v_action := CASE WHEN TG_OP='INSERT' THEN 'created' ELSE 'updated' END;
+  IF TG_TABLE_NAME = 'payment_settings' THEN
+    v_entity_id := 'payment_settings';
+  ELSE
+    v_entity_id := NEW.scope || ':' || NEW.scope_id;
+  END IF;
   INSERT INTO audit_log(actor_id,action,entity_type,entity_id,details)
   VALUES (v_actor,'marketplace_'||v_entity||'_'||v_action,v_entity,
-    CASE WHEN TG_TABLE_NAME='payment_settings' THEN 'payment_settings' ELSE NEW.scope||':'||NEW.scope_id END,
-    to_jsonb(NEW));
+    v_entity_id, to_jsonb(NEW));
   RETURN NEW;
 END;
 $$;
@@ -628,7 +717,7 @@ BEGIN
     SELECT user_id INTO v_locked FROM affiliates WHERE id = p_account_id FOR UPDATE;
     SELECT COALESCE(sum(l.amount), 0) INTO v_balance FROM ledger_entries l
       LEFT JOIN LATERAL (SELECT status FROM ledger_entry_events WHERE ledger_entry_id=l.id ORDER BY created_at DESC, id DESC LIMIT 1) e ON true
-      WHERE l.account_type='affiliate' AND l.account_id=p_account_id AND l.entry_type IN ('affiliate_commission','payout')
+      WHERE l.account_type='affiliate' AND l.account_id=p_account_id AND l.entry_type IN ('affiliate_commission','vendor_referral_commission','payout')
         AND (COALESCE(e.status,l.status)='available' OR (l.entry_type='payout' AND COALESCE(e.status,l.status)='paid'));
     IF v_locked IS NULL THEN RAISE EXCEPTION 'Affiliate not found'; END IF;
   ELSE RAISE EXCEPTION 'Invalid account type'; END IF;

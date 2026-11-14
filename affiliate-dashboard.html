@@ -91,7 +91,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
   .ad-mini small { color: var(--muted); font-size: .8rem; line-height: 1.5; }
 
   /* Stats */
-  .ad-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+  .ad-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
   .ad-stat { padding: 18px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
   .ad-stat-ico { display: grid; width: 38px; height: 38px; margin-bottom: 14px; place-items: center; border-radius: 12px; background: var(--soft); color: var(--red-deep); font-size: 18px; }
   .ad-stat span { display: block; color: var(--muted); font-size: .84rem; font-weight: 600; }
@@ -145,6 +145,13 @@ description: Votre espace affilié privé — liens, commissions et paiements
   .ad-badge[data-tone="info"] { background: #e8eefb; color: #2856a6; }
   .ad-empty { padding: 26px 18px; border: 1px dashed #cfd9e5; border-radius: 16px; text-align: center; color: var(--muted); line-height: 1.7; }
   .ad-empty strong { display: block; margin-bottom: 2px; color: var(--ink); }
+  .ad-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .ad-product { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+  .ad-product img { display: block; width: 100%; height: 150px; object-fit: cover; background: var(--paper); }
+  .ad-product-body { display: grid; gap: 8px; padding: 14px; }
+  .ad-product h3 { margin: 0; font-size: .98rem; }
+  .ad-product p { margin: 0; color: var(--muted); font-size: .88rem; }
+  .ad-product-link { overflow-wrap: anywhere; color: #2856a6; font-size: .8rem; }
 
   /* States */
   .ad-notice { padding: 24px; border: 1px solid #f8c9c4; border-radius: 22px; background: #fff7f6; color: #8c2727; }
@@ -170,7 +177,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
 
   @media (max-width: 900px) {
     .ad-balance, .ad-grid, .ad-grid-even { grid-template-columns: 1fr; }
-    .ad-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ad-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   @media (max-width: 620px) {
     .ad { margin-top: 16px; padding: 0 12px; }
@@ -193,12 +200,12 @@ description: Votre espace affilié privé — liens, commissions et paiements
     <div class="ad-who">
       <span class="ad-avatar" id="adAvatar" aria-hidden="true">P</span>
       <div>
-        <h1>Tablo afilye mwen</h1>
+        <h1 id="affiliateDashboardTitle">Tablo afilye mwen</h1>
         <p id="adWho">Jere lyen ou, swiv komisyon ou epi mande retrè an sekirite.</p>
       </div>
     </div>
     <button type="button" class="ad-btn ad-btn-ghost ad-btn-logout" id="affiliateLogout" aria-label="Dekonekte">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Dekonekte</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span id="affiliateLogoutText">Dekonekte</span>
     </button>
   </header>
 
@@ -217,6 +224,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
   let referralLinkText = '';
   let activeAffiliateTab = 0;
   let toastTimer = null;
+  const phrase = (ht, fr) => window.currentLang === 'fr' ? fr : ht;
 
   const ICONS = {
     sales: '<svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12zM6 6 5 3H2M9 20h.01M18 20h.01"/></svg>',
@@ -231,8 +239,11 @@ description: Votre espace affilié privé — liens, commissions et paiements
   async function loadAffiliateDashboard() {
     const container = document.getElementById('affiliate-content');
     try {
+      document.getElementById('affiliateLogoutText').textContent = phrase('Dekonekte', 'Se déconnecter');
+      document.getElementById('affiliateLogout').setAttribute('aria-label', phrase('Dekonekte', 'Se déconnecter'));
       const { data: { session }, error: sessionError } = await sup.auth.getSession();
       if (sessionError) throw sessionError;
+      document.getElementById('affiliateDashboardTitle').textContent = phrase('Tablo afilye mwen', 'Tableau de bord affilié');
       if (!session) {
         window.location.replace('/login.html?redirect=%2Faffiliate-dashboard.html');
         return;
@@ -251,9 +262,9 @@ description: Votre espace affilié privé — liens, commissions et paiements
           return;
         }
         showAffiliateNotice(
-          'Aksè sa a rezève pou afilye',
-          'Ou bezwen yon kont afilye pou ouvri tablo sa a. Ou ka li kijan pwogram nan mache avan ou enskri.',
-          '<a href="/affiliate.html">Dekouvri pwogram afilye a</a> · <a href="/signup.html?role=affiliate&redirect=%2Faffiliate-dashboard.html">Kreye kont afilye</a>'
+          phrase('Aksè sa a rezève pou afilye', 'Cet espace est réservé aux affiliés'),
+          phrase('Ou bezwen yon kont afilye pou ouvri tablo sa a. Ou ka li kijan pwogram nan mache avan ou enskri.', 'Vous devez avoir un compte affilié pour accéder à ce tableau. Découvrez le programme avant de vous inscrire.'),
+          `<a href="/affiliate.html">${phrase('Dekouvri pwogram afilye a', 'Découvrir le programme')}</a> · <a href="/signup.html?role=affiliate&redirect=%2Faffiliate-dashboard.html">${phrase('Kreye kont afilye', 'Créer un compte affilié')}</a>`
         );
         return;
       }
@@ -262,17 +273,17 @@ description: Votre espace affilié privé — liens, commissions et paiements
         headers: { Authorization: `Bearer ${session.access_token}` }
       });
       const finance = await response.json();
-      if (!response.ok) throw new Error(finance.error || 'Enfòmasyon afilye a pa disponib.');
+      if (!response.ok) throw new Error(finance.error || phrase('Enfòmasyon afilye a pa disponib.', 'Les informations de l’affilié sont indisponibles.'));
       if (!finance.affiliate?.id || !finance.affiliate?.referral_code) {
-        throw new Error('Nou pa jwenn kont afilye ki asosye ak pwofil ou a.');
+        throw new Error(phrase('Nou pa jwenn kont afilye ki asosye ak pwofil ou a.', 'Aucun compte affilié n’est associé à votre profil.'));
       }
       renderAffiliateDashboard(container, finance, session);
     } catch (error) {
       console.error('Affiliate dashboard load failed:', error);
       showAffiliateNotice(
-        'Nou pa kapab chaje tablo afilye a',
-        error.message || 'Gen yon pwoblèm pandan n ap chaje enfòmasyon ou yo. Tanpri eseye ankò.',
-        '<button type="button" class="ad-btn" onclick="loadAffiliateDashboard()">Eseye ankò</button>'
+        phrase('Nou pa kapab chaje tablo afilye a', 'Impossible de charger le tableau affilié'),
+        error.message || phrase('Gen yon pwoblèm pandan n ap chaje enfòmasyon ou yo. Tanpri eseye ankò.', 'Une erreur est survenue pendant le chargement. Veuillez réessayer.'),
+        `<button type="button" class="ad-btn" onclick="loadAffiliateDashboard()">${phrase('Eseye ankò', 'Réessayer')}</button>`
       );
     }
   }
@@ -282,7 +293,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const transactions = Array.isArray(finance.transactions) ? finance.transactions : [];
     const withdrawals = Array.isArray(finance.payouts) ? finance.payouts : [];
     referralLinkText = affiliate.referral_code;
-    const referralLink = `${window.location.origin}/signup.html?ref=${encodeURIComponent(referralLinkText)}`;
+    const referralLink = `${window.location.origin}/signup.html?role=seller&ref=${encodeURIComponent(referralLinkText)}`;
     const availableBalance = Number(finance.balance?.available_balance || 0);
     const pendingCommission = Number(finance.balance?.pending_balance || 0);
     const totalCommission = Number(finance.total_commission || 0);
@@ -298,124 +309,141 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const displayName = session.user.user_metadata?.full_name || session.user.email || '';
     const whoEl = document.getElementById('adWho');
     const avatarEl = document.getElementById('adAvatar');
-    if (whoEl && displayName) whoEl.textContent = `Bonjou, ${displayName}`;
+    if (whoEl) whoEl.textContent = displayName
+      ? `${phrase('Bonjou', 'Bonjour')}, ${displayName}`
+      : phrase('Jere lyen ou, swiv komisyon ou epi mande retrè an sekirite.', 'Gérez vos liens, suivez vos commissions et demandez un retrait sécurisé.');
     if (avatarEl && displayName) avatarEl.textContent = displayName.trim().charAt(0).toUpperCase();
 
     container.className = '';
     container.removeAttribute('role');
     container.removeAttribute('aria-label');
     container.innerHTML = `
-      <div class="ad-tabs" role="tablist" aria-label="Onglet tablo afilye">
-        <button class="ad-tab affiliate-tab" id="tab-summary" type="button" role="tab" aria-selected="true" aria-controls="panel-summary">Apèsi</button>
-        <button class="ad-tab affiliate-tab" id="tab-payout" type="button" role="tab" aria-selected="false" aria-controls="panel-payout" tabindex="-1">Retrè ak peman</button>
-        <button class="ad-tab affiliate-tab" id="tab-history" type="button" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1">Istwa aktivite</button>
+      <div class="ad-tabs" role="tablist" aria-label="${phrase('Onglet tablo afilye', 'Onglets du tableau affilié')}">
+        <button class="ad-tab affiliate-tab" id="tab-summary" type="button" role="tab" aria-selected="true" aria-controls="panel-summary">${phrase('Apèsi', 'Vue d’ensemble')}</button>
+        <button class="ad-tab affiliate-tab" id="tab-products" type="button" role="tab" aria-selected="false" aria-controls="panel-products" tabindex="-1">${phrase('Lyen pwodwi', 'Liens produits')}</button>
+        <button class="ad-tab affiliate-tab" id="tab-payout" type="button" role="tab" aria-selected="false" aria-controls="panel-payout" tabindex="-1">${phrase('Retrè ak peman', 'Retraits et paiements')}</button>
+        <button class="ad-tab affiliate-tab" id="tab-history" type="button" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1">${phrase('Istwa aktivite', 'Historique')}</button>
       </div>
 
       <section class="ad-panel" id="panel-summary" role="tabpanel" aria-labelledby="tab-summary">
         <div class="ad-balance">
           <article class="ad-bal-main">
-            <p class="ad-bal-label">Disponib pou retrè</p>
+            <p class="ad-bal-label">${phrase('Disponib pou retrè', 'Disponible au retrait')}</p>
             <p class="ad-bal-amount">${formatCurrency(availableBalance)}</p>
-            <div class="ad-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-label="Pwogrè pou rive minimòm retrè a"><span style="width:${progress}%"></span></div>
+            <div class="ad-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-label="${phrase('Pwogrè pou rive minimòm retrè a', 'Progression vers le retrait minimum')}"><span style="width:${progress}%"></span></div>
             <p class="ad-bal-hint">${canWithdraw
-              ? `Ou rive minimòm lan (${formatCurrency(minimumPayout)}). Ou ka mande retrè kounye a.`
-              : `Li rete ${formatCurrency(remaining)} pou w rive minimòm retrè a (${formatCurrency(minimumPayout)}).`}</p>
-            <button type="button" class="ad-btn ad-btn-light" id="goToPayout">Mande yon retrè</button>
+              ? phrase(`Ou rive minimòm lan (${formatCurrency(minimumPayout)}). Ou ka mande retrè kounye a.`, `Le minimum (${formatCurrency(minimumPayout)}) est atteint. Vous pouvez demander un retrait.`)
+              : phrase(`Li rete ${formatCurrency(remaining)} pou w rive minimòm retrè a (${formatCurrency(minimumPayout)}).`, `Il vous manque ${formatCurrency(remaining)} pour atteindre le minimum de retrait (${formatCurrency(minimumPayout)}).`)}</p>
+            <button type="button" class="ad-btn ad-btn-light" id="goToPayout">${phrase('Mande yon retrè', 'Demander un retrait')}</button>
           </article>
           <div class="ad-bal-side">
-            <article class="ad-mini"><span>Komisyon k ap tann</span><strong>${formatCurrency(pendingCommission)}</strong><small>Poko disponib pou retrè.</small></article>
-            <article class="ad-mini"><span>Retrè an pwosesis</span><strong>${formatCurrency(pendingWithdrawal)}</strong><small>Demann ki deja voye yo.</small></article>
+            <article class="ad-mini"><span>${phrase('Komisyon k ap tann', 'Commissions en attente')}</span><strong>${formatCurrency(pendingCommission)}</strong><small>${phrase('Poko disponib pou retrè.', 'Pas encore disponibles au retrait.')}</small></article>
+            <article class="ad-mini"><span>${phrase('Retrè an pwosesis', 'Retraits en cours')}</span><strong>${formatCurrency(pendingWithdrawal)}</strong><small>${phrase('Demann ki deja voye yo.', 'Demandes déjà envoyées.')}</small></article>
           </div>
         </div>
 
         <div class="ad-stats">
-          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.sales}</span><span>Vant</span><strong>${Number(finance.sales || 0).toLocaleString('fr-FR')}</strong></div>
-          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.visitors}</span><span>Vizitè inik</span><strong>${uniqueVisitors}</strong></div>
-          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.commission}</span><span>Komisyon total</span><strong>${formatCurrency(totalCommission)}</strong></div>
-          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.paid}</span><span>Ou deja resevwa</span><strong>${formatCurrency(totalPaidOut)}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.sales}</span><span>${phrase('Vant pwodwi', 'Ventes de produits')}</span><strong>${Number(finance.sales || 0).toLocaleString('fr-FR')}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.visitors}</span><span>${phrase('Vizitè inik', 'Visiteurs uniques')}</span><strong>${uniqueVisitors}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.commission}</span><span>${phrase('Komisyon total', 'Commissions totales')}</span><strong>${formatCurrency(totalCommission)}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.paid}</span><span>${phrase('Machann apwouve refere', 'Vendeurs recommandés approuvés')}</span><strong>${Number(finance.vendor_referrals || 0).toLocaleString('fr-FR')}</strong></div>
+          <div class="ad-stat"><span class="ad-stat-ico" aria-hidden="true">${ICONS.paid}</span><span>${phrase('Ou deja resevwa', 'Déjà reçu')}</span><strong>${formatCurrency(totalPaidOut)}</strong></div>
         </div>
 
         <div class="ad-grid">
           <article class="ad-card">
-            <h3>Lyen afilye pèsonèl ou</h3>
-            <p class="ad-sub">Pataje lyen sa a. Chak moun ki enskri ak li asosye ak kont ou.</p>
+            <h3>${phrase('Lyen envitasyon machann', 'Lien d’invitation vendeur')}</h3>
+            <p class="ad-sub">${phrase('Pataje lyen sa a ak yon nouvo machann. Si li peye 1,000 HTG epi admin apwouve l, ou touche 250 HTG.', 'Partagez ce lien avec un nouveau vendeur. S’il paie 1 000 HTG et que l’admin approuve son dossier, vous recevez 250 HTG.')}</p>
             <div class="ad-link-box">
               <p id="affiliateReferralLink"></p>
-              <button class="ad-btn" type="button" id="copyReferralButton">${ICONS.copy}Kopye</button>
+              <button class="ad-btn" type="button" id="copyReferralButton">${ICONS.copy}${phrase('Kopye', 'Copier')}</button>
             </div>
             <div class="ad-row">
-              <a class="ad-btn ad-btn-wa ad-btn-small" id="shareWhatsapp" target="_blank" rel="noopener noreferrer">${ICONS.chat}Voye sou WhatsApp</a>
+              <a class="ad-btn ad-btn-wa ad-btn-small" id="shareWhatsapp" target="_blank" rel="noopener noreferrer">${ICONS.chat}${phrase('Voye sou WhatsApp', 'Partager sur WhatsApp')}</a>
             </div>
-            <span class="ad-code">Kòd referans: ${escapeHtml(affiliate.referral_code)}</span>
+            <span class="ad-code">${phrase('Kòd referans', 'Code de parrainage')}: ${escapeHtml(affiliate.referral_code)}</span>
           </article>
           <article class="ad-card">
-            <h3>Pou w pataje byen</h3>
+            <h3>${phrase('Kijan komisyon yo mache', 'Comment fonctionnent les commissions')}</h3>
             <ul class="ad-tips">
-              <li>${ICONS.check}<span>Di sa w reyèlman panse sou pwodwi a.</span></li>
-              <li>${ICONS.check}<span>Pa fè spam, epi pa pwomèt rabè oswa revni ki pa konfime.</span></li>
-              <li>${ICONS.check}<span>Voye lyen an bay moun ki gen entèrè nan pwodwi a.</span></li>
+              <li>${ICONS.check}<span>${phrase('Lyen pwodwi: touche 10% sou montan pwodwi a pou chak lòd peye epi livre.', 'Lien produit : recevez 10 % du prix du produit pour chaque commande payée et livrée.')}</span></li>
+              <li>${ICONS.check}<span>${phrase('Lyen machann: touche 250 HTG apre frè 1,000 HTG la verifye epi aplikasyon an apwouve.', 'Lien vendeur : recevez 250 HTG après vérification des 1 000 HTG et approbation du dossier.')}</span></li>
+              <li>${ICONS.check}<span>${phrase('Komisyon pwodwi yo rete an atant jiskaske livrezon ak peryòd ranbousman an pase.', 'Les commissions produit restent en attente jusqu’à la livraison et la fin du délai de remboursement.')}</span></li>
             </ul>
           </article>
         </div>
       </section>
 
+      <section class="ad-panel" id="panel-products" role="tabpanel" aria-labelledby="tab-products" hidden>
+        <h2>${phrase('Chwazi pwodwi pou pataje', 'Choisir des produits à partager')}</h2>
+        <p class="ad-intro">${phrase('Kopye lyen yon pwodwi. Lè kliyan an achte atravè lyen sa a, kòd afilye a swiv nan kòmand lan.', 'Copiez le lien d’un produit. Si le client achète via ce lien, votre code affilié est transmis à la commande.')}</p>
+        <p class="ad-help">${phrase('Komisyon afilye a se 10% sou pri pwodwi a. Komisyon platfòm 7.5% la separe; vandè a resevwa rès la.', 'La commission affilié est de 10 % du prix du produit. Les 7,5 % de la plateforme sont distincts; le vendeur reçoit le solde.')}</p>
+        <label class="ad-field" for="productLinkSearch">${phrase('Chèche pwodwi', 'Rechercher un produit')}
+          <input type="search" id="productLinkSearch" placeholder="${phrase('Ekri non pwodwi a', 'Saisissez le nom du produit')}">
+        </label>
+        <div class="ad-products" id="affiliateProductList">${renderAffiliateProducts(finance.products || [], affiliate.referral_code)}</div>
+      </section>
+
       <section class="ad-panel" id="panel-payout" role="tabpanel" aria-labelledby="tab-payout" hidden>
-        <h2>Retrè ak peman</h2>
-        <p class="ad-intro">Sove kote ou vle resevwa peman an epi mande retrè lè balans ou rive nan minimòm lan.</p>
+        <h2>${phrase('Retrè ak peman', 'Retraits et paiements')}</h2>
+        <p class="ad-intro">${phrase('Sove kote ou vle resevwa peman an epi mande retrè lè balans ou rive nan minimòm lan.', 'Enregistrez votre moyen de paiement et demandez un retrait lorsque votre solde atteint le minimum.')}</p>
         <div class="ad-grid ad-grid-even">
           <article class="ad-card">
-            <h3>Mande yon retrè</h3>
-            <p class="ad-sub">Minimòm: ${formatCurrency(minimumPayout)} · Disponib: ${formatCurrency(availableBalance)}</p>
+            <h3>${phrase('Mande yon retrè', 'Demander un retrait')}</h3>
+            <p class="ad-sub">${phrase('Minimòm', 'Minimum')}: ${formatCurrency(minimumPayout)} · ${phrase('Disponib', 'Disponible')}: ${formatCurrency(availableBalance)}</p>
             <form id="withdrawalForm" class="ad-form">
-              <label class="ad-field" for="withdrawalAmount">Montan (HTG)
+              <label class="ad-field" for="withdrawalAmount">${phrase('Montan (HTG)', 'Montant (HTG)')}
                 <span class="ad-amount">
                   <input type="number" id="withdrawalAmount" min="${minimumPayout}" max="${availableBalance}" step="1" value="${canWithdraw ? minimumPayout : ''}" required>
-                  <button type="button" class="ad-btn ad-btn-ghost" id="withdrawAll" ${canWithdraw ? '' : 'disabled'}>Tout</button>
+                  <button type="button" class="ad-btn ad-btn-ghost" id="withdrawAll" ${canWithdraw ? '' : 'disabled'}>${phrase('Tout', 'Tout')}</button>
                 </span>
               </label>
-              <label class="ad-field" for="withdrawalMethod">Metòd peman
+              <label class="ad-field" for="withdrawalMethod">${phrase('Metòd peman', 'Moyen de paiement')}
                 <select id="withdrawalMethod">
                   <option value="moncash">MonCash</option>
                   <option value="natcash">NatCash</option>
-                  <option value="bank">Kont labank</option>
+                  <option value="bank">${phrase('Kont labank', 'Compte bancaire')}</option>
                 </select>
               </label>
-              <label class="ad-field" for="withdrawalAccountName">Non ki sou kont lan
+              <label class="ad-field" for="withdrawalAccountName">${phrase('Non ki sou kont lan', 'Nom associé au compte')}
                 <input type="text" id="withdrawalAccountName" maxlength="120" required>
               </label>
-              <label class="ad-field" for="withdrawalNumber"><span id="withdrawalDestinationLabel">Nimewo MonCash</span>
+              <label class="ad-field" for="withdrawalNumber"><span id="withdrawalDestinationLabel">${phrase('Nimewo MonCash', 'Numéro MonCash')}</span>
                 <input type="text" id="withdrawalNumber" maxlength="120" placeholder="509XXXXXXXX" required>
               </label>
-              <button type="submit" class="ad-btn" id="withdrawalSubmit" ${canWithdraw ? '' : 'disabled'}>Mande retrè</button>
-              <p id="withdrawalMessage" class="ad-message" role="status" aria-live="polite">${canWithdraw ? '' : `Ou ka mande retrè lè balans ou rive ${formatCurrency(minimumPayout)}.`}</p>
+              <button type="submit" class="ad-btn" id="withdrawalSubmit" ${canWithdraw ? '' : 'disabled'}>${phrase('Mande retrè', 'Demander le retrait')}</button>
+              <p id="withdrawalMessage" class="ad-message" role="status" aria-live="polite">${canWithdraw ? '' : phrase(`Ou ka mande retrè lè balans ou rive ${formatCurrency(minimumPayout)}.`, `Vous pourrez demander un retrait lorsque votre solde atteindra ${formatCurrency(minimumPayout)}.`)}</p>
             </form>
           </article>
           <article class="ad-card">
-            <h3>Balans ak detay</h3>
+            <h3>${phrase('Balans ak detay', 'Solde et détails')}</h3>
             <dl class="ad-details">
-              <div><dt>Balans disponib</dt><dd>${formatCurrency(availableBalance)}</dd></div>
-              <div><dt>Komisyon k ap tann</dt><dd>${formatCurrency(pendingCommission)}</dd></div>
-              <div><dt>Retrè an pwosesis</dt><dd>${formatCurrency(pendingWithdrawal)}</dd></div>
-              <div><dt>Total ou deja resevwa</dt><dd>${formatCurrency(totalPaidOut)}</dd></div>
-              <div><dt>Kòd referans</dt><dd>${escapeHtml(affiliate.referral_code)}</dd></div>
+              <div><dt>${phrase('Balans disponib', 'Solde disponible')}</dt><dd>${formatCurrency(availableBalance)}</dd></div>
+              <div><dt>${phrase('Komisyon k ap tann', 'Commissions en attente')}</dt><dd>${formatCurrency(pendingCommission)}</dd></div>
+              <div><dt>${phrase('Retrè an pwosesis', 'Retraits en cours')}</dt><dd>${formatCurrency(pendingWithdrawal)}</dd></div>
+              <div><dt>${phrase('Total ou deja resevwa', 'Total déjà reçu')}</dt><dd>${formatCurrency(totalPaidOut)}</dd></div>
+              <div><dt>${phrase('Kòd referans', 'Code de parrainage')}</dt><dd>${escapeHtml(affiliate.referral_code)}</dd></div>
             </dl>
           </article>
         </div>
       </section>
 
       <section class="ad-panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
-        <h2>Istwa aktivite</h2>
-        <p class="ad-intro">Gade dènye komisyon ak demann retrè ki sou kont pa ou.</p>
+        <h2>${phrase('Istwa aktivite', 'Historique')}</h2>
+        <p class="ad-intro">${phrase('Gade dènye komisyon ak demann retrè ki sou kont pa ou.', 'Consultez vos dernières commissions et demandes de retrait.')}</p>
         <div class="ad-grid ad-grid-even">
-          <article class="ad-card"><h3>Dènye komisyon</h3><div class="ad-records">${renderTransactions(transactions)}</div></article>
-          <article class="ad-card"><h3>Demann retrè</h3><div class="ad-records">${renderWithdrawals(withdrawals)}</div></article>
+          <article class="ad-card"><h3>${phrase('Dènye komisyon', 'Dernières commissions')}</h3><div class="ad-records">${renderTransactions(transactions)}</div></article>
+          <article class="ad-card"><h3>${phrase('Demann retrè', 'Demandes de retrait')}</h3><div class="ad-records">${renderWithdrawals(withdrawals)}</div></article>
         </div>
       </section>
     `;
 
     document.getElementById('affiliateReferralLink').textContent = referralLink;
     document.getElementById('shareWhatsapp').href =
-      `https://wa.me/?text=${encodeURIComponent(`Gade Boutique Piyay, ou ka jwenn bon pwodwi la: ${referralLink}`)}`;
+      `https://wa.me/?text=${encodeURIComponent(phrase(
+        `Envite yon machann sou Boutique Piyay. Si li peye 1,000 HTG epi admin apwouve l, ou touche 250 HTG: ${referralLink}`,
+        `Invitez un vendeur sur Boutique Piyay. S’il paie 1 000 HTG et que l’admin approuve son dossier, vous recevez 250 HTG : ${referralLink}`
+      ))}`;
     document.getElementById('withdrawalMethod').value = finance.payout_settings?.method || 'moncash';
     document.getElementById('withdrawalAccountName').value =
       finance.payout_settings?.account_name || session.user.user_metadata?.full_name || '';
@@ -424,8 +452,21 @@ description: Votre espace affilié privé — liens, commissions et paiements
     initializeAffiliateTabs();
     activateAffiliateTab(activeAffiliateTab);
     document.getElementById('copyReferralButton').addEventListener('click', copyReferralLink);
+    const productSearch = document.getElementById('productLinkSearch');
+    const productList = document.getElementById('affiliateProductList');
+    const products = finance.products || [];
+    function bindProductCopyButtons() {
+      productList.querySelectorAll('.copy-product-link').forEach((button) => {
+        button.addEventListener('click', () => copyProductLink(button.dataset.url));
+      });
+    }
+    bindProductCopyButtons();
+    productSearch.addEventListener('input', () => {
+      productList.innerHTML = renderAffiliateProducts(products, affiliate.referral_code, productSearch.value);
+      bindProductCopyButtons();
+    });
     document.getElementById('goToPayout').addEventListener('click', () => {
-      activateAffiliateTab(1);
+      activateAffiliateTab(2);
       document.getElementById('tab-payout').focus();
     });
     document.getElementById('withdrawAll').addEventListener('click', () => {
@@ -474,6 +515,41 @@ description: Votre espace affilié privé — liens, commissions et paiements
     container.innerHTML = `<div class="ad-notice"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>${actionMarkup || ''}</div>`;
   }
 
+  function renderAffiliateProducts(products, referralCode, searchTerm = '') {
+    const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
+    const matchingProducts = products.filter((product) => !normalizedSearch
+      || `${product.title || ''} ${product.category || ''}`.toLocaleLowerCase().includes(normalizedSearch));
+    if (!matchingProducts.length) {
+      if (normalizedSearch) {
+        return `<div class="ad-empty"><strong>${phrase('Pa gen pwodwi ki koresponn ak rechèch la', 'Aucun produit ne correspond à la recherche')}</strong></div>`;
+      }
+      return `<div class="ad-empty"><strong>${phrase('Pa gen pwodwi ki disponib pou kounye a', 'Aucun produit disponible pour le moment')}</strong>${phrase('Tounen pita pou chwazi pwodwi vandè yo apwouve.', 'Revenez plus tard pour choisir des produits approuvés.')}</div>`;
+    }
+    return matchingProducts.map((product) => {
+      const url = `${window.location.origin}/pwodwi-machann.html?id=${encodeURIComponent(product.id)}&ref=${encodeURIComponent(referralCode)}`;
+      const image = product.image_url ? escapeHtml(product.image_url) : '/assets/images/logo.png';
+      return `<article class="ad-product">
+        <img src="${image}" alt="${escapeHtml(product.title)}" loading="lazy">
+        <div class="ad-product-body">
+          <h3>${escapeHtml(product.title)}</h3>
+          <p>${formatCurrency(product.price)}${product.category ? ` · ${escapeHtml(product.category)}` : ''}</p>
+          <span class="ad-product-link">${escapeHtml(url)}</span>
+          <button type="button" class="ad-btn ad-btn-small copy-product-link" data-url="${escapeHtml(url)}">${phrase('Kopye lyen pwodwi a', 'Copier le lien produit')}</button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  async function copyProductLink(url) {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast(phrase('Lyen pwodwi a kopye.', 'Lien produit copié.'), 'success');
+    } catch (error) {
+      console.error('Unable to copy affiliate product link:', error);
+      window.prompt(phrase('Kopye lyen pwodwi a:', 'Copiez le lien produit :'), url);
+    }
+  }
+
   function showToast(text, state) {
     const toast = document.getElementById('adToast');
     if (!toast) return;
@@ -489,25 +565,27 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const label = document.getElementById('withdrawalDestinationLabel');
     const input = document.getElementById('withdrawalNumber');
     if (!label || !input) return;
-    label.textContent = method === 'bank' ? 'Nimewo kont labank' : `Nimewo ${method === 'natcash' ? 'NatCash' : 'MonCash'}`;
-    input.placeholder = method === 'bank' ? 'Antre nimewo kont labank ou' : '509XXXXXXXX';
+    label.textContent = method === 'bank'
+      ? phrase('Nimewo kont labank', 'Numéro de compte bancaire')
+      : `${phrase('Nimewo', 'Numéro')} ${method === 'natcash' ? 'NatCash' : 'MonCash'}`;
+    input.placeholder = method === 'bank' ? phrase('Antre nimewo kont labank ou', 'Saisissez votre numéro de compte') : '509XXXXXXXX';
   }
 
   function statusBadge(status) {
     const raw = String(status || '').trim();
     const key = raw.toLowerCase();
     const map = {
-      pending: ['An atant', 'wait'],
-      requested: ['An atant', 'wait'],
-      processing: ['An pwosesis', 'info'],
-      approved: ['Apwouve', 'info'],
-      paid: ['Peye', 'ok'],
-      completed: ['Peye', 'ok'],
-      success: ['Peye', 'ok'],
-      rejected: ['Rejte', 'bad'],
-      failed: ['Echwe', 'bad'],
-      cancelled: ['Anile', 'bad'],
-      canceled: ['Anile', 'bad']
+      pending: [phrase('An atant', 'En attente'), 'wait'],
+      requested: [phrase('An atant', 'En attente'), 'wait'],
+      processing: [phrase('An pwosesis', 'En cours'), 'info'],
+      approved: [phrase('Apwouve', 'Approuvé'), 'info'],
+      paid: [phrase('Peye', 'Payé'), 'ok'],
+      completed: [phrase('Peye', 'Payé'), 'ok'],
+      success: [phrase('Peye', 'Payé'), 'ok'],
+      rejected: [phrase('Rejte', 'Refusé'), 'bad'],
+      failed: [phrase('Echwe', 'Échoué'), 'bad'],
+      cancelled: [phrase('Anile', 'Annulé'), 'bad'],
+      canceled: [phrase('Anile', 'Annulé'), 'bad']
     };
     const [text, tone] = map[key] || [raw || 'Anrejistre', 'info'];
     return `<span class="ad-badge" data-tone="${tone}">${escapeHtml(text)}</span>`;
@@ -515,25 +593,27 @@ description: Votre espace affilié privé — liens, commissions et paiements
 
   function renderTransactions(transactions) {
     if (!transactions.length) {
-      return '<div class="ad-empty"><strong>Poko gen komisyon</strong>Pataje lyen ou. Lè yon vant valide, komisyon an ap parèt isit la.</div>';
+      return `<div class="ad-empty"><strong>${phrase('Poko gen komisyon', 'Aucune commission pour le moment')}</strong>${phrase('Pataje lyen pwodwi oswa lyen machann ou yo. Komisyon yo ap parèt apre validasyon.', 'Partagez vos liens produits ou vendeur. Les commissions apparaîtront après validation.')}</div>`;
     }
     return transactions.map((transaction) => `
       <article class="ad-record">
-        <div class="ad-record-top"><span>${escapeHtml(transaction.entry_type || 'Komisyon')}</span><span>${formatCurrency(transaction.amount)}</span></div>
-        <p>${escapeHtml(transaction.note || 'Komisyon pou vant')} · ${formatDate(transaction.created_at)}</p>
+        <div class="ad-record-top"><span>${transaction.entry_type === 'vendor_referral_commission' ? phrase('Komisyon referans machann', 'Commission de parrainage vendeur') : phrase('Komisyon pwodwi', 'Commission produit')}</span><span>${formatCurrency(transaction.amount)}</span></div>
+        <p>${transaction.entry_type === 'vendor_referral_commission'
+          ? phrase('Aplikasyon machann nan apwouve apre peman verifye.', 'Demande vendeur approuvée après vérification du paiement.')
+          : phrase('Lòd pwodwi atribiye ak lyen afilye ou.', 'Commande produit attribuée à votre lien affilié.')} · ${formatDate(transaction.created_at)}</p>
       </article>
     `).join('');
   }
 
   function renderWithdrawals(withdrawals) {
     if (!withdrawals.length) {
-      return '<div class="ad-empty"><strong>Pa gen demann retrè</strong>Lè w mande yon retrè, ou ap swiv estati li isit la.</div>';
+      return `<div class="ad-empty"><strong>${phrase('Pa gen demann retrè', 'Aucune demande de retrait')}</strong>${phrase('Lè w mande yon retrè, ou ap swiv estati li isit la.', 'Vos demandes de retrait et leur statut apparaîtront ici.')}</div>`;
     }
     return withdrawals.map((withdrawal) => `
       <article class="ad-record">
         <div class="ad-record-top"><span>${escapeHtml(withdrawal.method || 'Peman')}</span><span>${formatCurrency(withdrawal.amount)}</span></div>
         <p>${statusBadge(withdrawal.status)} ${formatDate(withdrawal.requested_at || withdrawal.created_at)}</p>
-        ${withdrawal.destination ? `<p>Destinasyon: ${escapeHtml(withdrawal.destination)}</p>` : ''}
+        ${withdrawal.destination ? `<p>${phrase('Destinasyon', 'Destination')}: ${escapeHtml(withdrawal.destination)}</p>` : ''}
         ${withdrawal.note ? `<p>${escapeHtml(withdrawal.note)}</p>` : ''}
       </article>
     `).join('');
@@ -549,17 +629,17 @@ description: Votre espace affilié privé — liens, commissions et paiements
     const minimumPayout = Number(document.getElementById('withdrawalAmount').min);
     if (!Number.isFinite(amount) || amount < minimumPayout || !accountName || !number) {
       message.dataset.state = 'error';
-      message.textContent = `Antre omwen ${formatCurrency(minimumPayout)}, non ki sou kont lan ak nimewo destinasyon an.`;
+      message.textContent = phrase(`Antre omwen ${formatCurrency(minimumPayout)}, non ki sou kont lan ak nimewo destinasyon an.`, `Saisissez au moins ${formatCurrency(minimumPayout)}, le nom du compte et le numéro de destination.`);
       return;
     }
 
     submitButton.disabled = true;
     message.dataset.state = '';
-    message.textContent = 'N ap voye demann ou an…';
+    message.textContent = phrase('N ap voye demann ou an…', 'Envoi de votre demande…');
     try {
       const { data: { session }, error: sessionError } = await sup.auth.getSession();
       if (sessionError) throw sessionError;
-      if (!session) throw new Error('Sesyon ou an fini. Tanpri konekte ankò.');
+      if (!session) throw new Error(phrase('Sesyon ou an fini. Tanpri konekte ankò.', 'Votre session a expiré. Veuillez vous reconnecter.'));
       const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` };
       const saveResponse = await fetch('/.netlify/functions/marketplace-payments', {
         method: 'POST',
@@ -567,32 +647,32 @@ description: Votre espace affilié privé — liens, commissions et paiements
         body: JSON.stringify({ action: 'save-affiliate-payout-settings', method, account_name: accountName, account_number: number })
       });
       const saveResult = await saveResponse.json();
-      if (!saveResponse.ok) throw new Error(saveResult.error || 'Nou pa kapab sove detay peman yo.');
+      if (!saveResponse.ok) throw new Error(saveResult.error || phrase('Nou pa kapab sove detay peman yo.', 'Impossible d’enregistrer vos coordonnées de paiement.'));
       const payoutResponse = await fetch('/.netlify/functions/marketplace-payments', {
         method: 'POST',
         headers,
         body: JSON.stringify({ action: 'request-payout', amount })
       });
       const payoutResult = await payoutResponse.json();
-      if (!payoutResponse.ok) throw new Error(payoutResult.error || 'Demann retrè a pa t reyisi.');
-      showToast('Demann retrè ou anrejistre. Balans disponib la rezève.', 'success');
+      if (!payoutResponse.ok) throw new Error(payoutResult.error || phrase('Demann retrè a pa t reyisi.', 'La demande de retrait a échoué.'));
+      showToast(phrase('Demann retrè ou anrejistre. Balans disponib la rezève.', 'Votre demande de retrait est enregistrée. Le montant a été réservé.'), 'success');
       await loadAffiliateDashboard();
     } catch (error) {
       console.error('Affiliate payout request failed:', error);
       message.dataset.state = 'error';
-      message.textContent = error.message || 'Erè pandan demann retrè a. Tanpri eseye ankò.';
+      message.textContent = error.message || phrase('Erè pandan demann retrè a. Tanpri eseye ankò.', 'Erreur lors de la demande de retrait. Veuillez réessayer.');
       submitButton.disabled = false;
     }
   }
 
   async function copyReferralLink() {
-    const referralLink = `${window.location.origin}/signup.html?ref=${encodeURIComponent(referralLinkText)}`;
+    const referralLink = `${window.location.origin}/signup.html?role=seller&ref=${encodeURIComponent(referralLinkText)}`;
     try {
       await navigator.clipboard.writeText(referralLink);
-      showToast('Lyen afilye a kopye.', 'success');
+      showToast(phrase('Lyen envitasyon machann nan kopye.', 'Lien d’invitation vendeur copié.'), 'success');
     } catch (error) {
       console.error('Unable to copy affiliate link:', error);
-      window.prompt('Kopye lyen afilye ou a:', referralLink);
+      window.prompt(phrase('Kopye lyen envitasyon machann ou a:', 'Copiez votre lien d’invitation vendeur :'), referralLink);
     }
   }
 
@@ -621,9 +701,10 @@ description: Votre espace affilié privé — liens, commissions et paiements
     } catch (error) {
       console.error('Affiliate logout failed:', error);
       button.disabled = false;
-      showAffiliateNotice('Dekoneksyon an pa reyisi', error.message || 'Tanpri eseye dekonekte ankò.');
+      showAffiliateNotice(phrase('Dekoneksyon an pa reyisi', 'La déconnexion a échoué'), error.message || phrase('Tanpri eseye dekonekte ankò.', 'Veuillez réessayer.'));
     }
   });
 
   document.addEventListener('DOMContentLoaded', loadAffiliateDashboard);
+  window.addEventListener('bp:language-changed', loadAffiliateDashboard);
 </script>

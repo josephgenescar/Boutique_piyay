@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paiement d’inscription vendeur | Boutique Piyay</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <script src="/assets/js/i18n.js" defer></script>
+  <style>
+    body { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: #f1f5f9; font-family: system-ui, sans-serif; }
+    main { width: min(100%, 560px); padding: 32px; border-radius: 22px; background: white; box-shadow: 0 16px 48px #0f172a18; }
+    h1 { margin: 0 0 12px; color: #0f172a; font-size: 1.5rem; }
+    p { color: #475569; line-height: 1.7; }
+    .amount { padding: 16px; border-radius: 14px; background: #fff7ed; color: #9a3412; font-size: 1.4rem; font-weight: 800; text-align: center; }
+    .status { min-height: 48px; margin: 18px 0; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    button, a { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 10px 16px; border: 0; border-radius: 10px; background: #ff4747; color: white; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    a.secondary { background: #e2e8f0; color: #0f172a; }
+    .language { position: fixed; top: 16px; right: 16px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+  </style>
+</head>
+<body>
+  <select id="lang-selector" class="language" aria-label="Langue">
+    <option value="fr">Français</option>
+    <option value="ht">Kreyòl</option>
+  </select>
+  <main>
+    <h1 id="page-title"></h1>
+    <p id="page-intro"></p>
+    <div class="amount">1 000 HTG · MonCash</div>
+    <p id="payment-note"></p>
+    <p id="payment-status" class="status" role="status" aria-live="polite"></p>
+    <div class="actions">
+      <button id="retry-button" type="button" hidden></button>
+      <button id="verify-button" type="button" hidden></button>
+      <a class="secondary" id="home-link" href="/"></a>
+    </div>
+  </main>
+  <script>
+    const userId = new URLSearchParams(location.search).get('userId')
+      || sessionStorage.getItem('vendor_registration_payment_user_id') || '';
+    const accessKey = sessionStorage.getItem('vendor_registration_payment_key') || '';
+    const orderId = new URLSearchParams(location.search).get('orderId') || '';
+    const phrase = (ht, fr) => window.currentLang === 'fr' ? fr : ht;
+    const statusEl = document.getElementById('payment-status');
+    const retryButton = document.getElementById('retry-button');
+    const verifyButton = document.getElementById('verify-button');
+    let working = false;
+
+    function renderLabels() {
+      document.documentElement.lang = window.currentLang === 'ht' ? 'ht-HT' : 'fr-HT';
+      document.title = phrase('Peman enskripsyon machann | Boutique Piyay', 'Paiement d’inscription vendeur | Boutique Piyay');
+      document.getElementById('page-title').textContent = phrase('Peye frè enskripsyon machann nan', 'Payer les frais d’inscription vendeur');
+      document.getElementById('page-intro').textContent = phrase(
+        'Aplikasyon ou a anrejistre. Peye 1,000 HTG yon sèl fwa pa MonCash. Admin nan ap verifye tranzaksyon an epi revize aplikasyon an.',
+        'Votre demande est enregistrée. Payez une seule fois les frais de 1 000 HTG par MonCash. L’admin vérifiera la transaction puis examinera votre dossier.'
+      );
+      document.getElementById('payment-note').textContent = phrase(
+        'Si aplikasyon an refize apre peman, Boutique Piyay ap fè ranbousman an epi pa gen komisyon referans k ap peye.',
+        'Si la demande est refusée après paiement, Boutique Piyay effectuera le remboursement et aucune commission de parrainage ne sera versée.'
+      );
+      retryButton.textContent = phrase('Eseye lanse peman an ankò', 'Réessayer de lancer le paiement');
+      verifyButton.textContent = phrase('Verifye peman mwen an', 'Vérifier mon paiement');
+      document.getElementById('home-link').textContent = phrase('Retounen sou sit la', 'Retour au site');
+    }
+
+    function setStatus(message, state) {
+      statusEl.textContent = message;
+      statusEl.dataset.state = state || '';
+      retryButton.hidden = true;
+      verifyButton.hidden = true;
+    }
+
+    async function requestPayment(action, payload) {
+      const response = await fetch('/.netlify/functions/vendor-registration-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...payload })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || phrase('Nou pa kapab trete peman an.', 'Impossible de traiter le paiement.'));
+      return result;
+    }
+
+    async function startPayment() {
+      if (working) return;
+      working = true;
+      retryButton.disabled = true;
+      setStatus(phrase('N ap prepare paj MonCash la…', 'Préparation de la page MonCash…'));
+      try {
+        if (!userId || !accessKey) throw new Error(phrase(
+          'Kle sesyon peman an pa disponib nan navigatè sa a. Tanpri kontakte sipò ak imèl ou te itilize pou enskri a.',
+          'La clé de paiement de cette session est indisponible. Contactez le support avec l’adresse e-mail utilisée lors de l’inscription.'
+        ));
+        const result = await requestPayment('create', { user_id: userId, access_key: accessKey });
+        if (result.status === 'paid') {
+          renderPaid();
+          return;
+        }
+        if (result.redirect_url) {
+          sessionStorage.setItem('vendor_registration_payment_user_id', userId);
+          sessionStorage.setItem('vendor_registration_payment_started', '1');
+          window.location.assign(result.redirect_url);
+          return;
+        }
+        setStatus(phrase('Peman an ap prepare toujou. Tann yon ti moman epi eseye ankò.', 'Le paiement est en cours de préparation. Patientez puis réessayez.'), 'pending');
+        retryButton.hidden = false;
+      } catch (error) {
+        console.error('Unable to start vendor registration payment:', error);
+        setStatus(error.message || phrase('Nou pa kapab lanse peman an kounye a.', 'Impossible de lancer le paiement pour le moment.'), 'error');
+        retryButton.hidden = false;
+      } finally {
+        working = false;
+        retryButton.disabled = false;
+      }
+    }
+
+    async function verifyPayment() {
+      if (working) return;
+      working = true;
+      verifyButton.disabled = true;
+      setStatus(phrase('N ap verifye tranzaksyon an ak MonCash…', 'Vérification de la transaction auprès de MonCash…'));
+      try {
+        if (!userId || !accessKey) throw new Error(phrase(
+          'Kle sesyon peman an pa disponib. Retounen nan menm navigatè a oswa kontakte sipò.',
+          'La clé de paiement de la session est indisponible. Revenez dans le même navigateur ou contactez le support.'
+        ));
+        const result = await requestPayment('verify', orderId
+          ? { order_id: orderId }
+          : { user_id: userId, access_key: accessKey });
+        if (result.status === 'paid') {
+          renderPaid();
+        } else {
+          setStatus(phrase('Nou poko jwenn konfimasyon MonCash. Tann yon ti moman epi verifye ankò.', 'MonCash n’a pas encore confirmé le paiement. Patientez puis vérifiez à nouveau.'), 'pending');
+          verifyButton.hidden = false;
+        }
+      } catch (error) {
+        console.error('Vendor registration payment verification failed:', error);
+        setStatus(error.message || phrase('Nou pa kapab verifye peman an kounye a.', 'Impossible de vérifier le paiement pour le moment.'), 'error');
+        verifyButton.hidden = false;
+      } finally {
+        working = false;
+        verifyButton.disabled = false;
+      }
+    }
+
+    function renderPaid() {
+      sessionStorage.removeItem('vendor_registration_payment_key');
+      sessionStorage.removeItem('vendor_registration_payment_user_id');
+      sessionStorage.removeItem('vendor_registration_payment_started');
+      setStatus(phrase(
+        'Peman 1,000 HTG la verifye. Aplikasyon an ap tann revizyon admin nan. Ou ka konekte nan kont vandè a apre admin apwouve li.',
+        'Le paiement de 1 000 HTG est vérifié. Votre demande attend la validation de l’admin. Vous pourrez vous connecter au compte vendeur après approbation.'
+      ), 'success');
+    }
+
+    retryButton.addEventListener('click', startPayment);
+    verifyButton.addEventListener('click', verifyPayment);
+    window.addEventListener('bp:language-changed', renderLabels);
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderLabels();
+      if (window.loadTranslations) await window.loadTranslations();
+      if (orderId) await verifyPayment();
+      else if (sessionStorage.getItem('vendor_registration_payment_started') === '1') {
+        setStatus(phrase(
+          'Apre ou fini sou paj MonCash la, tounen isit la epi verifye peman an.',
+          'Après le paiement sur MonCash, revenez ici et vérifiez la transaction.'
+        ), 'pending');
+        verifyButton.hidden = false;
+      } else await startPayment();
+    });
+  </script>
+</body>
+</html>

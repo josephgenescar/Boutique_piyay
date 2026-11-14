@@ -5,7 +5,9 @@ window.currentLang = supportedLanguages.includes(savedLanguage) ? savedLanguage 
 window.translations = window.translations || {};
 
 function resolveTranslation(key) {
-  return key.split('.').reduce((value, part) => value && value[part], window.translations[window.currentLang]);
+  const dictionary = window.translations[window.currentLang];
+  const resolve = translationKey => translationKey.split('.').reduce((value, part) => value && value[part], dictionary);
+  return resolve(key) ?? (key.startsWith('affiliate.') ? resolve(`pages.${key}`) : undefined);
 }
 
 function setTranslation(dictionary, key, value) {
@@ -73,6 +75,7 @@ window.loadTranslations = async function() {
       window.translations[language] = await response.json();
     }
     window.applyTranslations();
+    window.dispatchEvent(new CustomEvent('bp:translations-loaded', { detail: { lang: language } }));
 
     const client = window.supabaseMain;
     if (!client) return;
@@ -83,7 +86,10 @@ window.loadTranslations = async function() {
     if (error || !data) return;
 
     data.forEach(item => setTranslation(window.translations[language], item.translation_key, item.translation_value));
-    if (language === window.currentLang) window.applyTranslations();
+    if (language === window.currentLang) {
+      window.applyTranslations();
+      window.dispatchEvent(new CustomEvent('bp:translations-loaded', { detail: { lang: language } }));
+    }
   } catch (error) {
     console.error('Unable to load translations:', error);
   }
@@ -96,6 +102,7 @@ window.changeLanguage = async function(lang) {
   const selector = document.getElementById('lang-selector');
   if (selector) selector.value = lang;
   await window.loadTranslations();
+  window.dispatchEvent(new CustomEvent('bp:language-changed', { detail: { lang } }));
 };
 
 document.addEventListener('DOMContentLoaded', () => {

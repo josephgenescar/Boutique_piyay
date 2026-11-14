@@ -9,6 +9,8 @@
     <link rel="icon" type="image/png" href="/assets/images/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="/assets/js/i18n.js"></script>
+    <script src="/assets/js/affiliate-attribution.js"></script>
     <style>
         :root {
             --primary: #ff4747;
@@ -52,6 +54,8 @@
         .auth-header img { width: 56px; border-radius: 14px; margin-bottom: 16px; position: relative; }
         .auth-header h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 6px; position: relative; }
         .auth-header p { font-size: 13px; color: rgba(255,255,255,0.45); position: relative; }
+        .language-select { position: absolute; top: 16px; right: 16px; padding: 7px 10px; border: 1px solid #ffffff44; border-radius: 9px; background: #ffffff12; color: white; font: inherit; }
+        .language-select option { color: #0f172a; }
 
         .auth-body { padding: 32px 36px 36px; }
 
@@ -87,6 +91,7 @@
 
         .already-member { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gray); }
         .already-member a { color: var(--primary); font-weight: 800; text-decoration: none; }
+        .registration-fee-note { margin: 4px 0 18px; padding: 12px; border-radius: 10px; background: #fff7ed; color: #7c2d12; font-size: 12px; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -94,67 +99,72 @@
 <div class="auth-wrap">
     <div class="auth-header">
         <a href="/"><img src="/assets/images/logo.png" alt="Logo"></a>
-        <h2>Créer votre Compte 🚀</h2>
-        <p>Bienvenue sur le plus grand réseau de commerce</p>
+        <select id="lang-selector" class="language-select" aria-label="Langue">
+            <option value="fr">Français</option>
+            <option value="ht">Kreyòl</option>
+        </select>
+        <h2 data-i18n="signup_page.title">Créer votre compte</h2>
+        <p data-i18n="signup_page.intro">Bienvenue sur Boutique Piyay</p>
     </div>
 
     <div class="auth-body">
-        <div class="role-label">Comment souhaitez-vous participer ?</div>
+        <div class="role-label" data-i18n="signup_page.role_label">Comment souhaitez-vous participer ?</div>
         <div class="role-grid">
             <div id="opt-seller" class="role-option active" onclick="setRole('seller')">
                 <div class="role-icon">🏪</div>
-                <div><div class="role-name">Vendeur</div><div class="role-sub">Vendre des produits</div></div>
+                <div><div class="role-name" data-i18n="signup_page.seller">Vendeur</div><div class="role-sub" data-i18n="signup_page.seller_subtitle">Vendre des produits</div></div>
             </div>
             <div id="opt-affiliate" class="role-option" onclick="setRole('affiliate')">
                 <div class="role-icon">🔗</div>
-                <div><div class="role-name">Affilié</div><div class="role-sub">Gagner de l'argent</div></div>
+                <div><div class="role-name" data-i18n="signup_page.affiliate">Affilié</div><div class="role-sub" data-i18n="signup_page.affiliate_subtitle">Gagner des commissions</div></div>
             </div>
         </div>
 
         <form id="signupForm" onsubmit="handleSignup(event)">
             <div class="form-group">
-                <label class="form-label">Nom complet*</label>
-                <input type="text" id="fullName" class="form-input" placeholder="ex : Jean Dupont" required>
+                <label class="form-label" data-i18n="signup_page.full_name">Nom complet *</label>
+                <input type="text" id="fullName" class="form-input" placeholder="Ex. : Jean Dupont" data-i18n-placeholder="signup_page.full_name_placeholder" required>
             </div>
             <div class="form-group">
-                <label class="form-label">Email *</label>
-                <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
+                <label class="form-label" data-i18n="signup_page.email">Adresse e-mail *</label>
+                <input type="email" id="email" class="form-input" placeholder="vous@exemple.com" data-i18n-placeholder="signup_page.email_placeholder" required>
             </div>
             <div class="form-group">
-                <label class="form-label">Mot de passe *</label>
-                <input type="password" id="password" class="form-input" placeholder="Min. 8 caractères" required minlength="8">
+                <label class="form-label" data-i18n="signup_page.password">Mot de passe *</label>
+                <input type="password" id="password" class="form-input" placeholder="8 caractères minimum" data-i18n-placeholder="signup_page.password_placeholder" required minlength="8">
             </div>
 
             <!-- SELLER FIELDS -->
             <div id="seller-fields" style="display:block;">
-                <div class="divider">Informations Boutique</div>
+                <div class="divider" data-i18n="signup_page.shop_info">Informations sur la boutique</div>
                 <div class="form-group">
-                    <label class="form-label">Nom de la Boutique *</label>
-                    <input type="text" id="shopName" class="form-input" placeholder="ex : Boutique Belle Affaire" data-vendor-required required>
+                    <label class="form-label" data-i18n="signup_page.shop_name">Nom de la boutique *</label>
+                    <input type="text" id="shopName" class="form-input" placeholder="Ex. : Boutique Belle Affaire" data-i18n-placeholder="signup_page.shop_name_placeholder" data-vendor-required required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">WhatsApp (avec code pays) *</label>
-                    <input type="tel" id="whatsappNumber" class="form-input" placeholder="ex : 50948868964">
+                    <label class="form-label" data-i18n="signup_page.whatsapp">WhatsApp (avec indicatif pays) *</label>
+                    <input type="tel" id="whatsappNumber" class="form-input" placeholder="Ex. : 50948868964" data-i18n-placeholder="signup_page.whatsapp_placeholder">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Adresse</label>
-                    <input type="text" id="address" class="form-input" placeholder="ex : Port-au-Prince, Haïti">
+                    <label class="form-label" data-i18n="signup_page.address">Adresse</label>
+                    <input type="text" id="address" class="form-input" placeholder="Ex. : Port-au-Prince, Haïti" data-i18n-placeholder="signup_page.address_placeholder">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Kategori pwodwi ou vle vann *</label>
-                    <input type="text" id="productCategories" class="form-input" placeholder="Egzanp: rad, manje, elektwonik" data-vendor-required required>
+                    <label class="form-label" data-i18n="signup_page.product_categories">Catégories de produits *</label>
+                    <input type="text" id="productCategories" class="form-input" placeholder="Ex. : vêtements, alimentation, électronique" data-i18n-placeholder="signup_page.product_categories_placeholder" data-vendor-required required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Kisa ou pwopoze vann? *</label>
-                    <textarea id="productDescription" class="form-input" placeholder="Dekri pwodwi ou yo ak boutik ou" data-vendor-required required></textarea>
+                    <label class="form-label" data-i18n="signup_page.product_description">Que souhaitez-vous vendre ? *</label>
+                    <textarea id="productDescription" class="form-input" placeholder="Décrivez vos produits et votre boutique" data-i18n-placeholder="signup_page.product_description_placeholder" data-vendor-required required></textarea>
                 </div>
+                <p class="registration-fee-note" data-i18n="signup_page.vendor_fee">Après l’envoi de votre demande, payez les frais uniques d’inscription vendeur de 1 000 HTG par MonCash. L’équipe admin vérifiera le paiement et validera votre dossier.</p>
             </div>
 
-            <button type="submit" id="btnSignup" class="btn-submit">Soumettre ma demande de vendeur</button>
+            <button type="submit" id="btnSignup" class="btn-submit" data-i18n="signup_page.seller_submit">Continuer vers le paiement de 1 000 HTG</button>
         </form>
 
         <div class="already-member">
-            Vous avez déjà un compte ? <a id="loginRedirectLink" href="/login.html?redirect=/vendor-application-status.html">Se connecter ici →</a>
+            <span data-i18n="signup_page.already_have_account">Vous avez déjà un compte ?</span> <a id="loginRedirectLink" href="/login.html?redirect=/vendor-application-status.html" data-i18n="signup_page.login">Se connecter ici →</a>
         </div>
     </div>
 </div>
@@ -169,23 +179,6 @@
     const queryParams = new URLSearchParams(window.location.search);
     const initialRole = queryParams.get('role');
     const referralAttribution = queryParams.get('ref') || localStorage.getItem('ref_code') || null;
-    if (queryParams.has('ref')) {
-        localStorage.setItem('ref_code', queryParams.get('ref'));
-        let visitorId = localStorage.getItem('bp_affiliate_visitor_id');
-        if (!visitorId) {
-            visitorId = window.crypto?.randomUUID?.() || 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-                const random = Math.random() * 16 | 0;
-                return (char === 'x' ? random : (random & 3 | 8)).toString(16);
-            });
-            localStorage.setItem('bp_affiliate_visitor_id', visitorId);
-        }
-        fetch('/.netlify/functions/affiliate-click', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ referral_code: queryParams.get('ref'), visitor_id: visitorId })
-        }).catch(() => {});
-    }
-
     function setRole(role) {
         currentRole = role;
         document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
@@ -196,8 +189,8 @@
             field.required = role === 'seller';
         });
         document.getElementById('btnSignup').textContent = role === 'seller'
-            ? 'Soumettre ma demande de vendeur'
-            : 'Créer mon compte affilié';
+            ? window.t('signup_page.seller_submit', window.currentLang === 'fr' ? 'Continuer vers le paiement de 1 000 HTG' : 'Kontinye pou peye 1,000 HTG')
+            : window.t('signup_page.affiliate_submit', window.currentLang === 'fr' ? 'Créer mon compte affilié' : 'Kreye kont afilye mwen');
         const loginLink = document.getElementById('loginRedirectLink');
         if (loginLink) {
             const roleDestination = role === 'affiliate' ? '/affiliate-dashboard.html' : '/vendor-application-status.html';
@@ -208,6 +201,7 @@
     if (initialRole === 'affiliate') {
         setRole('affiliate');
     }
+    window.addEventListener('bp:language-changed', () => setRole(currentRole));
 
     async function notifyAdminOfRegistration(userId) {
         const response = await fetch('/.netlify/functions/notify-registration', {
@@ -225,7 +219,7 @@
         e.preventDefault();
         const btn = document.getElementById('btnSignup');
         btn.disabled = true;
-        btn.innerHTML = "⏳ Veuillez patienter...";
+        btn.innerHTML = window.currentLang === 'fr' ? "⏳ Veuillez patienter..." : "⏳ Tanpri tann...";
 
         const email = document.getElementById('email').value.trim();
         const pass = document.getElementById('password').value;
@@ -237,14 +231,19 @@
             const productCategories = document.getElementById('productCategories').value.trim();
             const productDescription = document.getElementById('productDescription').value.trim();
             if (!shopName || !whatsapp || !productCategories || !productDescription) {
-                alert("⚠️ Ranpli non boutik la, WhatsApp, kategori pwodwi ak deskripsyon pwopozisyon an.");
+                alert(window.currentLang === 'fr'
+                    ? "⚠️ Remplissez le nom de la boutique, le numéro WhatsApp, les catégories et la description des produits."
+                    : "⚠️ Ranpli non boutik la, nimewo WhatsApp, kategori ak deskripsyon pwodwi yo.");
                 btn.disabled = false;
-                btn.innerHTML = "Soumettre ma demande de vendeur";
+                setRole(currentRole);
                 return;
             }
         }
 
         try {
+            const vendorPaymentKey = currentRole === 'seller'
+                ? (window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`)
+                : null;
             const signupMetadata = {
                 full_name: fullName,
                 role: currentRole
@@ -255,6 +254,8 @@
                 signupMetadata.address = document.getElementById('address').value.trim();
                 signupMetadata.product_categories = document.getElementById('productCategories').value.trim();
                 signupMetadata.product_description = document.getElementById('productDescription').value.trim();
+                signupMetadata.referral_code = referralAttribution;
+                signupMetadata.vendor_registration_payment_key = vendorPaymentKey;
             } else {
                 signupMetadata.referral_code = referralAttribution;
             }
@@ -268,14 +269,13 @@
             });
 
             if (authErr) throw authErr;
-            if (!authData.user) throw new Error('Kreyasyon kont lan pa retounen yon itilizatè.');
+            if (!authData.user) throw new Error(window.currentLang === 'fr' ? 'La création du compte n’a pas renvoyé d’utilisateur.' : 'Kreyasyon kont lan pa retounen yon itilizatè.');
 
             if (currentRole === 'seller') {
-                let sessionError = null;
+                sessionStorage.setItem('vendor_registration_payment_key', vendorPaymentKey);
                 if (authData.session) {
                     const { error } = await supS.auth.signOut({ scope: 'local' });
-                    sessionError = error;
-                    if (sessionError) console.error('Unable to sign out pending seller:', sessionError);
+                    if (error) console.error('Unable to sign out pending seller:', error);
                 }
 
                 let notificationError = null;
@@ -286,14 +286,10 @@
                     console.error('Registration notification failed:', error);
                 }
 
-                if (sessionError) {
-                    throw new Error('Demann lan anrejistre, men nou pa t kapab fèmen sesyon an. Tanpri kontakte administratè a tousuit.');
+                if (notificationError) {
+                    console.warn('Registration notification failed; continuing to vendor payment:', notificationError);
                 }
-
-                alert(notificationError
-                    ? '✅ Demann vandè ou a anrejistre epi li rete an atant. Men avi imel la pa t kapab voye bay admin nan; tanpri kontakte admin nan pou fè l konnen.'
-                    : '✅ Demann vandè ou a anrejistre. Li rete an atant; ou p ap kapab konekte jiskaske admin nan apwouve li. Admin nan resevwa yon avi imel.');
-                window.location.href = '/';
+                window.location.href = `/vendor-registration-payment.html?userId=${encodeURIComponent(authData.user.id)}`;
             } else {
                 let notificationError = null;
                 try {
@@ -314,9 +310,9 @@
                     : '/login.html?redirect=' + encodeURIComponent('/affiliate-dashboard.html');
             }
         } catch (err) {
-            alert("❌ " + err.message);
+            alert((window.currentLang === 'fr' ? "❌ " : "❌ ") + err.message);
             btn.disabled = false;
-            btn.innerHTML = "CRÉER MON COMPTE";
+            setRole(currentRole);
         }
     }
 </script>
