@@ -4,7 +4,7 @@ const { getPaymentProvider } = require('./_payment-provider');
 
 const supabaseUrl = process.env.SUPABASE_URL || 'https://letyferfjpxmstohvgcj.supabase.co';
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = serviceKey ? createClient(supabaseUrl, serviceKey, { transport: ws }) : null;
+const supabase = serviceKey ? createClient(supabaseUrl, serviceKey, { realtime: { transport: ws } }) : null;
 const maxProofBytes = 4 * 1024 * 1024;
 const allowedOrigins = (process.env.SITE_ORIGIN || 'https://boutique-piyay.netlify.app').split(',').map((origin) => origin.trim());
 
