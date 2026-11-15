@@ -10,12 +10,6 @@
 [functions]
   included_files = ["ai-system-prompt.txt"]
 
-# ✅ NETLIFY FUNCTIONS (Priyorite)
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
 [[redirects]]
   from = "/admin"
   to = "/admin-stats.html"

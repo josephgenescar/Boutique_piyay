@@ -220,7 +220,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
 <script>
   const AFFILIATE_SUP_URL = "https://letyferfjpxmstohvgcj.supabase.co";
   const AFFILIATE_SUP_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxldHlmZXJmanB4bXN0b2h2Z2NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMjcwMDIsImV4cCI6MjA4OTgwMzAwMn0.Y5BVX8ewoEyiVfyy5AZRNXdn-phbhBWqwfYuWmSBjKg";
-  const sup = window.supabase.createClient(AFFILIATE_SUP_URL, AFFILIATE_SUP_KEY);
+  let sup = null;
   let referralLinkText = '';
   let activeAffiliateTab = 0;
   let toastTimer = null;
@@ -239,6 +239,8 @@ description: Votre espace affilié privé — liens, commissions et paiements
   async function loadAffiliateDashboard() {
     const container = document.getElementById('affiliate-content');
     try {
+      sup = sup || window.supabaseMain || window.supabaseAuth
+        || window.supabase.createClient(AFFILIATE_SUP_URL, AFFILIATE_SUP_KEY);
       document.getElementById('affiliateLogoutText').textContent = phrase('Dekonekte', 'Se déconnecter');
       document.getElementById('affiliateLogout').setAttribute('aria-label', phrase('Dekonekte', 'Se déconnecter'));
       const { data: { session }, error: sessionError } = await sup.auth.getSession();
@@ -269,11 +271,7 @@ description: Votre espace affilié privé — liens, commissions et paiements
         return;
       }
 
-      const response = await fetch('/.netlify/functions/marketplace-payments?view=affiliate', {
-        headers: { Authorization: `Bearer ${session.access_token}` }
-      });
-      const finance = await response.json();
-      if (!response.ok) throw new Error(finance.error || phrase('Enfòmasyon afilye a pa disponib.', 'Les informations de l’affilié sont indisponibles.'));
+      const finance = await fetchAffiliateFinance(session);
       if (!finance.affiliate?.id || !finance.affiliate?.referral_code) {
         throw new Error(phrase('Nou pa jwenn kont afilye ki asosye ak pwofil ou a.', 'Aucun compte affilié n’est associé à votre profil.'));
       }
@@ -286,6 +284,49 @@ description: Votre espace affilié privé — liens, commissions et paiements
         `<button type="button" class="ad-btn" onclick="loadAffiliateDashboard()">${phrase('Eseye ankò', 'Réessayer')}</button>`
       );
     }
+  }
+
+  async function fetchAffiliateFinance(session) {
+    const url = '/.netlify/functions/marketplace-payments?view=affiliate';
+    const request = accessToken => fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    let response = await request(session.access_token);
+
+    if (response.status === 401) {
+      const { data, error } = await sup.auth.refreshSession();
+      if (error) throw new Error(phrase(
+        'Sesyon ou an fini. Tanpri konekte ankò, apre sa relouvri dashboard afilye a.',
+        'Votre session a expiré. Reconnectez-vous puis rouvrez le tableau affilié.'
+      ));
+      if (!data.session?.access_token) {
+        throw new Error(phrase(
+          'Nou pa ka renouvle sesyon an. Tanpri konekte ankò.',
+          'Impossible de renouveler votre session. Veuillez vous reconnecter.'
+        ));
+      }
+      response = await request(data.session.access_token);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.toLowerCase().includes('application/json')) {
+      throw new Error(phrase(
+        'Sèvè a pa retounen repons dashboard la. Pou tès lokal, lanse sit la ak “netlify dev”, pa ak yon sèvè fichye estatik.',
+        'Le serveur n’a pas renvoyé la réponse du tableau. En local, lancez le site avec « netlify dev », pas avec un serveur de fichiers statiques.'
+      ));
+    }
+
+    const finance = await response.json();
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error(phrase(
+          'Sesyon an pa valab. Tanpri dekonekte, konekte ankò, epi eseye ankò.',
+          'La session n’est pas valide. Déconnectez-vous, reconnectez-vous, puis réessayez.'
+        ));
+      }
+      throw new Error(finance.error || phrase('Enfòmasyon afilye a pa disponib.', 'Les informations de l’affilié sont indisponibles.'));
+    }
+    return finance;
   }
 
   function renderAffiliateDashboard(container, finance, session) {
